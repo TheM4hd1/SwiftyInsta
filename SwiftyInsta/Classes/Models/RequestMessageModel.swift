@@ -29,7 +29,13 @@ struct RequestMessageModel: Codable {
     }
     
     func generateSignature(signatureKey: String) -> String {
-        return ""
+        var _signatureKey = signatureKey
+        if signatureKey.isEmpty {
+            _signatureKey = Headers.HeaderIGSignatureValue
+        }
+        
+        let message = getMessageString()
+        return message.hmac(algorithm: .SHA256, key: _signatureKey)
     }
     
     func isEmpty() -> Bool {
@@ -40,16 +46,32 @@ struct RequestMessageModel: Codable {
     }
     
     static func generateDeviceId() -> String {
-        return ""
+        return generateDeviceIdFromGuid(guid: UUID.init())
     }
     
     func generateUploadId() -> String {
-        return ""
+        var dateComponents = DateComponents()
+        dateComponents.year = 1970
+        dateComponents.month = 1
+        dateComponents.day = 1
+        dateComponents.timeZone = TimeZone(abbreviation: "UTC") // Japan Standard Time
+        dateComponents.hour = 0
+        dateComponents.minute = 0
+        dateComponents.second = 0
+        let timeSpan = Calendar.current.date(byAdding: dateComponents, to: Date())
+        let totalSeconds = Calendar.current.component(.second, from: timeSpan!)
+        return String(totalSeconds)
     }
     
     func fromDevice(device: AndroidDeviceModel) -> RequestMessageModel {
-        let model = RequestMessageModel(phoneId: device.phoneGuid.uuidString, username: "",
-                                        guid: device.deviceGuid, deviceId: device.deviceId, password: "", loginAttemptCount: "0")
+        let model = RequestMessageModel(
+            phoneId: device.phoneGuid.uuidString,
+            username: "",
+            guid: device.deviceGuid,
+            deviceId: device.deviceId,
+            password: "",
+            loginAttemptCount: "0"
+        )
         return model
     }
     
