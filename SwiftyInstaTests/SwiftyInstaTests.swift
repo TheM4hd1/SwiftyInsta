@@ -18,4 +18,8 @@ class SwiftyInstaTests: XCTestCase {
         """
         XCTAssertEqual("ebde2e05c55f3d41d89201ad75669e493a27408f46ef7f2395bb357456d6db5b", message.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue))
     }
+    
+    func testMD5hash() {
+        XCTAssertEqual("220cb46b456b848c19b2825db5bd3838", "SwiftyInsta".MD5)
+    }
 }
