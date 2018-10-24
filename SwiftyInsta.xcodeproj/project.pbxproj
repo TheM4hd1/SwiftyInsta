@@ -28,6 +28,9 @@
 		115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1254217FF0E300ED3530 /* UserShortModel.swift */; };
 		115F1257217FF1BF00ED3530 /* AndroidDeviceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */; };
 		115F1259217FF21E00ED3530 /* Devices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1258217FF21E00ED3530 /* Devices.swift */; };
+		1171E472218118A400579B04 /* DelayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E471218118A400579B04 /* DelayModel.swift */; };
+		1171E4742181217100579B04 /* CommonCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 1171E4732181217100579B04 /* CommonCrypto.h */; };
+		1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E47721812C9400579B04 /* LoginResultModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +68,9 @@
 		115F1254217FF0E300ED3530 /* UserShortModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortModel.swift; sourceTree = "<group>"; };
 		115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidDeviceGenerator.swift; sourceTree = "<group>"; };
 		115F1258217FF21E00ED3530 /* Devices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Devices.swift; sourceTree = "<group>"; };
+		1171E471218118A400579B04 /* DelayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayModel.swift; sourceTree = "<group>"; };
+		1171E4732181217100579B04 /* CommonCrypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonCrypto.h; sourceTree = "<group>"; };
+		1171E47721812C9400579B04 /* LoginResultModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResultModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +136,7 @@
 				115F120A217FDD8B00ED3530 /* SwiftyInsta.h */,
 				112E735D2180E8DF0048A8D7 /* CommonHMAC.h */,
 				115F120B217FDD8B00ED3530 /* Info.plist */,
+				1171E4732181217100579B04 /* CommonCrypto.h */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";
@@ -174,8 +181,10 @@
 			children = (
 				115F124E217FEC8E00ED3530 /* Result.swift */,
 				115F1250217FEF6800ED3530 /* ResultInfo.swift */,
+				1171E471218118A400579B04 /* DelayModel.swift */,
 				115F1252217FEFF200ED3530 /* SessionStorage.swift */,
 				115F1254217FF0E300ED3530 /* UserShortModel.swift */,
+				1171E47721812C9400579B04 /* LoginResultModel.swift */,
 				1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */,
 				1104CD0E2180639000F855BA /* RequestMessageModel.swift */,
 			);
@@ -243,6 +252,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1171E4742181217100579B04 /* CommonCrypto.h in Headers */,
 				112E735E2180E8DF0048A8D7 /* CommonHMAC.h in Headers */,
 				115F1218217FDD8B00ED3530 /* SwiftyInsta.h in Headers */,
 			);
@@ -361,6 +371,8 @@
 				1104CD0F2180639000F855BA /* RequestMessageModel.swift in Sources */,
 				1104CD112180644100F855BA /* HttpHelper.swift in Sources */,
 				115F1241217FE98000ED3530 /* APIHandler.swift in Sources */,
+				1171E472218118A400579B04 /* DelayModel.swift in Sources */,
+				1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */,
 				115F1253217FEFF200ED3530 /* SessionStorage.swift in Sources */,
 				1104CD092180621400F855BA /* HTTPMethods.swift in Sources */,
 			);

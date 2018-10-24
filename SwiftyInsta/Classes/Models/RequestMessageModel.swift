@@ -76,6 +76,7 @@ struct RequestMessageModel: Codable {
     }
     
     static func generateDeviceIdFromGuid(guid: UUID) -> String {
-        return ""
+        let hashedGuid = guid.uuidString.MD5
+        return "android-\(hashedGuid.prefix(16))"
     }
 }
