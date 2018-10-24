@@ -9,5 +9,9 @@
 import Foundation
 
 struct SessionStorage: Codable {
-    
+    var username: String
+    var password: String
+    var csrfToken: String
+    var rankToken: String
+    var loggedInUser: UserShortModel
 }

@@ -11,4 +11,18 @@ import Foundation
 enum CustomErrors: Error {
     case urlCreationFaild(_ description: String)
     case runTimeError(_ description: String)
+    case noError
+}
+
+extension CustomErrors: LocalizedError {
+    var localizedDescription: String {
+        switch self {
+        case .urlCreationFaild(let description):
+            return description
+        case .runTimeError(let description):
+            return description
+        default:
+            return ""
+        }
+    }
 }

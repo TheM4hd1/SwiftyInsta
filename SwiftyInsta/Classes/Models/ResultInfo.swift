@@ -9,5 +9,7 @@
 import Foundation
 
 struct ResultInfo {
-    
+    var error: Error
+    var message: String
+    var responseType: ResponseTypes
 }

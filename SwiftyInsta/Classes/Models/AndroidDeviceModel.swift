@@ -9,5 +9,21 @@
 import Foundation
 
 struct AndroidDeviceModel {
-    
+    var phoneGuid: UUID
+    var deviceGuid: UUID
+    var googleAdId: UUID?
+    var rankToken: UUID?
+    var androidBoardName: String
+    var androidBootLoader: String
+    var deviceBrand: String
+    var deviceId: String
+    var deviceModel: String
+    var deviceModelBoot: String
+    var deviceModelIdentifier: String
+    var frimwareBrand: String
+    var frimwareFingerprint: String
+    var frimwareTags: String
+    var frimwareType: String
+    var hardwareManufacturer: String
+    var hardwareModel: String
 }
