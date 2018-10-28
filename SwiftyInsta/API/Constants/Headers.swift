@@ -9,6 +9,9 @@
 import Foundation
 
 struct Headers {
+    
+    private init() {}
+    
     static let HeaderAcceptLanguageKey = "Accept-Language"
     static let HeaderAcceptLanguageValue = "en-US"
     static let HeaderIGCapablitiesKey = "X-IG-Capabilities"

@@ -194,8 +194,8 @@
 		115F1242217FEA1200ED3530 /* Constants */ = {
 			isa = PBXGroup;
 			children = (
-				115F1243217FEA4400ED3530 /* Headers.swift */,
 				115F1245217FEA5200ED3530 /* URLs.swift */,
+				115F1243217FEA4400ED3530 /* Headers.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -204,8 +204,8 @@
 			isa = PBXGroup;
 			children = (
 				115F1258217FF21E00ED3530 /* Devices.swift */,
-				1104CD082180621400F855BA /* HTTPMethods.swift */,
 				1104CD0A2180627400F855BA /* CustomErrors.swift */,
+				1104CD082180621400F855BA /* HTTPMethods.swift */,
 				1143E0C721809E7700D9FF31 /* ResponseTypes.swift */,
 			);
 			path = Enums;

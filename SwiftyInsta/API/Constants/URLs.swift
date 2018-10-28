@@ -10,19 +10,22 @@ import Foundation
 
 /// Private Instagram API
 struct URLs {
+    
+    private init() {}
+    
     // Base Url
-    static let InstagramUrl = "https://i.instagram.com"
-    static let API = "/api"
-    static let APIVersion = "/v1"
-    static let APISuffix = API + APIVersion
-    static let BaseInstagramApiUrl = InstagramUrl + APISuffix
+    private static let InstagramUrl = "https://i.instagram.com"
+    private static let API = "/api"
+    private static let APIVersion = "/v1"
+    private static let APISuffix = API + APIVersion
+    private static let BaseInstagramApiUrl = InstagramUrl + APISuffix
 
     // Endpoints
-    static let AccountCreate = "/accounts/create/"
-    static let AccountLogin = "/accounts/login/";
-    static let AccountTwoFactorLogin = "/accounts/two_factor_login/";
-    static let AccountChangePassword = "/accounts/change_password/"
-    static let AccountLogout = "/accounts/logout/";
+    private static let AccountCreate = "/accounts/create/"
+    private static let AccountLogin = "/accounts/login/";
+    private static let AccountTwoFactorLogin = "/accounts/two_factor_login/";
+    private static let AccountChangePassword = "/accounts/change_password/"
+    private static let AccountLogout = "/accounts/logout/";
     
     static func getInstagramUrl() throws -> URL {
         if let url = URL(string: InstagramUrl) {
