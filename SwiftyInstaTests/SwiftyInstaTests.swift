@@ -22,4 +22,26 @@ class SwiftyInstaTests: XCTestCase {
     func testMD5hash() {
         XCTAssertEqual("220cb46b456b848c19b2825db5bd3838", "SwiftyInsta".MD5)
     }
+    
+    func testLogin() {
+        HTTPCookieStorage.shared.cookies?.forEach({ (cookie) in
+            HTTPCookieStorage.shared.deleteCookie(cookie)
+        })
+        
+        let exp = expectation(description: "\n\nLogin() faild during timeout\n\n")
+        let user = SessionStorage.create(username: "testusernameinstaminer", password: "testpasswordinstaminer")
+        let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: DelayModel()).setUser(user: user).build()
+        
+        handler.login { (result) in
+            if result.isSucceeded {
+                
+            } else {
+                
+            }
+            
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 30, handler: nil)
+    }
 }
