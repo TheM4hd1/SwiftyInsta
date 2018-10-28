@@ -17,6 +17,16 @@ struct UserShortModel: Codable {
     var username: String
     var fullname: String
     
+    init() {
+        isVerified = false
+        isPrivate = false
+        pk = 0
+        profilePicture = ""
+        profilePictureId = "unknown"
+        username = ""
+        fullname = ""
+    }
+    
     func eqauls(user: UserShortModel) -> Bool {
         return pk == user.pk
     }

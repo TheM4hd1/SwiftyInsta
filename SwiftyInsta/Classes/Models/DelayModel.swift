@@ -9,10 +9,10 @@
 import Foundation
 
 struct DelayModel {
-    var min: Int = 1
-    var max: Int = 5
+    var min: Double = 1
+    var max: Double = 5
     
-    func random() -> Int {
-        return Int.random(in: min...max)
+    func random() -> Double {
+        return Double.random(in: min...max)
     }
 }

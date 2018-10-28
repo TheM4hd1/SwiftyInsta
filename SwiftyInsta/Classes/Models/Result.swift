@@ -9,13 +9,14 @@
 import Foundation
 
 protocol ResultProtocol {
-    associatedtype value
+    associatedtype type
     var isSucceeded: Bool { get }
     var info: ResultInfo { get }
 }
 
 struct Result<Element>: ResultProtocol {
-    typealias value = Element
+    typealias type = Element
     var isSucceeded: Bool
     var info: ResultInfo
+    var value: type?
 }
