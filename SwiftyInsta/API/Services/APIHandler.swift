@@ -22,6 +22,7 @@ class APIHandler: APIHandlerProtocol {
     private var _queue: DispatchQueue
     private var _twoFactor: TwoFactorLoginInfoModel?
     private var _challenge: ChallengeModel?
+    private var _isUserAuthenticated = false
     
     init(request: RequestMessageModel, user: SessionStorage, device: AndroidDeviceModel, delay: DelayModel, config: URLSessionConfiguration) {
         _delay = delay
@@ -33,6 +34,8 @@ class APIHandler: APIHandlerProtocol {
     }
     
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) {
+        try! validateUser()
+        try! validateRequestMessage()
         do {
             try _httpHelper.sendRequest(method: .get, url: URLs.getInstagramUrl(), body: [:], header: [:]) { [weak self] (data, response, error) in
                 if let error = error {
@@ -111,9 +114,19 @@ class APIHandler: APIHandlerProtocol {
                                             }
                                             
                                         } else {
-                                            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: ResponseTypes.ok)
-                                            let result = Result<LoginResultModel>.init(isSucceeded: true, info: info, value: .success)
-                                            completion(result)
+                                            do {
+                                                let loginInfo = try decoder.decode(LoginResponseModel.self, from: data)
+                                                self?._user.loggedInUser = loginInfo.loggedInUser
+                                                self?._isUserAuthenticated = (loginInfo.loggedInUser.username.lowercased() == self?._user.username.lowercased())
+                                                self?._user.rankToken = "\(self?._user.loggedInUser.pk ?? 0)_\(self?._request.phoneId ?? "")"
+                                                let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: ResponseTypes.ok)
+                                                let result = Result<LoginResultModel>.init(isSucceeded: true, info: info, value: .success)
+                                                completion(result)
+                                            } catch {
+                                                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .fail)
+                                                let result = Result<LoginResultModel>.init(isSucceeded: false, info: info, value: .exception)
+                                                completion(result)
+                                            }
                                         }
                                     }
                                 }
@@ -123,7 +136,6 @@ class APIHandler: APIHandlerProtocol {
                             let result = Result<LoginResultModel>.init(isSucceeded: false, info: info, value: .exception)
                             completion(result)
                         }
-                        
                     })
                 }
             }
@@ -134,4 +146,21 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
+    fileprivate func validateUser() throws {
+        if _user.username.isEmpty || _user.password.isEmpty {
+            throw CustomErrors.runTimeError("username and password must be specified.")
+        }
+    }
+    
+    fileprivate func validateLoggedIn() throws {
+        if !_isUserAuthenticated {
+            throw CustomErrors.runTimeError("user must be authenticated.")
+        }
+    }
+    
+    fileprivate func validateRequestMessage() throws {
+        if _request.isEmpty() {
+            throw CustomErrors.runTimeError("empty request message.")
+        }
+    }
 }
