@@ -12,19 +12,17 @@ struct UserShortModel: Codable {
     var isVerified: Bool
     var isPrivate: Bool
     var pk: Int
-    var profilePicture: String
-    var profilePictureId: String = "unknown"
+    var profilePicUrl: String
     var username: String
-    var fullname: String
+    var fullName: String
     
     init() {
         isVerified = false
         isPrivate = false
         pk = 0
-        profilePicture = ""
-        profilePictureId = "unknown"
+        profilePicUrl = ""
         username = ""
-        fullname = ""
+        fullName = ""
     }
     
     func eqauls(user: UserShortModel) -> Bool {

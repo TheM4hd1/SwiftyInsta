@@ -35,6 +35,7 @@
 		1171E472218118A400579B04 /* DelayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E471218118A400579B04 /* DelayModel.swift */; };
 		1171E4742181217100579B04 /* CommonCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 1171E4732181217100579B04 /* CommonCrypto.h */; };
 		1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E47721812C9400579B04 /* LoginResultModel.swift */; };
+		11723A592187C23400968DA5 /* LoginResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11723A582187C23400968DA5 /* LoginResponseModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +80,7 @@
 		1171E471218118A400579B04 /* DelayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayModel.swift; sourceTree = "<group>"; };
 		1171E4732181217100579B04 /* CommonCrypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonCrypto.h; sourceTree = "<group>"; };
 		1171E47721812C9400579B04 /* LoginResultModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResultModel.swift; sourceTree = "<group>"; };
+		11723A582187C23400968DA5 /* LoginResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponseModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +197,7 @@
 				115F1254217FF0E300ED3530 /* UserShortModel.swift */,
 				1171E47721812C9400579B04 /* LoginResultModel.swift */,
 				1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */,
+				11723A582187C23400968DA5 /* LoginResponseModel.swift */,
 				1104CD0E2180639000F855BA /* RequestMessageModel.swift */,
 				114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */,
 				114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */,
@@ -380,6 +383,7 @@
 				115F1246217FEA5200ED3530 /* URLs.swift in Sources */,
 				115F1257217FF1BF00ED3530 /* AndroidDeviceGenerator.swift in Sources */,
 				115F1251217FEF6800ED3530 /* ResultInfo.swift in Sources */,
+				11723A592187C23400968DA5 /* LoginResponseModel.swift in Sources */,
 				112E735C2180E86B0048A8D7 /* CryptoHelper.swift in Sources */,
 				115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */,
 				115F1259217FF21E00ED3530 /* Devices.swift in Sources */,
