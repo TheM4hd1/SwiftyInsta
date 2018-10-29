@@ -15,6 +15,10 @@
 		112E735C2180E86B0048A8D7 /* CryptoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112E735B2180E86B0048A8D7 /* CryptoHelper.swift */; };
 		112E735E2180E8DF0048A8D7 /* CommonHMAC.h in Headers */ = {isa = PBXBuildFile; fileRef = 112E735D2180E8DF0048A8D7 /* CommonHMAC.h */; };
 		1143E0C821809E7700D9FF31 /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
+		114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */; };
+		114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */; };
+		114B848421871E9B00F84161 /* PhoneVerificationSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */; };
+		114B84862187200500F84161 /* ChallengeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B84852187200500F84161 /* ChallengeModel.swift */; };
 		115F1211217FDD8B00ED3530 /* SwiftyInsta.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 115F1207217FDD8B00ED3530 /* SwiftyInsta.framework */; };
 		115F1216217FDD8B00ED3530 /* SwiftyInstaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1215217FDD8B00ED3530 /* SwiftyInstaTests.swift */; };
 		115F1218217FDD8B00ED3530 /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -52,6 +56,10 @@
 		112E735B2180E86B0048A8D7 /* CryptoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHelper.swift; sourceTree = "<group>"; };
 		112E735D2180E8DF0048A8D7 /* CommonHMAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHMAC.h; sourceTree = "<group>"; };
 		1143E0C721809E7700D9FF31 /* ResponseTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseTypes.swift; sourceTree = "<group>"; };
+		114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginBaseResponseModel.swift; sourceTree = "<group>"; };
+		114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLoginInfoModel.swift; sourceTree = "<group>"; };
+		114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneVerificationSettingsModel.swift; sourceTree = "<group>"; };
+		114B84852187200500F84161 /* ChallengeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeModel.swift; sourceTree = "<group>"; };
 		115F1207217FDD8B00ED3530 /* SwiftyInsta.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		115F120A217FDD8B00ED3530 /* SwiftyInsta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftyInsta.h; sourceTree = "<group>"; };
 		115F120B217FDD8B00ED3530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -183,10 +191,14 @@
 				115F1250217FEF6800ED3530 /* ResultInfo.swift */,
 				1171E471218118A400579B04 /* DelayModel.swift */,
 				115F1252217FEFF200ED3530 /* SessionStorage.swift */,
+				114B84852187200500F84161 /* ChallengeModel.swift */,
 				115F1254217FF0E300ED3530 /* UserShortModel.swift */,
 				1171E47721812C9400579B04 /* LoginResultModel.swift */,
 				1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */,
 				1104CD0E2180639000F855BA /* RequestMessageModel.swift */,
+				114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */,
+				114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */,
+				114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -358,7 +370,10 @@
 			files = (
 				1104CD0D218062DD00F855BA /* AndroidDeviceModel.swift in Sources */,
 				115F124A217FEBD600ED3530 /* APIBuilder.swift in Sources */,
+				114B848421871E9B00F84161 /* PhoneVerificationSettingsModel.swift in Sources */,
 				1143E0C821809E7700D9FF31 /* ResponseTypes.swift in Sources */,
+				114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */,
+				114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */,
 				1104CD0B2180627400F855BA /* CustomErrors.swift in Sources */,
 				115F124F217FEC8E00ED3530 /* Result.swift in Sources */,
 				115F1244217FEA4400ED3530 /* Headers.swift in Sources */,
@@ -369,6 +384,7 @@
 				115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */,
 				115F1259217FF21E00ED3530 /* Devices.swift in Sources */,
 				1104CD0F2180639000F855BA /* RequestMessageModel.swift in Sources */,
+				114B84862187200500F84161 /* ChallengeModel.swift in Sources */,
 				1104CD112180644100F855BA /* HttpHelper.swift in Sources */,
 				115F1241217FE98000ED3530 /* APIHandler.swift in Sources */,
 				1171E472218118A400579B04 /* DelayModel.swift in Sources */,

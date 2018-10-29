@@ -8,6 +8,12 @@
 
 import Foundation
 
-struct LoginResultModel {
-    
+enum LoginResultModel {
+    case success
+    case badPassword
+    case invalidUser
+    case twoFactorRequired
+    case challengeRequired
+    case exception
+    case responseError
 }
