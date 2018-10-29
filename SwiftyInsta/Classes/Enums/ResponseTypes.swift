@@ -18,4 +18,5 @@ enum ResponseTypes {
     case spam
     case actionBlocked
     case temporarilyBlocked
+    case fail
 }
