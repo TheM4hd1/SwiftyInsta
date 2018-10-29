@@ -34,11 +34,10 @@ class SwiftyInstaTests: XCTestCase {
         
         handler.login { (result) in
             if result.isSucceeded {
-                
+                print("Succeeded Login")
             } else {
-                
+                print(result.info.message)
             }
-            
             exp.fulfill()
         }
         
