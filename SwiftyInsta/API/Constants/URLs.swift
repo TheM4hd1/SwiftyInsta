@@ -47,4 +47,11 @@ struct URLs {
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for instagram login url.")
     }
+    
+    static func getLogoutUrl() throws -> URL {
+        if let url = URL(string: BaseInstagramApiUrl + AccountLogout) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for instagram logout url.")
+    }
 }

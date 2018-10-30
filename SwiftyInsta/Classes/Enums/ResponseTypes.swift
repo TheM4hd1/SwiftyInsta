@@ -9,7 +9,7 @@
 import Foundation
 
 enum ResponseTypes {
-    case unkown
+    case unknown
     case loginRequired
     case requestLimit
     case ok
