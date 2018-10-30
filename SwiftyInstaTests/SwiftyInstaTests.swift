@@ -32,12 +32,16 @@ class SwiftyInstaTests: XCTestCase {
         let user = SessionStorage.create(username: "testusernameinstaminer", password: "testpasswordinstaminer")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: DelayModel()).setUser(user: user).build()
         
-        handler.login { (result) in
-            if result.isSucceeded {
-                print("Succeeded Login")
-            } else {
+        do {
+            try handler.login { (result) in
                 print(result.info.message)
+                exp.fulfill()
             }
+        } catch let error as CustomErrors {
+            print(error.localizedDescription)
+            exp.fulfill()
+        } catch {
+            print(error)
             exp.fulfill()
         }
         
