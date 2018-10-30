@@ -10,7 +10,7 @@ import XCTest
 @testable import SwiftyInsta
 
 class SwiftyInstaTests: XCTestCase {
-
+    
     func testCalculateSignatureHash() {
         let message =
         """
@@ -34,7 +34,7 @@ class SwiftyInstaTests: XCTestCase {
         
         do {
             try handler.login { (result) in
-                print(result.info.message)
+                print("LoggedIn")
                 exp.fulfill()
             }
         } catch let error as CustomErrors {
@@ -45,6 +45,26 @@ class SwiftyInstaTests: XCTestCase {
             exp.fulfill()
         }
         
+        waitForExpectations(timeout: 30) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testLogout(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nLogout() faild during timeout\n\n")
+        do {
+            try handler.logout(completion: { (result) in
+                print("LoggedOut")
+                exp.fulfill()
+            })
+        } catch {
+            print(error)
+            exp.fulfill()
+        }
         waitForExpectations(timeout: 30, handler: nil)
     }
 }
