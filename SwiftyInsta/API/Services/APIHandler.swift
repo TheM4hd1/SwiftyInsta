@@ -10,6 +10,7 @@ import Foundation
 
 protocol APIHandlerProtocol {
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws
+    func logout(completion: @escaping (Result<Bool>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -45,7 +46,7 @@ class APIHandler: APIHandlerProtocol {
         // Simple 'GET' request to retrieve 'CSRF' token.
         try? _httpHelper.sendRequest(method: .get, url: URLs.getInstagramUrl(), body: [:], header: [:]) { [weak self] (data, response, error) in
             if let error = error {
-                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: ResponseTypes.unkown)
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: ResponseTypes.unknown)
                 let result = Result<LoginResultModel>.init(isSucceeded: false, info: info, value: .responseError)
                 completion(result)
                 
@@ -78,7 +79,7 @@ class APIHandler: APIHandlerProtocol {
                 self?._queue.asyncAfter(deadline: .now() + delay, execute: {
                     try? self?._httpHelper.sendRequest(method: .post, url: URLs.getLoginUrl(), body: body, header: headers, completion: { (data, response, error) in
                         if let error = error {
-                            let info = ResultInfo.init( error: error, message: error.localizedDescription, responseType: ResponseTypes.unkown)
+                            let info = ResultInfo.init( error: error, message: error.localizedDescription, responseType: ResponseTypes.unknown)
                             let result = Result<LoginResultModel>.init(isSucceeded: false, info: info, value: .responseError)
                             completion(result)
                             
@@ -135,6 +136,50 @@ class APIHandler: APIHandlerProtocol {
                 })
             }
         }
+    }
+    
+    func logout(completion: @escaping (Result<Bool>) -> ()) throws {
+        // validate before logout.
+        do {
+            try validateUser()
+            try validateLoggedIn()
+        } catch let error as CustomErrors {
+            throw CustomErrors.runTimeError(error.localizedDescription)
+        }
+        
+        try? _httpHelper.sendRequest(method: .get, url: URLs.getLogoutUrl(), body: [:], header: [:], completion: { [weak self] (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<Bool>.init(isSucceeded: false, info: info, value: false)
+                completion(result)
+            } else {
+                if let data  = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    
+                    do {
+                        let logoutInfo = try decoder.decode(BaseStatusResponseModel.self, from: data)
+                        let message = String(data: data, encoding: String.Encoding.utf8) ?? ""
+                        if response?.statusCode != 200 {
+                            let info = ResultInfo.init(error: CustomErrors.runTimeError("http error: \(String(describing: response?.statusCode))"), message: message, responseType: .fail)
+                            let result = Result<Bool>.init(isSucceeded: false, info: info, value: false)
+                            completion(result)
+                        } else {
+                            if logoutInfo.isOk() {
+                                self?._isUserAuthenticated = false
+                                let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                                let result = Result<Bool>.init(isSucceeded: true, info: info, value: true)
+                                completion(result)
+                            }
+                        }
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                        let result = Result<Bool>.init(isSucceeded: false, info: info, value: false)
+                        completion(result)
+                    }
+                }
+            }
+        })
     }
     
     fileprivate func validateUser() throws {
