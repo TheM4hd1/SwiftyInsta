@@ -8,7 +8,11 @@
 
 import Foundation
 
-struct BaseStatusResponseModel: Codable {
+protocol BaseStatusResponseProtocol {
+    var status: String? { get }
+}
+
+struct BaseStatusResponseModel: Codable, BaseStatusResponseProtocol {
     var status: String?
     
     func isOk() -> Bool {

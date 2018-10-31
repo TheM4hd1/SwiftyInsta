@@ -37,6 +37,10 @@
 		1171E4742181217100579B04 /* CommonCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 1171E4732181217100579B04 /* CommonCrypto.h */; };
 		1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E47721812C9400579B04 /* LoginResultModel.swift */; };
 		11723A592187C23400968DA5 /* LoginResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11723A582187C23400968DA5 /* LoginResponseModel.swift */; };
+		11848602218A1DDB0067FFD6 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848601218A1DDB0067FFD6 /* UserModel.swift */; };
+		11848604218A1F460067FFD6 /* FriendshipStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */; };
+		11848606218A21DA0067FFD6 /* NameTagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848605218A21DA0067FFD6 /* NameTagModel.swift */; };
+		11848608218A23900067FFD6 /* SearchUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848607218A23900067FFD6 /* SearchUserModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +87,10 @@
 		1171E4732181217100579B04 /* CommonCrypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonCrypto.h; sourceTree = "<group>"; };
 		1171E47721812C9400579B04 /* LoginResultModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResultModel.swift; sourceTree = "<group>"; };
 		11723A582187C23400968DA5 /* LoginResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponseModel.swift; sourceTree = "<group>"; };
+		11848601218A1DDB0067FFD6 /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
+		11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipStatusModel.swift; sourceTree = "<group>"; };
+		11848605218A21DA0067FFD6 /* NameTagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameTagModel.swift; sourceTree = "<group>"; };
+		11848607218A23900067FFD6 /* SearchUserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -193,18 +201,22 @@
 			children = (
 				115F124E217FEC8E00ED3530 /* Result.swift */,
 				115F1250217FEF6800ED3530 /* ResultInfo.swift */,
+				11848601218A1DDB0067FFD6 /* UserModel.swift */,
 				1171E471218118A400579B04 /* DelayModel.swift */,
+				11848605218A21DA0067FFD6 /* NameTagModel.swift */,
 				115F1252217FEFF200ED3530 /* SessionStorage.swift */,
 				114B84852187200500F84161 /* ChallengeModel.swift */,
 				115F1254217FF0E300ED3530 /* UserShortModel.swift */,
 				1171E47721812C9400579B04 /* LoginResultModel.swift */,
 				1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */,
 				11723A582187C23400968DA5 /* LoginResponseModel.swift */,
+				11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */,
 				1104CD0E2180639000F855BA /* RequestMessageModel.swift */,
 				114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */,
 				112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */,
 				114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */,
 				114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */,
+				11848607218A23900067FFD6 /* SearchUserModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -392,10 +404,14 @@
 				115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */,
 				115F1259217FF21E00ED3530 /* Devices.swift in Sources */,
 				1104CD0F2180639000F855BA /* RequestMessageModel.swift in Sources */,
+				11848602218A1DDB0067FFD6 /* UserModel.swift in Sources */,
+				11848606218A21DA0067FFD6 /* NameTagModel.swift in Sources */,
 				114B84862187200500F84161 /* ChallengeModel.swift in Sources */,
 				1104CD112180644100F855BA /* HttpHelper.swift in Sources */,
 				115F1241217FE98000ED3530 /* APIHandler.swift in Sources */,
 				1171E472218118A400579B04 /* DelayModel.swift in Sources */,
+				11848608218A23900067FFD6 /* SearchUserModel.swift in Sources */,
+				11848604218A1F460067FFD6 /* FriendshipStatusModel.swift in Sources */,
 				1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */,
 				115F1253217FEFF200ED3530 /* SessionStorage.swift in Sources */,
 				1104CD092180621400F855BA /* HTTPMethods.swift in Sources */,

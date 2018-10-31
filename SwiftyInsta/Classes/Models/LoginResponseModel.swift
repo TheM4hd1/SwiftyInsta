@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct LoginResponseModel: Codable {
-    var status: String
+struct LoginResponseModel: Codable, BaseStatusResponseProtocol {
+    var status: String?
     var loggedInUser: UserShortModel
 }
