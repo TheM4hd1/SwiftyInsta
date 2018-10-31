@@ -34,7 +34,11 @@ class SwiftyInstaTests: XCTestCase {
         
         do {
             try handler.login { (result) in
-                print("LoggedIn")
+                if result.isSucceeded {
+                    print("LoggedIn")
+                } else {
+                    print("Login failed: \(result.info.message)")
+                }
                 exp.fulfill()
             }
         } catch let error as CustomErrors {
@@ -45,11 +49,11 @@ class SwiftyInstaTests: XCTestCase {
             exp.fulfill()
         }
         
-        waitForExpectations(timeout: 30) { (err) in
+        waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
             } else {
-                self.testLogout(handler: handler)
+                self.testGetUser(handler: handler)
             }
         }
     }
@@ -58,13 +62,45 @@ class SwiftyInstaTests: XCTestCase {
         let exp = expectation(description: "\n\nLogout() faild during timeout\n\n")
         do {
             try handler.logout(completion: { (result) in
-                print("LoggedOut")
+                if result.isSucceeded {
+                    print("LoggedOut")
+                } else {
+                    print("Logout failed: \(result.info.message)")
+                }
                 exp.fulfill()
             })
         } catch {
             print(error)
             exp.fulfill()
         }
-        waitForExpectations(timeout: 30, handler: nil)
+        waitForExpectations(timeout: 60, handler: nil)
+    }
+    
+    func testGetUser(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nGetUser() faild during timeout\n\n")
+        do {
+            try handler.getUser(username: "swiftyinsta", completion: { (result) in
+                if result.isSucceeded {
+                    print("Data received")
+                } else {
+                    print("GetUser failed: \(result.info.message)")
+                }
+                exp.fulfill()
+            })
+        } catch let error as CustomErrors {
+            print(error.localizedDescription)
+            exp.fulfill()
+        } catch {
+            print(error.localizedDescription)
+            exp.fulfill()
+        }
+    
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
     }
 }

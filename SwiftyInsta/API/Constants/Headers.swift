@@ -25,4 +25,9 @@ struct Headers {
     static let HeaderIGSignatureValue = "98ff843b4c4d924311f452a965f073c7566ff680ee11d8fb7ba57264ab9fbabb"
     static let HeaderIGSignatureVersionKey = "ig_sig_key_version"
     static let HeaderIGSignatureVersionValue = "4"
+    static let HeaderTimeZoneOffsetKey = "timezone_offset"
+    static let HeaderTimeZoneOffsetValue = "43200"
+    static let HeaderCountKey = "count"
+    static let HeaderCountValue = "1"
+    static let HeaderRankTokenKey = "rank_token"
 }

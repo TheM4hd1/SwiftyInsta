@@ -11,6 +11,7 @@ import Foundation
 protocol APIHandlerProtocol {
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws
     func logout(completion: @escaping (Result<Bool>) -> ()) throws
+    func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -121,7 +122,7 @@ class APIHandler: APIHandlerProtocol {
                                     do {
                                         let loginInfo = try decoder.decode(LoginResponseModel.self, from: data)
                                         self?._user.loggedInUser = loginInfo.loggedInUser
-                                        self?._isUserAuthenticated = (loginInfo.loggedInUser.username.lowercased() == self?._user.username.lowercased())
+                                        self?._isUserAuthenticated = (loginInfo.loggedInUser.username?.lowercased() == self?._user.username.lowercased())
                                         self?._user.rankToken = "\(self?._user.loggedInUser.pk ?? 0)_\(self?._request.phoneId ?? "")"
                                         let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: ResponseTypes.ok)
                                         let result = Result<LoginResultModel>.init(isSucceeded: true, info: info, value: .success)
@@ -177,6 +178,70 @@ class APIHandler: APIHandlerProtocol {
                         let result = Result<Bool>.init(isSucceeded: false, info: info, value: false)
                         completion(result)
                     }
+                }
+            }
+        })
+    }
+    
+    func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws {
+        // validate before logout.
+        do {
+            try validateUser()
+            try validateLoggedIn()
+        } catch let error as CustomErrors {
+            throw CustomErrors.runTimeError(error.localizedDescription)
+        }
+        
+        let headers = [
+            Headers.HeaderTimeZoneOffsetKey: Headers.HeaderTimeZoneOffsetValue,
+            Headers.HeaderCountKey: Headers.HeaderCountValue,
+            Headers.HeaderRankTokenKey: _user.rankToken
+        ]
+        
+        try? _httpHelper.sendRequest(method: .get, url: URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<UserModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let info = try decoder.decode(SearchUserModel.self, from: data)
+                        if let user = info.users?.first {
+                            if let pk = user.pk {
+                                if pk < 1 {
+                                    // Incorrect pk.
+                                    let error = CustomErrors.runTimeError("Incorrect pk: \(pk)")
+                                    let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                                    let result = Result<UserModel>.init(isSucceeded: false, info: info, value: nil)
+                                    completion(result)
+                                } else {
+                                    // user found.
+                                    let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                                    let result = Result<UserModel>.init(isSucceeded: true, info: info, value: user)
+                                    completion(result)
+                                }
+                            }
+                        } else {
+                            // Couldn't find the user.
+                            let error = CustomErrors.runTimeError("Couldn't find the user: \(username)")
+                            let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                            let result = Result<UserModel>.init(isSucceeded: false, info: info, value: nil)
+                            completion(result)
+                        }
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<UserModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                } else {
+                    // nil data.
+                    let error = CustomErrors.runTimeError("The data couldn’t be read because it is missing error when decoding JSON.")
+                    let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                    let result = Result<UserModel>.init(isSucceeded: false, info: info, value: nil)
+                    completion(result)
                 }
             }
         })
