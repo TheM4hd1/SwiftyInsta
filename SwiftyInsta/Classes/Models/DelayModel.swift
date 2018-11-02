@@ -11,6 +11,7 @@ import Foundation
 struct DelayModel {
     var min: Double = 1
     var max: Double = 5
+    static let `default` = DelayModel(min: 1, max: 5)
     
     func random() -> Double {
         return Double.random(in: min...max)
