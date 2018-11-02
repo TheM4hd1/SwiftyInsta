@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="200" height="200" src="https://raw.githubusercontent.com/TheM4hd1/SwiftyInsta/master/Screenshots/Logo.png">
+</p>
+
 SwiftyInsta makes it easy to deal with **Instagram** trough a **tokenless private api**.
 You can get/post account information, media, explore tags, user feed comments and ...
 ## Overview
