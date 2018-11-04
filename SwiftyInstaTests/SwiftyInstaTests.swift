@@ -29,15 +29,15 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "\n\nLogin() faild during timeout\n\n")
-        let user = SessionStorage.create(username: "testusernameinstaminer", password: "testpasswordinstaminer")
-        let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: DelayModel()).setUser(user: user).build()
+        let user = SessionStorage.create(username: "", password: "")
+        let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
         
         do {
             try handler.login { (result) in
                 if result.isSucceeded {
-                    print("LoggedIn")
+                    print("[+]: logged in")
                 } else {
-                    print("Login failed: \(result.info.message)")
+                    print("[-] Login failed: \(result.info.message)")
                 }
                 exp.fulfill()
             }
@@ -53,7 +53,8 @@ class SwiftyInstaTests: XCTestCase {
             if let err = err {
                 print(err.localizedDescription)
             } else {
-                self.testGetUser(handler: handler)
+                //self.testGetUser(handler: handler)
+                self.testGetUserFollowing(handler: handler)
             }
         }
     }
@@ -63,9 +64,9 @@ class SwiftyInstaTests: XCTestCase {
         do {
             try handler.logout(completion: { (result) in
                 if result.isSucceeded {
-                    print("LoggedOut")
+                    print("[+]: logged out")
                 } else {
-                    print("Logout failed: \(result.info.message)")
+                    print("[-] Logout failed: \(result.info.message)")
                 }
                 exp.fulfill()
             })
@@ -81,7 +82,8 @@ class SwiftyInstaTests: XCTestCase {
         do {
             try handler.getUser(username: "swiftyinsta", completion: { (result) in
                 if result.isSucceeded {
-                    print("Data received")
+                    guard let user = result.value else { return }
+                    print("fullname: \(user.fullName!)")
                 } else {
                     print("GetUser failed: \(result.info.message)")
                 }
@@ -95,6 +97,32 @@ class SwiftyInstaTests: XCTestCase {
             exp.fulfill()
         }
     
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetUserFollowing(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetUserFollowing() faild during timeout\n\n")
+        do {
+            try handler.getUserFollowing(username: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1), searchQuery: "", completion: { (result) in
+                if result.isSucceeded {
+                    guard let following = result.value else { return }
+                    print("[+] following count: \(following.count)")
+                } else {
+                    print("[-] \(result.info.message)")
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print(error.localizedDescription)
+            exp.fulfill()
+        }
+        
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
