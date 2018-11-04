@@ -39,7 +39,7 @@ import SwiftyInsta
 let handler = try! APIBuilder()
                     .createBuilder()
                     .setHttpHandler(config: .default)
-                    .setRequestDelay(delay: DelayModel())
+                    .setRequestDelay(delay: .default)
                     .setUser(user: user)
                     .build()
 ```

@@ -27,6 +27,7 @@ struct URLs {
     private static let accountChangePassword = "/accounts/change_password/"
     private static let accountLogout = "/accounts/logout/"
     private static let searchUser = "/users/search"
+    private static let userFollowing = "/friendships/%ld/following/"
     
     static func getInstagramUrl() throws -> URL {
         if let url = URL(string: instagramUrl) {
@@ -63,5 +64,29 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for instagram user page.")
+    }
+    
+    static func getUserFollowing(userPk: Int?, rankToken: String?, searchQuery: String = "", maxId: String = "") throws -> URL {
+        guard let userPk = userPk, let rankToken = rankToken else {
+            throw CustomErrors.urlCreationFaild("Cant create URL for user followings.\n nil inputs.")
+        }
+
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userFollowing, userPk))) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            var queryItems: [URLQueryItem] = []
+            queryItems.append(URLQueryItem(name: "rank_token", value: rankToken))
+            
+            if !maxId.isEmpty {
+                queryItems.append(URLQueryItem(name: "max_id", value: maxId))
+            }
+            
+            if !searchQuery.isEmpty {
+                queryItems.append(URLQueryItem(name: "query", value: searchQuery))
+            }
+            
+            urlComponent?.queryItems = queryItems
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for user followings.")
     }
 }
