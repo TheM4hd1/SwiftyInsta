@@ -19,7 +19,7 @@ class HttpHelper {
         session = URLSession(configuration: config)
     }
     
-    func sendRequest(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String], completion: @escaping completionHandler) {
+    func sendAsync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String], completion: @escaping completionHandler) {
         var request = getDefaultRequest(for: url, method: method)
         addHeaders(to: &request, header: header)
         addBody(to: &request, body: body)
@@ -29,6 +29,23 @@ class HttpHelper {
         }
         
         task.resume()
+    }
+    
+    func sendSync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String]) -> (Data?, HTTPURLResponse?, Error?) {
+        var request = getDefaultRequest(for: url, method: method)
+        var result: (Data?, HTTPURLResponse?, Error?)
+        addHeaders(to: &request, header: header)
+        addBody(to: &request, body: body)
+        
+        let semaphore = DispatchSemaphore(value: 0)
+        let task = session.dataTask(with: request) { (data, response, error) in
+            result = (data, response as? HTTPURLResponse, error)
+            semaphore.signal()
+        }
+        
+        task.resume()
+        semaphore.wait()
+        return result
     }
     
     func getDefaultRequest(for url: URL, method: HTTPMethods) -> URLRequest {//, device: AndroidDeviceModel) -> URLRequest {
