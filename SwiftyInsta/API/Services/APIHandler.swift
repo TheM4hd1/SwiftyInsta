@@ -12,7 +12,7 @@ protocol APIHandlerProtocol {
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws
     func logout(completion: @escaping (Result<Bool>) -> ()) throws
     func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws
-    func getUserFollowers(username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<UserShortModel>) -> ()) throws
+    func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
 }
 
@@ -47,7 +47,7 @@ class APIHandler: APIHandlerProtocol {
         }
         
         // Simple 'GET' request to retrieve 'CSRF' token.
-        try? _httpHelper.sendRequest(method: .get, url: URLs.getInstagramUrl(), body: [:], header: [:]) { [weak self] (data, response, error) in
+        try? _httpHelper.sendAsync(method: .get, url: URLs.getInstagramUrl(), body: [:], header: [:]) { [weak self] (data, response, error) in
             if let error = error {
                 let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: ResponseTypes.unknown)
                 let result = Result<LoginResultModel>.init(isSucceeded: false, info: info, value: .responseError)
@@ -80,7 +80,7 @@ class APIHandler: APIHandlerProtocol {
                 // Request with delay
                 let delay = self!._delay.random()
                 self?._queue.asyncAfter(deadline: .now() + delay, execute: {
-                    try? self?._httpHelper.sendRequest(method: .post, url: URLs.getLoginUrl(), body: body, header: headers, completion: { (data, response, error) in
+                    try? self?._httpHelper.sendAsync(method: .post, url: URLs.getLoginUrl(), body: body, header: headers, completion: { (data, response, error) in
                         if let error = error {
                             let info = ResultInfo.init( error: error, message: error.localizedDescription, responseType: ResponseTypes.unknown)
                             let result = Result<LoginResultModel>.init(isSucceeded: false, info: info, value: .responseError)
@@ -150,7 +150,7 @@ class APIHandler: APIHandlerProtocol {
             throw CustomErrors.runTimeError(error.localizedDescription)
         }
         
-        try? _httpHelper.sendRequest(method: .get, url: URLs.getLogoutUrl(), body: [:], header: [:], completion: { [weak self] (data, response, error) in
+        try? _httpHelper.sendAsync(method: .get, url: URLs.getLogoutUrl(), body: [:], header: [:], completion: { [weak self] (data, response, error) in
             if let error = error {
                 let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
                 let result = Result<Bool>.init(isSucceeded: false, info: info, value: false)
@@ -200,7 +200,7 @@ class APIHandler: APIHandlerProtocol {
             Headers.HeaderRankTokenKey: _user.rankToken
         ]
         
-        try? _httpHelper.sendRequest(method: .get, url: URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
+        try? _httpHelper.sendAsync(method: .get, url: URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
             if let error = error {
                 let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
                 let result = Result<UserModel>.init(isSucceeded: false, info: info, value: nil)
@@ -250,15 +250,23 @@ class APIHandler: APIHandlerProtocol {
     }
     
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        try? getUser(username: username) { [weak self] (result) in
-            if result.isSucceeded {
+        // validate before logout.
+        do {
+            try validateUser()
+            try validateLoggedIn()
+        } catch let error as CustomErrors {
+            throw CustomErrors.runTimeError(error.localizedDescription)
+        }
+        
+        try? getUser(username: username) { [weak self] (user) in
+            if user.isSucceeded {
                 //var _paginationParameter = paginationParameter
                 // - Parameter searchQuery: search for specific username
-                let url = try! URLs.getUserFollowing(userPk: result.value?.pk, rankToken: self?._user.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
+                let url = try! URLs.getUserFollowing(userPk: user.value?.pk, rankToken: self?._user.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
                 var following: [UserShortModel] = []
-                self!.getFollowingList(url: url, completion: { (result) in
-                    if result.isSucceeded && result.value != nil {
-                        following.append(contentsOf: result.value!)
+                self!.getFollowingList(from: url, completion: { (result) in
+                    if result.isSucceeded && result.value?.users != nil {
+                        following.append(contentsOf: result.value!.users!)
                         let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
                         let result = Result<[UserShortModel]>.init(isSucceeded: true, info: info, value: following)
                         completion(result)
@@ -268,41 +276,41 @@ class APIHandler: APIHandlerProtocol {
                     }
                 })
             } else {
-                let result = Result<[UserShortModel]>.init(isSucceeded: false, info: result.info, value: nil)
+                let result = Result<[UserShortModel]>.init(isSucceeded: false, info: user.info, value: nil)
                 completion(result)
             }
         }
     }
     
-    private func getFollowingList(url: URL, completion: @escaping (Result<[UserShortModel]>) -> ()) {
-        _httpHelper.sendRequest(method: .get, url: url, body: [:], header: [:]) { (data, response, error) in
+    fileprivate func getFollowingList(from url: URL, completion: @escaping (Result<UserShortListModel>) -> ()) {
+        _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
-                let result = Result<[UserShortModel]>.init(isSucceeded: false, info: info, value: nil)
+                let result = Result<UserShortListModel>.init(isSucceeded: false, info: info, value: nil)
                 completion(result)
             } else {
                 if response?.statusCode != 200 {
                     let info = ResultInfo.init(error: CustomErrors.runTimeError("http error: \(String(describing: response?.statusCode))"), message: "", responseType: .fail)
-                    let result = Result<[UserShortModel]>.init(isSucceeded: false, info: info, value: nil)
+                    let result = Result<UserShortListModel>.init(isSucceeded: false, info: info, value: nil)
                     completion(result)
                 } else {
                     if let data = data {
                         let decoder = JSONDecoder()
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
                         do {
-                            let followingList = try decoder.decode(UserShortListModel.self, from: data)
+                            let list = try decoder.decode(UserShortListModel.self, from: data)
                             let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
-                            let result = Result<[UserShortModel]>.init(isSucceeded: true, info: info, value: followingList.users)
+                            let result = Result<UserShortListModel>.init(isSucceeded: true, info: info, value: list)
                             completion(result)
                         } catch {
                             let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
-                            let result = Result<[UserShortModel]>.init(isSucceeded: false, info: info, value: nil)
+                            let result = Result<UserShortListModel>.init(isSucceeded: false, info: info, value: nil)
                             completion(result)
                         }
                     } else {
                         let error = CustomErrors.runTimeError("The data couldn’t be read because it is missing error when decoding JSON.")
                         let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
-                        let result = Result<[UserShortModel]>.init(isSucceeded: false, info: info, value: nil)
+                        let result = Result<UserShortListModel>.init(isSucceeded: false, info: info, value: nil)
                         completion(result)
                     }
                 }
@@ -310,8 +318,67 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getUserFollowers(username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<UserShortModel>) -> ()) throws {
+    func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        // validate before logout.
+        do {
+            try validateUser()
+            try validateLoggedIn()
+        } catch let error as CustomErrors {
+            throw CustomErrors.runTimeError(error.localizedDescription)
+        }
         
+        try? getUser(username: username, completion: { [weak self] (user) in
+            let url = try! URLs.getUserFollowers(userPk: user.value?.pk, rankToken: self!._user.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
+            var followers: [UserShortModel] = []
+            self!.getFollowersList(pk: user.value?.pk, searchQuery: searchQuery, followers: followers, url: url, paginationParameter: paginationParameter, completion: { (result) in
+                followers.append(contentsOf: result)
+                let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                let result = Result<[UserShortModel]>.init(isSucceeded: true, info: info, value: followers)
+                completion(result)
+            })
+        })
+    }
+    
+    fileprivate func getFollowersList(pk: Int?, searchQuery: String, followers: [UserShortModel], url: URL, paginationParameter: PaginationParameters, completion: @escaping ([UserShortModel]) -> ()) {
+        var _paginationParameter = paginationParameter
+        _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            _paginationParameter.pagesLoaded += 1
+            if error != nil {
+                completion(followers)
+            } else {
+                if response?.statusCode == 200 {
+                    var list = followers
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let decoded = try decoder.decode(UserShortListModel.self, from: data)
+                            list.append(contentsOf: decoded.users!)
+                            if decoded.bigList! {
+                                if !(decoded.nextMaxId?.isEmpty ?? true) && paginationParameter.pagesLoaded <= paginationParameter.maxPagesToLoad {
+                                    _paginationParameter.nextId = decoded.nextMaxId ?? ""
+                                    let url = try! URLs.getUserFollowers(userPk: pk, rankToken: self!._user.rankToken, searchQuery: searchQuery, maxId: _paginationParameter.nextId)
+                                    self!.getFollowersList(pk: pk, searchQuery: searchQuery, followers: list, url: url, paginationParameter: _paginationParameter, completion: { (newusers) in
+                                        list.append(contentsOf: newusers)
+                                        completion(newusers)
+                                    })
+                                } else {
+                                    completion(list)
+                                }
+                                
+                            } else {
+                                completion(list)
+                            }
+                        } catch {
+                            print(error.localizedDescription)
+                            completion(list)
+                        }
+                    }
+                } else {
+                    completion(followers)
+                }
+            }
+        }
     }
     
     fileprivate func validateUser() throws {
