@@ -13,14 +13,14 @@ struct URLs {
     
     private init() {}
     
-    // Base Url
+    // MARK: - Base Url
     private static let instagramUrl = "https://i.instagram.com"
     private static let api = "/api"
     private static let apiVersion = "/v1"
     private static let apiSuffix = api + apiVersion
     private static let baseInstagramApiUrl = instagramUrl + apiSuffix
 
-    // Endpoints
+    // MARK: - Endpoints
     private static let accountCreate = "/accounts/create/"
     private static let accountLogin = "/accounts/login/"
     private static let accountTwoFactorLogin = "/accounts/two_factor_login/"
@@ -28,6 +28,9 @@ struct URLs {
     private static let accountLogout = "/accounts/logout/"
     private static let searchUser = "/users/search"
     private static let userFollowing = "/friendships/%ld/following/"
+    private static let userFollowers = "/friendships/%ld/followers/"
+    
+    // MARK: - Methods
     
     static func getInstagramUrl() throws -> URL {
         if let url = URL(string: instagramUrl) {
@@ -88,5 +91,29 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for user followings.")
+    }
+    
+    static func getUserFollowers(userPk: Int?, rankToken: String?, searchQuery: String = "", maxId: String = "") throws -> URL {
+        guard let userPk = userPk, let rankToken = rankToken else {
+            throw CustomErrors.urlCreationFaild("Cant create URL for user followers.\n nil inputs.")
+        }
+        
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userFollowers, userPk))) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            var queryItems: [URLQueryItem] = []
+            queryItems.append(URLQueryItem(name: "rank_token", value: rankToken))
+            
+            if !maxId.isEmpty {
+                queryItems.append(URLQueryItem(name: "max_id", value: maxId))
+            }
+            
+            if !searchQuery.isEmpty {
+                queryItems.append(URLQueryItem(name: "query", value: searchQuery))
+            }
+            
+            urlComponent?.queryItems = queryItems
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for user followers.")
     }
 }

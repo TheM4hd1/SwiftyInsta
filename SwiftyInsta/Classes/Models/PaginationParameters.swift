@@ -9,7 +9,7 @@
 import Foundation
 
 struct PaginationParameters {
-    private var maxPagesToLoad: Int = Int.max
+    var maxPagesToLoad: Int = Int.max
     var pagesLoaded: Int = 0
     var nextId = ""
     

@@ -10,6 +10,7 @@ import Foundation
 
 struct UserShortListModel: Codable, BaseStatusResponseProtocol {
     var status: String?
+    var nextMaxId: String? = ""
     var bigList: Bool?
     var pageSize: Int?
     var users: [UserShortModel]?
