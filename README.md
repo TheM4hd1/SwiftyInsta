@@ -28,6 +28,8 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Login
 - [x] Logout
 - [x] Get user
+- [x] Get Followings
+- [x] Get Followers
 
 ## Usage
 
@@ -66,6 +68,15 @@ try? handler.logout { (result) in
 ```swift
 try? handler.getUser(username: "username", completion: { (result) in
    // result: (Result<UserModel>)
+})
+```
+
+#### Get Followers
+```swift
+// searchQuery: search for specific username
+// paginationParameter: number of pages to read followers from.
+try handler.getUserFollowers(username: "", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 15), searchQuery: "", completion: { (result) in
+    // result: Result<[UserShortModel]>
 })
 ```
 

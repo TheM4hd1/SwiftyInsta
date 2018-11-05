@@ -250,7 +250,7 @@ class APIHandler: APIHandlerProtocol {
     }
     
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        // validate before logout.
+        // validate before request.
         do {
             try validateUser()
             try validateLoggedIn()
@@ -319,7 +319,7 @@ class APIHandler: APIHandlerProtocol {
     }
     
     func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        // validate before logout.
+        // validate before request.
         do {
             try validateUser()
             try validateLoggedIn()
