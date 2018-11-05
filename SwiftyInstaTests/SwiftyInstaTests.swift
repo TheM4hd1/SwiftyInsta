@@ -54,7 +54,8 @@ class SwiftyInstaTests: XCTestCase {
                 print(err.localizedDescription)
             } else {
                 //self.testGetUser(handler: handler)
-                self.testGetUserFollowing(handler: handler)
+                //self.testGetUserFollowing(handler: handler)
+                self.testGetUserFollowers(handler: handler)
             }
         }
     }
@@ -109,7 +110,7 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserFollowing(handler: APIHandlerProtocol) {
         let exp = expectation(description: "\n\ngetUserFollowing() faild during timeout\n\n")
         do {
-            try handler.getUserFollowing(username: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1), searchQuery: "", completion: { (result) in
+            try handler.getUserFollowing(username: "", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1), searchQuery: "", completion: { (result) in
                 if result.isSucceeded {
                     guard let following = result.value else { return }
                     print("[+] following count: \(following.count)")
@@ -131,5 +132,30 @@ class SwiftyInstaTests: XCTestCase {
             }
         }
     }
+    
+    func testGetUserFollowers(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetUserFollowing() faild during timeout\n\n")
+        do {
+            try handler.getUserFollowers(username: "", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 15), searchQuery: "", completion: { (result) in
+                if result.isSucceeded {
+                    guard let followers = result.value else { return }
+                    print("[+] followers count: \(followers.count)")
+                } else {
+                    print("[-] \(result.info.message)")
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print(error.localizedDescription)
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
 }
-
