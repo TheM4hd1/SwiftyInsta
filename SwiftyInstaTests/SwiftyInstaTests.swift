@@ -55,7 +55,8 @@ class SwiftyInstaTests: XCTestCase {
             } else {
                 //self.testGetUser(handler: handler)
                 //self.testGetUserFollowing(handler: handler)
-                self.testGetUserFollowers(handler: handler)
+                //self.testGetUserFollowers(handler: handler)
+                self.testGetCurrentUser(handler: handler)
             }
         }
     }
@@ -147,6 +148,29 @@ class SwiftyInstaTests: XCTestCase {
             })
         } catch {
             print(error.localizedDescription)
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetCurrentUser(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetCurrentUser() faild during timeout\n\n")
+        do {
+            try handler.getCurrentUser(completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] user email: \(result.value!.user.email!)")
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
         
