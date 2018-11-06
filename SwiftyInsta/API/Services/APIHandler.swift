@@ -14,6 +14,7 @@ protocol APIHandlerProtocol {
     func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws
     func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
+    func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -376,6 +377,50 @@ class APIHandler: APIHandlerProtocol {
                     }
                 } else {
                     completion(followers)
+                }
+            }
+        }
+    }
+    
+    func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
+        // validate before request.
+        do {
+            try validateUser()
+            try validateLoggedIn()
+        } catch let error as CustomErrors {
+            throw CustomErrors.runTimeError(error.localizedDescription)
+        }
+        
+        let body = [
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(format: "%ld", _user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken
+        ]
+        
+        try? _httpHelper.sendAsync(method: .get, url: URLs.getCurrentUser(), body: body, header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<CurrentUserModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let currentUser = try decoder.decode(CurrentUserModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<CurrentUserModel>.init(isSucceeded: true, info: info, value: currentUser)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<CurrentUserModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                } else {
+                    let error = CustomErrors.runTimeError("The data couldn’t be read because it is missing error when decoding JSON.")
+                    let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                    let result = Result<CurrentUserModel>.init(isSucceeded: false, info: info, value: nil)
+                    completion(result)
                 }
             }
         }

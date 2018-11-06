@@ -2,7 +2,7 @@
   <img width="200" height="200" src="https://raw.githubusercontent.com/TheM4hd1/SwiftyInsta/master/Screenshots/Logo.png">
 </p>
 
-SwiftyInsta makes it easy to deal with **Instagram** trough a **tokenless private api**.
+**SwiftyInsta** makes it easy to deal with **Instagram** trough a **tokenless private api**.
 You can get/post account information, media, explore tags, user feed comments and ...
 ## Overview
 This project intends to provide all the features available in the Instagram API. It is being developed in Swift 4.2 and Xcode 10.1 (10B61)
@@ -27,9 +27,10 @@ Currently the library supports following coverage of the following Instagram API
 
 - [x] Login
 - [x] Logout
-- [x] Get user
-- [x] Get Followings
-- [x] Get Followers
+- [x] Get User Info By Username
+- [x] Get Current User Info
+- [x] Get Followings By Username
+- [x] Get Followers By Username
 
 ## Usage
 
