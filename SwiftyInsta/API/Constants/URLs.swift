@@ -29,6 +29,7 @@ struct URLs {
     private static let searchUser = "/users/search"
     private static let userFollowing = "/friendships/%ld/following/"
     private static let userFollowers = "/friendships/%ld/followers/"
+    private static let currentUser = "/accounts/current_user?edit=true"
     
     // MARK: - Methods
     
@@ -115,5 +116,12 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for user followers.")
+    }
+    
+    static func getCurrentUser() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, currentUser)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for current user.")
     }
 }

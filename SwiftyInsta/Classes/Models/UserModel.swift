@@ -18,7 +18,7 @@ struct UserModel: Codable, UserShortProtocol {
     var fullName: String?
     var socialContext: String?
     var searchSocialContext: String?
-    var allowed_commenter_type: String?
+    var allowedCommenterType: String?
     var phoneNumber: String?
     var reelAutoArchive: String?
     var byline: String?

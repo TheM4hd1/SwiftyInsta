@@ -41,6 +41,8 @@
 		11848604218A1F460067FFD6 /* FriendshipStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */; };
 		11848606218A21DA0067FFD6 /* NameTagModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848605218A21DA0067FFD6 /* NameTagModel.swift */; };
 		11848608218A23900067FFD6 /* SearchUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848607218A23900067FFD6 /* SearchUserModel.swift */; };
+		11905DFD2191C2C100FF297A /* CurrentUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11905DFC2191C2C100FF297A /* CurrentUserModel.swift */; };
+		11905DFF2191C98600FF297A /* ProfilePicVersionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */; };
 		11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */; };
 		11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E2B134218F13D20095374A /* UserShortListModel.swift */; };
 /* End PBXBuildFile section */
@@ -93,6 +95,8 @@
 		11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipStatusModel.swift; sourceTree = "<group>"; };
 		11848605218A21DA0067FFD6 /* NameTagModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameTagModel.swift; sourceTree = "<group>"; };
 		11848607218A23900067FFD6 /* SearchUserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserModel.swift; sourceTree = "<group>"; };
+		11905DFC2191C2C100FF297A /* CurrentUserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserModel.swift; sourceTree = "<group>"; };
+		11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicVersionsModel.swift; sourceTree = "<group>"; };
 		11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationParameters.swift; sourceTree = "<group>"; };
 		11E2B134218F13D20095374A /* UserShortListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortListModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -213,15 +217,17 @@
 				115F1254217FF0E300ED3530 /* UserShortModel.swift */,
 				11848607218A23900067FFD6 /* SearchUserModel.swift */,
 				1171E47721812C9400579B04 /* LoginResultModel.swift */,
+				11905DFC2191C2C100FF297A /* CurrentUserModel.swift */,
 				11E2B134218F13D20095374A /* UserShortListModel.swift */,
 				1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */,
 				11723A582187C23400968DA5 /* LoginResponseModel.swift */,
 				11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */,
 				11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */,
 				1104CD0E2180639000F855BA /* RequestMessageModel.swift */,
+				11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */,
+				114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */,
 				114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */,
 				112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */,
-				114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */,
 				114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */,
 			);
 			path = Models;
@@ -396,6 +402,7 @@
 				115F124A217FEBD600ED3530 /* APIBuilder.swift in Sources */,
 				114B848421871E9B00F84161 /* PhoneVerificationSettingsModel.swift in Sources */,
 				1143E0C821809E7700D9FF31 /* ResponseTypes.swift in Sources */,
+				11905DFD2191C2C100FF297A /* CurrentUserModel.swift in Sources */,
 				112022982188AACF00CA58BA /* BaseStatusResponseModel.swift in Sources */,
 				114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */,
 				114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */,
@@ -403,6 +410,7 @@
 				1104CD0B2180627400F855BA /* CustomErrors.swift in Sources */,
 				115F124F217FEC8E00ED3530 /* Result.swift in Sources */,
 				115F1244217FEA4400ED3530 /* Headers.swift in Sources */,
+				11905DFF2191C98600FF297A /* ProfilePicVersionsModel.swift in Sources */,
 				115F1246217FEA5200ED3530 /* URLs.swift in Sources */,
 				115F1257217FF1BF00ED3530 /* AndroidDeviceGenerator.swift in Sources */,
 				115F1251217FEF6800ED3530 /* ResultInfo.swift in Sources */,
