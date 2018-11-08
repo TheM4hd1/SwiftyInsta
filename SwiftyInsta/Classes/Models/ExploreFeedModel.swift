@@ -11,6 +11,7 @@ import Foundation
 struct ExploreFeedModel: Codable, BaseStatusResponseProtocol {
     var rankToken: String?
     var autoLoadMoreEnabled: Bool?
+    var moreAvailable: Bool?
     var nextMaxId: String?
     var maxId: String?
     var items: [ExploreFeedItemModel]?

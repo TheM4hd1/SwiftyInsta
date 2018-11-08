@@ -10,6 +10,12 @@ import Foundation
 
 struct StoryModel: Codable {
     var id: Int?
+    var topLive: TopLiveModel?
     var isPortrait: Bool?
     var tray: [TrayModel]?
+}
+
+struct TopLiveModel: Codable {
+    var broadcastOwners: [UserShortModel]?
+    var rankedPosition: Int?
 }
