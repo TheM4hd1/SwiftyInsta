@@ -15,7 +15,7 @@ protocol APIHandlerProtocol {
     func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
-    func getExploreFeeds(completion: @escaping (Bool) -> ())
+    func getExploreFeeds(completion: @escaping (Result<ExploreFeedModel>) -> ())
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -403,14 +403,38 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getExploreFeeds(completion: @escaping (Bool) -> ()) {
+    func getExploreFeeds(completion: @escaping (Result<ExploreFeedModel>) -> ()) {
         _httpHelper.sendAsync(method: .get, url: try! URLs.getExploreFeedUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
-                print(error.localizedDescription)
-                completion(false)
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<ExploreFeedModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
             } else {
-                print(String(data: data!, encoding: .utf8)!)
-                completion(true)
+                if response?.statusCode != 200 {
+                    let info = ResultInfo.init(error: CustomErrors.runTimeError("http error: \(String(describing: response?.statusCode))"), message: "", responseType: .fail)
+                    let result = Result<ExploreFeedModel>.init(isSucceeded: false, info: info, value: nil)
+                    completion(result)
+                } else {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let explore = try decoder.decode(ExploreFeedModel.self, from: data)
+                            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                            let result = Result<ExploreFeedModel>.init(isSucceeded: true, info: info, value: explore)
+                            completion(result)
+                        } catch {
+                            let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                            let result = Result<ExploreFeedModel>.init(isSucceeded: false, info: info, value: nil)
+                            completion(result)
+                        }
+                    } else {
+                        let error = CustomErrors.runTimeError("The data couldn’t be read because it is missing error when decoding JSON.")
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<ExploreFeedModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                }
             }
         }
     }
