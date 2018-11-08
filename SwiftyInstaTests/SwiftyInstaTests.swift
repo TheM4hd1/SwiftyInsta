@@ -29,7 +29,7 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "\n\nLogin() faild during timeout\n\n")
-        let user = SessionStorage.create(username: "swiftyinsta", password: "qqqqqq")
+        let user = SessionStorage.create(username: "", password: "")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
         
         do {
@@ -187,6 +187,11 @@ class SwiftyInstaTests: XCTestCase {
     func testGetExploreFeed(handler: APIHandlerProtocol) {
         let exp = expectation(description: "\n\ngetExploreFeed() faild during timeout\n\n")
         handler.getExploreFeeds { (result) in
+            if result.isSucceeded {
+                print("[+] Data received.")
+            } else {
+                print("[-] \(result.info)")
+            }
             exp.fulfill()
         }
         
