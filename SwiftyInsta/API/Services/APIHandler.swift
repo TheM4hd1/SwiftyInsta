@@ -15,6 +15,7 @@ protocol APIHandlerProtocol {
     func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
+    func getExploreFeeds(completion: @escaping (Bool) -> ())
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -40,15 +41,11 @@ class APIHandler: APIHandlerProtocol {
     
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws {
         // validating before login.
-        do {
-            try validateUser()
-            try validateRequestMessage()
-        } catch let error as CustomErrors {
-            throw CustomErrors.runTimeError(error.localizedDescription)
-        }
+        try! validateUser()
+        try! validateRequestMessage()
         
         // Simple 'GET' request to retrieve 'CSRF' token.
-        try? _httpHelper.sendAsync(method: .get, url: URLs.getInstagramUrl(), body: [:], header: [:]) { [weak self] (data, response, error) in
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getInstagramUrl(), body: [:], header: [:]) { [weak self] (data, response, error) in
             if let error = error {
                 let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: ResponseTypes.unknown)
                 let result = Result<LoginResultModel>.init(isSucceeded: false, info: info, value: .responseError)
@@ -144,14 +141,10 @@ class APIHandler: APIHandlerProtocol {
     
     func logout(completion: @escaping (Result<Bool>) -> ()) throws {
         // validate before logout.
-        do {
-            try validateUser()
-            try validateLoggedIn()
-        } catch let error as CustomErrors {
-            throw CustomErrors.runTimeError(error.localizedDescription)
-        }
+        try! validateUser()
+        try! validateLoggedIn()
         
-        try? _httpHelper.sendAsync(method: .get, url: URLs.getLogoutUrl(), body: [:], header: [:], completion: { [weak self] (data, response, error) in
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getLogoutUrl(), body: [:], header: [:], completion: { [weak self] (data, response, error) in
             if let error = error {
                 let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
                 let result = Result<Bool>.init(isSucceeded: false, info: info, value: false)
@@ -188,12 +181,8 @@ class APIHandler: APIHandlerProtocol {
     
     func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws {
         // validate before logout.
-        do {
-            try validateUser()
-            try validateLoggedIn()
-        } catch let error as CustomErrors {
-            throw CustomErrors.runTimeError(error.localizedDescription)
-        }
+        try! validateUser()
+        try! validateLoggedIn()
         
         let headers = [
             Headers.HeaderTimeZoneOffsetKey: Headers.HeaderTimeZoneOffsetValue,
@@ -201,7 +190,7 @@ class APIHandler: APIHandlerProtocol {
             Headers.HeaderRankTokenKey: _user.rankToken
         ]
         
-        try? _httpHelper.sendAsync(method: .get, url: URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
             if let error = error {
                 let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
                 let result = Result<UserModel>.init(isSucceeded: false, info: info, value: nil)
@@ -252,12 +241,8 @@ class APIHandler: APIHandlerProtocol {
     
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         // validate before request.
-        do {
-            try validateUser()
-            try validateLoggedIn()
-        } catch let error as CustomErrors {
-            throw CustomErrors.runTimeError(error.localizedDescription)
-        }
+        try! validateUser()
+        try! validateLoggedIn()
         
         try? getUser(username: username) { [weak self] (user) in
             if user.isSucceeded {
@@ -321,12 +306,8 @@ class APIHandler: APIHandlerProtocol {
     
     func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         // validate before request.
-        do {
-            try validateUser()
-            try validateLoggedIn()
-        } catch let error as CustomErrors {
-            throw CustomErrors.runTimeError(error.localizedDescription)
-        }
+        try! validateUser()
+        try! validateLoggedIn()
         
         try? getUser(username: username, completion: { [weak self] (user) in
             let url = try! URLs.getUserFollowers(userPk: user.value?.pk, rankToken: self!._user.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
@@ -384,12 +365,8 @@ class APIHandler: APIHandlerProtocol {
     
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
         // validate before request.
-        do {
-            try validateUser()
-            try validateLoggedIn()
-        } catch let error as CustomErrors {
-            throw CustomErrors.runTimeError(error.localizedDescription)
-        }
+        try! validateUser()
+        try! validateLoggedIn()
         
         let body = [
             "_uuid": _device.deviceGuid.uuidString,
@@ -397,7 +374,7 @@ class APIHandler: APIHandlerProtocol {
             "_csrftoken": _user.csrfToken
         ]
         
-        try? _httpHelper.sendAsync(method: .get, url: URLs.getCurrentUser(), body: body, header: [:]) { (data, response, error) in
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getCurrentUser(), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
                 let result = Result<CurrentUserModel>.init(isSucceeded: false, info: info, value: nil)
@@ -422,6 +399,18 @@ class APIHandler: APIHandlerProtocol {
                     let result = Result<CurrentUserModel>.init(isSucceeded: false, info: info, value: nil)
                     completion(result)
                 }
+            }
+        }
+    }
+    
+    func getExploreFeeds(completion: @escaping (Bool) -> ()) {
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getExploreFeedUrl(), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                print(error.localizedDescription)
+                completion(false)
+            } else {
+                print(String(data: data!, encoding: .utf8)!)
+                completion(true)
             }
         }
     }

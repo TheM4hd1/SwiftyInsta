@@ -29,7 +29,7 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "\n\nLogin() faild during timeout\n\n")
-        let user = SessionStorage.create(username: "", password: "")
+        let user = SessionStorage.create(username: "swiftyinsta", password: "qqqqqq")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
         
         do {
@@ -56,7 +56,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetUser(handler: handler)
                 //self.testGetUserFollowing(handler: handler)
                 //self.testGetUserFollowers(handler: handler)
-                self.testGetCurrentUser(handler: handler)
+                //self.testGetCurrentUser(handler: handler)
+                self.testGetExploreFeed(handler: handler)
             }
         }
     }
@@ -171,6 +172,21 @@ class SwiftyInstaTests: XCTestCase {
             })
         } catch {
             print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetExploreFeed(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetExploreFeed() faild during timeout\n\n")
+        handler.getExploreFeeds { (result) in
             exp.fulfill()
         }
         
