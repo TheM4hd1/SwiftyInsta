@@ -26,6 +26,13 @@ struct UserShortModel: Codable, UserShortProtocol {
     var profilePicId: String?
     var username: String?
     var fullName: String?
+    var name: String?
+    var address: String?
+    var shortName: String?
+    var lng: Double?
+    var lat: Double?
+    var externalSource: String?
+    var facebookPlacesId: Int?
     
     init() {
         isVerified = false
