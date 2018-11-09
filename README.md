@@ -32,7 +32,8 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get Followings By Username
 - [x] Get Followers By Username
 - [x] Get User Explore Feed
-- [x] Get User TimeLine
+- [x] Get User Timeline Medias
+- [x] Get User Feed Medias By Username
 
 ## Usage
 

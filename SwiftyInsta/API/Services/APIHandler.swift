@@ -17,6 +17,7 @@ protocol APIHandlerProtocol {
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
     func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws
     func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws
+    func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -503,6 +504,57 @@ class APIHandler: APIHandlerProtocol {
                             }
                         } else {
                             completion(timelineList)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+        try? getUser(username: username, completion: { [weak self] (result) in
+            self!.getMediaList(from: try! URLs.getUserFeedUrl(userPk: result.value?.pk), userPk: result.value?.pk, list: [], paginationParameter: paginationParameter, completion: { (values) in
+                let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                let result = Result<[UserFeedModel]>.init(isSucceeded: true, info: info, value: values)
+                completion(result)
+            })
+        })
+    }
+    
+    fileprivate func getMediaList(from url: URL, userPk: Int?, list: [UserFeedModel], paginationParameter: PaginationParameters, completion: @escaping ([UserFeedModel]) -> ()) {
+        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
+            completion(list)
+        } else {
+            var _paginationParameter = paginationParameter
+            _paginationParameter.pagesLoaded += 1
+            _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+                if error != nil {
+                    completion(list)
+                } else {
+                    if response?.statusCode != 200 {
+                        completion(list)
+                    } else {
+                        if let data = data {
+                            let decoder = JSONDecoder()
+                            decoder.keyDecodingStrategy = .convertFromSnakeCase
+                            var mediaList = list
+                            do {
+                                let newItems = try decoder.decode(UserFeedModel.self, from: data)
+                                mediaList.append(newItems)
+                                if newItems.moreAvailable! {
+                                    _paginationParameter.nextId = newItems.nextMaxId!
+                                    let url = try URLs.getUserFeedUrl(userPk: userPk, maxId: _paginationParameter.nextId)
+                                    self!.getMediaList(from: url, userPk: userPk, list: mediaList, paginationParameter: _paginationParameter, completion: { (result) in
+                                        completion(result)
+                                    })
+                                } else {
+                                    completion(mediaList)
+                                }
+                            } catch {
+                                completion(list)
+                            }
+                        } else {
+                            completion(list)
                         }
                     }
                 }
