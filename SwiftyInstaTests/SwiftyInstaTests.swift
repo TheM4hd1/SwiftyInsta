@@ -57,7 +57,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetUserFollowing(handler: handler)
                 //self.testGetUserFollowers(handler: handler)
                 //self.testGetCurrentUser(handler: handler)
-                self.testGetExploreFeed(handler: handler)
+                //self.testGetExploreFeed(handler: handler)
+                self.testGetUserTimeLine(handler: handler)
             }
         }
     }
@@ -188,6 +189,31 @@ class SwiftyInstaTests: XCTestCase {
         let exp = expectation(description: "\n\ngetExploreFeed() faild during timeout\n\n")
         do {
             try handler.getExploreFeeds(paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+                if result.isSucceeded {
+                    print("[+] Data received.")
+                } else {
+                    print("[-] \(result.info)")
+                }
+                exp.fulfill()
+            }
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetUserTimeLine(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetTimeLine() faild during timeout\n\n")
+        do {
+            try handler.getUserTimeLine(paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
                 if result.isSucceeded {
                     print("[+] Data received.")
                 } else {
