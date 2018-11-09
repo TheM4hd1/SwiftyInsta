@@ -32,6 +32,7 @@ struct URLs {
     private static let currentUser = "/accounts/current_user?edit=true"
     private static let exploreFeed = "/discover/explore/"
     private static let userTimeLine = "/feed/timeline"
+    private static let userFeed = "/feed/user/"
     
     // MARK: - Methods
     
@@ -147,5 +148,21 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for timeline feed.")
+    }
+    
+    static func getUserFeedUrl(userPk: Int?, maxId: String = "") throws -> URL {
+        guard let userPk = userPk else {
+            throw CustomErrors.urlCreationFaild("Cant create URL for user feed.\n nil input.")
+        }
+        
+        if let url = URL(string: String(format: "%@%@%ld", baseInstagramApiUrl, userFeed, userPk)) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if !maxId.isEmpty {
+                urlComponent?.queryItems?.append(URLQueryItem(name: "max_id", value: maxId))
+            }
+            
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for user feed.")
     }
 }

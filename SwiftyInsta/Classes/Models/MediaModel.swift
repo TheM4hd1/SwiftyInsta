@@ -30,6 +30,14 @@ struct ExploreInfoModel: Codable {
     var sourceToken: String?
 }
 
+struct UserTagsModel: Codable {
+    var `in`: [UserTagItemModel]?
+}
+
+struct UserTagItemModel: Codable {
+    var user: UserShortModel?
+}
+
 struct MediaModel: Codable, MediaModelProtocol {
     var takenAt: Int?
     var pk: Int?
@@ -69,5 +77,6 @@ struct MediaModel: Codable, MediaModelProtocol {
     var inventorySource: String?
     var likeCount: Int?
     var hasLiked: Bool?
+    var usertags: UserTagsModel?
     //var topLikers: [UserShortModel]?
 }
