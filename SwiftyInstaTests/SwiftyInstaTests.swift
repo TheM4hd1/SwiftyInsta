@@ -58,7 +58,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetUserFollowers(handler: handler)
                 //self.testGetCurrentUser(handler: handler)
                 //self.testGetExploreFeed(handler: handler)
-                self.testGetUserTimeLine(handler: handler)
+                //self.testGetUserTimeLine(handler: handler)
+                self.testGetUserMedia(handler: handler)
             }
         }
     }
@@ -218,6 +219,29 @@ class SwiftyInstaTests: XCTestCase {
                     print("[+] Data received.")
                 } else {
                     print("[-] \(result.info)")
+                }
+                exp.fulfill()
+            }
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetUserMedia(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetUserMedia() faild during timeout\n\n")
+        do {
+            try handler.getUserMedia(for: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+                if result.isSucceeded {
+                    print("[+] number of pages that include medias: \(result.value!.count)")
                 }
                 exp.fulfill()
             }
