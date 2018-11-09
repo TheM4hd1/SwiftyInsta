@@ -16,6 +16,7 @@ protocol APIHandlerProtocol {
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
     func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws
+    func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -449,6 +450,59 @@ class APIHandler: APIHandlerProtocol {
                             }
                         } else {
                             completion(list)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        getTimeLineList(from: try! URLs.getUserTimeLineUrl(), list: [], paginationParameter: paginationParameter) { (list) in
+            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+            let result = Result<[TimeLineModel]>.init(isSucceeded: true, info: info, value: list)
+            completion(result)
+        }
+    }
+    
+    fileprivate func getTimeLineList(from url: URL, list: [TimeLineModel], paginationParameter: PaginationParameters, completion: @escaping ([TimeLineModel]) -> ()) {
+        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
+            completion(list)
+        } else {
+            var _paginationParameter = paginationParameter
+            _paginationParameter.pagesLoaded += 1
+            var timelineList = list
+            _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+                if error != nil {
+                    completion(timelineList)
+                } else {
+                    if response?.statusCode != 200 {
+                        completion(timelineList)
+                    } else {
+                        if let data = data {
+                            let decoder = JSONDecoder()
+                            decoder.keyDecodingStrategy = .convertFromSnakeCase
+                            do {
+                                let newItems = try decoder.decode(TimeLineModel.self, from: data)
+                                timelineList.append(newItems)
+                                if newItems.moreAvailable! {
+                                    _paginationParameter.nextId = newItems.nextMaxId!
+                                    let url = try URLs.getUserTimeLineUrl(maxId: _paginationParameter.nextId)
+                                    self!.getTimeLineList(from: url, list: timelineList, paginationParameter: _paginationParameter, completion: { (result) in
+                                        completion(result)
+                                    })
+                                } else {
+                                    completion(timelineList)
+                                }
+                            } catch {
+                                completion(timelineList)
+                            }
+                        } else {
+                            completion(timelineList)
                         }
                     }
                 }
