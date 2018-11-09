@@ -54,6 +54,7 @@
 		11B9568821945FD4006661A6 /* CaptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B9568721945FD4006661A6 /* CaptionModel.swift */; };
 		11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */; };
 		11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E2B134218F13D20095374A /* UserShortListModel.swift */; };
+		11F0CE6B2195CC2400C0F6A4 /* TimeLineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +118,7 @@
 		11B9568721945FD4006661A6 /* CaptionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionModel.swift; sourceTree = "<group>"; };
 		11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationParameters.swift; sourceTree = "<group>"; };
 		11E2B134218F13D20095374A /* UserShortListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortListModel.swift; sourceTree = "<group>"; };
+		11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,6 +228,7 @@
 			isa = PBXGroup;
 			children = (
 				1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */,
+				11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */,
 				112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */,
 				11B9568721945FD4006661A6 /* CaptionModel.swift */,
 				114B84852187200500F84161 /* ChallengeModel.swift */,
@@ -436,6 +439,7 @@
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
 				1104CD0B2180627400F855BA /* CustomErrors.swift in Sources */,
 				115F124F217FEC8E00ED3530 /* Result.swift in Sources */,
+				11F0CE6B2195CC2400C0F6A4 /* TimeLineModel.swift in Sources */,
 				11B9567221944F70006661A6 /* ExploreFeedModel.swift in Sources */,
 				115F1244217FEA4400ED3530 /* Headers.swift in Sources */,
 				11905DFF2191C98600FF297A /* ProfilePicVersionsModel.swift in Sources */,

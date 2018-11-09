@@ -18,7 +18,7 @@ protocol UserShortProtocol {
     var fullName: String? {get}
 }
 
-struct UserShortModel: Codable, UserShortProtocol {
+struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
     var isVerified: Bool?
     var isPrivate: Bool?
     var pk: Int?
@@ -33,6 +33,7 @@ struct UserShortModel: Codable, UserShortProtocol {
     var lat: Double?
     var externalSource: String?
     var facebookPlacesId: Int?
+    var city: String?
     
     init() {
         isVerified = false

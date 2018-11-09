@@ -44,7 +44,7 @@ struct MediaModel: Codable, MediaModelProtocol {
     var originalHeight: Int?
     var organicTrackingToken: String?
     var user: UserModel?
-    //var previewComments
+    var previewComments: [CaptionModel]?
     var canViewMorePreviewComments: Bool?
     var commentCount: Int?
     var videoDashManifest: String?
@@ -64,4 +64,10 @@ struct MediaModel: Codable, MediaModelProtocol {
     var mezqlToken: String?
     var impressionToken: String?
     var explore: ExploreInfoModel?
+    var location: LocationShortModel?
+    var preview: String?
+    var inventorySource: String?
+    var likeCount: Int?
+    var hasLiked: Bool?
+    //var topLikers: [UserShortModel]?
 }

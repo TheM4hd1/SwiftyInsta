@@ -31,6 +31,7 @@ struct URLs {
     private static let userFollowers = "/friendships/%ld/followers/"
     private static let currentUser = "/accounts/current_user?edit=true"
     private static let exploreFeed = "/discover/explore/"
+    private static let userTimeLine = "/feed/timeline"
     
     // MARK: - Methods
     
@@ -135,5 +136,16 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for exploring feed.")
+    }
+    
+    static func getUserTimeLineUrl(maxId: String = "") throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, userTimeLine)) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if !maxId.isEmpty {
+                urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for timeline feed.")
     }
 }

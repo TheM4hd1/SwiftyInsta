@@ -8,7 +8,14 @@
 
 import Foundation
 
-struct ExploreFeedModel: Codable, BaseStatusResponseProtocol {
+protocol FeedProtocol {
+    var autoLoadMoreEnabled: Bool? {get}
+    var moreAvailable: Bool? {get}
+    var nextMaxId: String? {get}
+    var numResults: Int? {get}
+}
+
+struct ExploreFeedModel: Codable, FeedProtocol, BaseStatusResponseProtocol {
     var rankToken: String?
     var autoLoadMoreEnabled: Bool?
     var moreAvailable: Bool?
