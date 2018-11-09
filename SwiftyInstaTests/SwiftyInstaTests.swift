@@ -186,12 +186,17 @@ class SwiftyInstaTests: XCTestCase {
     
     func testGetExploreFeed(handler: APIHandlerProtocol) {
         let exp = expectation(description: "\n\ngetExploreFeed() faild during timeout\n\n")
-        handler.getExploreFeeds { (result) in
-            if result.isSucceeded {
-                print("[+] Data received.")
-            } else {
-                print("[-] \(result.info)")
+        do {
+            try handler.getExploreFeeds(paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+                if result.isSucceeded {
+                    print("[+] Data received.")
+                } else {
+                    print("[-] \(result.info)")
+                }
+                exp.fulfill()
             }
+        } catch {
+            print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
         

@@ -12,6 +12,6 @@ struct VideoVersionModel: Codable, ProfilePicVersionsProtocol {
     var height: Int?
     var url: String?
     var width: Int?
-    var id: Int?
+    var id: String?
     var type: Int?
 }

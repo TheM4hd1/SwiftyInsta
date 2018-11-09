@@ -15,7 +15,7 @@ protocol APIHandlerProtocol {
     func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
-    func getExploreFeeds(completion: @escaping (Result<ExploreFeedModel>) -> ())
+    func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -41,8 +41,8 @@ class APIHandler: APIHandlerProtocol {
     
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws {
         // validating before login.
-        try! validateUser()
-        try! validateRequestMessage()
+        try validateUser()
+        try validateRequestMessage()
         
         // Simple 'GET' request to retrieve 'CSRF' token.
         _httpHelper.sendAsync(method: .get, url: try! URLs.getInstagramUrl(), body: [:], header: [:]) { [weak self] (data, response, error) in
@@ -141,8 +141,8 @@ class APIHandler: APIHandlerProtocol {
     
     func logout(completion: @escaping (Result<Bool>) -> ()) throws {
         // validate before logout.
-        try! validateUser()
-        try! validateLoggedIn()
+        try validateUser()
+        try validateLoggedIn()
         
         _httpHelper.sendAsync(method: .get, url: try! URLs.getLogoutUrl(), body: [:], header: [:], completion: { [weak self] (data, response, error) in
             if let error = error {
@@ -181,8 +181,8 @@ class APIHandler: APIHandlerProtocol {
     
     func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws {
         // validate before logout.
-        try! validateUser()
-        try! validateLoggedIn()
+        try validateUser()
+        try validateLoggedIn()
         
         let headers = [
             Headers.HeaderTimeZoneOffsetKey: Headers.HeaderTimeZoneOffsetValue,
@@ -241,8 +241,8 @@ class APIHandler: APIHandlerProtocol {
     
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         // validate before request.
-        try! validateUser()
-        try! validateLoggedIn()
+        try validateUser()
+        try validateLoggedIn()
         
         try? getUser(username: username) { [weak self] (user) in
             if user.isSucceeded {
@@ -306,8 +306,8 @@ class APIHandler: APIHandlerProtocol {
     
     func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         // validate before request.
-        try! validateUser()
-        try! validateLoggedIn()
+        try validateUser()
+        try validateLoggedIn()
         
         try? getUser(username: username, completion: { [weak self] (user) in
             let url = try! URLs.getUserFollowers(userPk: user.value?.pk, rankToken: self!._user.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
@@ -365,8 +365,8 @@ class APIHandler: APIHandlerProtocol {
     
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
         // validate before request.
-        try! validateUser()
-        try! validateLoggedIn()
+        try validateUser()
+        try validateLoggedIn()
         
         let body = [
             "_uuid": _device.deviceGuid.uuidString,
@@ -403,36 +403,53 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getExploreFeeds(completion: @escaping (Result<ExploreFeedModel>) -> ()) {
-        _httpHelper.sendAsync(method: .get, url: try! URLs.getExploreFeedUrl(), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
-                let result = Result<ExploreFeedModel>.init(isSucceeded: false, info: info, value: nil)
-                completion(result)
-            } else {
-                if response?.statusCode != 200 {
-                    let info = ResultInfo.init(error: CustomErrors.runTimeError("http error: \(String(describing: response?.statusCode))"), message: "", responseType: .fail)
-                    let result = Result<ExploreFeedModel>.init(isSucceeded: false, info: info, value: nil)
-                    completion(result)
+    func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        getExploreList(from: try! URLs.getExploreFeedUrl(), exploreList: [], paginationParameter: paginationParameter) { (list) in
+            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+            let result = Result<[ExploreFeedModel]>.init(isSucceeded: true, info: info, value: list)
+            completion(result)
+        }
+    }
+    
+    fileprivate func getExploreList(from url: URL, exploreList: [ExploreFeedModel], paginationParameter: PaginationParameters, completion: @escaping ([ExploreFeedModel]) -> ()) {
+        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
+            completion(exploreList)
+        } else {
+            var _paginationParameter = paginationParameter
+            _paginationParameter.pagesLoaded += 1
+            var list = exploreList
+            _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+                if error != nil {
+                    completion(list)
                 } else {
-                    if let data = data {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let explore = try decoder.decode(ExploreFeedModel.self, from: data)
-                            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
-                            let result = Result<ExploreFeedModel>.init(isSucceeded: true, info: info, value: explore)
-                            completion(result)
-                        } catch {
-                            let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
-                            let result = Result<ExploreFeedModel>.init(isSucceeded: false, info: info, value: nil)
-                            completion(result)
-                        }
+                    if response?.statusCode != 200 {
+                        completion(list)
                     } else {
-                        let error = CustomErrors.runTimeError("The data couldn’t be read because it is missing error when decoding JSON.")
-                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
-                        let result = Result<ExploreFeedModel>.init(isSucceeded: false, info: info, value: nil)
-                        completion(result)
+                        if let data = data {
+                            let decoder = JSONDecoder()
+                            decoder.keyDecodingStrategy = .convertFromSnakeCase
+                            do {
+                                let newItems = try decoder.decode(ExploreFeedModel.self, from: data)
+                                list.append(newItems)
+                                if newItems.moreAvailable! {
+                                    _paginationParameter.nextId = newItems.nextMaxId!
+                                    let url = try URLs.getExploreFeedUrl(maxId: _paginationParameter.nextId)
+                                    self!.getExploreList(from: url, exploreList: list, paginationParameter: _paginationParameter, completion: { (result) in
+                                        completion(result)
+                                    })
+                                } else {
+                                    completion(list)
+                                }
+                            } catch {
+                                completion(list)
+                            }
+                        } else {
+                            completion(list)
+                        }
                     }
                 }
             }
