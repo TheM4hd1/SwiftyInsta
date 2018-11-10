@@ -34,6 +34,7 @@ struct URLs {
     private static let userTimeLine = "/feed/timeline"
     private static let userFeed = "/feed/user/"
     private static let mediaInfo = "/media/%@/info/"
+    private static let tagFeed = "/feed/tag/%@"
     
     // MARK: - Methods
     
@@ -159,7 +160,7 @@ struct URLs {
         if let url = URL(string: String(format: "%@%@%ld", baseInstagramApiUrl, userFeed, userPk)) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if !maxId.isEmpty {
-                urlComponent?.queryItems?.append(URLQueryItem(name: "max_id", value: maxId))
+                urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
             }
             
             return (urlComponent?.url)!
@@ -172,5 +173,17 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for media info by id.")
+    }
+    
+    static func getTagFeed(for tag: String, maxId: String = "") throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: tagFeed, tag))) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if !maxId.isEmpty {
+                urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+            
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for exploring tag.")
     }
 }
