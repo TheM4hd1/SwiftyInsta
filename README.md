@@ -33,6 +33,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get user timeline medias
 - [x] Get user feed medias
 - [x] Get media by ID
+- [x] Explore tags by tagName
 
 ## Usage
 

@@ -19,6 +19,7 @@ protocol APIHandlerProtocol {
     func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws
     func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
     func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws
+    func getTagFeed(tagName: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[TagFeedModel]>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -597,6 +598,55 @@ class APIHandler: APIHandlerProtocol {
                     let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
                     let result = Result<MediaModel>.init(isSucceeded: false, info: info, value: nil)
                     completion(result)
+                }
+            }
+        }
+    }
+    
+    func getTagFeed(tagName: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[TagFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        getTagList(for: try! URLs.getTagFeed(for: tagName), tag: tagName, list: [], paginationParameter: paginationParameter) { (value) in
+            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+            let result = Result<[TagFeedModel]>.init(isSucceeded: true, info: info, value: value)
+            completion(result)
+        }
+    }
+    
+    fileprivate func getTagList(for url: URL, tag: String, list: [TagFeedModel], paginationParameter: PaginationParameters, completion: @escaping ([TagFeedModel]) -> ()) {
+        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
+            completion(list)
+        } else {
+            var _paginationParameter = paginationParameter
+            _paginationParameter.pagesLoaded += 1
+            _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+                if error != nil {
+                    completion(list)
+                } else {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            var tagList = list
+                            let newItems = try decoder.decode(TagFeedModel.self, from: data)
+                            tagList.append(newItems)
+                            if newItems.moreAvailable! {
+                                _paginationParameter.nextId = newItems.nextMaxId!
+                                let url = try! URLs.getTagFeed(for: tag, maxId: _paginationParameter.nextId)
+                                self!.getTagList(for: url, tag: tag, list: tagList, paginationParameter: _paginationParameter, completion: { (result) in
+                                    completion(result)
+                                })
+                            } else {
+                                completion(tagList)
+                            }
+                        } catch {
+                            completion(list)
+                        }
+                    } else {
+                        completion(list)
+                    }
                 }
             }
         }
