@@ -29,7 +29,7 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "\n\nLogin() faild during timeout\n\n")
-        let user = SessionStorage.create(username: "", password: "")
+        let user = SessionStorage.create(username: "swiftyinsta", password: "qqqqqq")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
         
         do {
@@ -59,7 +59,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetCurrentUser(handler: handler)
                 //self.testGetExploreFeed(handler: handler)
                 //self.testGetUserTimeLine(handler: handler)
-                self.testGetUserMedia(handler: handler)
+                //self.testGetUserMedia(handler: handler)
+                self.testGetMediaInfo(handler: handler, id: "1909062118116718858_8766457680")
             }
         }
     }
@@ -241,10 +242,34 @@ class SwiftyInstaTests: XCTestCase {
         do {
             try handler.getUserMedia(for: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
                 if result.isSucceeded {
+                    print(result.value!)
                     print("[+] number of pages that include medias: \(result.value!.count)")
                 }
                 exp.fulfill()
             }
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetMediaInfo(handler: APIHandlerProtocol, id: String) {
+        let exp = expectation(description: "\n\ngetMediaInfo(id) faild during timeout\n\n")
+        do {
+            try handler.getMediaInfo(mediaId: id, completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] media url: \(result.value!.imageVersions2!.candidates!.first!.url!)")
+                }
+                exp.fulfill()
+            })
         } catch {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
