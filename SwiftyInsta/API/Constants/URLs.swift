@@ -33,6 +33,7 @@ struct URLs {
     private static let exploreFeed = "/discover/explore/"
     private static let userTimeLine = "/feed/timeline"
     private static let userFeed = "/feed/user/"
+    private static let mediaInfo = "/media/%@/info/"
     
     // MARK: - Methods
     
@@ -164,5 +165,12 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for user feed.")
+    }
+    
+    static func getMediaUrl(mediaId: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: mediaInfo, mediaId))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for media info by id.")
     }
 }

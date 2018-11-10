@@ -18,6 +18,7 @@ protocol APIHandlerProtocol {
     func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws
     func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws
     func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
+    func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -512,6 +513,10 @@ class APIHandler: APIHandlerProtocol {
     }
     
     func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
         try? getUser(username: username, completion: { [weak self] (result) in
             self!.getMediaList(from: try! URLs.getUserFeedUrl(userPk: result.value?.pk), userPk: result.value?.pk, list: [], paginationParameter: paginationParameter, completion: { (values) in
                 let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
@@ -557,6 +562,41 @@ class APIHandler: APIHandlerProtocol {
                             completion(list)
                         }
                     }
+                }
+            }
+        }
+    }
+    
+    func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getMediaUrl(mediaId: mediaId), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<MediaModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let media = try decoder.decode(UserFeedModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<MediaModel>.init(isSucceeded: true, info: info, value: media.items?.first)
+                        completion(result)
+                        
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<MediaModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                } else {
+                    let error = CustomErrors.runTimeError("The data couldn’t be read because it is missing error when decoding JSON.")
+                    let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                    let result = Result<MediaModel>.init(isSucceeded: false, info: info, value: nil)
+                    completion(result)
                 }
             }
         }

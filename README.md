@@ -1,17 +1,15 @@
 <p align="center">
-  <img width="200" height="200" src="https://raw.githubusercontent.com/TheM4hd1/SwiftyInsta/master/Screenshots/Logo.png">
+<img width="200" height="200" src="https://raw.githubusercontent.com/TheM4hd1/SwiftyInsta/master/Screenshots/Logo.png">
 </p>
 
-**SwiftyInsta** makes it easy to deal with **Instagram** trough a **tokenless private api**.
-You can get/post account information, media, explore tags, user feed comments and ...
 ## Overview
-This project intends to provide all the features available in the Instagram API. It is being developed in Swift 4.2 and Xcode 10.1 (10B61)
+Tokenless Instagram's private API.
 
-#### This repository is provided for reference purposes only.
+This project intends to provide all the features available in the Instagram API including media upload, direct messaging, stories and more.
 
-* Please note that this project is still in design and development phase; the libraries may suffer major changes, so don't rely (yet) in this software for production uses. *
+* Please note that this project is still in design and development phase, the libraries may suffer major changes, so don't rely (yet) in this software for production uses. *
 
-* Before posting new issues: [Test Project](https://github.com/TheM4hd1/SwiftyInsta/tree/master/SwiftyInstaTests)
+* It is being developed in Swift 4.2 and Xcode 10.1 (10B61) *
 
 ### Integration
 To use this library in your project manually you may:
@@ -27,13 +25,14 @@ Currently the library supports following coverage of the following Instagram API
 
 - [x] Login
 - [x] Logout
-- [x] Get User Info By Username
-- [x] Get Current User Info
-- [x] Get Followings By Username
-- [x] Get Followers By Username
-- [x] Get User Explore Feed
-- [x] Get User Timeline Medias
-- [x] Get User Feed Medias By Username
+- [x] Get user information
+- [x] Get current user Information
+- [x] Get user followings 
+- [x] Get user followers
+- [x] Get user explore feed
+- [x] Get user timeline medias
+- [x] Get user feed medias
+- [x] Get media by ID
 
 ## Usage
 
@@ -47,31 +46,31 @@ import SwiftyInsta
 
 ```swift
 let handler = try! APIBuilder()
-                    .createBuilder()
-                    .setHttpHandler(config: .default)
-                    .setRequestDelay(delay: .default)
-                    .setUser(user: user)
-                    .build()
+.createBuilder()
+.setHttpHandler(config: .default)
+.setRequestDelay(delay: .default)
+.setUser(user: user)
+.build()
 ```
 
 #### Login
 ```swift
 try? handler.login { (result) in
-    // result: Result<LoginResultModel>
+// result: Result<LoginResultModel>
 }
 ```
 
 #### Logout
 ```swift
 try? handler.logout { (result) in
-    // result: Result<Bool>
+// result: Result<Bool>
 }
 ```
 
 #### Get User
 ```swift
 try? handler.getUser(username: "username", completion: { (result) in
-   // result: (Result<UserModel>)
+// result: (Result<UserModel>)
 })
 ```
 
@@ -80,7 +79,7 @@ try? handler.getUser(username: "username", completion: { (result) in
 // searchQuery: search for specific username
 // paginationParameter: number of pages to read followers from.
 try handler.getUserFollowers(username: "", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 15), searchQuery: "", completion: { (result) in
-    // result: Result<[UserShortModel]>
+// result: Result<[UserShortModel]>
 })
 ```
 
