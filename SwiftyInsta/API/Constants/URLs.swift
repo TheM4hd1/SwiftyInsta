@@ -35,6 +35,7 @@ struct URLs {
     private static let userFeed = "/feed/user/"
     private static let mediaInfo = "/media/%@/info/"
     private static let tagFeed = "/feed/tag/%@"
+    private static let recentActivities = "/news/inbox/"
     
     // MARK: - Methods
     
@@ -185,5 +186,18 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for exploring tag.")
+    }
+    
+    static func getRecentActivities(maxId: String = "") throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, recentActivities)) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if !maxId.isEmpty {
+                urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId), URLQueryItem(name: "activity_module", value: "all")]
+            } else {
+                urlComponent?.queryItems = [URLQueryItem(name: "activity_module", value: "all")]
+            }
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for recent followings activities.")
     }
 }
