@@ -8,14 +8,21 @@
 
 import Foundation
 
-struct RecentFollowingsActivitiesModel: Codable, BaseStatusResponseProtocol {
+struct RecentActivitiesModel: Codable, BaseStatusResponseProtocol {
     var aymf: AymfItemModel?
     var counts: CountsModel?
-    var friendRequestStories: [FriendRequestStoriesModel]?
+    var friendRequestStories: [RecentActivityStoryModel]?
     var newStories: [RecentActivityStoryModel]?
     var oldStories: [RecentActivityStoryModel]?
     var continuationToken: Int?
     var status: String?
+}
+
+struct RecentFollowingsActivitiesModel: Codable, BaseStatusResponseProtocol {
+    var autoLoadMoreEnabled: Bool?
+    var nextMaxId: Int?
+    var status: String?
+    var stories: [RecentActivityStoryModel]?
 }
 
 struct AymfItemModel: Codable, FeedProtocol {
@@ -35,12 +42,6 @@ struct CountsModel: Codable {
     var relationships: Int?
     var photosOfYou: Int?
     var requests: Int?
-}
-
-struct FriendRequestStoriesModel: Codable {
-    var type: Int?
-    var args: ArgsModel?
-    var counts: CountsModel?
 }
 
 struct ArgsModel: Codable {
