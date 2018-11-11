@@ -7,9 +7,9 @@ Tokenless Instagram's private API.
 
 This project intends to provide all the features available in the Instagram API including media upload, direct messaging, stories and more.
 
-* Please note that this project is still in design and development phase, the libraries may suffer major changes, so don't rely (yet) in this software for production uses. *
+* Please note that this project is still in design and development phase, the libraries may suffer major changes, so don't rely (yet) in this software for production uses.
 
-* It is being developed in Swift 4.2 and Xcode 10.1 (10B61) *
+* It is being developed in Swift 4.2 and Xcode 10.1 (10B61)
 
 ### Integration
 To use this library in your project manually you may:
@@ -34,7 +34,8 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get user feed medias
 - [x] Get media by ID
 - [x] Explore tags by tag name
-- [x] Get recent activities feed
+- [x] Get your recent activities
+- [x] Get recent following activities
 
 ## Usage
 
@@ -86,7 +87,7 @@ try handler.getUserFollowers(username: "", paginationParameter: PaginationParame
 ```
 
 ## TODO
-Currently the library suffers from nested asynchronous functions (Pyramid of Doom), the next step is **Writing Cleaner Asynchronous Code Using Promise Pattern**
+Currently the library suffers from nested asynchronous functions (Pyramid of Doom), the next step is *Optimizing Library*
 - [ ] Writing Cleaner Asynchronous Code Using Promise Pattern
 
 ## Special thanks
