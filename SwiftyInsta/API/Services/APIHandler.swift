@@ -20,6 +20,7 @@ protocol APIHandlerProtocol {
     func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
     func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws
     func getTagFeed(tagName: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[TagFeedModel]>) -> ()) throws
+    func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -640,6 +641,55 @@ class APIHandler: APIHandlerProtocol {
                                 })
                             } else {
                                 completion(tagList)
+                            }
+                        } catch {
+                            completion(list)
+                        }
+                    } else {
+                        completion(list)
+                    }
+                }
+            }
+        }
+    }
+    
+    func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        getRecentFollowingList(from: try! URLs.getRecentActivities(), list: [], paginationParameter: paginationParameter) { (value) in
+            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+            let result = Result<[RecentFollowingsActivitiesModel]>.init(isSucceeded: true, info: info, value: value)
+            completion(result)
+        }
+    }
+    
+    fileprivate func getRecentFollowingList(from url: URL, list: [RecentFollowingsActivitiesModel], paginationParameter: PaginationParameters, completion: @escaping ([RecentFollowingsActivitiesModel]) -> ()) {
+        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
+            completion(list)
+        } else {
+            var _paginationParameter = paginationParameter
+            _paginationParameter.pagesLoaded += 1
+            _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+                if error != nil {
+                    completion(list)
+                } else {
+                    if let data = data {
+                        var activitiesList = list
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let newItems = try decoder.decode(RecentFollowingsActivitiesModel.self, from: data)
+                            activitiesList.append(newItems)
+                            if (newItems.aymf?.moreAvailable)! {
+                                _paginationParameter.nextId = newItems.aymf!.nextMaxId!
+                                let url = try! URLs.getRecentActivities(maxId: _paginationParameter.nextId)
+                                self!.getRecentFollowingList(from: url, list: activitiesList, paginationParameter: _paginationParameter, completion: { (result) in
+                                    completion(result)
+                                })
+                            } else {
+                                completion(activitiesList)
                             }
                         } catch {
                             completion(list)

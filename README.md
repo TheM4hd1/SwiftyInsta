@@ -33,7 +33,8 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get user timeline medias
 - [x] Get user feed medias
 - [x] Get media by ID
-- [x] Explore tags by tagName
+- [x] Explore tags by tag name
+- [x] Get recent activities feed
 
 ## Usage
 
@@ -83,6 +84,10 @@ try handler.getUserFollowers(username: "", paginationParameter: PaginationParame
 // result: Result<[UserShortModel]>
 })
 ```
+
+## TODO
+Currently the library suffers from nested asynchronous functions (Pyramid of Doom), the next step is **Writing Cleaner Asynchronous Code Using Promise Pattern**
+- [ ] Writing Cleaner Asynchronous Code Using Promise Pattern
 
 ## Special thanks
 
