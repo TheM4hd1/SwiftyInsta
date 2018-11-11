@@ -61,7 +61,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetUserTimeLine(handler: handler)
                 //self.testGetUserMedia(handler: handler)
                 //self.testGetMediaInfo(handler: handler, id: "1909062118116718858_8766457680")
-                self.testGetTagFeed(handler: handler, tag: "github")
+                //self.testGetTagFeed(handler: handler, tag: "github")
+                self.testGetRecentActivities(handler: handler)
             }
         }
     }
@@ -297,6 +298,29 @@ class SwiftyInstaTests: XCTestCase {
             })
         } catch {
             print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetRecentActivities(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetRecentActivities() faild during timeout\n\n")
+        do {
+            try handler.getRecentFollowingActivities(paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+                if result.isSucceeded {
+                    print("[+] \(result.value!)")
+                }
+                exp.fulfill()
+            }
+        } catch {
+            print(error.localizedDescription)
             exp.fulfill()
         }
         
