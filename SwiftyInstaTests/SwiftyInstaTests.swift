@@ -68,7 +68,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testSendDirectMessage(handler: handler)
                 //self.testGetDirectThreadById(handler: handler)
                 //self.testGetRecentDirectRecipients(handler: handler)
-                self.testGetRankedDirectRecipients(handler: handler)
+                //self.testGetRankedDirectRecipients(handler: handler)
+                self.testSetProfilePublic(handler: handler)
             }
         }
     }
@@ -477,6 +478,30 @@ class SwiftyInstaTests: XCTestCase {
                 }
                 exp.fulfill()
             })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testSetProfilePublic(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nsetProfilePublic() faild during timeout\n\n")
+        do {
+            // try handler.setAccountPrivate
+            try handler.setAccountPublic(completion: { (result) in
+                if result.isSucceeded {
+                    print(result.value!.user!.biography!)
+                }
+            })
+            exp.fulfill()
         } catch {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
