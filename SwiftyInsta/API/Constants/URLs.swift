@@ -38,6 +38,7 @@ struct URLs {
     private static let recentActivities = "/news/inbox/"
     private static let recentFollowingActivities = "/news/"
     private static let directInbox = "/direct_v2/inbox/"
+    private static let directSendMessage = "/direct_v2/threads/broadcast/text/"
     
     // MARK: - Methods
     
@@ -219,5 +220,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for direct inbox.")
+    }
+    
+    static func getDirectSendTextMessage() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, directSendMessage)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for sending direct message.")
     }
 }

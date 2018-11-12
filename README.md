@@ -37,6 +37,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get your recent activities
 - [x] Get recent following activities
 - [x] Get direct inbox
+- [x] Send direct message to users and groups
 
 ## Usage
 

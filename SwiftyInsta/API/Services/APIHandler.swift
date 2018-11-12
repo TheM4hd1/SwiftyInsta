@@ -23,6 +23,7 @@ protocol APIHandlerProtocol {
     func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws
     func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws
     func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws
+    func sendDirect(to userId: String, in threadId: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -776,6 +777,49 @@ class APIHandler: APIHandlerProtocol {
                     } catch {
                         let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
                         let result = Result<DirectInboxModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func sendDirect(to userIds: String, in threadIds: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        var content = [
+            "text": text,
+            "action": "send_item"
+        ]
+        
+        if !userIds.isEmpty {
+            content.updateValue("[[\(userIds)]]", forKey: "recipient_users")
+        } else {
+            throw CustomErrors.runTimeError("Please provide at least one recipient.")
+        }
+        
+        if !threadIds.isEmpty {
+            content.updateValue("[\(threadIds)]", forKey: "thread_ids")
+        }
+        _httpHelper.sendAsync(method: .post, url: try! URLs.getDirectSendTextMessage(), body: content, header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<DirectSendMessageResponseModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(DirectSendMessageResponseModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<DirectSendMessageResponseModel>.init(isSucceeded: false, info: info, value: value)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<DirectSendMessageResponseModel>.init(isSucceeded: false, info: info, value: nil)
                         completion(result)
                     }
                 }
