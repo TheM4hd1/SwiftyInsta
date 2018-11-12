@@ -65,7 +65,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetRecentActivities(handler: handler)
                 //self.testGetRecentFollowingActivities(handler: handler)
                 //self.testGetDirectInbox(handler: handler)
-                self.testSendDirectMessage(handler: handler)
+                //self.testSendDirectMessage(handler: handler)
+                self.testGetDirectThreadById(handler: handler)
             }
         }
     }
@@ -402,6 +403,33 @@ class SwiftyInstaTests: XCTestCase {
             exp.fulfill()
         }
         
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetDirectThreadById(handler: APIHandlerProtocol) {
+        let threadId = "340282366841710300949128268428414320315"
+        let exp = expectation(description: "\n\ngetDirectThreadById() faild during timeout\n\n")
+        
+        do {
+            try handler.getDirectThreadById(threadId: threadId, completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] Conversation: \(String(describing: result.value!.thread))")
+                } else {
+                    print(result.info.message)
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
