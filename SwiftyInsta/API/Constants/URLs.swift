@@ -39,6 +39,7 @@ struct URLs {
     private static let recentFollowingActivities = "/news/"
     private static let directInbox = "/direct_v2/inbox/"
     private static let directSendMessage = "/direct_v2/threads/broadcast/text/"
+    private static let directThread = "/direct_v2/threads/%@"
     
     // MARK: - Methods
     
@@ -227,5 +228,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for sending direct message.")
+    }
+    
+    static func getDirectThread(id: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: directThread, id))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for get direct thread by id.")
     }
 }

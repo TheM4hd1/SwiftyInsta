@@ -97,3 +97,8 @@ struct DirectSendMessageResponseModel: Codable, BaseStatusResponseProtocol {
     var action: String?
     var payload: DirectPayloadModel
 }
+
+struct ThreadModel: Codable, BaseStatusResponseProtocol {
+    var thread: InboxThreadsModel?
+    var status: String?
+}
