@@ -27,6 +27,8 @@ protocol APIHandlerProtocol {
     func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws
     func getRecentDirectRecipients(completion: @escaping (Result<RecentRecipientsModel>) -> ()) throws
     func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws
+    func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
+    func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -917,6 +919,88 @@ class APIHandler: APIHandlerProtocol {
                     } catch {
                         let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
                         let result = Result<RankedRecipientsModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        let encoder = JSONEncoder()
+        var content = [
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(_user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken
+        ]
+        
+        let encodedContent = String(data: try! encoder.encode(content) , encoding: .utf8)!
+        let hash = encodedContent.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureKey)
+        let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
+        content.updateValue(signature, forKey: Headers.HeaderIGSignatureKey)
+        content.updateValue(Headers.HeaderIGSignatureVersionValue, forKey: Headers.HeaderIGSignatureVersionKey)
+        _httpHelper.sendAsync(method: .post, url: try! URLs.setPublicProfile(), body: content, header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<ProfilePrivacyResponseModel>.init(isSucceeded: true, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(ProfilePrivacyResponseModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<ProfilePrivacyResponseModel>.init(isSucceeded: true, info: info, value: value)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<ProfilePrivacyResponseModel>.init(isSucceeded: true, info: info, value: nil)
+                        completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        let encoder = JSONEncoder()
+        var content = [
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(_user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken
+        ]
+        
+        let encodedContent = String(data: try! encoder.encode(content) , encoding: .utf8)!
+        let hash = encodedContent.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureKey)
+        let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
+        content.updateValue(signature, forKey: Headers.HeaderIGSignatureKey)
+        content.updateValue(Headers.HeaderIGSignatureVersionValue, forKey: Headers.HeaderIGSignatureVersionKey)
+        _httpHelper.sendAsync(method: .post, url: try! URLs.setPrivateProfile(), body: content, header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<ProfilePrivacyResponseModel>.init(isSucceeded: true, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(ProfilePrivacyResponseModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<ProfilePrivacyResponseModel>.init(isSucceeded: true, info: info, value: value)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<ProfilePrivacyResponseModel>.init(isSucceeded: true, info: info, value: nil)
                         completion(result)
                     }
                 }

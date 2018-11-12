@@ -41,6 +41,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get direct thread by thread id
 - [x] Get recent recipients
 - [x] Get ranked recipients
+- [x] Change account privacy to public/private
 
 ## Usage
 
