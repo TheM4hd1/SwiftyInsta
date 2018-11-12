@@ -30,7 +30,7 @@ struct InboxThreadsModel: Codable {
     var threadV2Id: String?
     var users: [UserModel]?
     var leftUsers: [UserModel]?
-    var items: [InboxThreadsModel]?
+    var items: [ThreadItemModel]?
     var lastSeenActivityAt: Int?
     var muted: Bool?
     var isPin: Bool?
@@ -82,4 +82,18 @@ struct RavenMedia: Codable, MediaModelProtocol {
     var clientCacheKey: String?
     var filterType: Int?
     var deviceTimestamp: Int?
+}
+
+struct DirectPayloadModel: Codable {
+    var clientContext: String?
+    var itemId: String?
+    var timestamp: String?
+    var threadId: String?
+}
+
+struct DirectSendMessageResponseModel: Codable, BaseStatusResponseProtocol {
+    var status: String?
+    var statusCode: String?
+    var action: String?
+    var payload: DirectPayloadModel
 }
