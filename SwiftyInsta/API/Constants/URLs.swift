@@ -37,6 +37,7 @@ struct URLs {
     private static let tagFeed = "/feed/tag/%@"
     private static let recentActivities = "/news/inbox/"
     private static let recentFollowingActivities = "/news/"
+    private static let directInbox = "/direct_v2/inbox/"
     
     // MARK: - Methods
     
@@ -211,5 +212,12 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for recent followings activities.")
+    }
+    
+    static func getDirectInbox() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, directInbox)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for direct inbox.")
     }
 }
