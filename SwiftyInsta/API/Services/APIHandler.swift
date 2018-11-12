@@ -22,6 +22,7 @@ protocol APIHandlerProtocol {
     func getTagFeed(tagName: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[TagFeedModel]>) -> ()) throws
     func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws
     func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws
+    func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -747,6 +748,35 @@ class APIHandler: APIHandlerProtocol {
                         }
                     } else {
                         completion(list)
+                    }
+                }
+            }
+        }
+    }
+    
+    func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getDirectInbox(), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<DirectInboxModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let item = try decoder.decode(DirectInboxModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<DirectInboxModel>.init(isSucceeded: true, info: info, value: item)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                        let result = Result<DirectInboxModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
                     }
                 }
             }

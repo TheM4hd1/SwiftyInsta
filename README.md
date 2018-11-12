@@ -36,6 +36,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Explore tags by tag name
 - [x] Get your recent activities
 - [x] Get recent following activities
+- [x] Get direct inbox
 
 ## Usage
 
