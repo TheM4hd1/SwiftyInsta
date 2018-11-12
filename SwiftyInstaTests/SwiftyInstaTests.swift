@@ -64,7 +64,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetTagFeed(handler: handler, tag: "github")
                 //self.testGetRecentActivities(handler: handler)
                 //self.testGetRecentFollowingActivities(handler: handler)
-                self.testGetDirectInbox(handler: handler)
+                //self.testGetDirectInbox(handler: handler)
+                self.testSendDirectMessage(handler: handler)
             }
         }
     }
@@ -365,6 +366,34 @@ class SwiftyInstaTests: XCTestCase {
             try handler.getDirectInbox(completion: { (result) in
                 if result.isSucceeded {
                     print("[+] last item: \(String(describing: result.value!.inbox.threads?.first?.lastPermanentItem?.text))")
+                }
+                exp.fulfill()
+            })
+        } catch  {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testSendDirectMessage(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nsendDirectMessage() faild during timeout\n\n")
+        
+        do {
+            try handler.getDirectInbox(completion: { (result) in
+                if result.isSucceeded {
+                    let firstUserId = result.value?.inbox.threads?.first?.items?.first?.userId!
+                    let threadId = result.value?.inbox.threads?.first?.threadId!
+                    try? handler.sendDirect(to: String(firstUserId!), in: threadId!, with: "hello from swiftyinsta", completion: { (result) in
+                        
+                    })
                 }
                 exp.fulfill()
             })
