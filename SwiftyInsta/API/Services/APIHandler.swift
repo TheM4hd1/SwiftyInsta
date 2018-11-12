@@ -25,6 +25,8 @@ protocol APIHandlerProtocol {
     func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws
     func sendDirect(to userId: String, in threadId: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws
     func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws
+    func getRecentDirectRecipients(completion: @escaping (Result<RecentRecipientsModel>) -> ()) throws
+    func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -858,6 +860,64 @@ class APIHandler: APIHandlerProtocol {
                             let result = Result<ThreadModel>.init(isSucceeded: false, info: info, value: nil)
                             completion(result)
                         }
+                    }
+                }
+            }
+        }
+    }
+    
+    func getRecentDirectRecipients(completion: @escaping (Result<RecentRecipientsModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getRecentDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<RecentRecipientsModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(RecentRecipientsModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<RecentRecipientsModel>.init(isSucceeded: true, info: info, value: value)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<RecentRecipientsModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getRankedDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<RankedRecipientsModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(RankedRecipientsModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<RankedRecipientsModel>.init(isSucceeded: true, info: info, value: value)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<RankedRecipientsModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
                     }
                 }
             }

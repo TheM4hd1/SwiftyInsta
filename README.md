@@ -39,6 +39,8 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get direct inbox
 - [x] Send direct message to users and groups
 - [x] Get direct thread by thread id
+- [x] Get recent recipients
+- [x] Get ranked recipients
 
 ## Usage
 
