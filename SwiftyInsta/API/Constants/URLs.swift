@@ -40,6 +40,8 @@ struct URLs {
     private static let directInbox = "/direct_v2/inbox/"
     private static let directSendMessage = "/direct_v2/threads/broadcast/text/"
     private static let directThread = "/direct_v2/threads/%@"
+    private static let recentRecipients = "/direct_share/recent_recipients/"
+    private static let rankedRecipients = "/direct_v2/ranked_recipients"
     
     // MARK: - Methods
     
@@ -235,5 +237,19 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for get direct thread by id.")
+    }
+    
+    static func getRecentDirectRecipients() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, recentRecipients)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for get recent recipients")
+    }
+    
+    static func getRankedDirectRecipients() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, rankedRecipients)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for get ranked recipients")
     }
 }
