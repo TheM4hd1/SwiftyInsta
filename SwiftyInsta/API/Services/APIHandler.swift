@@ -24,6 +24,7 @@ protocol APIHandlerProtocol {
     func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws
     func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws
     func sendDirect(to userId: String, in threadId: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws
+    func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -821,6 +822,42 @@ class APIHandler: APIHandlerProtocol {
                         let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
                         let result = Result<DirectSendMessageResponseModel>.init(isSucceeded: false, info: info, value: nil)
                         completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        _httpHelper.sendAsync(method: .get, url: try! URLs.getDirectThread(id: threadId), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<ThreadModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    if response?.statusCode == 404 {
+                        let error = CustomErrors.runTimeError("thread not found.")
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                        let result = Result<ThreadModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    } else {
+                        do {
+                            let value =  try decoder.decode(ThreadModel.self, from: data)
+                            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                            let result = Result<ThreadModel>.init(isSucceeded: true, info: info, value: value)
+                            completion(result)
+                        } catch {
+                            let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                            let result = Result<ThreadModel>.init(isSucceeded: false, info: info, value: nil)
+                            completion(result)
+                        }
                     }
                 }
             }
