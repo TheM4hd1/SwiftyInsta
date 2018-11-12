@@ -42,6 +42,8 @@ struct URLs {
     private static let directThread = "/direct_v2/threads/%@"
     private static let recentRecipients = "/direct_share/recent_recipients/"
     private static let rankedRecipients = "/direct_v2/ranked_recipients"
+    private static let setAccountPublic = "/accounts/set_public/"
+    private static let setAccountPrivate = "/accounts/set_private/"
     
     // MARK: - Methods
     
@@ -251,5 +253,19 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for get ranked recipients")
+    }
+    
+    static func setPublicProfile() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, setAccountPublic)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for set public profile")
+    }
+    
+    static func setPrivateProfile() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, setAccountPrivate)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for set private profile")
     }
 }

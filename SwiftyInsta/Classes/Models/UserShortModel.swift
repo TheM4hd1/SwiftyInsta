@@ -34,6 +34,7 @@ struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
     var externalSource: String?
     var facebookPlacesId: Int?
     var city: String?
+    var biography: String?
     
     init() {
         isVerified = false
