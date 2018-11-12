@@ -66,7 +66,9 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetRecentFollowingActivities(handler: handler)
                 //self.testGetDirectInbox(handler: handler)
                 //self.testSendDirectMessage(handler: handler)
-                self.testGetDirectThreadById(handler: handler)
+                //self.testGetDirectThreadById(handler: handler)
+                //self.testGetRecentDirectRecipients(handler: handler)
+                self.testGetRankedDirectRecipients(handler: handler)
             }
         }
     }
@@ -430,6 +432,56 @@ class SwiftyInstaTests: XCTestCase {
             exp.fulfill()
         }
 
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetRecentDirectRecipients(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetRecentDirectRecipients() faild during timeout\n\n")
+        do {
+            try handler.getRecentDirectRecipients(completion: { (result) in
+                if result.isSucceeded {
+                    print(result.value!)
+                } else {
+                    print(result.info.message)
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetRankedDirectRecipients(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetRankedDirectRecipients() faild during timeout\n\n")
+        do {
+            try handler.getRankedDirectRecipients(completion: { (result) in
+                if result.isSucceeded {
+                    print(result.value!)
+                } else {
+                    print(result.info.message)
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
