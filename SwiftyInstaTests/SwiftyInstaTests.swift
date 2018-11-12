@@ -63,7 +63,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetMediaInfo(handler: handler, id: "1909062118116718858_8766457680")
                 //self.testGetTagFeed(handler: handler, tag: "github")
                 //self.testGetRecentActivities(handler: handler)
-                self.testGetRecentFollowingActivities(handler: handler)
+                //self.testGetRecentFollowingActivities(handler: handler)
+                self.testGetDirectInbox(handler: handler)
             }
         }
     }
@@ -345,6 +346,30 @@ class SwiftyInstaTests: XCTestCase {
             }
         } catch {
             print(error.localizedDescription)
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetDirectInbox(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetDirectInbox() faild during timeout\n\n")
+        
+        do {
+            try handler.getDirectInbox(completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] last item: \(String(describing: result.value!.inbox.threads?.first?.lastPermanentItem?.text))")
+                }
+                exp.fulfill()
+            })
+        } catch  {
+            print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
         
