@@ -14,6 +14,7 @@ protocol BaseStatusResponseProtocol {
 
 struct BaseStatusResponseModel: Codable, BaseStatusResponseProtocol {
     var status: String?
+    var message: StatusMessageModel?
     
     func isOk() -> Bool {
         if let status = status {
@@ -32,4 +33,8 @@ struct BaseStatusResponseModel: Codable, BaseStatusResponseProtocol {
         }
         return false
     }
+}
+
+struct StatusMessageModel: Codable {
+    var errors: [String]?
 }

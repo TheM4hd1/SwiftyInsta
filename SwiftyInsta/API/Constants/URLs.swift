@@ -44,7 +44,7 @@ struct URLs {
     private static let rankedRecipients = "/direct_v2/ranked_recipients"
     private static let setAccountPublic = "/accounts/set_public/"
     private static let setAccountPrivate = "/accounts/set_private/"
-    
+    private static let changePassword = "/accounts/change_password/"
     // MARK: - Methods
     
     static func getInstagramUrl() throws -> URL {
@@ -267,5 +267,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for set private profile")
+    }
+    
+    static func getChangePasswordUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, changePassword)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for change password.")
     }
 }
