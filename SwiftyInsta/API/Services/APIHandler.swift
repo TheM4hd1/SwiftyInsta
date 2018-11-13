@@ -29,6 +29,7 @@ protocol APIHandlerProtocol {
     func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws
     func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
     func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
+    func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -1001,6 +1002,51 @@ class APIHandler: APIHandlerProtocol {
                     } catch {
                         let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
                         let result = Result<ProfilePrivacyResponseModel>.init(isSucceeded: true, info: info, value: nil)
+                        completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        let body = [
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(_user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken,
+            "old_password": oldPassword,
+            "new_password1": newPassword,
+            "new_password2": newPassword
+        ]
+        
+        _httpHelper.sendAsync(method: .post, url: try! URLs.getChangePasswordUrl(), body: body, header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<BaseStatusResponseModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(BaseStatusResponseModel.self, from: data)
+                        if value.isOk() {
+                            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                            let result = Result<BaseStatusResponseModel>.init(isSucceeded: true, info: info, value: value)
+                            completion(result)
+                        } else {
+                            let message = value.message!.errors!.joined(separator: "\n")
+                            let info = ResultInfo.init(error: CustomErrors.runTimeError("failed\n for more info see the message propery."), message: message, responseType: .ok)
+                            let result = Result<BaseStatusResponseModel>.init(isSucceeded: false, info: info, value: value)
+                            completion(result)
+                        }
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<BaseStatusResponseModel>.init(isSucceeded: false, info: info, value: nil)
                         completion(result)
                     }
                 }

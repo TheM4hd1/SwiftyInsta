@@ -42,6 +42,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get recent recipients
 - [x] Get ranked recipients
 - [x] Change account privacy to public/private
+- [x] Change password
 
 ## Usage
 
