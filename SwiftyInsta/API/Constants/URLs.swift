@@ -46,6 +46,8 @@ struct URLs {
     private static let setAccountPublic = "/accounts/set_public/"
     private static let setAccountPrivate = "/accounts/set_private/"
     private static let changePassword = "/accounts/change_password/"
+    private static let likeMedia = "/media/%@/like/"
+    private static let unlikeMedia = "/media/%@/unlike/"
     // MARK: - Methods
     
     static func getInstagramUrl() throws -> URL {
@@ -282,5 +284,19 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for get userinfo.")
+    }
+    
+    static func getLikeMediaUrl(mediaId: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: likeMedia, mediaId))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for like media.")
+    }
+    
+    static func getUnLikeMediaUrl(mediaId: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: unlikeMedia, mediaId))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for unlike media.")
     }
 }
