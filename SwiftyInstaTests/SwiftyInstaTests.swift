@@ -29,7 +29,7 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "\n\nLogin() faild during timeout\n\n")
-        let user = SessionStorage.create(username: "swiftyinsta", password: "qqqqqq")
+        let user = SessionStorage.create(username: "swiftyinsta", password: "qqqqqqq")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
         
         do {
@@ -69,7 +69,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetDirectThreadById(handler: handler)
                 //self.testGetRecentDirectRecipients(handler: handler)
                 //self.testGetRankedDirectRecipients(handler: handler)
-                self.testSetProfilePublic(handler: handler)
+                //self.testSetProfilePublic(handler: handler)
+                self.testChangePassword(handler: handler)
             }
         }
     }
@@ -507,6 +508,31 @@ class SwiftyInstaTests: XCTestCase {
             exp.fulfill()
         }
         
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testChangePassword(handler: APIHandlerProtocol) {
+         let exp = expectation(description: "\n\ngetRankedDirectRecipients() faild during timeout\n\n")
+        
+        do {
+            try handler.setNewPassword(oldPassword: "qqqqqqq", newPassword: "123456", completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] password changed.")
+                } else {
+                    print("[-] \(result.info.message)")
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
