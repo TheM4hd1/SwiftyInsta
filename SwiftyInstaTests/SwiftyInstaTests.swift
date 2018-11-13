@@ -70,7 +70,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetRecentDirectRecipients(handler: handler)
                 //self.testGetRankedDirectRecipients(handler: handler)
                 //self.testSetProfilePublic(handler: handler)
-                self.testChangePassword(handler: handler)
+                //self.testChangePassword(handler: handler)
+                self.testGetUserInfoById(handler: handler)
             }
         }
     }
@@ -533,6 +534,33 @@ class SwiftyInstaTests: XCTestCase {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetUserInfoById(handler: APIHandlerProtocol) {
+        let id = 8766457680
+        let exp = expectation(description: "\n\ngetRankedDirectRecipients() faild during timeout\n\n")
+        do {
+            try handler.getUser(id: id, completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] caption: \(result.value!.user!.biography!)")
+                } else {
+                    print(result.info.error)
+                    print(result.info.message)
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+            
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
