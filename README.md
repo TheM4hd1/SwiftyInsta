@@ -45,6 +45,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Change account privacy to public/private
 - [x] Change password
 - [x] Like/Unlike media
+- [x] Get comments of specific media
 
 ## Usage
 

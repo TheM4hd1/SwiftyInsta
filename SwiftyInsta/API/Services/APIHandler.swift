@@ -33,6 +33,7 @@ protocol APIHandlerProtocol {
     func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
     func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
     func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
+    func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -1131,6 +1132,53 @@ class APIHandler: APIHandlerProtocol {
                     completion(true)
                 } else {
                     completion(false)
+                }
+            }
+        }
+    }
+    
+    func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        getCommentList(for: try URLs.getComments(for: mediaId), mediaId: mediaId, list: [], paginationParameter: paginationParameter) { (value) in
+            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+            let result = Result<[MediaCommentsResponseModel]>.init(isSucceeded: true, info: info, value: value)
+            completion(result)
+        }
+    }
+    
+    fileprivate func getCommentList(for url: URL, mediaId: String, list: [MediaCommentsResponseModel], paginationParameter: PaginationParameters, completion: @escaping ([MediaCommentsResponseModel]) -> ()) {
+        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
+            completion(list)
+        } else {
+            var _paginationParameter = paginationParameter
+            _paginationParameter.pagesLoaded += 1
+            _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+                if error != nil {
+                    completion(list)
+                } else {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        var commentList = list
+                        do {
+                            let newItem = try decoder.decode(MediaCommentsResponseModel.self, from: data)
+                            commentList.append(newItem)
+                            if newItem.hasMoreComments! && newItem.nextMaxId != nil {
+                                _paginationParameter.nextId = newItem.nextMaxId!
+                                let url = try! URLs.getComments(for: mediaId, maxId: _paginationParameter.nextId)
+                                self!.getCommentList(for: url, mediaId: mediaId, list: commentList, paginationParameter: _paginationParameter, completion: { (result) in
+                                    completion(result)
+                                })
+                            } else {
+                                completion(commentList)
+                            }
+                        } catch {
+                            completion(list)
+                        }
+                    }
                 }
             }
         }
