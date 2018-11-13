@@ -25,7 +25,8 @@ Currently the library supports following coverage of the following Instagram API
 
 - [x] Login
 - [x] Logout
-- [x] Get user information
+- [x] Get user information (by username)
+- [x] Get user information (by id)
 - [x] Get current user Information
 - [x] Get user followings 
 - [x] Get user followers
@@ -43,6 +44,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get ranked recipients
 - [x] Change account privacy to public/private
 - [x] Change password
+- [x] Like/Unlike media
 
 ## Usage
 

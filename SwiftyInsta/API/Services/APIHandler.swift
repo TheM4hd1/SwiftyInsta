@@ -31,6 +31,8 @@ protocol APIHandlerProtocol {
     func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
     func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
     func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
+    func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
+    func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -1079,6 +1081,56 @@ class APIHandler: APIHandlerProtocol {
                         let result = Result<BaseStatusResponseModel>.init(isSucceeded: false, info: info, value: nil)
                         completion(result)
                     }
+                }
+            }
+        }
+    }
+    
+    func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        let body = [
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(_user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken,
+            "media_id": mediaId
+        ]
+        
+        _httpHelper.sendAsync(method: .post, url: try URLs.getLikeMediaUrl(mediaId: mediaId), body: body, header: [:]) { (data, response, error) in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                if response?.statusCode == 200 {
+                    completion(true)
+                } else {
+                    completion(false)
+                }
+            }
+        }
+    }
+    
+    func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        let body = [
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(_user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken,
+            "media_id": mediaId
+        ]
+        
+        _httpHelper.sendAsync(method: .post, url: try URLs.getUnLikeMediaUrl(mediaId: mediaId), body: body, header: [:]) { (data, response, error) in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                if response?.statusCode == 200 {
+                    completion(true)
+                } else {
+                    completion(false)
                 }
             }
         }
