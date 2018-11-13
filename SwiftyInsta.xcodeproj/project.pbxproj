@@ -18,6 +18,7 @@
 		112E735C2180E86B0048A8D7 /* CryptoHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112E735B2180E86B0048A8D7 /* CryptoHelper.swift */; };
 		112E735E2180E8DF0048A8D7 /* CommonHMAC.h in Headers */ = {isa = PBXBuildFile; fileRef = 112E735D2180E8DF0048A8D7 /* CommonHMAC.h */; };
 		1131A45421974F9D00497992 /* TagFeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1131A45321974F9D00497992 /* TagFeedModel.swift */; };
+		1135EA60219B5C2D00DCB739 /* CommentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1135EA5F219B5C2D00DCB739 /* CommentModel.swift */; };
 		1143E0C821809E7700D9FF31 /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
 		114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */; };
 		114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */; };
@@ -86,6 +87,7 @@
 		112E735B2180E86B0048A8D7 /* CryptoHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoHelper.swift; sourceTree = "<group>"; };
 		112E735D2180E8DF0048A8D7 /* CommonHMAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHMAC.h; sourceTree = "<group>"; };
 		1131A45321974F9D00497992 /* TagFeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagFeedModel.swift; sourceTree = "<group>"; };
+		1135EA5F219B5C2D00DCB739 /* CommentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentModel.swift; sourceTree = "<group>"; };
 		1143E0C721809E7700D9FF31 /* ResponseTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseTypes.swift; sourceTree = "<group>"; };
 		114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginBaseResponseModel.swift; sourceTree = "<group>"; };
 		114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLoginInfoModel.swift; sourceTree = "<group>"; };
@@ -280,6 +282,7 @@
 				11BF2FA1219A07400095D594 /* RecentRecipientsModel.swift */,
 				11C439D3219A429B00467381 /* ProfilePrivacyResponseModel.swift */,
 				11C487F7219B2A3B00E952A1 /* UserInfoModel.swift */,
+				1135EA5F219B5C2D00DCB739 /* CommentModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -459,6 +462,7 @@
 				117E65A221962ED5004626CC /* UserFeedModel.swift in Sources */,
 				114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */,
 				114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */,
+				1135EA60219B5C2D00DCB739 /* CommentModel.swift in Sources */,
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
 				1104CD0B2180627400F855BA /* CustomErrors.swift in Sources */,
 				110C9D9821989F5800805C68 /* RecentActivitiesModel.swift in Sources */,

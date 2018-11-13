@@ -52,7 +52,7 @@ struct MediaModel: Codable, MediaModelProtocol {
     var originalHeight: Int?
     var organicTrackingToken: String?
     var user: UserModel?
-    var previewComments: [CaptionModel]?
+    var previewComments: [CommentModel]?
     var canViewMorePreviewComments: Bool?
     var commentCount: Int?
     var videoDashManifest: String?

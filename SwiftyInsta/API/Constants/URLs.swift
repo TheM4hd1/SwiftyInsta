@@ -48,6 +48,8 @@ struct URLs {
     private static let changePassword = "/accounts/change_password/"
     private static let likeMedia = "/media/%@/like/"
     private static let unlikeMedia = "/media/%@/unlike/"
+    private static let mediaComments = "/media/%@/comments/"
+    
     // MARK: - Methods
     
     static func getInstagramUrl() throws -> URL {
@@ -298,5 +300,17 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for unlike media.")
+    }
+    
+    static func getComments(for mediaId: String, maxId: String = "") throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: mediaComments, mediaId))) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if !maxId.isEmpty {
+                urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+            
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for get media comments.")
     }
 }
