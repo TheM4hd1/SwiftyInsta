@@ -36,4 +36,9 @@ struct UserModel: Codable, UserShortProtocol {
     var mutualFollowersCount: Int?
     var nametag: NameTagModel?
     var friendshipStatus: FriendshipStatusModel?
+    var biography: String?
+    var hdProfilePicVersions: [ProfilePicVersionsModel]?
+    var showBusinessConversionIcon: Bool?
+    var isPotentialBusiness: Bool?
+    var canConvertToBusiness: Bool?
 }

@@ -27,6 +27,7 @@ struct URLs {
     private static let accountChangePassword = "/accounts/change_password/"
     private static let accountLogout = "/accounts/logout/"
     private static let searchUser = "/users/search"
+    private static let userInfo = "/users/%ld/info/"
     private static let userFollowing = "/friendships/%ld/following/"
     private static let userFollowers = "/friendships/%ld/followers/"
     private static let currentUser = "/accounts/current_user?edit=true"
@@ -274,5 +275,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for change password.")
+    }
+    
+    static func getUserInfo(id: Int) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userInfo, id))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for get userinfo.")
     }
 }

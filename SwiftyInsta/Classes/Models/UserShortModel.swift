@@ -16,6 +16,7 @@ protocol UserShortProtocol {
     var profilePicId: String? {get}
     var username: String? {get}
     var fullName: String? {get}
+    var biography: String? {get}
 }
 
 struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
