@@ -72,7 +72,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testSetProfilePublic(handler: handler)
                 //self.testChangePassword(handler: handler)
                 //self.testGetUserInfoById(handler: handler)
-                self.testLikeMedia(handler: handler)
+                //self.testLikeMedia(handler: handler)
+                self.testGetMediaComments(handler: handler)
             }
         }
     }
@@ -588,6 +589,28 @@ class SwiftyInstaTests: XCTestCase {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetMediaComments(handler: APIHandlerProtocol) {
+        let mediaId = "1909062118116718858_8766457680"
+        let exp = expectation(description: "\n\nlikeMedia() faild during timeout\n\n")
+        do {
+            try handler.getMediaComments(mediaId: mediaId, paginationParameter:  PaginationParameters.maxPagesToLoad(maxPages: 5), completion: { (result) in
+                print("[+] first comment: \(result.value!.first!.comments!.first!)")
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
