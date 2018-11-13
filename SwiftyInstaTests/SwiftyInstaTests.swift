@@ -71,7 +71,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetRankedDirectRecipients(handler: handler)
                 //self.testSetProfilePublic(handler: handler)
                 //self.testChangePassword(handler: handler)
-                self.testGetUserInfoById(handler: handler)
+                //self.testGetUserInfoById(handler: handler)
+                self.testLikeMedia(handler: handler)
             }
         }
     }
@@ -561,6 +562,32 @@ class SwiftyInstaTests: XCTestCase {
             exp.fulfill()
         }
             
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testLikeMedia(handler: APIHandlerProtocol) {
+        let mediaId = "1909062118116718858_8766457680"
+        let exp = expectation(description: "\n\nlikeMedia() faild during timeout\n\n")
+        do {
+            // handler.unLikeMedia...
+            try handler.likeMedia(mediaId: mediaId, completion: { (result) in
+                if result {
+                    print("[+] media liked")
+                } else {
+                    print("[-] can not like media.]")
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
