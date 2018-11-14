@@ -48,6 +48,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get comments of specific media
 - [x] Follow/UnFollow user
 - [x] Get friendship status
+- [x] Block/Unblock user
 
 ## Usage
 

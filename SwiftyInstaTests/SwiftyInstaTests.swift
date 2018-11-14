@@ -75,7 +75,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testLikeMedia(handler: handler)
                 //self.testGetMediaComments(handler: handler)
                 //self.testFollowUser(handler: handler)
-                self.testFriendshipStatus(handler: handler)
+                //self.testFriendshipStatus(handler: handler)
+                self.testBlockUser(handler: handler)
             }
         }
     }
@@ -682,6 +683,32 @@ class SwiftyInstaTests: XCTestCase {
             exp.fulfill()
         }
         
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testBlockUser(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nfriendshipStatus() faild during timeout\n\n")
+        let userToBlock = "username"
+        do {
+            try handler.getUser(username: userToBlock, completion: { (user) in
+                if user.isSucceeded {
+                        //handler.unBlock(_,_)
+                    try? handler.block(userId: user.value!.pk!, completion: { (result) in
+                        print("[+] block status: \(result.value!.friendshipStatus!.blocking!)")
+                        exp.fulfill()
+                    })
+                }
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
