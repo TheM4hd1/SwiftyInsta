@@ -74,7 +74,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetUserInfoById(handler: handler)
                 //self.testLikeMedia(handler: handler)
                 //self.testGetMediaComments(handler: handler)
-                self.testFollowUser(handler: handler)
+                //self.testFollowUser(handler: handler)
+                self.testFriendshipStatus(handler: handler)
             }
         }
     }
@@ -632,6 +633,40 @@ class SwiftyInstaTests: XCTestCase {
                         if result.isSucceeded {
                             print("[+] following: \(result.value!.friendshipStatus!.following!)]")
                             print("[+] outgoing request: \(result.value!.friendshipStatus!.outgoingRequest!)")
+                        } else {
+                            print(result.info.message)
+                        }
+                    } else {
+                        print(user.info.message)
+                    }
+                    
+                    exp.fulfill()
+                })
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testFriendshipStatus(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nfriendshipStatus() faild during timeout\n\n")
+        let usernameToCheck = "username"
+        do {
+            try handler.getUser(username: usernameToCheck, completion: { (user) in
+                try? handler.getFriendshipStatus(of: user.value!.pk!, completion: { (result) in
+                    if user.isSucceeded {
+                        if result.isSucceeded {
+                            print("[+] following: \(result.value!.following!)]")
+                            print("[+] followed by: \(result.value!.followedBy!)")
                         } else {
                             print(result.info.message)
                         }

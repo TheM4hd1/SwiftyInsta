@@ -36,6 +36,7 @@ protocol APIHandlerProtocol {
     func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws
     func followUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func unFollowUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
+    func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -1253,6 +1254,35 @@ class APIHandler: APIHandlerProtocol {
                     } catch {
                         let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
                         let result = Result<FollowResponseModel>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        _httpHelper.sendAsync(method: .get, url: try URLs.getFriendshipStatusUrl(for: userId), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<FriendshipStatusModel>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(FriendshipStatusModel.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<FriendshipStatusModel>.init(isSucceeded: true, info: info, value: value)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<FriendshipStatusModel>.init(isSucceeded: false, info: info, value: nil)
                         completion(result)
                     }
                 }

@@ -51,6 +51,7 @@ struct URLs {
     private static let mediaComments = "/media/%@/comments/"
     private static let followUser = "/friendships/create/%ld/"
     private static let unFollowUser = "/friendships/destroy/%ld/"
+    private static let friendshipStatus = "/friendships/show/%ld"
     
     // MARK: - Methods
     
@@ -328,5 +329,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for unfollow user.")
+    }
+    
+    static func getFriendshipStatusUrl(for user: Int) throws -> URL {
+        if let url = URL(string: String(format: "%@%@/", baseInstagramApiUrl, String(format: friendshipStatus, user))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for friendship status.")
     }
 }
