@@ -17,3 +17,8 @@ struct FriendshipStatusModel: Codable {
     var outgoingRequest: Bool?
     var isBestie: Bool
 }
+
+struct FollowResponseModel: Codable, BaseStatusResponseProtocol {
+    var friendshipStatus: FriendshipStatusModel?
+    var status: String?
+}

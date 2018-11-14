@@ -73,7 +73,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testChangePassword(handler: handler)
                 //self.testGetUserInfoById(handler: handler)
                 //self.testLikeMedia(handler: handler)
-                self.testGetMediaComments(handler: handler)
+                //self.testGetMediaComments(handler: handler)
+                self.testFollowUser(handler: handler)
             }
         }
     }
@@ -605,6 +606,41 @@ class SwiftyInstaTests: XCTestCase {
             try handler.getMediaComments(mediaId: mediaId, paginationParameter:  PaginationParameters.maxPagesToLoad(maxPages: 5), completion: { (result) in
                 print("[+] first comment: \(result.value!.first!.comments!.first!)")
                 exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testFollowUser(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nfollowUser() faild during timeout\n\n")
+        let usernameToFollow = "username"
+        do {
+            try handler.getUser(username: usernameToFollow, completion: { (user) in
+                            //unFollowUser(_,_)
+                try? handler.followUser(userId: user.value!.pk!, completion: { (result) in
+                    if user.isSucceeded {
+                        if result.isSucceeded {
+                            print("[+] following: \(result.value!.friendshipStatus!.following!)]")
+                            print("[+] outgoing request: \(result.value!.friendshipStatus!.outgoingRequest!)")
+                        } else {
+                            print(result.info.message)
+                        }
+                    } else {
+                        print(user.info.message)
+                    }
+                    
+                    exp.fulfill()
+                })
             })
         } catch {
             print("[-] \(error.localizedDescription)")
