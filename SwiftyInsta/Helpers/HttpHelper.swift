@@ -19,10 +19,17 @@ class HttpHelper {
         session = URLSession(configuration: config)
     }
     
-    func sendAsync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String], completion: @escaping completionHandler) {
+    /// Only ```data: Data?``` or ```body: [String: Any]``` can use as ```httpBody```
+    func sendAsync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String], data: Data? = nil, completion: @escaping completionHandler) {
         var request = getDefaultRequest(for: url, method: method)
         addHeaders(to: &request, header: header)
-        addBody(to: &request, body: body)
+        //addBody(to: &request, body: body)
+        
+        if let data = data {
+            request.httpBody = data
+        } else {
+            addBody(to: &request, body: body)
+        }
         
         let task = session.dataTask(with: request) { (data, response, error) in
             completion(data, response as? HTTPURLResponse, error)
@@ -63,7 +70,8 @@ class HttpHelper {
     fileprivate func addHeaders(to request: inout URLRequest, header: [String: String]) {
         if header.count > 0 {
             header.forEach { (key, value) in
-                request.addValue(value, forHTTPHeaderField: key)
+                request.allHTTPHeaderFields?.updateValue(value, forKey: key)
+                //request.addValue(value, forHTTPHeaderField: key)
             }
         }
     }
