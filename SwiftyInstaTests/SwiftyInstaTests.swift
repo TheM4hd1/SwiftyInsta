@@ -76,7 +76,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testGetMediaComments(handler: handler)
                 //self.testFollowUser(handler: handler)
                 //self.testFriendshipStatus(handler: handler)
-                self.testBlockUser(handler: handler)
+                //self.testBlockUser(handler: handler)
+                self.testGetUserTags(handler: handler)
             }
         }
     }
@@ -709,6 +710,34 @@ class SwiftyInstaTests: XCTestCase {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetUserTags(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ngetUserTags() faild during timeout\n\n")
+        let userToGetTags = "username"
+        do {
+            try handler.getUser(username: userToGetTags, completion: { (user) in
+                if user.isSucceeded {
+                    try? handler.getUserTags(userId: user.value!.pk!, paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5), completion: { (result) in
+                        if result.isSucceeded {
+                            print("[+] first page items: \(result.value!.first!.totalCount!)")
+                        }
+                        exp.fulfill()
+                    })
+                }
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)

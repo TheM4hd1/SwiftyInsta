@@ -39,6 +39,7 @@ protocol APIHandlerProtocol {
     func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws
     func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
+    func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -1358,6 +1359,57 @@ class APIHandler: APIHandlerProtocol {
                         let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
                         let result = Result<FollowResponseModel>.init(isSucceeded: false, info: info, value: nil)
                         completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        userTagsList(from: try URLs.getUserTagsUrl(userPk: userId, rankToken: _user.rankToken), userId: userId, rankToken: _user.rankToken, list: [], paginationParameter: paginationParameter) { (value) in
+            let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+            let result = Result<[UserFeedModel]>.init(isSucceeded: true, info: info, value: value)
+            completion(result)
+        }
+    }
+    
+    fileprivate func userTagsList(from url: URL, userId: Int, rankToken: String, list: [UserFeedModel], paginationParameter: PaginationParameters, completion: @escaping ([UserFeedModel]) -> ())
+    {
+        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
+            completion(list)
+        } else {
+            var _paginationParameter = paginationParameter
+            _paginationParameter.pagesLoaded += 1
+            _httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+                if error != nil {
+                    completion(list)
+                } else {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        var usertagsList = list
+                        do {
+                            let newItems = try decoder.decode(UserFeedModel.self, from: data)
+                            usertagsList.append(newItems)
+                            if newItems.moreAvailable! {
+                                _paginationParameter.nextId = newItems.nextMaxId!
+                                let url = try! URLs.getUserTagsUrl(userPk: userId, rankToken: rankToken, maxId: _paginationParameter.nextId)
+                                self!.userTagsList(from: url, userId: userId, rankToken: rankToken, list: usertagsList, paginationParameter: _paginationParameter, completion: { (result) in
+                                    completion(result)
+                                })
+                            } else {
+                                completion(usertagsList)
+                            }
+                        } catch {
+                            print(error, error.localizedDescription)
+                            completion(list)
+                        }
+                    } else {
+                        completion(list)
                     }
                 }
             }

@@ -54,6 +54,7 @@ struct URLs {
     private static let friendshipStatus = "/friendships/show/%ld"
     private static let blockUser = "/friendships/block/%ld/"
     private static let unBlockUser = "/friendships/unblock/%ld/"
+    private static let userTags = "/usertags/%ld/feed/"
     
     // MARK: - Methods
     
@@ -352,5 +353,22 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for unblocking user.")
+    }
+    
+    static func getUserTagsUrl(userPk: Int, rankToken: String, maxId: String = "") throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userTags, userPk))) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            var queries = [
+                URLQueryItem(name: "rank_token", value: rankToken),
+                URLQueryItem(name: "ranked_content", value: "true")
+            ]
+            
+            if !maxId.isEmpty {
+                queries.append(URLQueryItem(name: "max_id", value: maxId))
+            }
+            urlComponent?.queryItems = queries
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for get user tags.")
     }
 }
