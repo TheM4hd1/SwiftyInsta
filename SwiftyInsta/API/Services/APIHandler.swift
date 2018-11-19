@@ -40,6 +40,8 @@ protocol APIHandlerProtocol {
     func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
+    func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
+    func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -155,6 +157,74 @@ class APIHandler: APIHandlerProtocol {
                                         fatalError(error.localizedDescription)
                                     }
                                 }
+                            }
+                        }
+                    })
+                })
+            }
+        }
+    }
+    
+    /// Its not working yet.
+    func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
+        
+        _httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { [weak self] (data, response, error) in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                // find CSRF token
+                let fields = response?.allHeaderFields
+                let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields as! [String : String], for: (response?.url)!)
+                for cookie in cookies {
+                    if cookie.name == "csrftoken" {
+                        self!._user.csrfToken = cookie.value
+                        break
+                    }
+                }
+
+                let content = [
+                    "allow_contacts_sync": "true",
+                    "sn_result": "API_ERROR:+null",
+                    "phone_id": UUID.init().uuidString,
+                    "_csrftoken": self!._user.csrfToken,
+                    "username": account.username,
+                    "first_name": account.firstName,
+                    "adid": UUID.init().uuidString,
+                    "guid": UUID.init().uuidString,
+                    "device_id": RequestMessageModel.generateDeviceId(),
+                    "email": account.email,
+                    "sn_nonce": "",
+                    "force_sign_up_code": "",
+                    "waterfall_id": UUID.init().uuidString,
+                    "qs_stamp": "",
+                    "password": account.password,
+                    "gdpr_s": "[0,2,0,null]"
+                ]
+
+                let encoder = JSONEncoder()
+                let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
+                let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+                // Creating Post Request Body
+                let signature = "\(hash).\(payload)"
+                let body: [String: Any] = [
+                    Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                    Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+                ]
+                
+                let headers: [String: String] = [
+                    "X-IG-App-ID": "567067343352427",
+                    Headers.HeaderXGoogleADID: (self!._device.googleAdId?.uuidString)!
+                ]
+                
+                let delay = 5.0
+                self?._queue.asyncAfter(deadline: .now() + delay, execute: {
+                    self!._httpHelper.sendAsync(method: .post, url: try! URLs.getCreateAccountUrl(), body: body, header: headers, completion: { (data, response, error) in
+                        if let error = error {
+                            print("error", error.localizedDescription)
+                        } else {
+                            if let data = data {
+                                //print(response)
+                                print(String(data: data, encoding: .utf8)!)
                             }
                         }
                     })
@@ -1413,6 +1483,119 @@ class APIHandler: APIHandlerProtocol {
                     }
                 }
             }
+        }
+    }
+    
+    func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
+        let uploadId = _request.generateUploadId()
+        var content = Data()
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"upload_id\"\n\n")
+        content.append(string: "\(uploadId)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\n\n")
+        content.append(string: "\(_device.deviceGuid.uuidString)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\n\n")
+        content.append(string: "\(_user.csrfToken)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"image_compression\"\n\n")
+        content.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Transfer-Encoding: binary\n")
+        content.append(string: "Content-Type: application/octet-stream\n")
+        content.append(string: "Content-Disposition: form-data; name=photo; filename=pending_media_\(uploadId).jpg; filename*=utf-8''pending_media_\(uploadId).jpg\n\n")
+        
+        let imageData = photo.image.jpegData(compressionQuality: 1)
+        
+        content.append(imageData!)
+        content.append(string: "\n--\(uploadId)--\n\n")
+
+        let header = [
+            "Content-Type": "multipart/form-data; boundary=\"\(uploadId)\"",
+            //"_csrftoken": _user.csrfToken
+        ]
+        
+        _httpHelper.sendAsync(method: .post, url: try URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<UploadPhotoResponse>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let res = try decoder.decode(UploadPhotoResponse.self, from: data)
+                        if res.status! == "ok" {
+                            self!.configureMedia(photo: photo, uploadId: uploadId, caption: photo.caption, completion: { (media, error) in
+                                if let error = error {
+                                    let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                                    let result = Result<UploadPhotoResponse>.init(isSucceeded: false, info: info, value: nil)
+                                    completion(result)
+                                } else {
+                                    let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                                    let result = Result<UploadPhotoResponse>.init(isSucceeded: true, info: info, value: media)
+                                    completion(result)
+                                }
+                            })
+                        } else {
+                            let info = ResultInfo.init(error: CustomErrors.runTimeError("fail"), message: res.status!, responseType: .ok)
+                            let result = Result<UploadPhotoResponse>.init(isSucceeded: false, info: info, value: nil)
+                            completion(result)
+                        }
+                    } catch {
+                        
+                    }
+                }
+            }
+        }
+    }
+    
+    fileprivate func configureMedia(photo: InstaPhoto, uploadId: String, caption: String, completion: @escaping (UploadPhotoResponse?, Error?) -> ()) {
+        let url = try! URLs.getConfigureMediaUrl()
+        let version = _device.frimwareFingerprint.split(separator: "/")[2].split(separator: ":")[1]
+        let androidVersion = AndroidVersion.fromString(versionString: String(version))
+        if let androidVersion = androidVersion {
+            let configureDevice = ConfigureDevice.init(manufacturer: _device.hardwareManufacturer, model: _device.hardwareModel, android_version: androidVersion.versionNumber, android_release: androidVersion.apiLevel)
+            let configureEdits = ConfigureEdits.init(crop_original_size: [photo.width, photo.height], crop_center: [0.0, -0.0], crop_zoom: 1)
+            let configureExtras = ConfigureExtras.init(source_width: photo.width, source_height: photo.height)
+            let configure = ConfigurePhotoModel.init(_uuid: _device.deviceGuid.uuidString, _uid: _user.loggedInUser.pk!, _csrftoken: _user.csrfToken, media_folder: "Camera", source_type: "4", caption: caption, upload_id: uploadId, device: configureDevice, edits: configureEdits, extras: configureExtras)
+            
+            let encoder = JSONEncoder()
+            let payload = String(data: try! encoder.encode(configure), encoding: .utf8)!
+            let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+            // Creating Post Request Body
+            let signature = "\(hash).\(payload)"
+            let body: [String: Any] = [
+                Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+            ]
+            
+            _httpHelper.sendAsync(method: .post, url: url, body: body, header: [:]) { (data, response, error) in
+                if error != nil {
+                    completion(nil, error)
+                } else {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let media = try decoder.decode(UploadPhotoResponse.self, from: data)
+                            completion(media, nil)
+                        } catch {
+                            completion(nil, error)
+                        }
+                    } else {
+                        completion(nil, CustomErrors.runTimeError("no data received from server."))
+                    }
+                }
+            }
+        } else {
+            completion(nil, CustomErrors.runTimeError("Unsupported android version"))
         }
     }
     

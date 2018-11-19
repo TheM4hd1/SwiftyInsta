@@ -55,6 +55,8 @@ struct URLs {
     private static let blockUser = "/friendships/block/%ld/"
     private static let unBlockUser = "/friendships/unblock/%ld/"
     private static let userTags = "/usertags/%ld/feed/"
+    private static let uploadPhoto = "/upload/photo/"
+    private static let configureMedia = "/media/configure/"
     
     // MARK: - Methods
     
@@ -66,7 +68,7 @@ struct URLs {
     }
     
     static func getCreateAccountUrl() throws -> URL {
-        if let url = URL(string: baseInstagramApiUrl + accountCreate) {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, accountCreate)) {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for user creation")
@@ -370,5 +372,19 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for get user tags.")
+    }
+    
+    static func getUploadPhotoUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, uploadPhoto)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for upload photo.")
+    }
+    
+    static func getConfigureMediaUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, configureMedia)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for configuring media.")
     }
 }

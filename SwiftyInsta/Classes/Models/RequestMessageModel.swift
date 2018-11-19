@@ -54,12 +54,10 @@ struct RequestMessageModel: Codable {
         dateComponents.year = 1970
         dateComponents.month = 1
         dateComponents.day = 1
-        dateComponents.timeZone = TimeZone(abbreviation: "UTC") // Japan Standard Time
-        dateComponents.hour = 0
-        dateComponents.minute = 0
-        dateComponents.second = 0
-        let timeSpan = Calendar.current.date(byAdding: dateComponents, to: Date())
-        let totalSeconds = Calendar.current.component(.second, from: timeSpan!)
+        dateComponents.timeZone = TimeZone(abbreviation: "UTC")
+        let date = Calendar.current.date(from: dateComponents)
+        let timeSpan = Date().timeIntervalSince(date!)
+        let totalSeconds = Int(timeSpan)
         return String(totalSeconds)
     }
     

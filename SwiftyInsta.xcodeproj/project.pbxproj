@@ -12,6 +12,7 @@
 		1104CD0D218062DD00F855BA /* AndroidDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */; };
 		1104CD0F2180639000F855BA /* RequestMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0E2180639000F855BA /* RequestMessageModel.swift */; };
 		1104CD112180644100F855BA /* HttpHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD102180644100F855BA /* HttpHelper.swift */; };
+		110B3F9B21A2CE4D0019523A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110B3F9A21A2CE4D0019523A /* Extensions.swift */; };
 		110C9D9821989F5800805C68 /* RecentActivitiesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110C9D9721989F5800805C68 /* RecentActivitiesModel.swift */; };
 		112022982188AACF00CA58BA /* BaseStatusResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */; };
 		112C1FD021998AEC00A698D5 /* DirectInboxModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112C1FCF21998AEC00A698D5 /* DirectInboxModel.swift */; };
@@ -48,6 +49,7 @@
 		11848608218A23900067FFD6 /* SearchUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848607218A23900067FFD6 /* SearchUserModel.swift */; };
 		11905DFD2191C2C100FF297A /* CurrentUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11905DFC2191C2C100FF297A /* CurrentUserModel.swift */; };
 		11905DFF2191C98600FF297A /* ProfilePicVersionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */; };
+		11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B8518E219F5208009527CD /* UploadMediaModel.swift */; };
 		11B9567221944F70006661A6 /* ExploreFeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B9567121944F70006661A6 /* ExploreFeedModel.swift */; };
 		11B95674219453B7006661A6 /* ExploreFeedItemModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B95673219453B7006661A6 /* ExploreFeedItemModel.swift */; };
 		11B956782194542D006661A6 /* StoryModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B956772194542D006661A6 /* StoryModel.swift */; };
@@ -61,6 +63,9 @@
 		11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */; };
 		11C439D4219A429B00467381 /* ProfilePrivacyResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C439D3219A429B00467381 /* ProfilePrivacyResponseModel.swift */; };
 		11C487F8219B2A3B00E952A1 /* UserInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C487F7219B2A3B00E952A1 /* UserInfoModel.swift */; };
+		11C5F4DE21A059F4001EC550 /* testbundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 11C5F4DD21A059F4001EC550 /* testbundle.bundle */; };
+		11D2AE0A21A02023007D7F1F /* CreateAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */; };
+		11DDE51F21A1F94B00754F0F /* AndroidVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */; };
 		11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E2B134218F13D20095374A /* UserShortListModel.swift */; };
 		11F0CE6B2195CC2400C0F6A4 /* TimeLineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */; };
 /* End PBXBuildFile section */
@@ -81,6 +86,7 @@
 		1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidDeviceModel.swift; sourceTree = "<group>"; };
 		1104CD0E2180639000F855BA /* RequestMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestMessageModel.swift; sourceTree = "<group>"; };
 		1104CD102180644100F855BA /* HttpHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpHelper.swift; sourceTree = "<group>"; };
+		110B3F9A21A2CE4D0019523A /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		110C9D9721989F5800805C68 /* RecentActivitiesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentActivitiesModel.swift; sourceTree = "<group>"; };
 		112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseStatusResponseModel.swift; sourceTree = "<group>"; };
 		112C1FCF21998AEC00A698D5 /* DirectInboxModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectInboxModel.swift; sourceTree = "<group>"; };
@@ -120,6 +126,7 @@
 		11848607218A23900067FFD6 /* SearchUserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchUserModel.swift; sourceTree = "<group>"; };
 		11905DFC2191C2C100FF297A /* CurrentUserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserModel.swift; sourceTree = "<group>"; };
 		11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePicVersionsModel.swift; sourceTree = "<group>"; };
+		11B8518E219F5208009527CD /* UploadMediaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMediaModel.swift; sourceTree = "<group>"; };
 		11B9567121944F70006661A6 /* ExploreFeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFeedModel.swift; sourceTree = "<group>"; };
 		11B95673219453B7006661A6 /* ExploreFeedItemModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreFeedItemModel.swift; sourceTree = "<group>"; };
 		11B956772194542D006661A6 /* StoryModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryModel.swift; sourceTree = "<group>"; };
@@ -133,6 +140,9 @@
 		11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationParameters.swift; sourceTree = "<group>"; };
 		11C439D3219A429B00467381 /* ProfilePrivacyResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePrivacyResponseModel.swift; sourceTree = "<group>"; };
 		11C487F7219B2A3B00E952A1 /* UserInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModel.swift; sourceTree = "<group>"; };
+		11C5F4DD21A059F4001EC550 /* testbundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = testbundle.bundle; sourceTree = "<group>"; };
+		11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountModel.swift; sourceTree = "<group>"; };
+		11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidVersion.swift; sourceTree = "<group>"; };
 		11E2B134218F13D20095374A /* UserShortListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortListModel.swift; sourceTree = "<group>"; };
 		11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -188,6 +198,7 @@
 		115F1214217FDD8B00ED3530 /* SwiftyInstaTests */ = {
 			isa = PBXGroup;
 			children = (
+				11C5F4DD21A059F4001EC550 /* testbundle.bundle */,
 				115F1215217FDD8B00ED3530 /* SwiftyInstaTests.swift */,
 				115F1217217FDD8B00ED3530 /* Info.plist */,
 			);
@@ -218,6 +229,7 @@
 			children = (
 				1104CD102180644100F855BA /* HttpHelper.swift */,
 				112E735B2180E86B0048A8D7 /* CryptoHelper.swift */,
+				110B3F9A21A2CE4D0019523A /* Extensions.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -283,6 +295,8 @@
 				11C439D3219A429B00467381 /* ProfilePrivacyResponseModel.swift */,
 				11C487F7219B2A3B00E952A1 /* UserInfoModel.swift */,
 				1135EA5F219B5C2D00DCB739 /* CommentModel.swift */,
+				11B8518E219F5208009527CD /* UploadMediaModel.swift */,
+				11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -321,6 +335,7 @@
 			isa = PBXGroup;
 			children = (
 				115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */,
+				11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */,
 			);
 			path = Android;
 			sourceTree = "<group>";
@@ -435,6 +450,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11C5F4DE21A059F4001EC550 /* testbundle.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -470,7 +486,9 @@
 				11F0CE6B2195CC2400C0F6A4 /* TimeLineModel.swift in Sources */,
 				11BF2FA2219A07400095D594 /* RecentRecipientsModel.swift in Sources */,
 				11B9567221944F70006661A6 /* ExploreFeedModel.swift in Sources */,
+				11D2AE0A21A02023007D7F1F /* CreateAccountModel.swift in Sources */,
 				115F1244217FEA4400ED3530 /* Headers.swift in Sources */,
+				110B3F9B21A2CE4D0019523A /* Extensions.swift in Sources */,
 				11905DFF2191C98600FF297A /* ProfilePicVersionsModel.swift in Sources */,
 				115F1246217FEA5200ED3530 /* URLs.swift in Sources */,
 				115F1257217FF1BF00ED3530 /* AndroidDeviceGenerator.swift in Sources */,
@@ -481,6 +499,7 @@
 				112E735C2180E86B0048A8D7 /* CryptoHelper.swift in Sources */,
 				11C439D4219A429B00467381 /* ProfilePrivacyResponseModel.swift in Sources */,
 				115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */,
+				11DDE51F21A1F94B00754F0F /* AndroidVersion.swift in Sources */,
 				11B9567C219454B9006661A6 /* ExploreItemInfoModel.swift in Sources */,
 				115F1259217FF21E00ED3530 /* Devices.swift in Sources */,
 				11B9567A21945494006661A6 /* MediaModel.swift in Sources */,
@@ -503,6 +522,7 @@
 				115F1253217FEFF200ED3530 /* SessionStorage.swift in Sources */,
 				1104CD092180621400F855BA /* HTTPMethods.swift in Sources */,
 				11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */,
+				11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

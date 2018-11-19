@@ -77,7 +77,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testFollowUser(handler: handler)
                 //self.testFriendshipStatus(handler: handler)
                 //self.testBlockUser(handler: handler)
-                self.testGetUserTags(handler: handler)
+                //self.testGetUserTags(handler: handler)
+                self.testCreateAccount(handler: handler)
             }
         }
     }
@@ -745,5 +746,26 @@ class SwiftyInstaTests: XCTestCase {
                 self.testLogout(handler: handler)
             }
         }
+    }
+    
+    func testCreateAccount(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ncreateAccount() faild during timeout\n\n")
+        let myBundle = Bundle.init(identifier: "com.TheM4hd1.SwiftyInsta")
+        let imagePath = (myBundle?.path(forResource: "testbundle", ofType: "bundle"))! + "/1.jpg"
+        let image = UIImage(contentsOfFile: imagePath)
+        do {
+            try handler.uploadPhoto(photo: InstaPhoto(image: image!, caption: "caption for test.", width: 1, height: 1), completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] upload status: \(result.value!.status!)")
+                } else {
+                    print(result.info.message)
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        waitForExpectations(timeout: 30, handler: nil)
     }
 }
