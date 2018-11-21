@@ -36,6 +36,12 @@ struct UploadPhotoResponse: Codable, BaseStatusResponseProtocol {
     var status: String?
 }
 
+struct UploadPhotoAlbumResponse: Codable, BaseStatusResponseProtocol {
+    var clientSidecarId: String?
+    var media: MediaModel?
+    var status: String?
+}
+
 struct ConfigurePhotoModel: Codable {
     let _uuid: String
     let _uid: Int
@@ -65,4 +71,26 @@ struct ConfigureEdits: Codable {
 struct ConfigureExtras: Codable {
     let source_width: Int
     let source_height: Int
+}
+
+struct ConfigurePhotoAlbumModel: Codable {
+    let _uuid: String
+    let _uid: Int
+    let _csrftoken: String
+    let caption: String
+    let client_sidecar_id: String
+    let geotag_enabled: Bool
+    let disable_comments: Bool
+    let children_metadata: [ConfigureChildren]
+}
+
+struct ConfigureChildren: Codable {
+    let scene_capture_type: String
+    let mas_opt_in: String
+    let camera_position: String
+    let allow_multi_configures: Bool
+    let geotag_enabled: Bool
+    let disable_comments: Bool
+    let source_type: Int
+    let upload_id: String
 }

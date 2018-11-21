@@ -51,6 +51,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Block/Unblock user
 - [x] Get user tags
 - [x] Upload Photo
+- [x] Upload Photo Album
 
 ## Usage
 

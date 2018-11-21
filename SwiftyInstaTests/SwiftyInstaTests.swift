@@ -78,7 +78,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testFriendshipStatus(handler: handler)
                 //self.testBlockUser(handler: handler)
                 //self.testGetUserTags(handler: handler)
-                self.testCreateAccount(handler: handler)
+                //self.testUploadPhoto(handler: handler)
+                self.testUploadPhotoAlbum(handler: handler)
             }
         }
     }
@@ -748,8 +749,8 @@ class SwiftyInstaTests: XCTestCase {
         }
     }
     
-    func testCreateAccount(handler: APIHandlerProtocol) {
-        let exp = expectation(description: "\n\ncreateAccount() faild during timeout\n\n")
+    func testUploadPhoto(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nuploadPhoto() faild during timeout\n\n")
         let myBundle = Bundle.init(identifier: "com.TheM4hd1.SwiftyInsta")
         let imagePath = (myBundle?.path(forResource: "testbundle", ofType: "bundle"))! + "/1.jpg"
         let image = UIImage(contentsOfFile: imagePath)
@@ -766,6 +767,41 @@ class SwiftyInstaTests: XCTestCase {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
-        waitForExpectations(timeout: 30, handler: nil)
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testUploadPhotoAlbum(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\nuploadPhotoAlbum() faild during timeout\n\n")
+        let myBundle = Bundle.init(identifier: "com.TheM4hd1.SwiftyInsta")
+        let imagePath = (myBundle?.path(forResource: "testbundle", ofType: "bundle"))! + "/1.jpg"
+        let image = UIImage(contentsOfFile: imagePath)
+        let photos: [InstaPhoto] = [InstaPhoto(image: image!, caption: "", width: 1, height: 1),
+                                    InstaPhoto(image: image!, caption: "", width: 1, height: 1),
+                                    InstaPhoto(image: image!, caption: "", width: 1, height: 1),
+                                    InstaPhoto(image: image!, caption: "", width: 1, height: 1)]
+        
+        try! handler.uploadPhotoAlbum(photos: photos, caption: "another test for album", completion: { (result) in
+            if result.isSucceeded {
+                print("[+] status: \(result.value!.status!)")
+            } else {
+                print("[-] error: \(result.info.message)")
+            }
+            exp.fulfill()
+        })
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@
 import Foundation
 
 protocol APIHandlerProtocol {
+    func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws
     func logout(completion: @escaping (Result<Bool>) -> ()) throws
     func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws
@@ -41,7 +42,7 @@ protocol APIHandlerProtocol {
     func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
     func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
-    func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws
+    func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -1487,6 +1488,10 @@ class APIHandler: APIHandlerProtocol {
     }
     
     func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
         let uploadId = _request.generateUploadId()
         var content = Data()
         content.append(string: "--\(uploadId)\n")
@@ -1515,10 +1520,7 @@ class APIHandler: APIHandlerProtocol {
         content.append(imageData!)
         content.append(string: "\n--\(uploadId)--\n\n")
 
-        let header = [
-            "Content-Type": "multipart/form-data; boundary=\"\(uploadId)\"",
-            //"_csrftoken": _user.csrfToken
-        ]
+        let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
         
         _httpHelper.sendAsync(method: .post, url: try URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
             if let error = error {
@@ -1596,6 +1598,136 @@ class APIHandler: APIHandlerProtocol {
             }
         } else {
             completion(nil, CustomErrors.runTimeError("Unsupported android version"))
+        }
+    }
+    
+    func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        getUploadIdsForPhotoAlbum(uploadIds: [], photos: photos) { [weak self] (uploadIds) in
+            self!.configureMediaAlbum(uploadIds: uploadIds, caption: caption, completion: { (value, error) in
+                if let error = error {
+                    let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                    let result = Result<UploadPhotoAlbumResponse>.init(isSucceeded: false, info: info, value: nil)
+                    completion(result)
+                } else {
+                    let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                    let result = Result<UploadPhotoAlbumResponse>.init(isSucceeded: true, info: info, value: value)
+                    completion(result)
+                }
+            })
+        }
+    }
+    
+    fileprivate func getUploadIdsForPhotoAlbum(uploadIds: [String], photos: [InstaPhoto], completion: @escaping ([String]) -> ()) {
+        if photos.count == 0 {
+            completion(uploadIds)
+        } else {
+            var _uploadIds = uploadIds
+            var _photos = photos
+            let _currentPhoto = _photos.removeFirst()
+            
+            let uploadId = _request.generateUploadId()
+            var content = Data()
+            content.append(string: "--\(uploadId)\n")
+            content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+            content.append(string: "Content-Disposition: form-data; name=\"upload_id\"\n\n")
+            content.append(string: "\(uploadId)\n")
+            content.append(string: "--\(uploadId)\n")
+            content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+            content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\n\n")
+            content.append(string: "\(_device.deviceGuid.uuidString)\n")
+            content.append(string: "--\(uploadId)\n")
+            content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+            content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\n\n")
+            content.append(string: "\(_user.csrfToken)\n")
+            content.append(string: "--\(uploadId)\n")
+            content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+            content.append(string: "Content-Disposition: form-data; name=\"image_compression\"\n\n")
+            content.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\n")
+            content.append(string: "--\(uploadId)\n")
+            content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+            content.append(string: "Content-Disposition: form-data; name=\"is_sidecar\"\n\n")
+            content.append(string: "1\n")
+            content.append(string: "--\(uploadId)\n")
+            content.append(string: "Content-Transfer-Encoding: binary\n")
+            content.append(string: "Content-Type: application/octet-stream\n")
+            content.append(string: "Content-Disposition: form-data; name=photo; filename=pending_media_\(uploadId).jpg; filename*=utf-8''pending_media_\(uploadId).jpg\n\n")
+            
+            let imageData = _currentPhoto.image.jpegData(compressionQuality: 1)
+            
+            content.append(imageData!)
+            content.append(string: "\n--\(uploadId)--\n\n")
+            
+            let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
+            
+            _httpHelper.sendAsync(method: .post, url: try! URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
+                if error != nil {
+                    completion(_uploadIds)
+                } else {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let res = try decoder.decode(UploadPhotoResponse.self, from: data)
+                            if res.status! == "ok" {
+                                _uploadIds.append(res.uploadId!)
+                                self!.getUploadIdsForPhotoAlbum(uploadIds: _uploadIds, photos: _photos, completion: { (ids) in
+                                    completion(ids)
+                                })
+                            } else {
+                                completion(_uploadIds)
+                            }
+                        } catch {
+                            completion(_uploadIds)
+                        }
+                    } else {
+                        completion(_uploadIds)
+                    }
+                }
+            }
+            
+        }
+    }
+    
+    fileprivate func configureMediaAlbum(uploadIds: [String], caption: String, completion: @escaping (UploadPhotoAlbumResponse?, Error?) -> ()) {
+        let url = try! URLs.getConfigureMediaAlbumUrl()
+        let clientSidecarId = _request.generateUploadId()
+        
+        var childrens: [ConfigureChildren] = []
+        for id in uploadIds {
+            childrens.append(ConfigureChildren.init(scene_capture_type: "standard", mas_opt_in: "NOT_PROMPTED", camera_position: "unknown", allow_multi_configures: false, geotag_enabled: false, disable_comments: false, source_type: 0, upload_id: id))
+        }
+        
+        let content = ConfigurePhotoAlbumModel.init(_uuid: _device.deviceGuid.uuidString, _uid: _user.loggedInUser.pk!, _csrftoken: _user.csrfToken, caption: caption, client_sidecar_id: clientSidecarId, geotag_enabled: false, disable_comments: false, children_metadata: childrens)
+        
+        let encoder = JSONEncoder()
+        let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
+        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+        // Creating Post Request Body
+        let signature = "\(hash).\(payload)"
+        let body: [String: Any] = [
+            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+        ]
+        
+        _httpHelper.sendAsync(method: .post, url: url, body: body, header: [:]) { (data, response, error) in
+            if let error = error {
+                completion(nil, error)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let res = try decoder.decode(UploadPhotoAlbumResponse.self, from: data)
+                        completion(res, nil)
+                    } catch {
+                        completion(nil, error)
+                    }
+                }
+            }
         }
     }
     

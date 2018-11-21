@@ -38,6 +38,16 @@ struct UserTagItemModel: Codable {
     var user: UserShortModel?
 }
 
+struct CarouselMedia: Codable {
+    var id: String?
+    var mediaType: Int?
+    var imageVersions2: CandidatesModel?
+    var originalWidth: Int?
+    var originalHeight: Int?
+    var pk: Int?
+    var carouselParentId: String?
+}
+
 struct MediaModel: Codable, MediaModelProtocol {
     var takenAt: Int?
     var pk: Int?
@@ -47,6 +57,7 @@ struct MediaModel: Codable, MediaModelProtocol {
     var code: String?
     var clientCacheKey: String?
     var filterType: Int?
+    var carouselMedia: [CarouselMedia]?
     var imageVersions2: CandidatesModel?
     var originalWidth: Int?
     var originalHeight: Int?

@@ -57,6 +57,7 @@ struct URLs {
     private static let userTags = "/usertags/%ld/feed/"
     private static let uploadPhoto = "/upload/photo/"
     private static let configureMedia = "/media/configure/"
+    private static let configureMediaAlbum = "/media/configure_sidecar/"
     
     // MARK: - Methods
     
@@ -386,5 +387,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for configuring media.")
+    }
+    
+    static func getConfigureMediaAlbumUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, configureMediaAlbum)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for configuring media album.")
     }
 }
