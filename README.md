@@ -23,37 +23,12 @@ Currently the library supports following coverage of the following Instagram API
 
 ***
 
-- [x] Login
-- [x] Logout
-- [x] Get user information (by username)
-- [x] Get user information (by id)
-- [x] Get current user Information
-- [x] Get user followings 
-- [x] Get user followers
-- [x] Get user explore feed
-- [x] Get user timeline medias
-- [x] Get user feed medias
-- [x] Get media by ID
-- [x] Explore tags by tag name
-- [x] Get your recent activities
-- [x] Get recent following activities
-- [x] Get direct inbox
-- [x] Send direct message to users and groups
-- [x] Get direct thread by thread id
-- [x] Get recent recipients
-- [x] Get ranked recipients
-- [x] Change account privacy to public/private
-- [x] Change password
-- [x] Like/Unlike media
-- [x] Get comments of specific media
-- [x] Follow/UnFollow user
-- [x] Get friendship status
-- [x] Block/Unblock user
-- [x] Get user tags
-- [x] Upload Photo
-- [x] Upload Photo Album
-- [x] Add/Remove comment
-- [x] Delete Media (photo/video)
+|  |  |  |
+| ------ | ------ | ------ |
+| `createAccount` <br></br> `login` <br></br> `logout` | `setAccountPublic` <br></br> `setAccountPrivate` <br></br> `setNewPassword` | `getRecentActivities` <br></br> `getRecentFollowingActivities` |
+| `getUserFollowers` <br></br> `getUserFollowing`  <br></br> `getFriendshipStatus(of userId)` | `followUser` <br></br> `unFollowUser` | `block` <br></br> `unBlock` |
+| `uploadPhoto` <br></br> `uploadPhotoAlbum` <br></br> `getMediaInfo` | `getMediaComments` <br></br> `addComment` <br></br> `deleteComment` | `likeMedia` <br></br> `unLikeMedia` <br></br> `deleteMedia` |
+| `getUser(username)` <br></br> `getUser(userPk)` <br></br> `getCurrentUser` | `getTagFeed` <br></br> `getExploreFeeds` <br></br> `getUserTimeLine` <br></br> `getUserMedia` <br></br> `getUserTags` | `sendDirect` <br></br> `getDirectInbox` <br></br> `getDirectThreadById` <br></br> `getRecentDirectRecipients` <br></br> `getRankedDirectRecipients` |
 
 ## Usage
 
