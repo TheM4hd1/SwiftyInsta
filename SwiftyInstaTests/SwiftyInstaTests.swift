@@ -79,7 +79,8 @@ class SwiftyInstaTests: XCTestCase {
                 //self.testBlockUser(handler: handler)
                 //self.testGetUserTags(handler: handler)
                 //self.testUploadPhoto(handler: handler)
-                self.testUploadPhotoAlbum(handler: handler)
+                //self.testUploadPhotoAlbum(handler: handler)
+                self.testAddComment(handler: handler)
             }
         }
     }
@@ -795,6 +796,30 @@ class SwiftyInstaTests: XCTestCase {
             }
             exp.fulfill()
         })
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                print(err.localizedDescription)
+            } else {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testAddComment(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "\n\ntestAddComment() faild during timeout\n\n")
+        let mediaId = "1909062118116718858"
+        let commentId = "18004184605045547"
+        
+        try! handler.addComment(mediaId: mediaId, comment: "test for receive comment id", completion: { (result) in
+            print("[+] status: \(result.value!.status!)")
+            print("[+] comment id: \(result.value!.comment!.pk!)") // 18004184605045547
+            exp.fulfill()
+        })
+        
+//        try! handler.deleteComment(mediaId: mediaId, commentPk: commentId, completion: { (result) in
+//            exp.fulfill()
+//        })
         
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {

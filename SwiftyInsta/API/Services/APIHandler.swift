@@ -43,6 +43,8 @@ protocol APIHandlerProtocol {
     func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
     func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
     func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws
+    func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws
+    func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -1726,6 +1728,81 @@ class APIHandler: APIHandlerProtocol {
                     } catch {
                         completion(nil, error)
                     }
+                }
+            }
+        }
+    }
+    
+    func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        let content = [
+            "user_breadcrumb": String(Date().millisecondsSince1970),
+            "idempotence_token": UUID.init().uuidString,
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(_user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken,
+            "comment_text": text,
+            "containermodule": "comments_feed_timeline",
+            "radio_type": "wifi-none"
+        ]
+        
+        let encoder = JSONEncoder()
+        let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
+        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+        // Creating Post Request Body
+        let signature = "\(hash).\(payload)"
+        let body: [String: Any] = [
+            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+        ]
+        
+        _httpHelper.sendAsync(method: .post, url: try URLs.getPostCommentUrl(mediaId: mediaId), body: body, header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<CommentResponse>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let res = try decoder.decode(CommentResponse.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<CommentResponse>.init(isSucceeded: true, info: info, value: res)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<CommentResponse>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
+                }
+            }
+        }
+    }
+    
+    func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        let content = [
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(_user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken
+        ]
+        
+        _httpHelper.sendAsync(method: .post, url: try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentPk), body: content, header: [:]) { (data, response, error) in
+            if error != nil {
+                completion(false)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    let status = try? decoder.decode(BaseStatusResponseModel.self, from: data)
+                    completion(status!.isOk())
                 }
             }
         }

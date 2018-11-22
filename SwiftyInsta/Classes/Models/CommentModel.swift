@@ -32,3 +32,8 @@ struct MediaCommentsResponseModel: Codable, BaseStatusResponseProtocol {
     var nextMaxId: String?
     var status: String?
 }
+
+struct CommentResponse: Codable, BaseStatusResponseProtocol {
+    var comment: CommentModel?
+    var status: String?
+}

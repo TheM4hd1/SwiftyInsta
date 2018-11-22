@@ -52,6 +52,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Get user tags
 - [x] Upload Photo
 - [x] Upload Photo Album
+- [x] Add/Remove comment
 
 ## Usage
 
