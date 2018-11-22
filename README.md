@@ -53,6 +53,7 @@ Currently the library supports following coverage of the following Instagram API
 - [x] Upload Photo
 - [x] Upload Photo Album
 - [x] Add/Remove comment
+- [x] Delete Media (photo/video)
 
 ## Usage
 

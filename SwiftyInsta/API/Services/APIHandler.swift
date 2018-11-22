@@ -45,6 +45,7 @@ protocol APIHandlerProtocol {
     func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws
     func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws
     func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws
+    func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -1800,9 +1801,47 @@ class APIHandler: APIHandlerProtocol {
             } else {
                 if let data = data {
                     let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let status = try? decoder.decode(BaseStatusResponseModel.self, from: data)
-                    completion(status!.isOk())
+                    do {
+                        let status = try decoder.decode(BaseStatusResponseModel.self, from: data)
+                        completion(status.isOk())
+                    } catch {
+                        completion(false)
+                    }
+                }
+            }
+        }
+    }
+    
+    func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        let content = [
+            "_uuid": _device.deviceGuid.uuidString,
+            "_uid": String(_user.loggedInUser.pk!),
+            "_csrftoken": _user.csrfToken,
+            "media_id": mediaId
+        ]
+        
+        _httpHelper.sendAsync(method: .post, url: try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: mediaType.rawValue), body: content, header: [:]) { (data, response, error) in
+            if let error = error {
+                let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .unknown)
+                let result = Result<DeleteMediaResponse>.init(isSucceeded: false, info: info, value: nil)
+                completion(result)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    do {
+                        let value = try decoder.decode(DeleteMediaResponse.self, from: data)
+                        let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
+                        let result = Result<DeleteMediaResponse>.init(isSucceeded: true, info: info, value: value)
+                        completion(result)
+                    } catch {
+                        let info = ResultInfo.init(error: error, message: error.localizedDescription, responseType: .ok)
+                        let result = Result<DeleteMediaResponse>.init(isSucceeded: false, info: info, value: nil)
+                        completion(result)
+                    }
                 }
             }
         }

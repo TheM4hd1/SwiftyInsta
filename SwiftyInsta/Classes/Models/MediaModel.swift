@@ -91,3 +91,8 @@ struct MediaModel: Codable, MediaModelProtocol {
     var usertags: UserTagsModel?
     //var topLikers: [UserShortModel]?
 }
+
+struct DeleteMediaResponse: Codable, BaseStatusResponseProtocol {
+    var did_delete: Bool?
+    var status: String?
+}

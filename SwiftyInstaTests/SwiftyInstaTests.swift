@@ -809,15 +809,22 @@ class SwiftyInstaTests: XCTestCase {
     func testAddComment(handler: APIHandlerProtocol) {
         let exp = expectation(description: "\n\ntestAddComment() faild during timeout\n\n")
         let mediaId = "1909062118116718858"
-        let commentId = "18004184605045547"
+        //let commentId = "17928620479228631"
         
-        try! handler.addComment(mediaId: mediaId, comment: "test for receive comment id", completion: { (result) in
+        try! handler.addComment(mediaId: mediaId, comment: "test for receive comment id2", completion: { (result) in
             print("[+] status: \(result.value!.status!)")
-            print("[+] comment id: \(result.value!.comment!.pk!)") // 18004184605045547
+            print("[+] comment id: \(result.value!.comment!.pk!)")
             exp.fulfill()
         })
         
+        // DELTE COMMENT
+        
 //        try! handler.deleteComment(mediaId: mediaId, commentPk: commentId, completion: { (result) in
+//            exp.fulfill()
+//        })
+
+        // DELETE MEDIA
+//        try! handler.deleteMedia(mediaId: mediaId, mediaType: .image, completion: { (result) in
 //            exp.fulfill()
 //        })
         

@@ -60,6 +60,7 @@ struct URLs {
     private static let configureMediaAlbum = "/media/configure_sidecar/"
     private static let postComment = "/media/%@/comment/"
     private static let deleteComment = "/media/%@/comment/%@/delete/"
+    private static let deleteMedia = "/media/%@/delete/?media_type=%@"
     
     // MARK: - Methods
     
@@ -410,5 +411,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for delete comment.")
+    }
+    
+    static func getDeleteMediaUrl(mediaId: String, mediaType: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: deleteMedia, mediaId, mediaType))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for delete media.")
     }
 }
