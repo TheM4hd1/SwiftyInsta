@@ -15,6 +15,7 @@ enum CustomErrors: Error {
     case twoFactorAuthentication
     case challengeRequired
     case unExpected(_ description: String)
+    case groupedError(_ description: String)
     case noError
 }
 
@@ -28,6 +29,8 @@ extension CustomErrors: LocalizedError {
         case .invalidCredentials:
             return "Invalid Credentials."
         case .unExpected(let description):
+            return description
+        case .groupedError(let description):
             return description
         default:
             return ""
