@@ -1,117 +1,39 @@
-<p align="center">
-<img width="200" height="200" src="https://raw.githubusercontent.com/TheM4hd1/SwiftyInsta/master/Screenshots/Logo.png">
-</p>
+![Logo](https://github.com/mgp25/Instagram-API/raw/master/examples/assets/instagram.png) 
+## Instagram APIs
 
-## Overview
-Tokenless Instagram's private API.
+Instagram offers two kind of APIs for developers. The [Official API](https://www.instagram.com/developer/) and [Unofficial API](https://github.com/TheM4hd1/SwiftyInsta/blob/master/SwiftyInsta/API/Constants/URLs.swift).
 
-This project intends to provide all the features available in the Instagram API including media upload, direct messaging, stories and more.
+They both have pros and cons, the private api is a tokenless api which means it doesn't require any token or app registration in Instagram system.<br></br>
+But you should know that its not authorized, maintained, sponsored or endorsed by Instagram.
 
-* Please note that this project is still in design and development phase, the libraries may suffer major changes, so don't rely (yet) in this software for production uses.
+## SwiftyInsta
 
-* It is being developed in Swift 4.2 and Xcode 10.1 (10B61)
+SwiftyInsta allows you to build your own customized Instagram client or Bot. It is 100% open for all developers who wish to create applications on Instagram platform.
 
-### Integration
-To use this library in your project manually you may:
+This project is still in development phase and intends to provide all features which are available in the Official API.
 
-1. compile framework and add it to project
-2. for Workspaces, include the whole SwiftyInsta.xcodeproj
+## Installing
 
-## Features
+1. To use this library in your project manually you may:
+    - Add framework from ```General > Linked frameworks and libraries```
+    - Clone and copy the whole ```/SwiftyInsta``` into your workspace.
 
-Currently the library supports following coverage of the following Instagram APIs:
+## Documentation
 
-***
+- See [Features](https://github.com/TheM4hd1/SwiftyInsta/wiki/Features) for all available APIs
+- See [Usage](https://github.com/TheM4hd1/SwiftyInsta/wiki/Usage) for more specific usage and use case documentation
+- See [Tests](https://github.com/TheM4hd1/SwiftyInsta/tree/master/SwiftyInstaTests) for some real world examples
 
-- [x] Login
-- [x] Logout
-- [x] Get user information (by username)
-- [x] Get user information (by id)
-- [x] Get current user Information
-- [x] Get user followings 
-- [x] Get user followers
-- [x] Get user explore feed
-- [x] Get user timeline medias
-- [x] Get user feed medias
-- [x] Get media by ID
-- [x] Explore tags by tag name
-- [x] Get your recent activities
-- [x] Get recent following activities
-- [x] Get direct inbox
-- [x] Send direct message to users and groups
-- [x] Get direct thread by thread id
-- [x] Get recent recipients
-- [x] Get ranked recipients
-- [x] Change account privacy to public/private
-- [x] Change password
-- [x] Like/Unlike media
-- [x] Get comments of specific media
-- [x] Follow/UnFollow user
-- [x] Get friendship status
-- [x] Block/Unblock user
-- [x] Get user tags
-- [x] Upload Photo
-- [x] Upload Photo Album
-- [x] Add/Remove comment
-- [x] Delete Media (photo/video)
+## Contributions
 
-## Usage
+Pull requests and issues are welcome
 
-#### Initialization
+## License
 
-```swift
-import SwiftyInsta
-```
+SwiftyInsta is licensed under the MIT license. See [LICENSE](https://github.com/TheM4hd1/SwiftyInsta/blob/master/LICENSE) for more info.
 
-#### Use builder to get Insta API instance:
+## Thanks to
 
-```swift
-let handler = try! APIBuilder()
-.createBuilder()
-.setHttpHandler(config: .default)
-.setRequestDelay(delay: .default)
-.setUser(user: user)
-.build()
-```
+[mpg25](https://github.com/mgp25/Instagram-API)
 
-#### Login
-```swift
-try? handler.login { (result) in
-// result: Result<LoginResultModel>
-}
-```
-
-#### Logout
-```swift
-try? handler.logout { (result) in
-// result: Result<Bool>
-}
-```
-
-#### Get User
-```swift
-try? handler.getUser(username: "username", completion: { (result) in
-// result: (Result<UserModel>)
-})
-```
-
-#### Get Followers
-```swift
-// searchQuery: search for specific username
-// paginationParameter: number of pages to read followers from.
-try handler.getUserFollowers(username: "", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 15), searchQuery: "", completion: { (result) in
-// result: Result<[UserShortModel]>
-})
-```
-
-## TODO
-Currently the library suffers from nested asynchronous functions (Pyramid of Doom), the next step is *Optimizing Library*
-- [ ] Writing Cleaner Asynchronous Code Using Promise Pattern
-
-## Special thanks
-
-[a-legotin](https://github.com/a-legotin) and his [InstaSharper](https://github.com/a-legotin/InstaSharper)
-
-## Legal
-
-This code is in no way affiliated with, authorized, maintained, sponsored or endorsed by Instagram or any of its affiliates or subsidiaries. This is an independent and unofficial API wrapper.
+[a-legotin](https://github.com/a-legotin/InstaSharper)
