@@ -50,15 +50,16 @@ struct RequestMessageModel: Codable {
     }
     
     func generateUploadId() -> String {
-        var dateComponents = DateComponents()
-        dateComponents.year = 1970
-        dateComponents.month = 1
-        dateComponents.day = 1
-        dateComponents.timeZone = TimeZone(abbreviation: "UTC")
-        let date = Calendar.current.date(from: dateComponents)
-        let timeSpan = Date().timeIntervalSince(date!)
-        let totalSeconds = Int(timeSpan)
-        return String(totalSeconds)
+//        var dateComponents = DateComponents()
+//        dateComponents.year = 1970
+//        dateComponents.month = 1
+//        dateComponents.day = 1
+//        dateComponents.timeZone = TimeZone(abbreviation: "UTC")
+//        let date = Calendar.current.date(from: dateComponents)
+//        let timeSpan = Date().timeIntervalSince(date!)
+//        let totalSeconds = Int(timeSpan)
+//        return String(totalSeconds)
+        return String(Date().millisecondsSince1970 / 1000)
     }
     
     func fromDevice(device: AndroidDeviceModel) -> RequestMessageModel {
