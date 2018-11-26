@@ -15,7 +15,9 @@ struct FriendshipStatusModel: Codable {
     var isPrivate: Bool?
     var incomingRequest: Bool?
     var outgoingRequest: Bool?
-    var isBestie: Bool
+    var isBestie: Bool?
+    var muting: Bool?
+    var isMutingReel: Bool?
 }
 
 struct FollowResponseModel: Codable, BaseStatusResponseProtocol {
