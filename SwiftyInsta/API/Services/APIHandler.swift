@@ -14,7 +14,8 @@ protocol APIHandlerProtocol:
     FeedHandlerProtocol,
     MediaHandlerProtocol,
     MessageHandlerProtocol,
-    CommentHandlerProtocol {
+    CommentHandlerProtocol,
+    StoryHandlerProtocol {
 }
 
 class APIHandler: APIHandlerProtocol {
@@ -386,12 +387,52 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
+    func uploadVideo(video: InstaVideo?, imageTumbnail: InstaPhoto?, caption: String?, completion: @escaping (Bool) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.uploadVideo(video: nil, imageTumbnail: nil, caption: nil, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
 
         try MediaHandler.shared.deleteMedia(mediaId: mediaId, mediaType: mediaType, completion: { (result) in
+            completion(result)
+        })
+    }
+    
+    func getStoryFeed(completion: @escaping (Result<StoryFeedModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try StoryHandler.shared.getStoryFeed(completion: { (result) in
+            completion(result)
+        })
+    }
+    
+    func getUserStory(userId: Int, completion: @escaping (Result<TrayModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try StoryHandler.shared.getUserStory(userId: userId, completion: { (result) in
+            completion(result)
+        })
+    }
+    
+    func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try StoryHandler.shared.getUserStoryReelFeed(userId: userId, completion: { (result) in
             completion(result)
         })
     }

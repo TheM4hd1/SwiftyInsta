@@ -60,10 +60,11 @@ class SwiftyInstaTests: XCTestCase {
             if let err = err {
                 print(err.localizedDescription)
             } else {
-                // FIXME: 'test function' you want to run after login.
-                self.testUploadPhoto(handler: handler)
                 // FIXME: after the test is completed, the logout is handled by this variable.
                 self.logoutAfterTest = true
+                
+                // FIXME: 'test function' you want to run after login.
+                self.testGetUserStory(handler: handler)
             }
         }
     }
@@ -637,6 +638,23 @@ class SwiftyInstaTests: XCTestCase {
         }
     }
     
+    func testUploadVideo(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "testUploadVideo() faild during timeout")
+        
+        try! handler.uploadVideo(video: nil, imageTumbnail: nil, caption: nil, completion: { (result) in
+            exp.fulfill()
+        })
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
     // -------------------------------
     // MARK: - Message Handler Methods
     
@@ -875,6 +893,61 @@ class SwiftyInstaTests: XCTestCase {
                     print("[-] \(result.info.message)")
                 }
                 exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    // ------------------------------
+    // MARK: - Story Handler Methods
+    
+    func testGetStoryFeed(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "testGetStoryFeed() faild during timeout")
+        do {
+            try handler.getStoryFeed { (result) in
+                if result.isSucceeded {
+                    print("[+] available stories: \(result.value!.tray!.count)")
+                } else {
+                    print(result.info.message)
+                }
+                exp.fulfill()
+            }
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetUserStory(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "getUserStory() faild during timeout")
+        do {
+            try handler.getUser(username: "avant.seol", completion: { (user) in
+                    //handler.getUserStoryReelFeed
+                try? handler.getUserStory(userId: user.value!.pk!, completion: { (result) in
+                    exp.fulfill()
+                })
             })
         } catch {
             print("[-] \(error.localizedDescription)")
