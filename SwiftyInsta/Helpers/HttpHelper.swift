@@ -21,21 +21,23 @@ class HttpHelper {
     
     /// Only ```data: Data?``` or ```body: [String: Any]``` can use as ```httpBody```
     func sendAsync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String], data: Data? = nil, completion: @escaping completionHandler) {
-        var request = getDefaultRequest(for: url, method: method)
-        addHeaders(to: &request, header: header)
-        //addBody(to: &request, body: body)
-        
-        if let data = data {
-            request.httpBody = data
-        } else {
-            addBody(to: &request, body: body)
+        HandlerSettings.shared.queue!.asyncAfter(deadline: .now() + HandlerSettings.shared.delay!.random()) { [weak self] in
+            var request = self!.getDefaultRequest(for: url, method: method)
+            self!.addHeaders(to: &request, header: header)
+            //addBody(to: &request, body: body)
+            
+            if let data = data {
+                request.httpBody = data
+            } else {
+                self!.addBody(to: &request, body: body)
+            }
+            
+            let task = self!.session.dataTask(with: request) { (data, response, error) in
+                completion(data, response as? HTTPURLResponse, error)
+            }
+            
+            task.resume()
         }
-        
-        let task = session.dataTask(with: request) { (data, response, error) in
-            completion(data, response as? HTTPURLResponse, error)
-        }
-        
-        task.resume()
     }
     
     func sendSync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String]) -> (Data?, HTTPURLResponse?, Error?) {
