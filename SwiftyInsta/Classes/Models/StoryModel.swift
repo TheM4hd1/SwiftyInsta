@@ -35,3 +35,16 @@ struct StoryReelFeedModel: Codable, BaseStatusResponseProtocol {
     var reel: TrayModel?
     var status: String?
 }
+
+struct ConfigureStoryUploadModel: Codable {
+    var _uuid: String
+    var _uid: String
+    var _csrftoken: String
+    var source_type: String
+    var caption: String
+    var upload_id: String
+    //var edits
+    var disable_comments: Bool
+    var configure_mode: Int
+    var campera_position: String
+}

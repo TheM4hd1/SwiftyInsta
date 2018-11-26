@@ -387,15 +387,15 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func uploadVideo(video: InstaVideo?, imageTumbnail: InstaPhoto?, caption: String?, completion: @escaping (Bool) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
-        
-        try MediaHandler.shared.uploadVideo(video: nil, imageTumbnail: nil, caption: nil, completion: { (result) in
-            completion(result)
-        })
-    }
+//    func uploadVideo(video: InstaVideo?, imageTumbnail: InstaPhoto?, caption: String?, completion: @escaping (Bool) -> ()) throws {
+//        // validate before request.
+//        try validateUser()
+//        try validateLoggedIn()
+//
+//        try MediaHandler.shared.uploadVideo(video: nil, imageTumbnail: nil, caption: nil, completion: { (result) in
+//            completion(result)
+//        })
+//    }
     
     func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws {
         // validate before request.
@@ -433,6 +433,16 @@ class APIHandler: APIHandlerProtocol {
         try validateLoggedIn()
         
         try StoryHandler.shared.getUserStoryReelFeed(userId: userId, completion: { (result) in
+            completion(result)
+        })
+    }
+    
+    func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try StoryHandler.shared.uploadStoryPhoto(photo: photo, completion: { (result) in
             completion(result)
         })
     }

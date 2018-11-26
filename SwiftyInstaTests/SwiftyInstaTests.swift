@@ -638,22 +638,22 @@ class SwiftyInstaTests: XCTestCase {
         }
     }
     
-    func testUploadVideo(handler: APIHandlerProtocol) {
-        let exp = expectation(description: "testUploadVideo() faild during timeout")
-        
-        try! handler.uploadVideo(video: nil, imageTumbnail: nil, caption: nil, completion: { (result) in
-            exp.fulfill()
-        })
-        waitForExpectations(timeout: 60) { (err) in
-            if let err = err {
-                fatalError(err.localizedDescription)
-            }
-            
-            if self.logoutAfterTest {
-                self.testLogout(handler: handler)
-            }
-        }
-    }
+//    func testUploadVideo(handler: APIHandlerProtocol) {
+//        let exp = expectation(description: "testUploadVideo() faild during timeout")
+//
+//        try! handler.uploadVideo(video: nil, imageTumbnail: nil, caption: nil, completion: { (result) in
+//            exp.fulfill()
+//        })
+//        waitForExpectations(timeout: 60) { (err) in
+//            if let err = err {
+//                fatalError(err.localizedDescription)
+//            }
+//
+//            if self.logoutAfterTest {
+//                self.testLogout(handler: handler)
+//            }
+//        }
+//    }
     
     // -------------------------------
     // MARK: - Message Handler Methods
@@ -943,11 +943,25 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserStory(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserStory() faild during timeout")
         do {
-            try handler.getUser(username: "avant.seol", completion: { (user) in
-                    //handler.getUserStoryReelFeed
+            try handler.getUser(username: "username", completion: { (user) in
+                
+                // Test Get Story Reel
+//                try? handler.getUserStoryReelFeed(userId: user.value!.pk!, completion: { (result) in
+//                    exp.fulfill()
+//                })
+                
                 try? handler.getUserStory(userId: user.value!.pk!, completion: { (result) in
                     exp.fulfill()
                 })
+                
+                // Test Upload Photo Story
+//                let myBundle = Bundle.init(identifier: "com.TheM4hd1.SwiftyInsta")
+//                let imagePath = (myBundle?.path(forResource: "testbundle", ofType: "bundle"))! + "/1.jpg"
+//                let image = UIImage(contentsOfFile: imagePath)
+//                try? handler.uploadStoryPhoto(photo: InstaPhoto(image: image!, caption: "caption", width: 1, height: 1), completion: { (result) in
+//                    print(result.value!.status!)
+//                    exp.fulfill()
+//                })
             })
         } catch {
             print("[-] \(error.localizedDescription)")
