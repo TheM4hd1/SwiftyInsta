@@ -47,7 +47,7 @@ struct TrayModel: Codable {
     var canReply: Bool?
     var canReshare: Bool?
     var reelType: String?
-    var owner: UserShortModel?
+    var owner: OwnerModel?//UserShortModel?
     var user: UserModel?
     var items: [TrayItems]?
     var prefetchCount: Int?
@@ -92,7 +92,7 @@ struct TrayModel: Codable {
         canReply = try container.decodeIfPresent(Bool.self, forKey: .canReply)
         canReshare = try container.decodeIfPresent(Bool.self, forKey: .canReshare)
         reelType = try container.decodeIfPresent(String.self, forKey: .reelType)
-        owner = try container.decodeIfPresent(UserShortModel.self, forKey: .owner)
+        owner = try container.decodeIfPresent(OwnerModel.self, forKey: .owner)
         user = try container.decodeIfPresent(UserModel.self, forKey: .user)
         items = try container.decodeIfPresent([TrayItems].self, forKey: .items)
         prefetchCount = try container.decodeIfPresent(Int.self, forKey: .prefetchCount)
@@ -101,5 +101,36 @@ struct TrayModel: Codable {
         seenRankedPosition = try container.decodeIfPresent(Int.self, forKey: .seenRankedPosition)
         sourceToken = try container.decodeIfPresent(String.self, forKey: .sourceToken)
         
+    }
+}
+
+struct OwnerModel: Codable {
+    var type: String?
+    var pk: String?
+    var profilePicUrl: String?
+    var profilePicUsername: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case type = "type"
+        case pk = "pk"
+        case profilePicUrl = "profile_pic_url"
+        case profilePicUsername = "profile_pic_username"
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let value = try? container.decodeIfPresent(Int.self, forKey: .pk) {
+            if value != nil {
+                pk = String(value!)
+            } else {
+                pk = try container.decode(String.self, forKey: .pk)
+            }
+        } else {
+            pk = try container.decode(String.self, forKey: .pk)
+        }
+        
+        type = try container.decodeIfPresent(String.self, forKey: .type)
+        profilePicUrl = try container.decodeIfPresent(String.self, forKey: .profilePicUrl)
+        profilePicUsername = try container.decodeIfPresent(String.self, forKey: .profilePicUsername)
     }
 }

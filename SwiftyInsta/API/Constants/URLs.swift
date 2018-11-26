@@ -61,6 +61,10 @@ struct URLs {
     private static let postComment = "/media/%@/comment/"
     private static let deleteComment = "/media/%@/comment/%@/delete/"
     private static let deleteMedia = "/media/%@/delete/?media_type=%@"
+    private static let uploadVideo = "/upload/video/"
+    private static let storyFeed = "/feed/reels_tray/"
+    private static let userStory = "/feed/user/%ld/reel_media/"
+    private static let userStoryFeed = "/feed/user/%ld/story/"
     
     // MARK: - Methods
     
@@ -418,5 +422,35 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for delete media.")
+    }
+    
+    static func getUploadVideoUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, uploadVideo)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for upload video.")
+    }
+    
+    static func getStoryFeedUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, storyFeed)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for get stories feed.")
+    }
+    
+    static func getUserStoryUrl(userId: Int) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userStory, userId))) {
+            return url
+        } else {
+            throw CustomErrors.urlCreationFaild("Cant create URL for get user story.")
+        }
+    }
+    
+    static func getUserStoryFeed(userId: Int) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userStoryFeed, userId))) {
+            return url
+        } else {
+            throw CustomErrors.urlCreationFaild("Cant create URL for get user story feed.")
+        }
     }
 }
