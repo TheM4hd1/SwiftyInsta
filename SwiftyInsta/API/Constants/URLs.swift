@@ -68,6 +68,9 @@ struct URLs {
     private static let configureStory = "/media/configure_to_reel/"
     private static let editProfile = "/accounts/current_user/?edit=true"
     private static let saveEditProfile = "/accounts/edit_profile/"
+    private static let editBiography = "/accounts/set_biography/"
+    private static let removeProfilePicture = "/accounts/remove_profile_picture/"
+    private static let changeProfilePicture = "/accounts/change_profile_picture/"
     
     // MARK: - Methods
     
@@ -476,5 +479,26 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for editing profile.")
+    }
+    
+    static func getEditBiographyUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, editBiography)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for editing biography.")
+    }
+    
+    static func getRemoveProfilePictureUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, removeProfilePicture)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for removing profile picture.")
+    }
+    
+    static func getChangeProfilePictureUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, changeProfilePicture)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for changing profile picture.")
     }
 }

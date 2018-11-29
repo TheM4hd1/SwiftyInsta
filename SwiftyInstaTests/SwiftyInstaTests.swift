@@ -64,7 +64,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testEditBiography(handler: handler)
+                self.testUploadProfilePicture(handler: handler)
             }
         }
     }
@@ -942,6 +942,36 @@ class SwiftyInstaTests: XCTestCase {
         do {
             try handler.editBiography(text: "Private Instagram API Library", completion: { (result) in
                 print("bio changed: \(result.value!)")
+                exp.fulfill()
+            })
+        } catch {
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testUploadProfilePicture(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "testUploadProfilePicture() faild during timeout")
+        let myBundle = Bundle.init(identifier: "com.TheM4hd1.SwiftyInsta")
+        let imagePath = (myBundle?.path(forResource: "testbundle", ofType: "bundle"))! + "/1.jpg"
+        
+        do {
+            let image = UIImage(contentsOfFile: imagePath)
+            try handler.uploadProfilePicture(photo: InstaPhoto(image: image!, caption: "", width: 0, height: 0), completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] uploaded: true")
+                } else {
+                    print("[-] \(result.info.message)")
+                }
                 exp.fulfill()
             })
         } catch {

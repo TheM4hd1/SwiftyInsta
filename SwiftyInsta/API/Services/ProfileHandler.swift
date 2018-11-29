@@ -15,6 +15,7 @@ protocol ProfileHandlerProtocol {
     func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws
     func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws
     func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws
+    func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (Result<EditProfileModel>) -> ()) throws
 }
 
 class ProfileHandler: ProfileHandlerProtocol {
@@ -242,6 +243,51 @@ class ProfileHandler: ProfileHandlerProtocol {
                     }
                 } else {
                     completion(Return.fail(error: nil, response: .unknown, value: nil))
+                }
+            }
+        }
+    }
+    
+    func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+        let uploadId = HandlerSettings.shared.request!.generateUploadId()
+        var content = Data()
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"upload_id\"\n\n")
+        content.append(string: "\(uploadId)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\n\n")
+        content.append(string: "\(HandlerSettings.shared.device!.deviceGuid.uuidString)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\n\n")
+        content.append(string: "\(HandlerSettings.shared.user!.csrfToken)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Transfer-Encoding: binary\n")
+        content.append(string: "Content-Type: application/octet-stream\n")
+        content.append(string: "Content-Disposition: form-data; name=\"profile_pic\"; filename=r\(uploadId).jpg; filename*=utf-8''r\(uploadId).jpg\n\n")
+        
+        let imageData = photo.image.jpegData(compressionQuality: 1)
+        
+        content.append(imageData!)
+        content.append(string: "\n--\(uploadId)--\n\n")
+        
+        let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getChangeProfilePictureUrl(), body: [:], header: header, data: content) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(EditProfileModel.self, from: data)
+                        completion(Return.success(value: value))
+                    } catch {
+                        completion(Return.fail(error: error, response: .ok, value: nil))
+                    }
                 }
             }
         }

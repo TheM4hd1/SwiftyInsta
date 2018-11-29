@@ -477,6 +477,16 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
+    func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try ProfileHandler.shared.uploadProfilePicture(photo: photo, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     fileprivate func validateUser() throws {
         if HandlerSettings.shared.user!.username.isEmpty || HandlerSettings.shared.user!.password.isEmpty {
             throw CustomErrors.runTimeError("username and password must be specified.")
