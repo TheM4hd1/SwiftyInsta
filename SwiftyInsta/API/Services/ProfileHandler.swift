@@ -14,6 +14,7 @@ protocol ProfileHandlerProtocol {
     func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
     func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws
     func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws
+    func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws
 }
 
 class ProfileHandler: ProfileHandlerProtocol {
@@ -210,6 +211,37 @@ class ProfileHandler: ProfileHandlerProtocol {
                     }
                 } else {
                     completion(Return.fail(error: nil, response: .unknown, value: false))
+                }
+            }
+        }
+    }
+    
+    func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+        let content = [
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
+            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString
+        ]
+        
+        let header = ["Host": "i.instagram.com"]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getRemoveProfilePictureUrl(), body: content, header: header) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if response?.statusCode == 200 {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let value = try decoder.decode(EditProfileModel.self, from: data)
+                            completion(Return.success(value: value))
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil))
+                        }
+                    }
+                } else {
+                    completion(Return.fail(error: nil, response: .unknown, value: nil))
                 }
             }
         }

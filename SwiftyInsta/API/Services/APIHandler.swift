@@ -467,6 +467,16 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
+    func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try ProfileHandler.shared.removeProfilePicture(completion: { (result) in
+            completion(result)
+        })
+    }
+    
     fileprivate func validateUser() throws {
         if HandlerSettings.shared.user!.username.isEmpty || HandlerSettings.shared.user!.password.isEmpty {
             throw CustomErrors.runTimeError("username and password must be specified.")
