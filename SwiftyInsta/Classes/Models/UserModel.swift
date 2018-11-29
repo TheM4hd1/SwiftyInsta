@@ -22,6 +22,8 @@ struct UserModel: Codable, UserShortProtocol {
     var phoneNumber: String?
     var reelAutoArchive: String?
     var byline: String?
+    var externalUrl: String?
+    var email: String?
     var hasAnonymousProfilePicture: Bool?
     var isBusiness: Bool?
     var canBoostPost: Bool?

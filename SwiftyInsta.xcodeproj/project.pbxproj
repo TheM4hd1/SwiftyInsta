@@ -25,6 +25,8 @@
 		114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */; };
 		114B848421871E9B00F84161 /* PhoneVerificationSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */; };
 		114B84862187200500F84161 /* ChallengeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B84852187200500F84161 /* ChallengeModel.swift */; };
+		115CA6DD21AFFB2700769B00 /* GenderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DC21AFFB2700769B00 /* GenderTypes.swift */; };
+		115CA6DF21B0214800769B00 /* EditProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DE21B0214800769B00 /* EditProfileModel.swift */; };
 		115F1211217FDD8B00ED3530 /* SwiftyInsta.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 115F1207217FDD8B00ED3530 /* SwiftyInsta.framework */; };
 		115F1216217FDD8B00ED3530 /* SwiftyInstaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1215217FDD8B00ED3530 /* SwiftyInstaTests.swift */; };
 		115F1218217FDD8B00ED3530 /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -108,6 +110,8 @@
 		114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLoginInfoModel.swift; sourceTree = "<group>"; };
 		114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneVerificationSettingsModel.swift; sourceTree = "<group>"; };
 		114B84852187200500F84161 /* ChallengeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeModel.swift; sourceTree = "<group>"; };
+		115CA6DC21AFFB2700769B00 /* GenderTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenderTypes.swift; sourceTree = "<group>"; };
+		115CA6DE21B0214800769B00 /* EditProfileModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileModel.swift; sourceTree = "<group>"; };
 		115F1207217FDD8B00ED3530 /* SwiftyInsta.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		115F120A217FDD8B00ED3530 /* SwiftyInsta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftyInsta.h; sourceTree = "<group>"; };
 		115F120B217FDD8B00ED3530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -323,6 +327,7 @@
 				1135EA5F219B5C2D00DCB739 /* CommentModel.swift */,
 				11B8518E219F5208009527CD /* UploadMediaModel.swift */,
 				11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */,
+				115CA6DE21B0214800769B00 /* EditProfileModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -344,6 +349,7 @@
 				1104CD082180621400F855BA /* HTTPMethods.swift */,
 				1143E0C721809E7700D9FF31 /* ResponseTypes.swift */,
 				116C3F3A21A6EBE5003084DD /* MediaTypes.swift */,
+				115CA6DC21AFFB2700769B00 /* GenderTypes.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -508,6 +514,7 @@
 				117E65A221962ED5004626CC /* UserFeedModel.swift in Sources */,
 				114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */,
 				11A95BEF21AC0B9800839250 /* StoryHandler.swift in Sources */,
+				115CA6DF21B0214800769B00 /* EditProfileModel.swift in Sources */,
 				114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */,
 				1135EA60219B5C2D00DCB739 /* CommentModel.swift in Sources */,
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
@@ -559,6 +566,7 @@
 				11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */,
 				11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */,
 				11AE440921A99CD400BD9EFB /* MediaHandler.swift in Sources */,
+				115CA6DD21AFFB2700769B00 /* GenderTypes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

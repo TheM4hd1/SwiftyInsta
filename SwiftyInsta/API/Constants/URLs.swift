@@ -66,6 +66,8 @@ struct URLs {
     private static let userStory = "/feed/user/%ld/reel_media/"
     private static let userStoryFeed = "/feed/user/%ld/story/"
     private static let configureStory = "/media/configure_to_reel/"
+    private static let editProfile = "/accounts/current_user/?edit=true"
+    private static let saveEditProfile = "/accounts/edit_profile/"
     
     // MARK: - Methods
     
@@ -460,5 +462,19 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for configuring story.")
+    }
+    
+    static func getEditProfileUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, editProfile)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for editing profile.")
+    }
+    
+    static func getSaveEditProfileUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, saveEditProfile)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for editing profile.")
     }
 }

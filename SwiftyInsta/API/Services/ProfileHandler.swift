@@ -12,6 +12,7 @@ protocol ProfileHandlerProtocol {
     func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
     func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
     func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
+    func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws
 }
 
 class ProfileHandler: ProfileHandlerProtocol {
@@ -120,4 +121,63 @@ class ProfileHandler: ProfileHandlerProtocol {
         }
     }
 
+    func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String = "", completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getEditProfileUrl(), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if response?.statusCode == 200 {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let user = try decoder.decode(EditProfileModel.self, from: data)
+                            if user.status! == "ok" {
+                                let _name = name.isEmpty ? user.user!.fullName!: name
+                                let _biography = biography.isEmpty ? user.user!.biography!: biography
+                                let _url = url.isEmpty ? user.user!.externalUrl!: url
+                                let _email = email.isEmpty ? user.user!.email!: email
+                                let _phone = phone.isEmpty ? user.user!.phoneNumber!: phone
+                                let _username = newUsername.isEmpty ? user.user!.username!: newUsername
+                                
+                                let content = [
+                                    "external_url": _url,
+                                    "gender": gender.rawValue,
+                                    "phone_number": _phone,
+                                    "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+                                    "username": _username,
+                                    "first_name": _name,
+                                    "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
+                                    "biography": _biography,
+                                    "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+                                    "email": _email
+                                ]
+                                
+                                let header = ["Host": "i.instagram.com"]
+                                HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try! URLs.getSaveEditProfileUrl(), body: content, header: header, completion: { (data, response, error) in
+                                    if let error = error {
+                                        completion(Return.fail(error: error, response: .fail, value: nil))
+                                    } else {
+                                        if let data = data {
+                                            if response?.statusCode == 200 {
+                                                let value = try? decoder.decode(EditProfileModel.self, from: data)
+                                                completion(Return.success(value: value))
+                                            } else {
+                                                completion(Return.fail(error: nil, response: .unknown, value: nil))
+                                            }
+                                        }
+                                    }
+                                })
+                            } else {
+                                completion(Return.fail(error: nil, response: .unknown, value: nil))
+                            }
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 }

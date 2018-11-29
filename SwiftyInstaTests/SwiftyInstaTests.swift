@@ -44,7 +44,7 @@ class SwiftyInstaTests: XCTestCase {
                 if result.isSucceeded {
                     print("[+]: logged in")
                 } else {
-                    print("[-] Login failed: \(result.info.message)")
+                    print("[-] Login failed: \(result.info.error)")
                 }
                 exp.fulfill()
             }
@@ -64,7 +64,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testGetUserStory(handler: handler)
+                self.testEditProfile(handler: handler)
             }
         }
     }
@@ -891,6 +891,33 @@ class SwiftyInstaTests: XCTestCase {
                     print("[+] password changed.")
                 } else {
                     print("[-] \(result.info.message)")
+                }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testEditProfile(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "testEditProfile() faild during timeout")
+        do {
+            try handler.editProfile(name: "SwiftyInstaa", biography: "Private and Tokenless Instagram Library", url: "https://github.com/TheM4hd1/SwiftyInsta", email: "swiftyinsta@github.com", phone: "", gender: .male, newUsername: "", completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] profile edited.")
+                } else {
+                    print("[-] fail to edit profile: \(result.info.error)")
                 }
                 exp.fulfill()
             })
