@@ -457,6 +457,16 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
+    func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try ProfileHandler.shared.editBiography(text: bio, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     fileprivate func validateUser() throws {
         if HandlerSettings.shared.user!.username.isEmpty || HandlerSettings.shared.user!.password.isEmpty {
             throw CustomErrors.runTimeError("username and password must be specified.")

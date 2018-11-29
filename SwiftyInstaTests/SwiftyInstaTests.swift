@@ -64,7 +64,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testEditProfile(handler: handler)
+                self.testEditBiography(handler: handler)
             }
         }
     }
@@ -923,6 +923,28 @@ class SwiftyInstaTests: XCTestCase {
             })
         } catch {
             print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testEditBiography(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "testEditBiographyc() faild during timeout")
+        do {
+            try handler.editBiography(text: "Private Instagram API Library", completion: { (result) in
+                print("bio changed: \(result.value!)")
+                exp.fulfill()
+            })
+        } catch {
             exp.fulfill()
         }
         

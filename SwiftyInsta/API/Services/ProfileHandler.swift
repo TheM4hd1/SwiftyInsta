@@ -13,6 +13,7 @@ protocol ProfileHandlerProtocol {
     func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
     func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
     func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws
+    func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws
 }
 
 class ProfileHandler: ProfileHandlerProtocol {
@@ -180,4 +181,37 @@ class ProfileHandler: ProfileHandlerProtocol {
         }
     }
     
+    func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws {
+        let content = [
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
+            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "raw_text": bio
+        ]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getEditBiographyUrl(), body: content, header: [:]) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: false))
+            } else {
+                if response?.statusCode == 200 {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let status = try decoder.decode(BaseStatusResponseModel.self, from: data)
+                            if status.isOk() {
+                                completion(Return.success(value: true))
+                            } else {
+                                completion(Return.fail(error: error, response: .ok, value: false))
+                            }
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: false))
+                        }
+                    }
+                } else {
+                    completion(Return.fail(error: nil, response: .unknown, value: false))
+                }
+            }
+        }
+    }
 }
