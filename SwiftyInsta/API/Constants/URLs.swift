@@ -501,4 +501,21 @@ struct URLs {
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for changing profile picture.")
     }
+    
+    static func getChallengeLoginUrl(url: String, guid: String, deviceId: String) throws -> URL {
+        if let url = URL(string: url) {
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            let queries = [URLQueryItem(name: "guid", value: guid), URLQueryItem(name: "device_id", value: deviceId)]
+            urlComponent?.queryItems = queries
+            return (urlComponent?.url)!
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for challenge login.")
+    }
+    
+    static func getVerifyLoginUrl(challenge: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, challenge)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for verify login.")
+    }
 }

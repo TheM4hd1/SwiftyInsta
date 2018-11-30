@@ -41,6 +41,39 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
+    func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws {
+        if HandlerSettings.shared.challenge == nil {
+            let error = CustomErrors.runTimeError("challenge require info is empty.\r\ntry to call login function first.")
+            completion(Return.fail(error: error, response: .challengeRequired, value: nil))
+        } else {
+            try UserHandler.shared.challengeLogin(completion: { (result) in
+                completion(result)
+            })
+        }
+    }
+    
+    func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) -> ()) throws {
+        if HandlerSettings.shared.challenge == nil {
+            let error = CustomErrors.runTimeError("challenge require info is empty.\r\ntry to call login function first.")
+            completion(Return.fail(error: error, response: .challengeRequired, value: nil))
+        } else {
+            try UserHandler.shared.verifyMethod(of: type, completion: { (result) in
+                completion(result)
+            })
+        }
+    }
+    
+    func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>) -> ()) throws {
+        if HandlerSettings.shared.challenge == nil {
+            let error = CustomErrors.runTimeError("challenge require info is empty.\r\ntry to call login function first.")
+            completion(Return.fail(error: error, response: .challengeRequired, value: .challengeRequired))
+        } else {
+            try UserHandler.shared.sendVerifyCode(securityCode: securityCode, completion: { (result) in
+                completion(result)
+            })
+        }
+    }
+    
     func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
         try UserHandler.shared.createAccount(account: account) { (result) in
             completion(result)

@@ -11,6 +11,8 @@ import Foundation
 enum ResponseTypes {
     case unknown
     case loginRequired
+    case challengeRequired
+    case verifyMethodRequired
     case requestLimit
     case ok
     case wrongRequest

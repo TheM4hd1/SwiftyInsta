@@ -14,6 +14,7 @@ enum LoginResultModel {
     case invalidUser
     case twoFactorRequired
     case challengeRequired
+    case badSecurityCode
     case exception
     case responseError
 }

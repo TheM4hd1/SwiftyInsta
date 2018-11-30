@@ -38,13 +38,14 @@ class SwiftyInstaTests: XCTestCase {
         let exp = expectation(description: "login() faild during timeout")
         let user = SessionStorage.create(username: "swiftyinsta", password: "qqqqqqq")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
-        
+        var _error: Error?
         do {
             try handler.login { (result) in
                 if result.isSucceeded {
                     print("[+]: logged in")
                 } else {
                     print("[-] Login failed: \(result.info.error)")
+                    _error = result.info.error
                 }
                 exp.fulfill()
             }
@@ -59,12 +60,53 @@ class SwiftyInstaTests: XCTestCase {
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {
                 print(err.localizedDescription)
-            } else {
+            } else if _error != nil {
+                switch _error! {
+                case CustomErrors.challengeRequired:
+                    self.testLoginWithChallenge(handler: handler)
+                default:
+                    print("[-] unexcpected error.")
+                }
+            }else {
                 // FIXME: after the test is completed, the logout is handled by this variable.
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
                 self.testUploadProfilePicture(handler: handler)
+            }
+        }
+    }
+    
+    func testLoginWithChallenge(handler: APIHandlerProtocol) {
+        print("[+] trying to loggin with challenge.")
+        let exp = expectation(description: "login() faild during timeout")
+        do {
+            // to test run this test, you need to set breakpoints at line 91 after you got the codeSent result,
+            // change the value of 'securityCode' variable to recieved security code and continue the test.
+            try handler.challengeLogin(completion: { (result) in
+                print(result.value!)
+                try! handler.verifyMethod(of: .email, completion: { (result) in
+                    print(result.value!)
+                    let securityCode = "847159"
+                    // Breakpoint Here, to variable from debugger type: e securityCode = "new code"
+                    try! handler.sendVerifyCode(securityCode: securityCode, completion: { (result) in
+                        print(result.value!)
+                        exp.fulfill()
+                    })
+                })
+            })
+        } catch {
+            print(error.localizedDescription)
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
             }
         }
     }

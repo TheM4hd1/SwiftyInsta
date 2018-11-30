@@ -11,6 +11,9 @@ import Foundation
 protocol UserHandlerProtocol {
     func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws
+    func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws
+    func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) ->()) throws
+    func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>) -> ()) throws
     func logout(completion: @escaping (Result<Bool>) -> ()) throws
     func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws
     func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws
@@ -76,7 +79,7 @@ class UserHandler: UserHandlerProtocol {
                             if response?.statusCode != 200 {
                                 do {
                                     let loginFailReason = try decoder.decode(LoginBaseResponseModel.self, from: data)
-                                    if loginFailReason.invalidCredentials ?? false {
+                                    if loginFailReason.invalidCredentials ?? false || loginFailReason.errorType! == "bad_password" {
                                         let value = (loginFailReason.errorType == "bad_password" ? LoginResultModel.badPassword : LoginResultModel.invalidUser)
                                         completion(Return.fail(error: CustomErrors.invalidCredentials, response: .fail, value: value))
                                         
@@ -84,7 +87,7 @@ class UserHandler: UserHandlerProtocol {
                                         HandlerSettings.shared.twoFactor = loginFailReason.twoFactorInfo
                                         completion(Return.fail(error: CustomErrors.twoFactorAuthentication, response: .ok, value: .twoFactorRequired))
                                         
-                                    } else if loginFailReason.checkpointChallengeRequired ?? false {
+                                    } else if loginFailReason.checkpointChallengeRequired ?? false || loginFailReason.errorType! == "checkpoint_challenge_required" {
                                         HandlerSettings.shared.challenge = loginFailReason.challenge
                                         completion(Return.fail(error: CustomErrors.challengeRequired, response: .ok, value: .challengeRequired))
                                     } else {
@@ -108,6 +111,92 @@ class UserHandler: UserHandlerProtocol {
                         }
                     }
                 })
+            }
+        }
+    }
+    
+    func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws {
+        let url = URL(string: HandlerSettings.shared.challenge!.url)!
+        let content = [
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "device_id": HandlerSettings.shared.device!.deviceId
+            //"choice": "1"
+        ]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: .fail))
+            } else {
+                if response?.statusCode == 200 {
+                    if let data = data {
+                        if String(data: data, encoding: .utf8)!.contains("security code to verify your account") {
+                            completion(Return.success(value: .verifyMethodRequired))
+                        }
+                    }
+                } else {
+                    completion(Return.fail(error: nil, response: .wrongRequest, value: .wrongRequest))
+                }
+            }
+        }
+    }
+    
+    func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) -> ()) throws {
+        let url = URL(string: HandlerSettings.shared.challenge!.url)!
+        let content = [
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "device_id": HandlerSettings.shared.device!.deviceId,
+            "choice": type.rawValue
+        ]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if let data = data {
+                    if String(data: data, encoding: .utf8)!.contains("Enter Security Code") {
+                        completion(Return.success(value: .codeSent))
+                    } else {
+                        completion(Return.fail(error: nil, response: .ok, value: .badChoice))
+                    }
+                }
+            }
+        }
+    }
+    
+    func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>) -> ()) throws {
+        let body: [String: Any] = [
+            "security_code": securityCode,
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "device_id": HandlerSettings.shared.device!.deviceId
+        ]
+
+        let header = ["Host": "i.instagram.com"]
+        let url = try URLs.getVerifyLoginUrl(challenge: HandlerSettings.shared.challenge!.apiPath)
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: body, header: header) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: .responseError))
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let loginInfo = try decoder.decode(LoginResponseModel.self, from: data)
+                        if loginInfo.status! == "ok" {
+                            HandlerSettings.shared.user!.loggedInUser = loginInfo.loggedInUser
+                            HandlerSettings.shared.isUserAuthenticated = (loginInfo.loggedInUser.username?.lowercased() == HandlerSettings.shared.user!.username.lowercased())
+                            HandlerSettings.shared.user!.rankToken = "\(HandlerSettings.shared.user!.loggedInUser.pk ?? 0)_\(HandlerSettings.shared.request!.phoneId )"
+                            completion(Return.success(value: .success))
+                        } else {
+                            let error = CustomErrors.runTimeError("Please check the code we sent you and try again.")
+                            completion(Return.fail(error: error, response: .fail, value: .badSecurityCode))
+                        }
+                    } catch {
+                        completion(Return.fail(error: error, response: .ok, value: .exception))
+                    }
+                }
             }
         }
     }
