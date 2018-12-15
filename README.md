@@ -1,12 +1,12 @@
 ![Logo](https://github.com/mgp25/Instagram-API/raw/master/examples/assets/instagram.png) 
-## Instagram APIs
+## About Instagram APIs
 
-Instagram offers two kind of APIs for developers. The [Official API](https://www.instagram.com/developer/) and [Unofficial API](https://github.com/TheM4hd1/SwiftyInsta/blob/master/SwiftyInsta/API/Constants/URLs.swift).
+Instagram offers two kind of APIs for developers. The [Official API](https://www.instagram.com/developer/) and **[Unofficial API](https://github.com/TheM4hd1/SwiftyInsta/blob/master/SwiftyInsta/API/Constants/URLs.swift)**.
 
-They both have pros and cons, the private api is a tokenless api which means it doesn't require any token or app registration in Instagram system.<br></br>
+They both have pros and cons, **the private api is a tokenless api** which means it doesn't require any token or app registration in Instagram system.<br></br>
 But you should know that its not authorized, maintained, sponsored or endorsed by Instagram.
 
-## SwiftyInsta
+## SwiftyInsta, Tokenless Instagram API
 
 SwiftyInsta allows you to build your own customized Instagram client or Bot. It is 100% open for all developers who wish to create applications on Instagram platform.
 
