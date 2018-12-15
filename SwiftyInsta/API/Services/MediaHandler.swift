@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol MediaHandlerProtocol {
+public protocol MediaHandlerProtocol {
     func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
     func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws
     func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws

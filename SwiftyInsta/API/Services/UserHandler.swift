@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol UserHandlerProtocol {
+public protocol UserHandlerProtocol {
     func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws
     func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws
     func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws

@@ -39,7 +39,7 @@ struct CandidatesModel: Codable {
  We need to manually decode this model.
  the reason is sometimes the 'id' is Integer and sometimes its String.
  */
-struct TrayModel: Codable {
+public struct TrayModel: Codable {
     var id: String?
     var latestReelMedia: Int?
     var expiringAt: Int?
@@ -74,7 +74,7 @@ struct TrayModel: Codable {
         case sourceToken = "source_token"
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(Int.self, forKey: .id) {
             if let value = value {

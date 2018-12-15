@@ -15,7 +15,7 @@ protocol RecipientProtocol {
     var rankToken: String? {get}
 }
 
-struct RankedRecipientsModel: Codable, BaseStatusResponseProtocol, RecipientProtocol {
+public struct RankedRecipientsModel: Codable, BaseStatusResponseProtocol, RecipientProtocol {
     var rankedRecipients: [RecipientItemModel]?
     var expires: Int?
     var filtered: Bool?
@@ -24,7 +24,7 @@ struct RankedRecipientsModel: Codable, BaseStatusResponseProtocol, RecipientProt
     var status: String?
 }
 
-struct RecentRecipientsModel: Codable, BaseStatusResponseProtocol, RecipientProtocol {
+public struct RecentRecipientsModel: Codable, BaseStatusResponseProtocol, RecipientProtocol {
     var recentRecipients: [RecipientItemModel]?
     var expires: Int?
     var filtered: Bool?

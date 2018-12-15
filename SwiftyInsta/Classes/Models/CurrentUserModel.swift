@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CurrentUser: Codable, UserShortProtocol {
+public struct CurrentUser: Codable, UserShortProtocol {
     var isVerified: Bool?
     var isPrivate: Bool?
     var pk: Int?
@@ -29,7 +29,7 @@ struct CurrentUser: Codable, UserShortProtocol {
     var hdProfilePicUrlInfo: ProfilePicVersionsModel?
 }
 
-struct CurrentUserModel: Codable, BaseStatusResponseProtocol {
+public struct CurrentUserModel: Codable, BaseStatusResponseProtocol {
     var user: CurrentUser
     var status: String?
 }

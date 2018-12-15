@@ -48,7 +48,7 @@ struct CarouselMedia: Codable {
     var carouselParentId: String?
 }
 
-struct MediaModel: Codable, MediaModelProtocol {
+public struct MediaModel: Codable, MediaModelProtocol {
     var takenAt: Int?
     var pk: Int?
     var id: String?
@@ -92,7 +92,7 @@ struct MediaModel: Codable, MediaModelProtocol {
     //var topLikers: [UserShortModel]?
 }
 
-struct DeleteMediaResponse: Codable, BaseStatusResponseProtocol {
+public struct DeleteMediaResponse: Codable, BaseStatusResponseProtocol {
     var did_delete: Bool?
     var status: String?
 }

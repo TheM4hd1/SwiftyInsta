@@ -21,7 +21,7 @@ struct CommentModel: Codable {
     var commentLikeCount: Int?
 }
 
-struct MediaCommentsResponseModel: Codable, BaseStatusResponseProtocol {
+public struct MediaCommentsResponseModel: Codable, BaseStatusResponseProtocol {
     var commentLikesEnabled: Bool?
     var comments: [CommentModel]?
     var commentCount: Int?
@@ -33,7 +33,7 @@ struct MediaCommentsResponseModel: Codable, BaseStatusResponseProtocol {
     var status: String?
 }
 
-struct CommentResponse: Codable, BaseStatusResponseProtocol {
+public struct CommentResponse: Codable, BaseStatusResponseProtocol {
     var comment: CommentModel?
     var status: String?
 }

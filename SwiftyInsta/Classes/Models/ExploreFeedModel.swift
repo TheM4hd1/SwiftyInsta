@@ -15,7 +15,7 @@ protocol FeedProtocol {
     var numResults: Int? {get}
 }
 
-struct ExploreFeedModel: Codable, FeedProtocol, BaseStatusResponseProtocol {
+public struct ExploreFeedModel: Codable, FeedProtocol, BaseStatusResponseProtocol {
     var rankToken: String?
     var autoLoadMoreEnabled: Bool?
     var moreAvailable: Bool?

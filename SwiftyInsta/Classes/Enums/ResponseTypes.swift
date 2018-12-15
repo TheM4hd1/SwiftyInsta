@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ResponseTypes {
+public enum ResponseTypes {
     case unknown
     case loginRequired
     case challengeRequired

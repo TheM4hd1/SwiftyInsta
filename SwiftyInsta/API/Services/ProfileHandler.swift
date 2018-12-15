@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol ProfileHandlerProtocol {
+public protocol ProfileHandlerProtocol {
     func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
     func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
     func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws

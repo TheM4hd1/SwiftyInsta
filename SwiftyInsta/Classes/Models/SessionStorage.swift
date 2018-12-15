@@ -8,15 +8,16 @@
 
 import Foundation
 
-struct SessionStorage: Codable {
-    var username: String
-    var password: String
-    var csrfToken: String
-    var rankToken: String
-    var loggedInUser: UserShortModel
+public struct SessionStorage: Codable {
+    public var username: String
+    public var password: String
+    public var csrfToken: String
+    public var rankToken: String
+    public var loggedInUser: UserShortModel
+    
     
     /// Leave blank if you don't want to login.
-    static func create(username: String, password: String) -> SessionStorage {
+    public static func create(username: String, password: String) -> SessionStorage {
         return SessionStorage(
             username: username,
             password: password,

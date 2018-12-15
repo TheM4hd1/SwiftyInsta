@@ -8,14 +8,14 @@
 
 import Foundation
 
-protocol APIBuilderProtocol {
+public protocol APIBuilderProtocol {
     func setUser(user: SessionStorage) -> APIBuilderProtocol
     func setHttpHandler(config: URLSessionConfiguration) -> APIBuilderProtocol
     func setRequestDelay(delay: DelayModel) -> APIBuilderProtocol
     func build() throws -> APIHandlerProtocol
 }
 
-class APIBuilder: APIBuilderProtocol {
+public class APIBuilder: APIBuilderProtocol {
     
     private var _delay: DelayModel?
     private var _user: SessionStorage?
@@ -23,26 +23,30 @@ class APIBuilder: APIBuilderProtocol {
     private var _request: RequestMessageModel?
     private var _config: URLSessionConfiguration?
     
-    func createBuilder() -> APIBuilderProtocol {
+    public init() {
+        
+    }
+    
+    public func createBuilder() -> APIBuilderProtocol {
         return APIBuilder()
     }
     
-    func setUser(user: SessionStorage) -> APIBuilderProtocol {
+    public func setUser(user: SessionStorage) -> APIBuilderProtocol {
         _user = user
         return self
     }
     
-    func setHttpHandler(config: URLSessionConfiguration) -> APIBuilderProtocol {
+    public func setHttpHandler(config: URLSessionConfiguration) -> APIBuilderProtocol {
         _config = config
         return self
     }
     
-    func setRequestDelay(delay: DelayModel) -> APIBuilderProtocol {
+    public func setRequestDelay(delay: DelayModel) -> APIBuilderProtocol {
         _delay = delay
         return self
     }
     
-    func build() throws -> APIHandlerProtocol {
+    public func build() throws -> APIHandlerProtocol {
         guard let user = _user else {
             throw CustomErrors.runTimeError("User auth data must be specified.")
         }

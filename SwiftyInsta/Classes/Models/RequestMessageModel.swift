@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RequestMessageModel: Codable {
+public struct RequestMessageModel: Codable {
     var phoneId: String
     var username: String
     var guid: UUID

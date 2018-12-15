@@ -8,12 +8,12 @@
 
 import Foundation
 
-enum VerifyTypes: String {
+public enum VerifyTypes: String {
     case email = "1"
     case sms = "0"
 }
 
-enum VerifyResponse {
+public enum VerifyResponse {
     case codeSent
     case badChoice
 }

@@ -14,7 +14,7 @@ protocol ResultProtocol {
     var info: ResultInfo { get }
 }
 
-struct Result<Element>: ResultProtocol {
+public struct Result<Element>: ResultProtocol {
     typealias type = Element
     var isSucceeded: Bool
     var info: ResultInfo

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct AndroidDeviceModel {
+public struct AndroidDeviceModel {
     var phoneGuid: UUID
     var deviceGuid: UUID
     var googleAdId: UUID?

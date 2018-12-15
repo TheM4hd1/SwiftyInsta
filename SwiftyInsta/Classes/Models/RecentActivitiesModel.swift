@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RecentActivitiesModel: Codable, BaseStatusResponseProtocol {
+public struct RecentActivitiesModel: Codable, BaseStatusResponseProtocol {
     var aymf: AymfItemModel?
     var counts: CountsModel?
     var friendRequestStories: [RecentActivityStoryModel]?
@@ -18,7 +18,7 @@ struct RecentActivitiesModel: Codable, BaseStatusResponseProtocol {
     var status: String?
 }
 
-struct RecentFollowingsActivitiesModel: Codable, BaseStatusResponseProtocol {
+public struct RecentFollowingsActivitiesModel: Codable, BaseStatusResponseProtocol {
     var autoLoadMoreEnabled: Bool?
     var nextMaxId: Int?
     var status: String?

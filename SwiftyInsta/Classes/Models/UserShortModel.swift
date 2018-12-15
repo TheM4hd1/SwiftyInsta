@@ -19,7 +19,7 @@ protocol UserShortProtocol {
     var biography: String? {get}
 }
 
-struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
+public struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
     var isVerified: Bool?
     var isPrivate: Bool?
     var pk: Int?

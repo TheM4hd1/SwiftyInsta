@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol APIHandlerProtocol:
+public protocol APIHandlerProtocol:
     UserHandlerProtocol,
     ProfileHandlerProtocol,
     FeedHandlerProtocol,
@@ -18,9 +18,13 @@ protocol APIHandlerProtocol:
     StoryHandlerProtocol {
 }
 
-class APIHandler: APIHandlerProtocol {
+public class APIHandler: APIHandlerProtocol {
     
-    init(request: RequestMessageModel, user: SessionStorage, device: AndroidDeviceModel, delay: DelayModel, config: URLSessionConfiguration) {
+    public init() {
+        
+    }
+    
+    public init(request: RequestMessageModel, user: SessionStorage, device: AndroidDeviceModel, delay: DelayModel, config: URLSessionConfiguration) {
         // TODO: - Update Handler Settings
         HandlerSettings.shared.delay = delay
         HandlerSettings.shared.user = user
@@ -31,7 +35,7 @@ class APIHandler: APIHandlerProtocol {
         HandlerSettings.shared.isUserAuthenticated = false
     }
     
-    func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws {
+    public func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws {
         // validating before login.
         try validateUser()
         try validateRequestMessage()
@@ -41,7 +45,11 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws {
+    /// to login with challenge, you need to go through 3 steps.
+    /// 1. ```challengeLogin(_)```, if you get ```verifyRequired``` result, run step 2
+    /// 2. ```verifyMethod(_,_)```, if you get ```codeSent``` result, run step 3
+    /// 3. ```sendVerifyCode(_,_)```, if you get ```success``` result, you're logged-in now
+    public func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws {
         if HandlerSettings.shared.challenge == nil {
             let error = CustomErrors.runTimeError("challenge require info is empty.\r\ntry to call login function first.")
             completion(Return.fail(error: error, response: .challengeRequired, value: nil))
@@ -52,7 +60,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) -> ()) throws {
+    public func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) -> ()) throws {
         if HandlerSettings.shared.challenge == nil {
             let error = CustomErrors.runTimeError("challenge require info is empty.\r\ntry to call login function first.")
             completion(Return.fail(error: error, response: .challengeRequired, value: nil))
@@ -63,7 +71,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>) -> ()) throws {
+    public func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>) -> ()) throws {
         if HandlerSettings.shared.challenge == nil {
             let error = CustomErrors.runTimeError("challenge require info is empty.\r\ntry to call login function first.")
             completion(Return.fail(error: error, response: .challengeRequired, value: .challengeRequired))
@@ -74,13 +82,13 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
+    public func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
         try UserHandler.shared.createAccount(account: account) { (result) in
             completion(result)
         }
     }
     
-    func logout(completion: @escaping (Result<Bool>) -> ()) throws {
+    public func logout(completion: @escaping (Result<Bool>) -> ()) throws {
         // validate before logout.
         try validateUser()
         try validateLoggedIn()
@@ -90,7 +98,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws {
+    public func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws {
         // validate before logout.
         try validateUser()
         try validateLoggedIn()
@@ -100,7 +108,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws {
+    public func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -110,7 +118,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+    public func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -120,7 +128,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+    public func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -130,7 +138,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
+    public func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -140,7 +148,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws {
+    public func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -150,7 +158,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws {
+    public func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -160,7 +168,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+    public func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -170,7 +178,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+    public func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -180,7 +188,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getTagFeed(tagName: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[TagFeedModel]>) -> ()) throws {
+    public func getTagFeed(tagName: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[TagFeedModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -190,7 +198,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws {
+    public func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -200,7 +208,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws {
+    public func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -210,7 +218,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws {
+    public func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -220,7 +228,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func sendDirect(to userIds: String, in threadIds: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws {
+    public func sendDirect(to userIds: String, in threadIds: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -230,7 +238,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws {
+    public func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -240,7 +248,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getRecentDirectRecipients(completion: @escaping (Result<RecentRecipientsModel>) -> ()) throws {
+    public func getRecentDirectRecipients(completion: @escaping (Result<RecentRecipientsModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -250,7 +258,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws {
+    public func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -260,7 +268,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
+    public func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -270,7 +278,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
+    public func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -280,7 +288,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws {
+    public func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -290,7 +298,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws {
+    public func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -300,7 +308,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws {
+    public func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -310,7 +318,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws {
+    public func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -320,7 +328,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func followUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
+    public func followUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -330,7 +338,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func unFollowUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
+    public func unFollowUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -340,7 +348,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws {
+    public func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -350,7 +358,7 @@ class APIHandler: APIHandlerProtocol {
         }
     }
     
-    func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
+    public func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -360,7 +368,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
+    public func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -370,7 +378,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+    public func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -380,7 +388,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
+    public func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -390,7 +398,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws {
+    public func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -400,7 +408,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws {
+    public func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -410,7 +418,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws {
+    public func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -430,7 +438,7 @@ class APIHandler: APIHandlerProtocol {
 //        })
 //    }
     
-    func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws {
+    public func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -440,7 +448,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func getStoryFeed(completion: @escaping (Result<StoryFeedModel>) -> ()) throws {
+    public func getStoryFeed(completion: @escaping (Result<StoryFeedModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -450,7 +458,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func getUserStory(userId: Int, completion: @escaping (Result<TrayModel>) -> ()) throws {
+    public func getUserStory(userId: Int, completion: @escaping (Result<TrayModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -460,7 +468,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws {
+    public func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -470,7 +478,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
+    public func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -480,7 +488,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+    public func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -490,7 +498,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws {
+    public func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -500,7 +508,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+    public func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
@@ -510,7 +518,7 @@ class APIHandler: APIHandlerProtocol {
         })
     }
     
-    func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+    public func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()

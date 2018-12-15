@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct TagFeedModel: Codable, FeedProtocol, BaseStatusResponseProtocol {
+public struct TagFeedModel: Codable, FeedProtocol, BaseStatusResponseProtocol {
     var autoLoadMoreEnabled: Bool?
     var moreAvailable: Bool?
     var nextMaxId: String?

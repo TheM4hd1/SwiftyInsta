@@ -8,35 +8,35 @@
 
 import Foundation
 
-protocol UploadMediaProtocol {
+public protocol UploadMediaProtocol {
     var image: UIImage {get}
     var caption: String {get}
     var width: Int {get}
     var height: Int {get}
 }
 
-struct InstaPhoto: UploadMediaProtocol {
-    var image: UIImage
-    var caption: String
-    var width: Int
-    var height: Int
+public struct InstaPhoto: UploadMediaProtocol {
+    public var image: UIImage
+    public var caption: String
+    public var width: Int
+    public var height: Int
 }
 
-struct InstaVideo: UploadMediaProtocol {
-    var image: UIImage
-    var caption: String
-    var width: Int
-    var height: Int
-    var type: Int
+public struct InstaVideo: UploadMediaProtocol {
+    public var image: UIImage
+    public var caption: String
+    public var width: Int
+    public var height: Int
+    public var type: Int
 }
 
-struct UploadPhotoResponse: Codable, BaseStatusResponseProtocol {
+public struct UploadPhotoResponse: Codable, BaseStatusResponseProtocol {
     var media: MediaModel?
     var uploadId: String?
     var status: String?
 }
 
-struct UploadPhotoAlbumResponse: Codable, BaseStatusResponseProtocol {
+public struct UploadPhotoAlbumResponse: Codable, BaseStatusResponseProtocol {
     var clientSidecarId: String?
     var media: MediaModel?
     var status: String?

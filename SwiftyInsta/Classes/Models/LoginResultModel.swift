@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum LoginResultModel {
+public enum LoginResultModel {
     case success
     case badPassword
     case invalidUser

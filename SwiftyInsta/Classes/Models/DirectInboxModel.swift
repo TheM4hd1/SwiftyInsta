@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct DirectInboxModel: Codable, BaseStatusResponseProtocol {
+public struct DirectInboxModel: Codable, BaseStatusResponseProtocol {
     var inbox: InboxModel
     var seqId: Int?
     var pending_requests_total: Int?
@@ -91,14 +91,14 @@ struct DirectPayloadModel: Codable {
     var threadId: String?
 }
 
-struct DirectSendMessageResponseModel: Codable, BaseStatusResponseProtocol {
+public struct DirectSendMessageResponseModel: Codable, BaseStatusResponseProtocol {
     var status: String?
     var statusCode: String?
     var action: String?
     var payload: DirectPayloadModel
 }
 
-struct ThreadModel: Codable, BaseStatusResponseProtocol {
+public struct ThreadModel: Codable, BaseStatusResponseProtocol {
     var thread: InboxThreadsModel?
     var status: String?
 }

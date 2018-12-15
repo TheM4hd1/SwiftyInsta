@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol CommentHandlerProtocol {
+public protocol CommentHandlerProtocol {
     func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws
     func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws
     func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws

@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol StoryHandlerProtocol {
+public protocol StoryHandlerProtocol {
     func getStoryFeed(completion: @escaping (Result<StoryFeedModel>) -> ()) throws
     func getUserStory(userId: Int, completion: @escaping (Result<TrayModel>) -> ()) throws
     func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws

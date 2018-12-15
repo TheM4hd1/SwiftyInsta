@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct UserInfoModel: Codable, BaseStatusResponseProtocol {
+public struct UserInfoModel: Codable, BaseStatusResponseProtocol {
     var user: UserModel?
     var status: String?
 }

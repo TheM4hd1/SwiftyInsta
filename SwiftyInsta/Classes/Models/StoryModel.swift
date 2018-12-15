@@ -20,7 +20,7 @@ struct TopLiveModel: Codable {
     var rankedPosition: Int?
 }
 
-struct StoryFeedModel: Codable, BaseStatusResponseProtocol {
+public struct StoryFeedModel: Codable, BaseStatusResponseProtocol {
     var tray: [TrayModel]?
     var storyRankingToken: String?
     var faceFilterNuxVersion: Int?
@@ -30,7 +30,7 @@ struct StoryFeedModel: Codable, BaseStatusResponseProtocol {
     //var broadcasts
 }
 
-struct StoryReelFeedModel: Codable, BaseStatusResponseProtocol {
+public struct StoryReelFeedModel: Codable, BaseStatusResponseProtocol {
     //var broadcast
     var reel: TrayModel?
     var status: String?

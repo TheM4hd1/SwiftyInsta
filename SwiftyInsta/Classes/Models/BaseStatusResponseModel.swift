@@ -12,7 +12,7 @@ protocol BaseStatusResponseProtocol {
     var status: String? { get }
 }
 
-struct BaseStatusResponseModel: Codable, BaseStatusResponseProtocol {
+public struct BaseStatusResponseModel: Codable, BaseStatusResponseProtocol {
     var status: String?
     var message: StatusMessageModel?
     

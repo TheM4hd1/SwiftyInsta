@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum MediaTypes: String {
+public enum MediaTypes: String {
     case image = "1"
     case video = "2"
     case carousel = "8"

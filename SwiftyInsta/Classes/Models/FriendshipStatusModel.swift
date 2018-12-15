@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct FriendshipStatusModel: Codable {
+public struct FriendshipStatusModel: Codable {
     var following: Bool?
     var followedBy: Bool?
     var blocking: Bool?
@@ -20,7 +20,7 @@ struct FriendshipStatusModel: Codable {
     var isMutingReel: Bool?
 }
 
-struct FollowResponseModel: Codable, BaseStatusResponseProtocol {
+public struct FollowResponseModel: Codable, BaseStatusResponseProtocol {
     var friendshipStatus: FriendshipStatusModel?
     var status: String?
 }

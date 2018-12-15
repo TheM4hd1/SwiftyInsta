@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol MessageHandlerProtocol {
+public protocol MessageHandlerProtocol {
     func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws
     func sendDirect(to userId: String, in threadId: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws
     func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws

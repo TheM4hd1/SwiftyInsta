@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct UserFeedModel: Codable, FeedProtocol {
+public struct UserFeedModel: Codable, FeedProtocol {
     var autoLoadMoreEnabled: Bool?
     var moreAvailable: Bool?
     var nextMaxId: String?
@@ -25,7 +25,7 @@ struct UserFeedModel: Codable, FeedProtocol {
         case totalCount = "totalCount"
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try container.decodeIfPresent(Int.self, forKey: .nextMaxId) {
             nextMaxId = String(value)

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct CreateAccountModel {
+public struct CreateAccountModel {
     let username: String
     let password: String
     let email: String

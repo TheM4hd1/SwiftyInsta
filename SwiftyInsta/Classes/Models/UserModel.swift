@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct UserModel: Codable, UserShortProtocol {
+public struct UserModel: Codable, UserShortProtocol {
     var isVerified: Bool?
     var isPrivate: Bool?
     var pk: Int?
