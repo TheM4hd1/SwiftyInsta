@@ -20,6 +20,13 @@ public struct InstaPhoto: UploadMediaProtocol {
     public var caption: String
     public var width: Int
     public var height: Int
+    
+    public init(image: UIImage, caption: String, width: Int, height: Int) {
+        self.image = image
+        self.caption = caption
+        self.width = width
+        self.height = height
+    }
 }
 
 public struct InstaVideo: UploadMediaProtocol {
@@ -28,6 +35,14 @@ public struct InstaVideo: UploadMediaProtocol {
     public var width: Int
     public var height: Int
     public var type: Int
+    
+    public init(image: UIImage, caption: String, width: Int, height: Int, type: Int) {
+        self.image = image
+        self.caption = caption
+        self.width = width
+        self.height = height
+        self.type = type
+    }
 }
 
 public struct UploadPhotoResponse: Codable, BaseStatusResponseProtocol {
