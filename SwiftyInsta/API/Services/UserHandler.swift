@@ -471,7 +471,7 @@ class UserHandler: UserHandlerProtocol {
                         do {
                             let decoded = try decoder.decode(UserShortListModel.self, from: data)
                             list.append(contentsOf: decoded.users!)
-                            if decoded.bigList! {
+                            if let bigList = decoded.bigList, bigList {
                                 if !(decoded.nextMaxId?.isEmpty ?? true) && paginationParameter.pagesLoaded <= paginationParameter.maxPagesToLoad {
                                     _paginationParameter.nextId = decoded.nextMaxId ?? ""
                                     let url = try! URLs.getUserFollowers(userPk: pk, rankToken: HandlerSettings.shared.user!.rankToken, searchQuery: searchQuery, maxId: _paginationParameter.nextId)
