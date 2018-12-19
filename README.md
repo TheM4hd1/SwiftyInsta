@@ -12,12 +12,39 @@ SwiftyInsta allows you to build your own customized Instagram client or Bot. It 
 
 This project is still in development phase and intends to provide all features which are available in the Official API.
 
-## Installing
+## Installation
 
 1. To use this library in your project manually you may:
-    - Add framework from ```General > Linked frameworks and libraries```
-    - Clone and copy the whole ```/SwiftyInsta``` into your workspace.
+    - Add compiled framework from ```General > Linked frameworks and libraries```
+    - Clone the project, right click on your root project(not SwiftyInsta) and select ```Add files...```, then select the ```SwiftyInsta.xcodeproj```. after that go to your ```project>embeded libraries``` and select ```SwiftyInsta.framework```, build the project and import ```SwiftyInsta```
 
+## Usage
+
+### Create API Handler Instance
+```swift
+import SwiftyInsta
+
+let handler = try! APIBuilder()
+.createBuilder()
+.setHttpHandler(config: .default)
+.setRequestDelay(delay: .default)
+.setUser(user: user)
+.build()
+```
+
+### Login
+```swift
+try? handler.login { (result) in
+    //result: Result<LoginResultModel>
+}
+```
+
+#### Search User
+```swift
+try? handler.getUser(username: "username", completion: { (result) in
+    //result: (Result<UserModel>)
+})
+```
 ## Documentation
 
 - See [Features](https://github.com/TheM4hd1/SwiftyInsta/wiki/Features) for all available APIs
