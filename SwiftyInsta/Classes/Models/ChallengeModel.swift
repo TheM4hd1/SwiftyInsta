@@ -8,11 +8,20 @@
 
 import Foundation
 
-struct ChallengeModel: Codable {
-    var url: String
-    var apiPath: String
-    var hideWebviewHeader: Bool
-    var lock: Bool
-    var logout: Bool
-    var nativeFlow: Bool
+public struct ChallengeModel: Codable {
+    public var url: String
+    public var apiPath: String
+    public var hideWebviewHeader: Bool
+    public var lock: Bool
+    public var logout: Bool
+    public var nativeFlow: Bool
+    
+    public init(url: String, apiPath: String, hideWebviewHeader: Bool, lock: Bool, logout: Bool, nativeFlow: Bool) {
+        self.url = url
+        self.apiPath = apiPath
+        self.hideWebviewHeader = hideWebviewHeader
+        self.lock = lock
+        self.logout = logout
+        self.nativeFlow = nativeFlow
+    }
 }

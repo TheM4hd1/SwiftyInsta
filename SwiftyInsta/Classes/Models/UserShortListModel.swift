@@ -8,10 +8,18 @@
 
 import Foundation
 
-struct UserShortListModel: Codable, BaseStatusResponseProtocol {
-    var status: String?
-    var nextMaxId: String? = ""
-    var bigList: Bool?
-    var pageSize: Int?
-    var users: [UserShortModel]?
+public struct UserShortListModel: Codable, BaseStatusResponseProtocol {
+    public var status: String?
+    public var nextMaxId: String? = ""
+    public var bigList: Bool?
+    public var pageSize: Int?
+    public var users: [UserShortModel]?
+    
+    public init(status: String?, nextMaxId: String? = "", bigList: Bool?, pageSize: Int?, users: [UserShortModel]?) {
+        self.status = status
+        self.nextMaxId = nextMaxId
+        self.bigList = bigList
+        self.pageSize = pageSize
+        self.users = users
+    }
 }

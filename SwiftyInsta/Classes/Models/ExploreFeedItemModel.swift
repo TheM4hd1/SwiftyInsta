@@ -8,8 +8,14 @@
 
 import Foundation
 
-struct ExploreFeedItemModel: Codable {
-    var stories: StoryModel?
-    var media: MediaModel?
-    var exploreItemInfo: ExploreItemInfoModel?
+public struct ExploreFeedItemModel: Codable {
+    public var stories: StoryModel?
+    public var media: MediaModel?
+    public var exploreItemInfo: ExploreItemInfoModel?
+    
+    public init(stories: StoryModel?, media: MediaModel?, exploreItemInfo: ExploreItemInfoModel?) {
+        self.stories = stories
+        self.media = media
+        self.exploreItemInfo = exploreItemInfo
+    }
 }

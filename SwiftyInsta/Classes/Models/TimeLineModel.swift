@@ -9,40 +9,79 @@
 import Foundation
 
 public struct TimeLineModel: Codable, FeedProtocol, BaseStatusResponseProtocol {
-    var autoLoadMoreEnabled: Bool?
-    var moreAvailable: Bool?
-    var nextMaxId: String?
-    var numResults: Int?
-    var status: String?
-    var feedItems: [TimeLineItemModel]?
-    var isDirectV2Enabled: Bool?
+    public var autoLoadMoreEnabled: Bool?
+    public var moreAvailable: Bool?
+    public var nextMaxId: String?
+    public var numResults: Int?
+    public var status: String?
+    public var feedItems: [TimeLineItemModel]?
+    public var isDirectV2Enabled: Bool?
+    
+    public init(autoLoadMoreEnabled: Bool?, moreAvailable: Bool?, nextMaxId: String?, numResults: Int?, status: String?, feedItems: [TimeLineItemModel]?, isDirectV2Enabled: Bool?) {
+        self.autoLoadMoreEnabled = autoLoadMoreEnabled
+        self.moreAvailable = moreAvailable
+        self.nextMaxId = nextMaxId
+        self.numResults = numResults
+        self.status = status
+        self.feedItems = feedItems
+        self.isDirectV2Enabled = isDirectV2Enabled
+    }
 }
 
-struct SuggestionModel: Codable {
-    var user: SuggestionUser?//UserShortModel?
-    var algorithm: String?
-    var socialContext: String?
-    var uuid: String?
+public struct SuggestionModel: Codable {
+    public var user: SuggestionUser?//UserShortModel?
+    public var algorithm: String?
+    public var socialContext: String?
+    public var uuid: String?
+    
+    public init(user: SuggestionUser?, algorithm: String?, socialContext: String?, uuid: String?) {
+        self.user = user
+        self.algorithm = algorithm
+        self.socialContext = socialContext
+        self.uuid = uuid
+    }
 }
 
-struct SuggestedUsersModel: Codable {
-    var type: Int?
-    var suggestions: [SuggestionModel]?
-    var id: String?
-    var trackingToken: String?
+public struct SuggestedUsersModel: Codable {
+    public var type: Int?
+    public var suggestions: [SuggestionModel]?
+    public var id: String?
+    public var trackingToken: String?
+    
+    public init(type: Int?, suggestions: [SuggestionModel]?, id: String?, trackingToken: String) {
+        self.type = type
+        self.suggestions = suggestions
+        self.id = id
+        self.trackingToken = trackingToken
+    }
 }
 
-struct TimeLineItemModel: Codable {
-    var mediaOrAd: MediaModel?
-    var suggestedUsers: SuggestedUsersModel?
+public struct TimeLineItemModel: Codable {
+    public var mediaOrAd: MediaModel?
+    public var suggestedUsers: SuggestedUsersModel?
+    
+    public init(mediaOrAd: MediaModel?, suggestedUsers: SuggestedUsersModel?) {
+        self.mediaOrAd = mediaOrAd
+        self.suggestedUsers = suggestedUsers
+    }
 }
 
-struct SuggestionUser: Codable {
-    var isVerified: Bool?
-    var isPrivate: Bool?
-    var pk: String?
-    var profilePicUrl: String?
-    var profilePicId: String?
-    var username: String?
-    var fullName: String?
+public struct SuggestionUser: Codable {
+    public var isVerified: Bool?
+    public var isPrivate: Bool?
+    public var pk: String?
+    public var profilePicUrl: String?
+    public var profilePicId: String?
+    public var username: String?
+    public var fullName: String?
+    
+    public init(isVerified: Bool?, isPrivate: Bool?, pk: String?, profilePicUrl: String?, profilePicId: String?, username: String?, fullName: String?) {
+        self.isVerified = isVerified
+        self.isPrivate = isPrivate
+        self.pk = pk
+        self.profilePicUrl = profilePicUrl
+        self.profilePicId = profilePicId
+        self.username = username
+        self.fullName = fullName
+    }
 }

@@ -15,6 +15,13 @@ public struct SessionStorage: Codable {
     public var rankToken: String
     public var loggedInUser: UserShortModel
     
+    public init(username: String, password: String, csrfToken: String, rankToken: String, loggedInUser: UserShortModel) {
+        self.username = username
+        self.password = password
+        self.csrfToken = csrfToken
+        self.rankToken = rankToken
+        self.loggedInUser = loggedInUser
+    }
     
     /// Leave blank if you don't want to login.
     public static func create(username: String, password: String) -> SessionStorage {

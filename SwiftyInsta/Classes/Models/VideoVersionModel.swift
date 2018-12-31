@@ -8,10 +8,18 @@
 
 import Foundation
 
-struct VideoVersionModel: Codable, ProfilePicVersionsProtocol {
-    var height: Int?
-    var url: String?
-    var width: Int?
-    var id: String?
-    var type: Int?
+public struct VideoVersionModel: Codable, ProfilePicVersionsProtocol {
+    public var height: Int?
+    public var url: String?
+    public var width: Int?
+    public var id: String?
+    public var type: Int?
+    
+    public init(height: Int?, url: String?, width: Int?, id: String?, type: Int?) {
+        self.height = height
+        self.url = url
+        self.width = width
+        self.id = id
+        self.type = type
+    }
 }

@@ -8,12 +8,20 @@
 
 import Foundation
 
-struct TwoFactorLoginInfoModel: Codable {
-    var obfuscatedPhoneNumber: Int
-    var showMessengerCodeOption: Bool
-    var twoFactorIdentifier: String
-    var username: String
-    var phoneVerificationSettings: PhoneVerificationSettingsModel
+public struct TwoFactorLoginInfoModel: Codable {
+    public var obfuscatedPhoneNumber: Int
+    public var showMessengerCodeOption: Bool
+    public var twoFactorIdentifier: String
+    public var username: String
+    public var phoneVerificationSettings: PhoneVerificationSettingsModel
+    
+    public init(obfuscatedPhoneNumber: Int, showMessengerCodeOption: Bool, twoFactorIdentifier: String, username: String, phoneVerificationSettings: PhoneVerificationSettingsModel) {
+        self.obfuscatedPhoneNumber = obfuscatedPhoneNumber
+        self.showMessengerCodeOption = showMessengerCodeOption
+        self.twoFactorIdentifier = twoFactorIdentifier
+        self.username = username
+        self.phoneVerificationSettings = phoneVerificationSettings
+    }
     
     static func empty() -> TwoFactorLoginInfoModel {
         return TwoFactorLoginInfoModel(

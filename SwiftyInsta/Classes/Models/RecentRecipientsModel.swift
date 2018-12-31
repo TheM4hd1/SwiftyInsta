@@ -16,24 +16,47 @@ protocol RecipientProtocol {
 }
 
 public struct RankedRecipientsModel: Codable, BaseStatusResponseProtocol, RecipientProtocol {
-    var rankedRecipients: [RecipientItemModel]?
-    var expires: Int?
-    var filtered: Bool?
-    var requestId: String?
-    var rankToken: String?
-    var status: String?
+    public var rankedRecipients: [RecipientItemModel]?
+    public var expires: Int?
+    public var filtered: Bool?
+    public var requestId: String?
+    public var rankToken: String?
+    public var status: String?
+    
+    public init(rankedRecipients: [RecipientItemModel]?, expires: Int?, filtered: Bool?, requestId: String?, rankToken: String?, status: String?) {
+        self.rankedRecipients = rankedRecipients
+        self.expires = expires
+        self.filtered = filtered
+        self.requestId = requestId
+        self.rankToken = rankToken
+        self.status = status
+    }
 }
 
 public struct RecentRecipientsModel: Codable, BaseStatusResponseProtocol, RecipientProtocol {
-    var recentRecipients: [RecipientItemModel]?
-    var expires: Int?
-    var filtered: Bool?
-    var requestId: String?
-    var rankToken: String?
-    var status: String?
+    public var recentRecipients: [RecipientItemModel]?
+    public var expires: Int?
+    public var filtered: Bool?
+    public var requestId: String?
+    public var rankToken: String?
+    public var status: String?
+    
+    public init(recentRecipients: [RecipientItemModel]?, expires: Int?, filtered: Bool?, requestId: String?, rankToken: String?, status: String?) {
+        self.recentRecipients = recentRecipients
+        self.expires = expires
+        self.filtered = filtered
+        self.requestId = requestId
+        self.rankToken = rankToken
+        self.status = status
+    }
 }
 
-struct RecipientItemModel: Codable {
-    var thread: InboxThreadsModel?
-    var user: UserShortModel?
+public struct RecipientItemModel: Codable {
+    public var thread: InboxThreadsModel?
+    public var user: UserShortModel?
+    
+    public init(thread: InboxThreadsModel?, user: UserShortModel?) {
+        self.thread = thread
+        self.user = user
+    }
 }

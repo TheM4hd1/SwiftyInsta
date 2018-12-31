@@ -9,8 +9,15 @@
 import Foundation
 
 public struct CreateAccountModel {
-    let username: String
-    let password: String
-    let email: String
-    let firstName: String
+    public let username: String
+    public let password: String
+    public let email: String
+    public let firstName: String
+    
+    public init(username: String, password: String, email: String, firstName: String) {
+        self.username = username
+        self.password = password
+        self.email = email
+        self.firstName = firstName
+    }
 }

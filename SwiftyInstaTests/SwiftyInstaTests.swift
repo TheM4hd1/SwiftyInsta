@@ -163,7 +163,7 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserFollowing(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserFollowing() faild during timeout")
         do {
-            try handler.getUserFollowing(username: "", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1), searchQuery: "", completion: { (result) in
+            try handler.getUserFollowing(username: "mehdi.makhdumi", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1), searchQuery: "", completion: { (result) in
                 if result.isSucceeded {
                     guard let following = result.value else { return }
                     print("[+] following count: \(following.count)")

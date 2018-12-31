@@ -9,12 +9,21 @@
 import Foundation
 
 public struct RequestMessageModel: Codable {
-    var phoneId: String
-    var username: String
-    var guid: UUID
-    var deviceId: String
-    var password: String
-    var loginAttemptCount: String = "0"
+    public var phoneId: String
+    public var username: String
+    public var guid: UUID
+    public var deviceId: String
+    public var password: String
+    public var loginAttemptCount: String = "0"
+    
+    public init(phoneId: String, username: String, guid: UUID, deviceId: String, password: String, loginAttemptCount: String = "0") {
+        self.phoneId = phoneId
+        self.username = username
+        self.guid = guid
+        self.deviceId = deviceId
+        self.password = password
+        self.loginAttemptCount = loginAttemptCount
+    }
     
     func getMessageString() -> String {
         let encoder = JSONEncoder()

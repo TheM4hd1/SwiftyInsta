@@ -8,9 +8,16 @@
 
 import Foundation
 
-struct ExploreItemInfoModel: Codable {
-    var numColumns: Int?
-    var totalNumColumns: Int?
-    var aspectRatio: Int?
-    var autopaly: Bool?
+public struct ExploreItemInfoModel: Codable {
+    public var numColumns: Int?
+    public var totalNumColumns: Int?
+    public var aspectRatio: Int?
+    public var autopaly: Bool?
+    
+    public init(numColumns: Int?, totalNumColumns: Int?, aspectRatio: Int?, autopaly: Bool?) {
+        self.numColumns = numColumns
+        self.totalNumColumns = totalNumColumns
+        self.aspectRatio = aspectRatio
+        self.autopaly = autopaly
+    }
 }

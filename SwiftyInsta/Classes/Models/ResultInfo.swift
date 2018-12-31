@@ -8,8 +8,14 @@
 
 import Foundation
 
-struct ResultInfo {
-    var error: Error
-    var message: String
-    var responseType: ResponseTypes
+public struct ResultInfo {
+    public var error: Error
+    public var message: String
+    public var responseType: ResponseTypes
+    
+    public init(error: Error, message: String, responseType: ResponseTypes) {
+        self.error = error
+        self.message = message
+        self.responseType = responseType
+    }
 }

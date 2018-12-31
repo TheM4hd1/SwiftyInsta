@@ -8,9 +8,16 @@
 
 import Foundation
 
-struct CaptionModel: Codable {
-    var pk: Int?
-    var userId: Int?
-    var text: String
-    var user: UserModel?
+public struct CaptionModel: Codable {
+    public var pk: Int?
+    public var userId: Int?
+    public var text: String
+    public var user: UserModel?
+    
+    public init(pk: Int?, userId: Int?, text: String, user: UserModel?) {
+        self.pk = pk
+        self.userId = userId
+        self.text = text
+        self.user = user
+    }
 }

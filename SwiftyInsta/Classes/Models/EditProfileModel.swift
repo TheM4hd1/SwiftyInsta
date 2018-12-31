@@ -9,6 +9,11 @@
 import Foundation
 
 public struct EditProfileModel: Codable, BaseStatusResponseProtocol {
-    var user: UserModel?
-    var status: String?
+    public var user: UserModel?
+    public var status: String?
+    
+    public init(user: UserModel?, status: String?) {
+        self.user = user
+        self.status = status
+    }
 }

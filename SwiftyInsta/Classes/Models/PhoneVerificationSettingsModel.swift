@@ -8,11 +8,18 @@
 
 import Foundation
 
-struct PhoneVerificationSettingsModel: Codable {
-    var maxSmsCount: Int
-    var resendSmsDelaySec: Int
-    var robocallAfterMaxSms: Bool
-    var robocallCountDownTime: Int
+public struct PhoneVerificationSettingsModel: Codable {
+    public var maxSmsCount: Int
+    public var resendSmsDelaySec: Int
+    public var robocallAfterMaxSms: Bool
+    public var robocallCountDownTime: Int
+    
+    public init(maxSmsCount: Int, resendSmsDelaySec: Int, robocallAfterMaxSms: Bool, robocallCountDownTime: Int) {
+        self.maxSmsCount = maxSmsCount
+        self.resendSmsDelaySec = resendSmsDelaySec
+        self.robocallAfterMaxSms = robocallAfterMaxSms
+        self.robocallCountDownTime = robocallCountDownTime
+    }
     
     static func empty() -> PhoneVerificationSettingsModel {
         return PhoneVerificationSettingsModel(

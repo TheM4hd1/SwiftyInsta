@@ -20,24 +20,24 @@ protocol UserShortProtocol {
 }
 
 public struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
-    var isVerified: Bool?
-    var isPrivate: Bool?
-    var pk: Int?
-    var profilePicUrl: String?
-    var profilePicId: String?
-    var username: String?
-    var fullName: String?
-    var name: String?
-    var address: String?
-    var shortName: String?
-    var lng: Double?
-    var lat: Double?
-    var externalSource: String?
-    var facebookPlacesId: Int?
-    var city: String?
-    var biography: String?
+    public var isVerified: Bool?
+    public var isPrivate: Bool?
+    public var pk: Int?
+    public var profilePicUrl: String?
+    public var profilePicId: String?
+    public var username: String?
+    public var fullName: String?
+    public var name: String?
+    public var address: String?
+    public var shortName: String?
+    public var lng: Double?
+    public var lat: Double?
+    public var externalSource: String?
+    public var facebookPlacesId: Int?
+    public var city: String?
+    public var biography: String?
     
-    init() {
+    public init() {
         isVerified = false
         isPrivate = false
         pk = 0
@@ -45,6 +45,25 @@ public struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
         profilePicId = ""
         username = ""
         fullName = ""
+    }
+    
+    public init(isVerified: Bool?, isPrivate: Bool?, pk: Int?, profilePicUrl: String?, profilePicId: String?, username: String?, fullName: String?, name: String?, address: String?, shortName: String?, lng: Double?, lat: Double?, externalSource: String?, facebookPlacesId: Int?, city: String?, biography: String?) {
+        self.isVerified = isVerified
+        self.isPrivate = isPrivate
+        self.pk = pk
+        self.profilePicUrl = profilePicUrl
+        self.profilePicId = profilePicId
+        self.username = username
+        self.fullName = fullName
+        self.name = name
+        self.address = address
+        self.shortName = shortName
+        self.lng = lng
+        self.lat = lat
+        self.externalSource = externalSource
+        self.facebookPlacesId = facebookPlacesId
+        self.city = city
+        self.biography = biography
     }
     
     func eqauls(user: UserShortModel) -> Bool {

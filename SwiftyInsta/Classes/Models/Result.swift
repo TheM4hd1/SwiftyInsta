@@ -15,14 +15,20 @@ protocol ResultProtocol {
 }
 
 public struct Result<Element>: ResultProtocol {
-    typealias type = Element
-    var isSucceeded: Bool
-    var info: ResultInfo
-    var value: type?
+    public typealias type = Element
+    public var isSucceeded: Bool
+    public var info: ResultInfo
+    public var value: type?
+    
+    public init(isSucceeded: Bool, info: ResultInfo, value: type?) {
+        self.isSucceeded = isSucceeded
+        self.info = info
+        self.value = value
+    }
 }
 
-struct Return {
-    static func fail<T>(error: Error?, response: ResponseTypes, value: T?) -> Result<T> {
+public struct Return {
+    public static func fail<T>(error: Error?, response: ResponseTypes, value: T?) -> Result<T> {
         var _error: Error
         if let error = error {
             _error = error
@@ -35,7 +41,7 @@ struct Return {
         return result
     }
     
-    static func success<T>(value: T?) -> Result<T> {
+    public static func success<T>(value: T?) -> Result<T> {
         let info = ResultInfo.init(error: CustomErrors.noError, message: CustomErrors.noError.localizedDescription, responseType: .ok)
         let result = Result<T>.init(isSucceeded: true, info: info, value: value)
         return result

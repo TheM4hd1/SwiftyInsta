@@ -8,11 +8,11 @@
 
 import Foundation
 
-struct NameTagModel: Codable {
-    var mode: Int?
-    var gradient: Int?
-    var emoji: String?
-    var selfieSticker: Int?
+public struct NameTagModel: Codable {
+    public var mode: Int?
+    public var gradient: Int?
+    public var emoji: String?
+    public var selfieSticker: Int?
     
     private enum CodingKeys: String, CodingKey {
         case mode = "mode"
@@ -21,7 +21,7 @@ struct NameTagModel: Codable {
         case selfieSticker = "selfie_sticker"
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(String.self, forKey: .gradient) {
             if let value = value {

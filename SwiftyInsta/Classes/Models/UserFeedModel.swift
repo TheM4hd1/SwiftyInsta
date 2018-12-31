@@ -9,12 +9,12 @@
 import Foundation
 
 public struct UserFeedModel: Codable, FeedProtocol {
-    var autoLoadMoreEnabled: Bool?
-    var moreAvailable: Bool?
-    var nextMaxId: String?
-    var numResults: Int?
-    var totalCount: Int?
-    var items: [MediaModel]?
+    public var autoLoadMoreEnabled: Bool?
+    public var moreAvailable: Bool?
+    public var nextMaxId: String?
+    public var numResults: Int?
+    public var totalCount: Int?
+    public var items: [MediaModel]?
     
     private enum CodingKeys: String, CodingKey {
         case nextMaxId = "nextMaxId"

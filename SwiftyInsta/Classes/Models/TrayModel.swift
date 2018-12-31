@@ -8,31 +8,58 @@
 
 import Foundation
 
-struct TrayItems: Codable, MediaModelProtocol {
-    var takenAt: Int?
-    var pk: Int?
-    var id: String?
-    var deviceTimestamp: Int?
-    var mediaType: Int?
-    var code: String?
-    var clientCacheKey: String?
-    var filterType: Int?
-    var imageVersions2: CandidatesModel?
-    var originalWidth: Int?
-    var originalHeight: Int?
-    var organicTrackingToken: String?
-    var user: UserShortModel?
-    var caption: CaptionModel?
-    var captionIsEdited: Bool?
-    var photoOfYou: Bool?
-    var canViewerSave: Bool?
-    var expiringAt: Int?
-    var storyLocation: LocationModel?
-    var supportsReelReactions: Bool?
+public struct TrayItems: Codable, MediaModelProtocol {
+    public var takenAt: Int?
+    public var pk: Int?
+    public var id: String?
+    public var deviceTimestamp: Int?
+    public var mediaType: Int?
+    public var code: String?
+    public var clientCacheKey: String?
+    public var filterType: Int?
+    public var imageVersions2: CandidatesModel?
+    public var originalWidth: Int?
+    public var originalHeight: Int?
+    public var organicTrackingToken: String?
+    public var user: UserShortModel?
+    public var caption: CaptionModel?
+    public var captionIsEdited: Bool?
+    public var photoOfYou: Bool?
+    public var canViewerSave: Bool?
+    public var expiringAt: Int?
+    public var storyLocation: LocationModel?
+    public var supportsReelReactions: Bool?
+    
+    public init(takenAt: Int?, pk: Int?, id: String?, deviceTimestamp: Int?, mediaType: Int?, code: String?, clientCacheKey: String?, filterType: Int?, imageVersions2: CandidatesModel?, originalWidth: Int?, originalHeight: Int?, organicTrackingToken: String?, user: UserShortModel?, caption: CaptionModel?, captionIsEdited: Bool?, photoOfYou: Bool?, canViewerSave: Bool?, expiringAt: Int?, storyLocation: LocationModel?, supportsReelReactions: Bool?) {
+        self.takenAt = takenAt
+        self.pk = pk
+        self.id = id
+        self.deviceTimestamp = deviceTimestamp
+        self.mediaType = mediaType
+        self.code = code
+        self.clientCacheKey = clientCacheKey
+        self.filterType = filterType
+        self.imageVersions2 = imageVersions2
+        self.originalWidth = originalWidth
+        self.originalHeight = originalHeight
+        self.organicTrackingToken = organicTrackingToken
+        self.user = user
+        self.caption = caption
+        self.captionIsEdited = captionIsEdited
+        self.photoOfYou = photoOfYou
+        self.canViewerSave = canViewerSave
+        self.expiringAt = expiringAt
+        self.storyLocation = storyLocation
+        self.supportsReelReactions = supportsReelReactions
+    }
 }
 
-struct CandidatesModel: Codable {
+public struct CandidatesModel: Codable {
     var candidates: [ProfilePicVersionsModel]?
+    
+    public init(candidates: [ProfilePicVersionsModel]?) {
+        self.candidates = candidates
+    }
 }
 
 /*
@@ -40,21 +67,21 @@ struct CandidatesModel: Codable {
  the reason is sometimes the 'id' is Integer and sometimes its String.
  */
 public struct TrayModel: Codable {
-    var id: String?
-    var latestReelMedia: Int?
-    var expiringAt: Int?
-    var seen: Double?
-    var canReply: Bool?
-    var canReshare: Bool?
-    var reelType: String?
-    var owner: OwnerModel?//UserShortModel?
-    var user: UserModel?
-    var items: [TrayItems]?
-    var prefetchCount: Int?
-    var uniqueIntegerReelId: Int?
-    var rankedPosition: Int?
-    var seenRankedPosition: Int?
-    var sourceToken: String?
+    public var id: String?
+    public var latestReelMedia: Int?
+    public var expiringAt: Int?
+    public var seen: Double?
+    public var canReply: Bool?
+    public var canReshare: Bool?
+    public var reelType: String?
+    public var owner: OwnerModel?//UserShortModel?
+    public var user: UserModel?
+    public var items: [TrayItems]?
+    public var prefetchCount: Int?
+    public var uniqueIntegerReelId: Int?
+    public var rankedPosition: Int?
+    public var seenRankedPosition: Int?
+    public var sourceToken: String?
     
     private enum CodingKeys: String, CodingKey {
         case id = "id"
@@ -104,11 +131,11 @@ public struct TrayModel: Codable {
     }
 }
 
-struct OwnerModel: Codable {
-    var type: String?
-    var pk: String?
-    var profilePicUrl: String?
-    var profilePicUsername: String?
+public struct OwnerModel: Codable {
+    public var type: String?
+    public var pk: String?
+    public var profilePicUrl: String?
+    public var profilePicUsername: String?
     
     private enum CodingKeys: String, CodingKey {
         case type = "type"
@@ -117,7 +144,7 @@ struct OwnerModel: Codable {
         case profilePicUsername = "profile_pic_username"
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(Int.self, forKey: .pk) {
             if value != nil {

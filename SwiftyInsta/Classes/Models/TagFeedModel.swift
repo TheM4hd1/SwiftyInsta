@@ -9,12 +9,22 @@
 import Foundation
 
 public struct TagFeedModel: Codable, FeedProtocol, BaseStatusResponseProtocol {
-    var autoLoadMoreEnabled: Bool?
-    var moreAvailable: Bool?
-    var nextMaxId: String?
-    var numResults: Int?
-    var status: String?
-    var rankedItems: [MediaModel]?
-    var items: [MediaModel]?
+    public var autoLoadMoreEnabled: Bool?
+    public var moreAvailable: Bool?
+    public var nextMaxId: String?
+    public var numResults: Int?
+    public var status: String?
+    public var rankedItems: [MediaModel]?
+    public var items: [MediaModel]?
+    
+    public init(autoLoadMoreEnabled: Bool?, moreAvailable: Bool?, nextMaxId: String?, numResults: Int?, status: String?, rankedItems: [MediaModel]?, items: [MediaModel]?) {
+        self.autoLoadMoreEnabled = autoLoadMoreEnabled
+        self.moreAvailable = moreAvailable
+        self.nextMaxId = nextMaxId
+        self.numResults = numResults
+        self.status = status
+        self.rankedItems = rankedItems
+        self.items = items
+    }
     //var story: TrayModel?
 }

@@ -8,32 +8,61 @@
 
 import Foundation
 
-struct CommentModel: Codable {
-    var pk: Int?
-    var userId: Int?
-    var text: String?
-    var contentType: String?
-    var status: String?
-    var user: UserShortModel?
-    var didReportAsSpam: Bool?
-    var shareEnabled: Bool?
-    var hasLikedComment: Bool?
-    var commentLikeCount: Int?
+public struct CommentModel: Codable {
+    public var pk: Int?
+    public var userId: Int?
+    public var text: String?
+    public var contentType: String?
+    public var status: String?
+    public var user: UserShortModel?
+    public var didReportAsSpam: Bool?
+    public var shareEnabled: Bool?
+    public var hasLikedComment: Bool?
+    public var commentLikeCount: Int?
+    
+    public init(pk: Int?, userId: Int?, text: String?, contentType: String?, status: String?, user: UserShortModel?, didReportAsSpam: Bool?, shareEnabled: Bool?, hasLikedComment: Bool?, commentLikeCount: Int?) {
+        self.pk = pk
+        self.userId = userId
+        self.contentType = contentType
+        self.status = status
+        self.user = user
+        self.didReportAsSpam = didReportAsSpam
+        self.shareEnabled = shareEnabled
+        self.hasLikedComment = hasLikedComment
+        self.commentLikeCount = commentLikeCount
+    }
 }
 
 public struct MediaCommentsResponseModel: Codable, BaseStatusResponseProtocol {
-    var commentLikesEnabled: Bool?
-    var comments: [CommentModel]?
-    var commentCount: Int?
-    var caption: CaptionModel?
-    var captionIsEdited: Bool?
-    var hasMoreComments: Bool?
-    var previewComments: [CommentModel]?
-    var nextMaxId: String?
-    var status: String?
+    public var commentLikesEnabled: Bool?
+    public var comments: [CommentModel]?
+    public var commentCount: Int?
+    public var caption: CaptionModel?
+    public var captionIsEdited: Bool?
+    public var hasMoreComments: Bool?
+    public var previewComments: [CommentModel]?
+    public var nextMaxId: String?
+    public var status: String?
+    
+    public init(commentLikesEnabled: Bool?, comments: [CommentModel]?, commentCount: Int?, caption: CaptionModel?, captionIsEdited: Bool?, hasMoreComments: Bool?, previewComments: [CommentModel]?, nextMaxId: String?, status: String?) {
+        self.commentLikesEnabled = commentLikesEnabled
+        self.comments = comments
+        self.commentCount = commentCount
+        self.caption = caption
+        self.captionIsEdited = captionIsEdited
+        self.hasMoreComments = hasMoreComments
+        self.previewComments = previewComments
+        self.nextMaxId = nextMaxId
+        self.status = status
+    }
 }
 
 public struct CommentResponse: Codable, BaseStatusResponseProtocol {
-    var comment: CommentModel?
-    var status: String?
+    public var comment: CommentModel?
+    public var status: String?
+    
+    public init(comment: CommentModel?, status: String?) {
+        self.comment = comment
+        self.status = status
+    }
 }
