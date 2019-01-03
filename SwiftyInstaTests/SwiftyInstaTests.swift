@@ -36,11 +36,11 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "login() faild during timeout")
-        let user = SessionStorage.create(username: "swiftyinsta", password: "qqqqqqq")
+        let user = SessionStorage.create(username: "swiftyinsta", password: "vvvvvv")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
         var _error: Error?
         do {
-            try handler.login { (result) in
+            try handler.login { (result, cache) in
                 if result.isSucceeded {
                     print("[+]: logged in")
                 } else {
@@ -77,9 +77,37 @@ class SwiftyInstaTests: XCTestCase {
         }
     }
     
+    func testLoginCache(handler: APIHandlerProtocol, cache: SessionCache) {
+        print("[+] testing login cache...")
+        
+        // Clearing saved cookies for test.
+        HTTPCookieStorage.shared.cookies?.forEach({ (cookie) in
+            HTTPCookieStorage.shared.deleteCookie(cookie)
+        })
+        
+        let exp = expectation(description: "testLoginCache() faild during timeout")
+        do {
+            try handler.login(cache: cache, completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] login cache test succeeded.")
+                } else {
+                    print("[-] login cache test failed.")
+                }
+                
+                exp.fulfill()
+            })
+        } catch {
+            print(error.localizedDescription)
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60, handler: nil)
+    }
+    
     func testLoginWithChallenge(handler: APIHandlerProtocol) {
         print("[+] trying to loggin with challenge.")
         let exp = expectation(description: "login() faild during timeout")
+        //var _cache: SessionCache?
         do {
             // to test run this test, you need to set breakpoints at line 91 after you got the codeSent result,
             // change the value of 'securityCode' variable to recieved security code and continue the test.
@@ -87,9 +115,10 @@ class SwiftyInstaTests: XCTestCase {
                 print(result.value!)
                 try! handler.verifyMethod(of: .email, completion: { (result) in
                     print(result.value!)
-                    let securityCode = "847159"
+                    let securityCode = "093182"
                     // Breakpoint Here, to variable from debugger type: e securityCode = "new code"
-                    try! handler.sendVerifyCode(securityCode: securityCode, completion: { (result) in
+                    try! handler.sendVerifyCode(securityCode: securityCode, completion: { (result, cache) in
+                        //_cache = cache
                         print(result.value!)
                         exp.fulfill()
                     })
@@ -105,6 +134,8 @@ class SwiftyInstaTests: XCTestCase {
                 fatalError(err.localizedDescription)
             }
             
+            // if you need to test loginCache method, uncomment lines [110, 121, 138] and set `logoutAfterTest = false'
+            //self.testLoginCache(handler: handler, cache: _cache!)
             if self.logoutAfterTest {
                 self.testLogout(handler: handler)
             }
@@ -221,7 +252,7 @@ class SwiftyInstaTests: XCTestCase {
         do {
             try handler.getCurrentUser(completion: { (result) in
                 if result.isSucceeded {
-                    print("[+] user email: \(result.value!.user.email!)")
+                    print("[+] user email: \(result.value!.user!.email!)")
                 }
                 exp.fulfill()
             })

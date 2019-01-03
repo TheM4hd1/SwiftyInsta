@@ -51,10 +51,10 @@ public struct CurrentUser: Codable, UserShortProtocol {
 }
 
 public struct CurrentUserModel: Codable, BaseStatusResponseProtocol {
-    public var user: CurrentUser
+    public var user: CurrentUser?
     public var status: String?
     
-    public init(user: CurrentUser, status: String?) {
+    public init(user: CurrentUser?, status: String?) {
         self.user = user
         self.status = status
     }

@@ -90,4 +90,8 @@ class HttpHelper {
             request.httpBody = data.data(using: String.Encoding.utf8)
         }
     }
+    
+    func setCookies(_ cookies: [HTTPCookie]) {
+        HTTPCookieStorage.shared.setCookies(cookies, for: URL(string: "https://www.instagram.com/"), mainDocumentURL: nil)
+    }
 }

@@ -40,6 +40,7 @@
 		115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1254217FF0E300ED3530 /* UserShortModel.swift */; };
 		115F1257217FF1BF00ED3530 /* AndroidDeviceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */; };
 		115F1259217FF21E00ED3530 /* Devices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1258217FF21E00ED3530 /* Devices.swift */; };
+		116B149F21DEB64B00953A71 /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
 		116C3F3B21A6EBE5003084DD /* MediaTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116C3F3A21A6EBE5003084DD /* MediaTypes.swift */; };
 		1171E472218118A400579B04 /* DelayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E471218118A400579B04 /* DelayModel.swift */; };
 		1171E4742181217100579B04 /* CommonCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 1171E4732181217100579B04 /* CommonCrypto.h */; };
@@ -129,6 +130,7 @@
 		115F1254217FF0E300ED3530 /* UserShortModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortModel.swift; sourceTree = "<group>"; };
 		115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidDeviceGenerator.swift; sourceTree = "<group>"; };
 		115F1258217FF21E00ED3530 /* Devices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Devices.swift; sourceTree = "<group>"; };
+		116B149E21DEB64B00953A71 /* SessionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCache.swift; sourceTree = "<group>"; };
 		116C3F3A21A6EBE5003084DD /* MediaTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTypes.swift; sourceTree = "<group>"; };
 		1171E471218118A400579B04 /* DelayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayModel.swift; sourceTree = "<group>"; };
 		1171E4732181217100579B04 /* CommonCrypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonCrypto.h; sourceTree = "<group>"; };
@@ -330,6 +332,7 @@
 				11B8518E219F5208009527CD /* UploadMediaModel.swift */,
 				11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */,
 				115CA6DE21B0214800769B00 /* EditProfileModel.swift */,
+				116B149E21DEB64B00953A71 /* SessionCache.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -525,6 +528,7 @@
 				110C9D9821989F5800805C68 /* RecentActivitiesModel.swift in Sources */,
 				11AE440721A99CD400BD9EFB /* MessageHandler.swift in Sources */,
 				115F124F217FEC8E00ED3530 /* Result.swift in Sources */,
+				116B149F21DEB64B00953A71 /* SessionCache.swift in Sources */,
 				11F0CE6B2195CC2400C0F6A4 /* TimeLineModel.swift in Sources */,
 				116C3F3B21A6EBE5003084DD /* MediaTypes.swift in Sources */,
 				11BF2FA2219A07400095D594 /* RecentRecipientsModel.swift in Sources */,

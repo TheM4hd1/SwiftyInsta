@@ -35,13 +35,19 @@ public class APIHandler: APIHandlerProtocol {
         HandlerSettings.shared.isUserAuthenticated = false
     }
     
-    public func login(completion: @escaping (Result<LoginResultModel>) -> ()) throws {
+    public func login(cache: SessionCache, completion: @escaping (Result<LoginResultModel>) -> ()) throws {
+        try UserHandler.shared.login(cache: cache, completion: { (result) in
+            completion(result)
+        })
+    }
+    
+    public func login(completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws {
         // validating before login.
         try validateUser()
         try validateRequestMessage()
         
-        try UserHandler.shared.login { (result) in
-            completion(result)
+        try UserHandler.shared.login { (result, cache) in
+            completion(result, cache)
         }
     }
     
@@ -71,13 +77,13 @@ public class APIHandler: APIHandlerProtocol {
         }
     }
     
-    public func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>) -> ()) throws {
+    public func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws {
         if HandlerSettings.shared.challenge == nil {
             let error = CustomErrors.runTimeError("challenge require info is empty.\r\ntry to call login function first.")
-            completion(Return.fail(error: error, response: .challengeRequired, value: .challengeRequired))
+            completion(Return.fail(error: error, response: .challengeRequired, value: .challengeRequired), nil)
         } else {
-            try UserHandler.shared.sendVerifyCode(securityCode: securityCode, completion: { (result) in
-                completion(result)
+            try UserHandler.shared.sendVerifyCode(securityCode: securityCode, completion: { (result, cache) in
+                completion(result, cache)
             })
         }
     }
