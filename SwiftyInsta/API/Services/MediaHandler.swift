@@ -16,6 +16,7 @@ public protocol MediaHandlerProtocol {
     func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
     func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws
     func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws
+    func editMedia(mediaId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws
 }
 
 class MediaHandler: MediaHandlerProtocol {
@@ -380,7 +381,7 @@ class MediaHandler: MediaHandlerProtocol {
             "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
             "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
             "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "media_id": mediaId
+            "media_id": mediaId,
         ]
         
         HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: mediaType.rawValue), body: content, header: [:]) { (data, response, error) in
@@ -398,5 +399,46 @@ class MediaHandler: MediaHandlerProtocol {
                 }
             }
         }
+    }
+    
+    func editMedia(mediaId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+        let encoder = JSONEncoder()
+        
+        let content = [
+            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "_uid": String(format: "%ld", HandlerSettings.shared.user!.loggedInUser.pk!),
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "caption_text": caption,
+        ]
+
+        let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
+        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+        // Creating Post Request Body
+        let signature = "\(hash).\(payload)"
+        let body: [String: Any] = [
+            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+        ]
+        
+        HandlerSettings.shared.httpHelper?.sendAsync(method: .post, url: try! URLs.getEditMediaUrl(mediaId: mediaId), body: body, header: [:], completion: { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if response?.statusCode == 200 {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let value = try decoder.decode(MediaModel.self, from: data)
+                            completion(Return.success(value: value))
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil))
+                        }
+                    }
+                } else {
+                    completion(Return.fail(error: nil, response: .fail, value: nil))
+                }
+            }
+        })
     }
 }

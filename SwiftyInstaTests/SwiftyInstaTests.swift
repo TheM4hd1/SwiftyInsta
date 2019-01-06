@@ -72,7 +72,8 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testUploadProfilePicture(handler: handler)
+                self.testEditMedia(handler: handler)
+                //self.testUploadProfilePicture(handler: handler)
             }
         }
     }
@@ -163,7 +164,7 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUser(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUser() faild during timeout")
         do {
-            try handler.getUser(username: "swiftyinsta", completion: { (result) in
+            try handler.getUser(username: "swifty.tips", completion: { (result) in // swifty.tips pk: 9529571412
                 if result.isSucceeded {
                     guard let user = result.value else { return }
                     print("fullname: \(user.fullName!)")
@@ -657,7 +658,8 @@ class SwiftyInstaTests: XCTestCase {
         let imagePath = (myBundle?.path(forResource: "testbundle", ofType: "bundle"))! + "/1.jpg"
         let image = UIImage(contentsOfFile: imagePath)
         do {
-            try handler.uploadPhoto(photo: InstaPhoto(image: image!, caption: "caption for test.", width: 1, height: 1), completion: { (result) in
+            let photo = InstaPhoto(image: image!, caption: "caption for test.", width: 1, height: 1)
+            try handler.uploadPhoto(photo: photo, completion: { (result) in
                 if result.isSucceeded {
                     print("[+] upload status: \(result.value!.status!)")
                 } else {
@@ -697,6 +699,25 @@ class SwiftyInstaTests: XCTestCase {
             } else {
                 print("[-] error: \(result.info.message)")
             }
+            exp.fulfill()
+        })
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testEditMedia(handler: APIHandlerProtocol) {
+        let mediaId = "1920671942680208682_8766457680"
+        let exp = expectation(description: "testEditMedia() faild during timeout")
+        
+        try! handler.editMedia(mediaId: mediaId, caption: "final test for edit media", completion: { (result) in
             exp.fulfill()
         })
         

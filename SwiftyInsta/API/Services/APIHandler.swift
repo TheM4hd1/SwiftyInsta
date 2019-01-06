@@ -534,6 +534,16 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func editMedia(mediaId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.editMedia(mediaId: mediaId, caption: caption, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     fileprivate func validateUser() throws {
         if HandlerSettings.shared.user!.username.isEmpty || HandlerSettings.shared.user!.password.isEmpty {
             throw CustomErrors.runTimeError("username and password must be specified.")

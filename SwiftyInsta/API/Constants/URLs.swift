@@ -71,6 +71,7 @@ struct URLs {
     private static let editBiography = "/accounts/set_biography/"
     private static let removeProfilePicture = "/accounts/remove_profile_picture/"
     private static let changeProfilePicture = "/accounts/change_profile_picture/"
+    private static let editMedia = "/media/%@/edit_media/"
     
     // MARK: - Methods
     
@@ -514,6 +515,13 @@ struct URLs {
     
     static func getVerifyLoginUrl(challenge: String) throws -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, challenge)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for verify login.")
+    }
+    
+    static func getEditMediaUrl(mediaId: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: editMedia, mediaId))) {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for verify login.")
