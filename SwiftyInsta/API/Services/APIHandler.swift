@@ -324,6 +324,16 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func getMediaLikers(mediaId: String, completion: @escaping (Result<MediaLikersModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.getMediaLikers(mediaId: mediaId, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws {
         // validate before request.
         try validateUser()

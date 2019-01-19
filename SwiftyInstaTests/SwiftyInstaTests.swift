@@ -36,7 +36,7 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "login() faild during timeout")
-        let user = SessionStorage.create(username: "swiftyinsta", password: "vvvvvv")
+        let user = SessionStorage.create(username: "swiftyinsta", password: "tttttt")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
         var _error: Error?
         do {
@@ -72,8 +72,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testEditMedia(handler: handler)
-                //self.testUploadProfilePicture(handler: handler)
+                self.testGetMediaLikers(handler: handler)
             }
         }
     }
@@ -116,7 +115,8 @@ class SwiftyInstaTests: XCTestCase {
                 print(result.value!)
                 try! handler.verifyMethod(of: .email, completion: { (result) in
                     print(result.value!)
-                    let securityCode = "093182"
+                    // FIXME: - Challenge Code
+                    let securityCode = "607925"
                     // Breakpoint Here, to variable from debugger type: e securityCode = "new code"
                     try! handler.sendVerifyCode(securityCode: securityCode, completion: { (result, cache) in
                         //_cache = cache
@@ -137,9 +137,10 @@ class SwiftyInstaTests: XCTestCase {
             
             // if you need to test loginCache method, uncomment lines [110, 121, 138] and set `logoutAfterTest = false'
             //self.testLoginCache(handler: handler, cache: _cache!)
-            if self.logoutAfterTest {
-                self.testLogout(handler: handler)
-            }
+            self.testGetMediaLikers(handler: handler)
+//            if self.logoutAfterTest {
+//                self.testLogout(handler: handler)
+//            }
         }
     }
     
@@ -634,6 +635,31 @@ class SwiftyInstaTests: XCTestCase {
                 } else {
                     print("[-] can not like media.]")
                 }
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetMediaLikers(handler: APIHandlerProtocol) {
+        let mediaId = "1920671942680208682_8766457680"
+        let exp = expectation(description: "getMediaLikers() faild during timeout")
+        
+        do {
+            try handler.getMediaLikers(mediaId: mediaId, completion: { (result) in
+                print(result)
                 exp.fulfill()
             })
         } catch {

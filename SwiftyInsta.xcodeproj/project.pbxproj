@@ -46,6 +46,7 @@
 		1171E4742181217100579B04 /* CommonCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 1171E4732181217100579B04 /* CommonCrypto.h */; };
 		1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E47721812C9400579B04 /* LoginResultModel.swift */; };
 		11723A592187C23400968DA5 /* LoginResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11723A582187C23400968DA5 /* LoginResponseModel.swift */; };
+		1177ACA721F34BE1008A0C4C /* MediaLikersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */; };
 		117E65A221962ED5004626CC /* UserFeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117E65A121962ED5004626CC /* UserFeedModel.swift */; };
 		11848602218A1DDB0067FFD6 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848601218A1DDB0067FFD6 /* UserModel.swift */; };
 		11848604218A1F460067FFD6 /* FriendshipStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */; };
@@ -136,6 +137,7 @@
 		1171E4732181217100579B04 /* CommonCrypto.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonCrypto.h; sourceTree = "<group>"; };
 		1171E47721812C9400579B04 /* LoginResultModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResultModel.swift; sourceTree = "<group>"; };
 		11723A582187C23400968DA5 /* LoginResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponseModel.swift; sourceTree = "<group>"; };
+		1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLikersModel.swift; sourceTree = "<group>"; };
 		117E65A121962ED5004626CC /* UserFeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedModel.swift; sourceTree = "<group>"; };
 		11848601218A1DDB0067FFD6 /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipStatusModel.swift; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 				11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */,
 				115CA6DE21B0214800769B00 /* EditProfileModel.swift */,
 				116B149E21DEB64B00953A71 /* SessionCache.swift */,
+				1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -546,6 +549,7 @@
 				11B9568621945F09006661A6 /* VideoVersionModel.swift in Sources */,
 				112E735C2180E86B0048A8D7 /* CryptoHelper.swift in Sources */,
 				11C439D4219A429B00467381 /* ProfilePrivacyResponseModel.swift in Sources */,
+				1177ACA721F34BE1008A0C4C /* MediaLikersModel.swift in Sources */,
 				115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */,
 				11DDE51F21A1F94B00754F0F /* AndroidVersion.swift in Sources */,
 				1195D5A721B1E6E900C71FE7 /* VerifyTypes.swift in Sources */,

@@ -48,6 +48,7 @@ struct URLs {
     private static let changePassword = "/accounts/change_password/"
     private static let likeMedia = "/media/%@/like/"
     private static let unlikeMedia = "/media/%@/unlike/"
+    private static let mediaLikers = "/media/%@/likers/"
     private static let mediaComments = "/media/%@/comments/"
     private static let followUser = "/friendships/create/%ld/"
     private static let unFollowUser = "/friendships/destroy/%ld/"
@@ -525,5 +526,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for verify login.")
+    }
+    
+    static func getMediaLikersUrl(mediaId: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: mediaLikers, mediaId))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for media likers.")
     }
 }

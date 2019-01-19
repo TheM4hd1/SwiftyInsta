@@ -17,6 +17,7 @@ public protocol MediaHandlerProtocol {
     func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws
     func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws
     func editMedia(mediaId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws
+    func getMediaLikers(mediaId: String, completion: @escaping (Result<MediaLikersModel>) -> ()) throws
 }
 
 class MediaHandler: MediaHandlerProtocol {
@@ -420,7 +421,7 @@ class MediaHandler: MediaHandlerProtocol {
             Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
         ]
         
-        HandlerSettings.shared.httpHelper?.sendAsync(method: .post, url: try! URLs.getEditMediaUrl(mediaId: mediaId), body: body, header: [:], completion: { (data, response, error) in
+        HandlerSettings.shared.httpHelper?.sendAsync(method: .post, url: try URLs.getEditMediaUrl(mediaId: mediaId), body: body, header: [:], completion: { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -430,6 +431,29 @@ class MediaHandler: MediaHandlerProtocol {
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
                         do {
                             let value = try decoder.decode(MediaModel.self, from: data)
+                            completion(Return.success(value: value))
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil))
+                        }
+                    }
+                } else {
+                    completion(Return.fail(error: nil, response: .fail, value: nil))
+                }
+            }
+        })
+    }
+    
+    func getMediaLikers(mediaId: String, completion: @escaping (Result<MediaLikersModel>) -> ()) throws {
+        HandlerSettings.shared.httpHelper?.sendAsync(method: .get, url: try URLs.getMediaLikersUrl(mediaId: mediaId), body: [:], header: [:], completion: { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if response?.statusCode == 200 {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let value = try decoder.decode(MediaLikersModel.self, from: data)
                             completion(Return.success(value: value))
                         } catch {
                             completion(Return.fail(error: error, response: .ok, value: nil))
