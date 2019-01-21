@@ -17,7 +17,7 @@ public struct PaginationParameters {
         maxPagesToLoad = maxPages
     }
     
-    static func maxPagesToLoad(maxPages: Int) -> PaginationParameters {
+    public static func maxPagesToLoad(maxPages: Int) -> PaginationParameters {
         return PaginationParameters(maxPages: maxPages)
     }
 }
