@@ -543,4 +543,12 @@ struct URLs {
         
         throw CustomErrors.urlCreationFaild("Cant create URL for instagram cookies.")
     }
+    
+    static func getTwoFactorLoginUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, accountTwoFactorLogin)) {
+            return url
+        }
+        
+        throw CustomErrors.urlCreationFaild("Cant create URL for two factor login.")
+    }
 }

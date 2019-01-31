@@ -51,6 +51,13 @@ public class APIHandler: APIHandlerProtocol {
         }
     }
     
+    public func twoFactorLogin(verificationCode: String, useBackupCode: Bool, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws {
+        
+        try UserHandler.shared.twoFactorLogin(verificationCode: verificationCode, useBackupCode: useBackupCode, completion: { (result, cache) in
+            completion(result, cache)
+        })
+    }
+    
     /// to login with challenge, you need to go through 3 steps.
     /// 1. ```challengeLogin(_)```, if you get ```verifyRequired``` result, run step 2
     /// 2. ```verifyMethod(_,_)```, if you get ```codeSent``` result, run step 3

@@ -61,7 +61,7 @@ public class APIBuilder: APIBuilderProtocol {
                 phoneId: device.phoneGuid.uuidString,
                 username: user.username,
                 guid: device.deviceGuid,
-                deviceId: RequestMessageModel.generateDeviceId(),
+                deviceId: RequestMessageModel.generateDeviceIdFromGuid(guid: device.deviceGuid),
                 password: user.password,
                 loginAttemptCount: "0"
             )

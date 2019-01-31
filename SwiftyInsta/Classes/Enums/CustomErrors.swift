@@ -8,11 +8,13 @@
 
 import Foundation
 
-enum CustomErrors: Error {
+public enum CustomErrors: Error {
     case urlCreationFaild(_ description: String)
     case runTimeError(_ description: String)
     case invalidCredentials
     case twoFactorAuthentication
+    case invalidTwoFactorCode
+    case missingTwoFactorCode
     case challengeRequired
     case unExpected(_ description: String)
     case groupedError(_ description: String)
@@ -32,6 +34,14 @@ extension CustomErrors: LocalizedError {
             return description
         case .groupedError(let description):
             return description
+        case .invalidTwoFactorCode:
+            return "This code is no longer valid, please request a new one"
+        case .twoFactorAuthentication:
+            return "Two Factor Authentication is required"
+        case .challengeRequired:
+            return "Challenge is required"
+        case .missingTwoFactorCode:
+            return "Sms validation code missing"
         default:
             return ""
         }

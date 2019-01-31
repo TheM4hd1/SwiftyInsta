@@ -47,6 +47,7 @@
 		1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E47721812C9400579B04 /* LoginResultModel.swift */; };
 		11723A592187C23400968DA5 /* LoginResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11723A582187C23400968DA5 /* LoginResponseModel.swift */; };
 		1177ACA721F34BE1008A0C4C /* MediaLikersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */; };
+		117AACE922033B48008913FF /* TwoFactorEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117AACE822033B48008913FF /* TwoFactorEnums.swift */; };
 		117E65A221962ED5004626CC /* UserFeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117E65A121962ED5004626CC /* UserFeedModel.swift */; };
 		11848602218A1DDB0067FFD6 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848601218A1DDB0067FFD6 /* UserModel.swift */; };
 		11848604218A1F460067FFD6 /* FriendshipStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */; };
@@ -138,6 +139,7 @@
 		1171E47721812C9400579B04 /* LoginResultModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResultModel.swift; sourceTree = "<group>"; };
 		11723A582187C23400968DA5 /* LoginResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginResponseModel.swift; sourceTree = "<group>"; };
 		1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLikersModel.swift; sourceTree = "<group>"; };
+		117AACE822033B48008913FF /* TwoFactorEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorEnums.swift; sourceTree = "<group>"; };
 		117E65A121962ED5004626CC /* UserFeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedModel.swift; sourceTree = "<group>"; };
 		11848601218A1DDB0067FFD6 /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipStatusModel.swift; sourceTree = "<group>"; };
@@ -359,6 +361,7 @@
 				116C3F3A21A6EBE5003084DD /* MediaTypes.swift */,
 				115CA6DC21AFFB2700769B00 /* GenderTypes.swift */,
 				1195D5A621B1E6E900C71FE7 /* VerifyTypes.swift */,
+				117AACE822033B48008913FF /* TwoFactorEnums.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -520,6 +523,7 @@
 				11AE440521A99CD400BD9EFB /* UserHandler.swift in Sources */,
 				11905DFD2191C2C100FF297A /* CurrentUserModel.swift in Sources */,
 				112022982188AACF00CA58BA /* BaseStatusResponseModel.swift in Sources */,
+				117AACE922033B48008913FF /* TwoFactorEnums.swift in Sources */,
 				117E65A221962ED5004626CC /* UserFeedModel.swift in Sources */,
 				114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */,
 				11A95BEF21AC0B9800839250 /* StoryHandler.swift in Sources */,

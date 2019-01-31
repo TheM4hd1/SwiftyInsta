@@ -31,9 +31,9 @@ class SwiftyInstaTests: XCTestCase {
     func testLogin() {
         
         // Clearing saved cookies before login.
-        HTTPCookieStorage.shared.cookies?.forEach({ (cookie) in
-            HTTPCookieStorage.shared.deleteCookie(cookie)
-        })
+//        HTTPCookieStorage.shared.cookies?.forEach({ (cookie) in
+//            HTTPCookieStorage.shared.deleteCookie(cookie)
+//        })
         
         let exp = expectation(description: "login() faild during timeout")
         let user = SessionStorage.create(username: "swiftyinsta", password: "??????")
@@ -64,10 +64,12 @@ class SwiftyInstaTests: XCTestCase {
                 switch _error! {
                 case CustomErrors.challengeRequired:
                     self.testLoginWithChallenge(handler: handler)
+                case CustomErrors.twoFactorAuthentication:
+                    self.testLoginTwoFactor(handler: handler)
                 default:
                     print("[-] unexcpected error.")
                 }
-            }else {
+            } else {
                 // FIXME: after the test is completed, the logout is handled by this variable.
                 self.logoutAfterTest = true
                 
@@ -75,6 +77,27 @@ class SwiftyInstaTests: XCTestCase {
                 self.testGetMediaLikers(handler: handler)
             }
         }
+    }
+    
+    func testLoginTwoFactor(handler: APIHandlerProtocol) {
+        print("[+] testing twoFactor login...")
+
+        let verCode = "269475"
+        
+        let exp = expectation(description: "testLoginTwoFactor() faild during timeout")
+
+        do {
+            try handler.twoFactorLogin(verificationCode: verCode, useBackupCode: false, completion: { (result, cache) in
+                print(result)
+                exp.fulfill()
+            })
+        } catch {
+            print(error.localizedDescription)
+            exp.fulfill()
+            
+        }
+        
+        waitForExpectations(timeout: 60, handler: nil)
     }
     
     func testLoginCache(handler: APIHandlerProtocol, cache: SessionCache) {
