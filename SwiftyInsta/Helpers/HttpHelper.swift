@@ -21,18 +21,18 @@ class HttpHelper {
     
     /// Only ```data: Data?``` or ```body: [String: Any]``` can use as ```httpBody```
     func sendAsync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String], data: Data? = nil, completion: @escaping completionHandler) {
-        HandlerSettings.shared.queue!.asyncAfter(deadline: .now() + HandlerSettings.shared.delay!.random()) { [weak self] in
-            var request = self!.getDefaultRequest(for: url, method: method)
-            self!.addHeaders(to: &request, header: header)
+        HandlerSettings.shared.queue!.asyncAfter(deadline: .now() + HandlerSettings.shared.delay!.random()) { [unowned self] in
+            var request = self.getDefaultRequest(for: url, method: method)
+            self.addHeaders(to: &request, header: header)
             //addBody(to: &request, body: body)
             
             if let data = data {
                 request.httpBody = data
             } else {
-                self!.addBody(to: &request, body: body)
+                self.addBody(to: &request, body: body)
             }
             
-            let task = self!.session.dataTask(with: request) { (data, response, error) in
+            let task = self.session.dataTask(with: request) { (data, response, error) in
                 completion(data, response as? HTTPURLResponse, error)
             }
             
@@ -91,7 +91,14 @@ class HttpHelper {
         }
     }
     
-    func setCookies(_ cookies: [HTTPCookie]) {
-        HTTPCookieStorage.shared.setCookies(cookies, for: URL(string: "https://www.instagram.com/"), mainDocumentURL: nil)
+    func setCookies(_ cookiesData: [Data]) {
+        var cookies = [HTTPCookie]()
+        for data in cookiesData {
+            if let cookieFromData = HTTPCookie.loadCookie(using: data) {
+                cookies.append(cookieFromData)
+            }
+        }
+        
+        try? HTTPCookieStorage.shared.setCookies(cookies, for: URLs.getInstagramCookieUrl(), mainDocumentURL: nil)
     }
 }

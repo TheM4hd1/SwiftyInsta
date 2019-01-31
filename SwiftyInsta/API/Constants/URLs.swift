@@ -73,6 +73,7 @@ struct URLs {
     private static let removeProfilePicture = "/accounts/remove_profile_picture/"
     private static let changeProfilePicture = "/accounts/change_profile_picture/"
     private static let editMedia = "/media/%@/edit_media/"
+    private static let instagramCookieUrl = "https://www.instagram.com/"
     
     // MARK: - Methods
     
@@ -533,5 +534,13 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for media likers.")
+    }
+    
+    static func getInstagramCookieUrl() throws -> URL {
+        if let url = URL(string: instagramCookieUrl) {
+            return url
+        }
+        
+        throw CustomErrors.urlCreationFaild("Cant create URL for instagram cookies.")
     }
 }

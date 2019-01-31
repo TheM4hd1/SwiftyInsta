@@ -8,10 +8,10 @@
 
 import Foundation
 
-public struct SessionCache {
+public struct SessionCache: Codable {
     public let user: SessionStorage
     public let device: AndroidDeviceModel
     public let requestMessage: RequestMessageModel
-    public let cookies: [HTTPCookie]
+    public let cookies: [Data]
     public let isUserAuthenticated: Bool
 }

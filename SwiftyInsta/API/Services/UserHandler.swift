@@ -68,6 +68,7 @@ class UserHandler: UserHandlerProtocol {
                 // find CSRF token
                 let fields = response?.allHeaderFields
                 let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields as! [String : String], for: (response?.url)!)
+                
                 for cookie in cookies {
                     if cookie.name == "csrftoken" {
                         HandlerSettings.shared.user!.csrfToken = cookie.value
@@ -125,7 +126,7 @@ class UserHandler: UserHandlerProtocol {
                                     HandlerSettings.shared.isUserAuthenticated = (loginInfo.loggedInUser.username?.lowercased() == HandlerSettings.shared.user!.username.lowercased())
                                     HandlerSettings.shared.user!.rankToken = "\(HandlerSettings.shared.user!.loggedInUser.pk ?? 0)_\(HandlerSettings.shared.request!.phoneId )"
                                     
-                                    let sessionCache = SessionCache.init(user: HandlerSettings.shared.user!, device: HandlerSettings.shared.device!, requestMessage: HandlerSettings.shared.request!, cookies: cookies, isUserAuthenticated: true)
+                                    let sessionCache = SessionCache.init(user: HandlerSettings.shared.user!, device: HandlerSettings.shared.device!, requestMessage: HandlerSettings.shared.request!, cookies: (HTTPCookieStorage.shared.cookies?.getInstagramCookies()?.toCookieData())!, isUserAuthenticated: true)
                                     completion(Return.success(value: .success), sessionCache)
                                 } catch {
                                     completion(Return.fail(error: error, response: .ok, value: nil), nil)
@@ -211,9 +212,8 @@ class UserHandler: UserHandlerProtocol {
                             HandlerSettings.shared.user!.loggedInUser = loginInfo.loggedInUser
                             HandlerSettings.shared.isUserAuthenticated = (loginInfo.loggedInUser.username?.lowercased() == HandlerSettings.shared.user!.username.lowercased())
                             HandlerSettings.shared.user!.rankToken = "\(HandlerSettings.shared.user!.loggedInUser.pk ?? 0)_\(HandlerSettings.shared.request!.phoneId )"
-                            let fields = response?.allHeaderFields
-                            let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields as! [String : String], for: (response?.url)!)
-                            let sessionCache = SessionCache.init(user: HandlerSettings.shared.user!, device: HandlerSettings.shared.device!, requestMessage: HandlerSettings.shared.request!, cookies: cookies, isUserAuthenticated: true)
+                            let sessionCache = SessionCache.init(user: HandlerSettings.shared.user!, device: HandlerSettings.shared.device!, requestMessage: HandlerSettings.shared.request!, cookies: (HTTPCookieStorage.shared.cookies?.getInstagramCookies()?.toCookieData())!, isUserAuthenticated: true)
+
                             completion(Return.success(value: .success), sessionCache)
                         } else {
                             let error = CustomErrors.runTimeError("Please check the code we sent you and try again.")

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct AndroidDeviceModel {
+public struct AndroidDeviceModel: Codable {
     var phoneGuid: UUID
     var deviceGuid: UUID
     var googleAdId: UUID?

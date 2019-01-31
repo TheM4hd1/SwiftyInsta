@@ -36,7 +36,7 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "login() faild during timeout")
-        let user = SessionStorage.create(username: "swiftyinsta", password: "tttttt")
+        let user = SessionStorage.create(username: "swiftyinsta", password: "??????")
         let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
         var _error: Error?
         do {
@@ -116,7 +116,7 @@ class SwiftyInstaTests: XCTestCase {
                 try! handler.verifyMethod(of: .email, completion: { (result) in
                     print(result.value!)
                     // FIXME: - Challenge Code
-                    let securityCode = "607925"
+                    let securityCode = "465739"
                     // Breakpoint Here, to variable from debugger type: e securityCode = "new code"
                     try! handler.sendVerifyCode(securityCode: securityCode, completion: { (result, cache) in
                         //_cache = cache
