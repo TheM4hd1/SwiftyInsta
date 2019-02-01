@@ -9,7 +9,6 @@
 import Foundation
 
 public protocol UploadMediaProtocol {
-    var image: UIImage {get}
     var caption: String {get}
     var width: Int {get}
     var height: Int {get}
@@ -30,15 +29,19 @@ public struct InstaPhoto: UploadMediaProtocol {
 }
 
 public struct InstaVideo: UploadMediaProtocol {
-    public var image: UIImage
+    public var data: Data
+    public var fileName: String
     public var caption: String
+    public var audioMuted: Bool
     public var width: Int
     public var height: Int
     public var type: Int
     
-    public init(image: UIImage, caption: String, width: Int, height: Int, type: Int) {
-        self.image = image
+    public init(data: Data, name: String, caption: String, muted: Bool, width: Int, height: Int, type: Int) {
+        self.data = data
+        self.fileName = name
         self.caption = caption
+        self.audioMuted = muted
         self.width = width
         self.height = height
         self.type = type
@@ -108,4 +111,39 @@ struct ConfigureChildren: Codable {
     let disable_comments: Bool
     let source_type: Int
     let upload_id: String
+}
+
+struct UploadVideoResponse: Codable, BaseStatusResponseProtocol {
+    let videoUploadUrls: [VideoUploadUrls]?
+    let uploadId: String?
+    var status: String?
+}
+
+struct VideoUploadUrls: Codable {
+    let url: String?
+    let job: String?
+    let expires: Double?
+}
+
+struct ConfigureVideoModel: Codable {
+    let caption: String
+    let uploadId: String
+    let sourceType: String
+    let cameraPosition: String
+    let extra: ConfigureExtras
+    let clips: [ClipsModel]
+    let posterFrameIndex: Int
+    let audioMuted: Bool
+    let filterType: String
+    let videoResult: String
+    let _csrftoken: String
+    let _uuid: String
+    let _uid: String
+}
+
+struct ClipsModel: Codable {
+    let length: Int
+    let creationDate: String
+    let sourceType: String
+    let cameraPosition: String
 }

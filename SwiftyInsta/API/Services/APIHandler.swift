@@ -431,6 +431,16 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.uploadVideo(video: video, imageThumbnail: imageThumbnail, caption: caption, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws {
         // validate before request.
         try validateUser()

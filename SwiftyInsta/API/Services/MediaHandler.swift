@@ -15,6 +15,7 @@ public protocol MediaHandlerProtocol {
     func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
     func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
     func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws
+    func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws
     func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws
     func editMedia(mediaId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws
     func getMediaLikers(mediaId: String, completion: @escaping (Result<MediaLikersModel>) -> ()) throws
@@ -371,6 +372,202 @@ class MediaHandler: MediaHandlerProtocol {
                         completion(res, nil)
                     } catch {
                         completion(nil, error)
+                    }
+                }
+            }
+        }
+    }
+    
+    // Make sure file is valid (correct format, codecs, width, height and aspect ratio)
+    // also its important to provide fileName.extenstion in InstaVideo
+    // to convert video to data you need to pass file's URL to Data.init(contentsOf: URL)
+    func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+        let url = try! URLs.getUploadVideoUrl()
+        let uploadId = HandlerSettings.shared.request!.generateUploadId()
+        var content = Data()
+        
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+        content.append(string: "Content-Disposition: form-data; name=\"media_type\"\r\n\r\n")
+        content.append(string: "2\r\n")
+        content.append(string: "--\(uploadId)\r\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+        content.append(string: "Content-Disposition: form-data; name=\"upload_id\"\r\n\r\n")
+        content.append(string: "\(uploadId)\r\n")
+        content.append(string: "--\(uploadId)\r\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+        content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\r\n\r\n")
+        content.append(string: "\(HandlerSettings.shared.device!.deviceGuid.uuidString)\r\n")
+        content.append(string: "--\(uploadId)\r\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+        content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\r\n\r\n")
+        content.append(string: "\r\n")// FIXME - CSRF TOKEN ????
+        content.append(string: "--\(uploadId)\r\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+        content.append(string: "Content-Disposition: form-data; name=\"image_compression\"\r\n\r\n")
+        content.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\r\n")
+        content.append(string: "--\(uploadId)--\r\n\r\n")
+        
+        let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: [:], header: header, data: content) { (data, response, error) in
+            if let error = error {
+                print("[-] error: ", error)
+            } else {
+                if response?.statusCode == 200 {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let uploadUrls = try decoder.decode(UploadVideoResponse.self, from: data)
+                            if let firstUrl = uploadUrls.videoUploadUrls?.first {
+                                guard let uploadStringUrl = firstUrl.url?.removingPercentEncoding else { return }
+                                guard let uploadUrl = URL(string: uploadStringUrl) else { return }
+                                guard let job = firstUrl.job else { return }
+                                
+                                let headers = ["Host": "upload.instagram.com",
+                                               "Cookie2": "$Version=1",
+                                               "Session-ID": uploadId,
+                                               "job": job,
+                                               "Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
+                                
+                                var videoContent = Data()
+                                videoContent.append(string: "--\(uploadId)\r\n")
+                                videoContent.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+                                videoContent.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\r\n\r\n")
+                                videoContent.append(string: "\r\n")// FIXME - CSRF TOKEN ????
+                                videoContent.append(string: "--\(uploadId)\r\n")
+                                videoContent.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+                                videoContent.append(string: "Content-Disposition: form-data; name=\"image_compression\"\r\n\r\n")
+                                videoContent.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\r\n")
+                                videoContent.append(string: "--\(uploadId)\r\n")
+                                videoContent.append(string: "Content-Transfer-Encoding: binary\r\n")
+                                videoContent.append(string: "Content-Type: application/octet-stream\r\n")
+                                videoContent.append(string: "Content-Disposition: attachment; filename=\"\(video.fileName)\"\r\n\r\n")
+                                videoContent.append(video.data)
+                                videoContent.append(string: "\r\n--\(uploadId)--\r\n\r\n")
+                                
+                                HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: uploadUrl, body: [:], header: headers, data: videoContent, completion: { (data, response, error) in
+                                    if let error = error {
+                                        completion(Return.fail(error: error, response: .fail, value: nil))
+                                    } else {
+                                        print(response!.statusCode)
+                                        if response?.statusCode == 200 {
+                                            if let data  = data {
+                                                print(String(data: data, encoding: .utf8)!)
+                                                self.uploadVideoThumbnail(photo: imageThumbnail, uploadId: uploadId, completion: { (isUploaded) in
+                                                    if isUploaded {
+                                                        self.configureUploadVideo(video: video, uploadId: uploadId, caption: caption, completion: { (result) in
+                                                            completion(result)
+                                                        })
+                                                    } else {
+                                                        completion(Return.fail(error: CustomErrors.unExpected("error in uploading video thumbnail image"), response: .fail, value: nil))
+                                                    }
+                                                })
+                                            }
+                                        }
+                                    }
+                                })
+                                
+                                
+                            } else {
+                                completion(Return.fail(error: CustomErrors.runTimeError("Failed to get response from instagram video upload endpoint"), response: .ok, value: nil))
+                            }
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil))
+                        }
+                    }
+                } else {
+                    completion(Return.fail(error: CustomErrors.unExpected("status code: \(response?.statusCode ?? -1)"), response: .fail, value: nil))
+                }
+            }
+        }
+    }
+    
+    private func uploadVideoThumbnail(photo: InstaPhoto, uploadId: String, completion: @escaping (Bool) -> ()) {
+        let url = try! URLs.getUploadPhotoUrl()
+        var content = Data()
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"upload_id\"\n\n")
+        content.append(string: "\(uploadId)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\n\n")
+        content.append(string: "\(HandlerSettings.shared.device!.deviceGuid.uuidString)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\n\n")
+        content.append(string: "\(HandlerSettings.shared.user!.csrfToken)\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
+        content.append(string: "Content-Disposition: form-data; name=\"image_compression\"\n\n")
+        content.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\n")
+        content.append(string: "--\(uploadId)\n")
+        content.append(string: "Content-Transfer-Encoding: binary\n")
+        content.append(string: "Content-Type: application/octet-stream\n")
+        content.append(string: "Content-Disposition: form-data; name=photo; filename=pending_media_\(uploadId).jpg; filename*=utf-8''pending_media_\(uploadId).jpg\n\n")
+        
+        let imageData = photo.image.jpegData(compressionQuality: 1)
+        
+        content.append(imageData!)
+        content.append(string: "\n--\(uploadId)--\n\n")
+        
+        let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: [:], header: header, data: content) { (data, response, error) in
+            if error != nil {
+                completion(false)
+            } else {
+                if let data = data {
+                    print(String(data: data, encoding: .utf8)!)
+                    if response?.statusCode == 200 {
+                        completion(true)
+                    } else {
+                        completion(false)
+                    }
+                }
+            }
+        }
+        
+        
+    }
+    
+    private func configureUploadVideo(video: InstaVideo, uploadId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) {
+        let url = try! URLs.getConfigureMediaUrl()
+        let header = [Headers.HeaderContentTypeKey: Headers.HeaderContentTypeApplicationFormValue,
+                      "Host": "i.instagram.com"]
+        
+        let extra = ConfigureExtras.init(source_width: 0, source_height: 0)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-dd-MM'T'H:mm:ss-0SSS"
+        let clips = ClipsModel.init(length: 10, creationDate: formatter.string(from: Date()), sourceType: "3", cameraPosition: "back")
+        let content = ConfigureVideoModel.init(caption: caption, uploadId: uploadId, sourceType: "3", cameraPosition: "unknown", extra: extra, clips: [clips], posterFrameIndex: 0, audioMuted: video.audioMuted, filterType: "0", videoResult: "deprecated", _csrftoken: "", _uuid: HandlerSettings.shared.device!.deviceGuid.uuidString, _uid: HandlerSettings.shared.user!.loggedInUser.username!)
+        
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
+        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+        // Creating Post Request Body
+        let signature = "\(hash).\(payload)"
+        let body: [String: Any] = [
+            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+        ]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: body, header: header) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if let data = data {
+                    if response?.statusCode == 200 {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let media = try decoder.decode(MediaModel.self, from: data)
+                            completion(Return.success(value: media))
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil))
+                        }
                     }
                 }
             }

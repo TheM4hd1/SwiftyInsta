@@ -74,7 +74,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testGetMediaLikers(handler: handler)
+                self.testUploadVideo(handler: handler)
             }
         }
     }
@@ -699,6 +699,28 @@ class SwiftyInstaTests: XCTestCase {
                 self.testLogout(handler: handler)
             }
         }
+    }
+    
+    func testUploadVideo(handler: APIHandlerProtocol) {
+        print("[+] uploadVideo testing ...")
+        let exp = expectation(description: "testUploadVideo() faild during timeout")
+        let myBundle = Bundle.init(identifier: "com.TheM4hd1.SwiftyInsta")
+        let videoUrl = URL(fileURLWithPath: (myBundle?.path(forResource: "testbundle", ofType: "bundle"))! + "/video.mp4")
+        let imagePath = (myBundle?.path(forResource: "testbundle", ofType: "bundle"))! + "/2.jpg"
+        let image = UIImage(contentsOfFile: imagePath)
+        let photo = InstaPhoto(image: image!, caption: "", width: 1, height: 1)
+        let video = try! InstaVideo.init(data: Data.init(contentsOf: videoUrl), name: "video.mp4", caption: "just uploaded a video from framework", muted: false, width: 0, height: 0, type: 0)
+        do {
+            try handler.uploadVideo(video: video, imageThumbnail: photo, caption: "just uploaded a video from framework", completion: { (result) in
+                print(result)
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] failed: ", error)
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60, handler: nil)
     }
     
     func testUploadPhoto(handler: APIHandlerProtocol) {
