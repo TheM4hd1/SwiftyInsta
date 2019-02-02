@@ -112,8 +112,7 @@ class UserHandler: UserHandlerProtocol {
                                         let value = (errorType == "bad_password" ? LoginResultModel.badPassword : LoginResultModel.invalidUser)
                                         completion(Return.fail(error: CustomErrors.invalidCredentials, response: .fail, value: value), nil)
                                         
-                                    } else if loginFailReason.twoFactorRequired! {
-                                        print("here")
+                                    } else if loginFailReason.twoFactorRequired ?? false {
                                         HandlerSettings.shared.twoFactor = loginFailReason.twoFactorInfo
                                         
                                         if loginFailReason.twoFactorInfo?.totpTwoFactorOn == true {
@@ -200,7 +199,6 @@ class UserHandler: UserHandlerProtocol {
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 
                 if let data = data {
-                    print(String(data: data, encoding: .utf8)!)
                     if response?.statusCode != 200 {
                         do {
                             var loginFailReason = try decoder.decode(LoginBaseResponseModel.self, from: data)
