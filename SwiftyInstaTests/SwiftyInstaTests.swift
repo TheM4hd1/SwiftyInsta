@@ -31,9 +31,9 @@ class SwiftyInstaTests: XCTestCase {
     func testLogin() {
         
         // Clearing saved cookies before login.
-//        HTTPCookieStorage.shared.cookies?.forEach({ (cookie) in
-//            HTTPCookieStorage.shared.deleteCookie(cookie)
-//        })
+        HTTPCookieStorage.shared.cookies?.forEach({ (cookie) in
+            HTTPCookieStorage.shared.deleteCookie(cookie)
+        })
         
         let exp = expectation(description: "login() faild during timeout")
         let user = SessionStorage.create(username: "swiftyinsta", password: "??????")

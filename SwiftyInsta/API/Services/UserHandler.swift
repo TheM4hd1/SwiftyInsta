@@ -100,15 +100,20 @@ class UserHandler: UserHandlerProtocol {
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
                         
                         if let data = data {
+                            print(String(data: data, encoding: .utf8)!)
                             if response?.statusCode != 200 {
                                 do {
-                                    let loginFailReason = try decoder.decode(LoginBaseResponseModel.self, from: data)
+                                    var loginFailReason = try decoder.decode(LoginBaseResponseModel.self, from: data)
+                                    if loginFailReason.errorType == nil {
+                                        loginFailReason.errorType = ""
+                                    }
                                     guard let errorType = loginFailReason.errorType else { return }
                                     if loginFailReason.invalidCredentials ?? false || errorType == "bad_password" {
                                         let value = (errorType == "bad_password" ? LoginResultModel.badPassword : LoginResultModel.invalidUser)
                                         completion(Return.fail(error: CustomErrors.invalidCredentials, response: .fail, value: value), nil)
                                         
-                                    } else if loginFailReason.twoFactorRequired ?? false {
+                                    } else if loginFailReason.twoFactorRequired! {
+                                        print("here")
                                         HandlerSettings.shared.twoFactor = loginFailReason.twoFactorInfo
                                         
                                         if loginFailReason.twoFactorInfo?.totpTwoFactorOn == true {
@@ -140,6 +145,8 @@ class UserHandler: UserHandlerProtocol {
                                     completion(Return.fail(error: error, response: .ok, value: nil), nil)
                                 }
                             }
+                        } else {
+                            print("no data")
                         }
                     }
                 })
@@ -196,7 +203,10 @@ class UserHandler: UserHandlerProtocol {
                     print(String(data: data, encoding: .utf8)!)
                     if response?.statusCode != 200 {
                         do {
-                            let loginFailReason = try decoder.decode(LoginBaseResponseModel.self, from: data)
+                            var loginFailReason = try decoder.decode(LoginBaseResponseModel.self, from: data)
+                            if loginFailReason.errorType == nil {
+                                loginFailReason.errorType = ""
+                            }
                             guard let errorType = loginFailReason.errorType else { return }
                             if errorType == TwoFactorLoginErrorTypeEnum.invalidCode.rawValue {
                                 completion(Return.fail(error: CustomErrors.invalidTwoFactorCode, response: .fail, value: nil), nil)
@@ -221,8 +231,6 @@ class UserHandler: UserHandlerProtocol {
                             completion(Return.fail(error: error, response: .ok, value: nil), nil)
                         }
                     }
-                } else {
-                    print("NO DATA")
                 }
             }
         }
