@@ -52,9 +52,15 @@ public class APIHandler: APIHandlerProtocol {
     }
     
     public func twoFactorLogin(verificationCode: String, useBackupCode: Bool, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws {
-        
         try UserHandler.shared.twoFactorLogin(verificationCode: verificationCode, useBackupCode: useBackupCode, completion: { (result, cache) in
             completion(result, cache)
+        })
+    }
+    
+    /// Resend TwoFactor Sms
+    public func sendTwoFactorLoginSms(completion: @escaping (Result<Bool>) -> ()) throws {
+        try UserHandler.shared.sendTwoFactorLoginSms(completion: { (result) in
+            completion(result)
         })
     }
     

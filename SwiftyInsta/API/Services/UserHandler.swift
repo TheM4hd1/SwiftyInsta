@@ -13,6 +13,7 @@ public protocol UserHandlerProtocol {
     func login(completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws
     func login(cache: SessionCache, completion: @escaping (Result<LoginResultModel>) -> ()) throws
     func twoFactorLogin(verificationCode: String, useBackupCode: Bool, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws
+    func sendTwoFactorLoginSms(completion: @escaping (Result<Bool>) -> ()) throws
     func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws
     func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) ->()) throws
     func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws
@@ -144,8 +145,6 @@ class UserHandler: UserHandlerProtocol {
                                     completion(Return.fail(error: error, response: .ok, value: nil), nil)
                                 }
                             }
-                        } else {
-                            print("no data")
                         }
                     }
                 })
@@ -166,7 +165,6 @@ class UserHandler: UserHandlerProtocol {
         
         let encoder = JSONEncoder()
         let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
-        print("\n\n" + payload + "\n\n")
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
         
         let signature = "\(hash).\(payload)"
@@ -191,7 +189,7 @@ class UserHandler: UserHandlerProtocol {
         
         let body = getTwoFactorLoginRequestBody(verificationCode: verificationCode, verificationMethod: verificationMethod)
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try! URLs.getTwoFactorLoginUrl(), body: body, header: [:]) { (data, response, error) in
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getTwoFactorLoginUrl(), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .unknown, value: nil), nil)
             } else {
@@ -230,6 +228,41 @@ class UserHandler: UserHandlerProtocol {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    private func getTwoFactorLoginSmsRequestBody() -> [String: Any]{
+        let content = [
+            "two_factor_identifier" : HandlerSettings.shared.twoFactor!.twoFactorIdentifier,
+            "username": HandlerSettings.shared.user!.username,
+            "device_id": RequestMessageModel.generateDeviceIdFromGuid(guid: HandlerSettings.shared.device!.deviceGuid),
+            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            ]
+        
+        let encoder = JSONEncoder()
+        let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
+        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+        
+        let signature = "\(hash).\(payload)"
+        let body: [String: Any] = [
+            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+        ]
+        
+        return body
+    }
+    
+    // resend twofactor sms
+    func sendTwoFactorLoginSms(completion: @escaping (Result<Bool>) -> ()) throws {
+        let body = getTwoFactorLoginSmsRequestBody()
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getSendTwoFactorLoginSmsUrl(), body: body, header: [:]) { (data, response, error) in
+            if response?.statusCode == 200 {
+                completion(Return.success(value: true))
+            } else {
+                completion(Return.fail(error: error, response: .fail, value: false))
             }
         }
     }
