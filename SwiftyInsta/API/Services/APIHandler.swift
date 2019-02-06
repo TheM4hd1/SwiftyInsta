@@ -24,13 +24,13 @@ public class APIHandler: APIHandlerProtocol {
         
     }
     
-    public init(request: RequestMessageModel, user: SessionStorage, device: AndroidDeviceModel, delay: DelayModel, config: URLSessionConfiguration) {
+    public init(request: RequestMessageModel, user: SessionStorage, device: AndroidDeviceModel, delay: DelayModel, urlSession: URLSession) {
         // TODO: - Update Handler Settings
         HandlerSettings.shared.delay = delay
         HandlerSettings.shared.user = user
         HandlerSettings.shared.device = device
         HandlerSettings.shared.request = request
-        HandlerSettings.shared.httpHelper = HttpHelper(config: config)
+        HandlerSettings.shared.httpHelper = HttpHelper(urlSession: urlSession)
         HandlerSettings.shared.queue = DispatchQueue.global(qos: .utility)
         HandlerSettings.shared.isUserAuthenticated = false
     }

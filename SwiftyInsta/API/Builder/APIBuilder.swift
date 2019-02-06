@@ -10,7 +10,7 @@ import Foundation
 
 public protocol APIBuilderProtocol {
     func setUser(user: SessionStorage) -> APIBuilderProtocol
-    func setHttpHandler(config: URLSessionConfiguration) -> APIBuilderProtocol
+    func setHttpHandler(urlSession: URLSession) -> APIBuilderProtocol
     func setRequestDelay(delay: DelayModel) -> APIBuilderProtocol
     func build() throws -> APIHandlerProtocol
 }
@@ -21,7 +21,7 @@ public class APIBuilder: APIBuilderProtocol {
     private var _user: SessionStorage?
     private var _device: AndroidDeviceModel?
     private var _request: RequestMessageModel?
-    private var _config: URLSessionConfiguration?
+    private var _urlSession: URLSession?
     
     public init() {
         
@@ -36,8 +36,8 @@ public class APIBuilder: APIBuilderProtocol {
         return self
     }
     
-    public func setHttpHandler(config: URLSessionConfiguration) -> APIBuilderProtocol {
-        _config = config
+    public func setHttpHandler(urlSession: URLSession) -> APIBuilderProtocol {
+        _urlSession = urlSession
         return self
     }
     
@@ -91,11 +91,11 @@ public class APIBuilder: APIBuilderProtocol {
             _delay = DelayModel.init(min: 5, max: 5)
         }
         
-        if _config == nil {
-            _config = URLSessionConfiguration.default
+        if _urlSession == nil {
+            _urlSession = URLSession(configuration: .default)
         }
         
         // We can safely unwrap values.
-        return APIHandler(request: _request!, user: user, device: _device!, delay: _delay!, config: _config!)
+        return APIHandler(request: _request!, user: user, device: _device!, delay: _delay!, urlSession: _urlSession!)//config: _config!)
     }
 }

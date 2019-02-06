@@ -36,8 +36,9 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "login() faild during timeout")
-        let user = SessionStorage.create(username: "swiftyinsta", password: "??????")
-        let handler = try! APIBuilder().createBuilder().setHttpHandler(config: .default).setRequestDelay(delay: .default).setUser(user: user).build()
+        let user = SessionStorage.create(username: "swiftyinsta", password: "uuuuuu")
+        let urlSession = URLSession(configuration: .default)
+        let handler = try! APIBuilder().createBuilder().setHttpHandler(urlSession: urlSession).setRequestDelay(delay: .default).setUser(user: user).build()
         var _error: Error?
         do {
             try handler.login { (result, cache) in

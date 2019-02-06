@@ -24,9 +24,10 @@ This project is still in development phase and intends to provide all features w
 ```swift
 import SwiftyInsta
 
+let _urlSession = URLSession(configuration: .default)
 let handler = try! APIBuilder()
 .createBuilder()
-.setHttpHandler(config: .default)
+.setHttpHandler(urlSession: _urlSession)
 .setRequestDelay(delay: .default)
 .setUser(user: user)
 .build()

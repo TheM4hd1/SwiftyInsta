@@ -11,12 +11,10 @@ import Foundation
 class HttpHelper {
     
     typealias completionHandler = (Data?, HTTPURLResponse?, Error?) -> Void
-    private var configuration: URLSessionConfiguration
     private var session: URLSession
     
-    init(config: URLSessionConfiguration) {
-        configuration = config
-        session = URLSession(configuration: config)
+    init(urlSession: URLSession) {
+        session = urlSession
     }
     
     /// Only ```data: Data?``` or ```body: [String: Any]``` can use as ```httpBody```
