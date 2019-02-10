@@ -75,7 +75,8 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testUploadVideo(handler: handler)
+                //self.testUploadVideo(handler: handler)
+                self.testEditMedia(handler: handler)
             }
         }
     }
@@ -788,8 +789,8 @@ class SwiftyInstaTests: XCTestCase {
     func testEditMedia(handler: APIHandlerProtocol) {
         let mediaId = "1920671942680208682_8766457680"
         let exp = expectation(description: "testEditMedia() faild during timeout")
-        
-        try! handler.editMedia(mediaId: mediaId, caption: "final test for edit media", completion: { (result) in
+        let tag = UserTags(in: [NewTag.init(user_id: 9529571412, position: [0.8, 0.8])], removed: [])
+        try! handler.editMedia(mediaId: mediaId, caption: "final test for tag editing.", tags: tag, completion: { (result) in
             exp.fulfill()
         })
         

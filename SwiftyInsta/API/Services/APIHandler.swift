@@ -567,12 +567,12 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
-    public func editMedia(mediaId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+    public func editMedia(mediaId: String, caption: String, tags: UserTags, completion: @escaping (Result<MediaModel>) -> ()) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
         
-        try MediaHandler.shared.editMedia(mediaId: mediaId, caption: caption, completion: { (result) in
+        try MediaHandler.shared.editMedia(mediaId: mediaId, caption: caption, tags: tags, completion: { (result) in
             completion(result)
         })
     }

@@ -17,7 +17,7 @@ public protocol MediaHandlerProtocol {
     func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws
     func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws
     func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws
-    func editMedia(mediaId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws
+    func editMedia(mediaId: String, caption: String, tags: UserTags, completion: @escaping (Result<MediaModel>) -> ()) throws
     func getMediaLikers(mediaId: String, completion: @escaping (Result<MediaLikersModel>) -> ()) throws
 }
 
@@ -599,14 +599,16 @@ class MediaHandler: MediaHandlerProtocol {
         }
     }
     
-    func editMedia(mediaId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+    func editMedia(mediaId: String, caption: String, tags: UserTags, completion: @escaping (Result<MediaModel>) -> ()) throws {
         let encoder = JSONEncoder()
+        let tagPayload = try! encoder.encode(tags)
         
         let content = [
             "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
             "_uid": String(format: "%ld", HandlerSettings.shared.user!.loggedInUser.pk!),
             "_csrftoken": HandlerSettings.shared.user!.csrfToken,
             "caption_text": caption,
+            "usertags": String(data: tagPayload, encoding: .utf8)!
         ]
 
         let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
