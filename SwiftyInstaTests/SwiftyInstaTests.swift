@@ -37,6 +37,8 @@ class SwiftyInstaTests: XCTestCase {
         
         let exp = expectation(description: "login() faild during timeout")
         let user = SessionStorage.create(username: "swiftyinsta", password: "uuuuuu")
+        let userAgent = CustomUserAgent(apiVersion: "79.0.0.0", osName: "iOS", osVersion: "12", osRelease: "1.4", dpi: "458", resolution: "2688x1242", company: "Apple", model: "iPhone11,2", modem: "A12", locale: "en_US", fbCode: "95414346")
+        HttpSettings.shared.addValue(userAgent.toString(), forHTTPHeaderField: Headers.HeaderUserAgentKey)
         let urlSession = URLSession(configuration: .default)
         let handler = try! APIBuilder().createBuilder().setHttpHandler(urlSession: urlSession).setRequestDelay(delay: .default).setUser(user: user).build()
         var _error: Error?
@@ -75,8 +77,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                //self.testUploadVideo(handler: handler)
-                self.testEditMedia(handler: handler)
+                self.testLogout(handler: handler)
             }
         }
     }

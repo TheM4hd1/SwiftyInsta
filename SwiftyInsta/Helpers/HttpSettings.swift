@@ -15,9 +15,6 @@ public class HttpSettings {
         
     }
     
-    /// default is true
-    var useFakeUserAgent = true
-    
     private var headers: [String: String] = [:]
     
     /// Any existing value for the field is replaced by the new value

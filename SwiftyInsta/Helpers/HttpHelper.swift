@@ -62,10 +62,7 @@ class HttpHelper {
         request.addValue(Headers.HeaderIGCapablitiesValue, forHTTPHeaderField: Headers.HeaderIGCapablitiesKey)
         request.addValue(Headers.HeaderIGConnectionTypeValue, forHTTPHeaderField: Headers.HeaderIGConnectionTypeKey)
         request.addValue(Headers.HeaderContentTypeApplicationFormValue, forHTTPHeaderField: Headers.HeaderContentTypeKey)
-
-        if HttpSettings.shared.useFakeUserAgent {
-            request.addValue(Headers.HeaderUserAgentValue, forHTTPHeaderField: Headers.HeaderUserAgentKey)
-        }
+        request.addValue(Headers.HeaderUserAgentValue, forHTTPHeaderField: Headers.HeaderUserAgentKey)
         
         // remove old values and updates with new one.
         if HttpSettings.shared.getHeaders().count > 0 {
