@@ -15,6 +15,7 @@ struct URLs {
     
     // MARK: - Base Url
     private static let instagramUrl = "https://i.instagram.com"
+    private static let instagramCookieUrl = "https://www.instagram.com/"
     private static let api = "/api"
     private static let apiVersion = "/v1"
     private static let apiSuffix = api + apiVersion
@@ -74,7 +75,8 @@ struct URLs {
     private static let removeProfilePicture = "/accounts/remove_profile_picture/"
     private static let changeProfilePicture = "/accounts/change_profile_picture/"
     private static let editMedia = "/media/%@/edit_media/"
-    private static let instagramCookieUrl = "https://www.instagram.com/"
+    private static let recoverByEmail = "/accounts/send_recovery_flow_email/"
+    
     
     // MARK: - Methods
     
@@ -559,5 +561,13 @@ struct URLs {
         }
         
         throw CustomErrors.urlCreationFaild("Cant create URL for send two factor login sms.")
+    }
+    
+    static func getRecoverByEmailUrl() throws -> URL {
+        if let url = URL(string: baseInstagramApiUrl + recoverByEmail) {
+            return url
+        }
+        
+        throw CustomErrors.urlCreationFaild("Cant create URL for recovery by email.")
     }
 }

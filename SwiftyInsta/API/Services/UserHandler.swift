@@ -31,6 +31,8 @@ public protocol UserHandlerProtocol {
     func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws
     func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
+    func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
+    func recoverAccountBy(username: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
 }
 
 class UserHandler: UserHandlerProtocol {
@@ -893,6 +895,59 @@ class UserHandler: UserHandlerProtocol {
                         completion(Return.fail(error: error, response: .ok, value: nil))
                     }
                 }
+            }
+        }
+    }
+    
+    func recoverAccountBy(username: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws {
+        try recoverAccountBy(email: username) { (result) in
+            completion(result)
+        }
+    }
+    
+    func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws {
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .unknown, value: nil))
+            } else {
+                // find CSRF token
+                let fields = response?.allHeaderFields
+                let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields as! [String : String], for: (response?.url)!)
+                
+                for cookie in cookies {
+                    if cookie.name == "csrftoken" {
+                        HandlerSettings.shared.user!.csrfToken = cookie.value
+                        break
+                    }
+                }
+                
+                let body = [
+                    "query": email,
+                    "adid": UUID.init().uuidString,
+                    "device_id": RequestMessageModel.generateDeviceId(),
+                    "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+                    "_csrftoken": HandlerSettings.shared.user!.csrfToken
+                ]
+                
+                HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try! URLs.getRecoverByEmailUrl(), body: body, header: [:], completion: { (data, response, error) in
+                    if let error = error {
+                        completion(Return.fail(error: error, response: .fail, value: nil))
+                    } else {
+                        if let data = data {
+                            if response?.statusCode == 200 {
+                                let decoder = JSONDecoder()
+                                do {
+                                    let value = try decoder.decode(AccountRecovery.self, from: data)
+                                    completion(Return.success(value: value))
+                                } catch {
+                                    completion(Return.fail(error: error, response: .ok, value: nil))
+                                }
+                            } else {
+                                completion(Return.fail(error: error, response: .wrongRequest, value: nil))
+                            }
+                        }
+                    }
+                })
             }
         }
     }

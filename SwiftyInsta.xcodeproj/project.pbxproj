@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		110454D5221DE7270080F986 /* AccountRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110454D4221DE7270080F986 /* AccountRecovery.swift */; };
 		1104CD092180621400F855BA /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
 		1104CD0B2180627400F855BA /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
 		1104CD0D218062DD00F855BA /* AndroidDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */; };
@@ -99,6 +100,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		110454D4221DE7270080F986 /* AccountRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRecovery.swift; sourceTree = "<group>"; };
 		1104CD082180621400F855BA /* HTTPMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethods.swift; sourceTree = "<group>"; };
 		1104CD0A2180627400F855BA /* CustomErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomErrors.swift; sourceTree = "<group>"; };
 		1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidDeviceModel.swift; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 				1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */,
 				E8314D5D2210652400D13BEA /* UserTags.swift */,
 				1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */,
+				110454D4221DE7270080F986 /* AccountRecovery.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -552,6 +555,7 @@
 				11B9567221944F70006661A6 /* ExploreFeedModel.swift in Sources */,
 				11D2AE0A21A02023007D7F1F /* CreateAccountModel.swift in Sources */,
 				115F1244217FEA4400ED3530 /* Headers.swift in Sources */,
+				110454D5221DE7270080F986 /* AccountRecovery.swift in Sources */,
 				110B3F9B21A2CE4D0019523A /* Extensions.swift in Sources */,
 				E8314D5E2210652400D13BEA /* UserTags.swift in Sources */,
 				11AE440321A99CD400BD9EFB /* CommentHandler.swift in Sources */,

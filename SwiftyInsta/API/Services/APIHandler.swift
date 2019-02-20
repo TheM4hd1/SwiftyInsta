@@ -577,6 +577,18 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func recoverAccountBy(username: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws {
+        try UserHandler.shared.recoverAccountBy(username: username, completion: { (result) in
+            completion(result)
+        })
+    }
+    
+    public func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws {
+        try UserHandler.shared.recoverAccountBy(email: email, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     fileprivate func validateUser() throws {
         if HandlerSettings.shared.user!.username.isEmpty || HandlerSettings.shared.user!.password.isEmpty {
             throw CustomErrors.runTimeError("username and password must be specified.")

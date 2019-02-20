@@ -28,6 +28,24 @@ class SwiftyInstaTests: XCTestCase {
     // ----------------------------
     // MARK: - User Handler Methods
     
+    func testRecoverAccount() {
+        let exp = expectation(description: "testRecoverAccount() faild during timeout")
+        let urlSession = URLSession(configuration: .default)
+        let user = SessionStorage.create(username: "", password: "")
+        let handler = try! APIBuilder().createBuilder().setHttpHandler(urlSession:
+            urlSession).setRequestDelay(delay: .default).setUser(user: user).build()
+        do {
+            try handler.recoverAccountBy(email: "swiftyinsta", completion: { (result) in
+                print(result)
+                exp.fulfill()
+            })
+        } catch {
+            print(error)
+            exp.fulfill()
+        }
+        waitForExpectations(timeout: 60, handler: nil)
+    }
+    
     func testLogin() {
         
         // Clearing saved cookies before login.
@@ -37,7 +55,7 @@ class SwiftyInstaTests: XCTestCase {
         
         let exp = expectation(description: "login() faild during timeout")
         let user = SessionStorage.create(username: "swiftyinsta", password: "uuuuuu")
-        let userAgent = CustomUserAgent(apiVersion: "79.0.0.0", osName: "iOS", osVersion: "12", osRelease: "1.4", dpi: "458", resolution: "2688x1242", company: "Apple", model: "iPhone11,2", modem: "A12", locale: "en_US", fbCode: "95414346")
+        let userAgent = CustomUserAgent(apiVersion: "79.0.0.0", osName: "iOS", osVersion: "12", osRelease: "1.4", dpi: "458", resolution: "2688x1242", company: "Apple", model: "iPhone11,2", modem: "intel", locale: "en_US", fbCode: "95414346")
         HttpSettings.shared.addValue(userAgent.toString(), forHTTPHeaderField: Headers.HeaderUserAgentKey)
         let urlSession = URLSession(configuration: .default)
         let handler = try! APIBuilder().createBuilder().setHttpHandler(urlSession: urlSession).setRequestDelay(delay: .default).setUser(user: user).build()
