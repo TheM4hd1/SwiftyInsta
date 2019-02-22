@@ -32,6 +32,8 @@ public struct UserModel: Codable, UserShortProtocol {
     public var canSeeOrganicInsights: Bool?
     public var allowContactsSync: Bool?
     public var followerCount: Int?
+    public var followingCount: Int?
+    public var mediaCount: Int?
     public var countryCode: Int?
     public var nationalNumber: Int?
     public var unseenCount: Int?
@@ -44,7 +46,7 @@ public struct UserModel: Codable, UserShortProtocol {
     public var isPotentialBusiness: Bool?
     public var canConvertToBusiness: Bool?
     
-    public init(isVerified: Bool?, isPrivate: Bool?, pk: Int?, profilePicUrl: String?, profilePicId: String?, username: String?, fullName: String?, socialContext: String?, searchSocialContext: String?, allowedCommenterType: String, phoneNumber: String?, reelAutoArchive: String?, byline: String?, externalUrl: String?, email: String?, hasAnonymousProfilePicture: Bool?, isBusiness: Bool?, canBoostPost: Bool?, showInsightsTerms: Bool?, hasPlacedOrders: Bool?, canSeeOrganicInsights: Bool?, allowContactsSync: Bool?, followerCount: Int?, countryCode: Int?, nationalNumber: Int?, unseenCount: Int?, mutualFollowersCount: Int?, nametag: NameTagModel?, friendshipStatus: FriendshipStatusModel?, biography: String?, hdProfilePicVersions: [ProfilePicVersionsModel]?, showBusinessConversionIcon: Bool?, isPotentialBusiness: Bool?, canConvertToBusiness: Bool?) {
+    public init(isVerified: Bool?, isPrivate: Bool?, pk: Int?, profilePicUrl: String?, profilePicId: String?, username: String?, fullName: String?, socialContext: String?, searchSocialContext: String?, allowedCommenterType: String, phoneNumber: String?, reelAutoArchive: String?, byline: String?, externalUrl: String?, email: String?, hasAnonymousProfilePicture: Bool?, isBusiness: Bool?, canBoostPost: Bool?, showInsightsTerms: Bool?, hasPlacedOrders: Bool?, canSeeOrganicInsights: Bool?, allowContactsSync: Bool?, followerCount: Int?, followingCount: Int?, mediaCount: Int?, countryCode: Int?, nationalNumber: Int?, unseenCount: Int?, mutualFollowersCount: Int?, nametag: NameTagModel?, friendshipStatus: FriendshipStatusModel?, biography: String?, hdProfilePicVersions: [ProfilePicVersionsModel]?, showBusinessConversionIcon: Bool?, isPotentialBusiness: Bool?, canConvertToBusiness: Bool?) {
         self.isVerified = isVerified
         self.isPrivate = isPrivate
         self.pk = pk
@@ -68,6 +70,8 @@ public struct UserModel: Codable, UserShortProtocol {
         self.canSeeOrganicInsights = canSeeOrganicInsights
         self.allowContactsSync = allowContactsSync
         self.followerCount = followerCount
+        self.followingCount = followingCount
+        self.mediaCount = mediaCount
         self.countryCode = countryCode
         self.nationalNumber = nationalNumber
         self.unseenCount = unseenCount

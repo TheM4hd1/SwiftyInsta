@@ -95,7 +95,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testLogout(handler: handler)
+                self.testGetUser(handler: handler)
             }
         }
     }
@@ -209,10 +209,13 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUser(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUser() faild during timeout")
         do {
-            try handler.getUser(username: "swifty.tips", completion: { (result) in // swifty.tips pk: 9529571412
+            try handler.getUser(id: 8766457680, completion: { (result) in // swifty.tips pk: 9529571412
                 if result.isSucceeded {
                     guard let user = result.value else { return }
-                    print("fullname: \(user.fullName!)")
+                    print("followers: ", user.user!.followerCount!)
+                    print("followings: ", user.user!.followingCount!)
+                    print("medias: ", user.user!.mediaCount!)
+                    //print("fullname: \(user.fullName!)")
                 } else {
                     print("GetUser failed: \(result.info.message)")
                 }
