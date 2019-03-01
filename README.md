@@ -14,7 +14,22 @@ This project is still in development phase and intends to provide all features w
 
 ## Installation
 
-1. To use this library in your project manually you may:
+### CocoaPods
+[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. You can install it with the following command:
+```terminal
+$ gem install cocoapods
+```
+To integrate SwiftyInsta into your Xcode project using CocoaPods, specify it to a target in your Podfile:
+```text
+pod 'SwiftyInsta'
+```
+Then, run the following command:
+```terminal
+$ pod install
+````
+
+### Manual
+To use this library in your project manually you may:
     - Add compiled framework from ```General > Linked frameworks and libraries```
     - Clone the project, right click on your root project(not SwiftyInsta) and select ```Add files...```, then select the ```SwiftyInsta.xcodeproj```. after that go to your ```project>embeded libraries``` and select ```SwiftyInsta.framework```, build the project and import ```SwiftyInsta```
 
