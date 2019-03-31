@@ -27,9 +27,10 @@ public struct UserFeedModel: Codable, FeedProtocol {
     
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        if let value = try container.decodeIfPresent(Int.self, forKey: .nextMaxId) {
+        do {
+            let value = try container.decode(Int.self, forKey: .nextMaxId)
             nextMaxId = String(value)
-        } else {
+        } catch {
             nextMaxId = try? container.decode(String.self, forKey: .nextMaxId)
         }
 

@@ -54,7 +54,7 @@ class SwiftyInstaTests: XCTestCase {
         })
         
         let exp = expectation(description: "login() faild during timeout")
-        let user = SessionStorage.create(username: "swiftyinsta", password: "uuuuuu")
+        let user = SessionStorage.create(username: "swiftyinsta", password: "***")
         let userAgent = CustomUserAgent(apiVersion: "79.0.0.0", osName: "iOS", osVersion: "12", osRelease: "1.4", dpi: "458", resolution: "2688x1242", company: "Apple", model: "iPhone11,2", modem: "intel", locale: "en_US", fbCode: "95414346")
         HttpSettings.shared.addValue(userAgent.toString(), forHTTPHeaderField: Headers.HeaderUserAgentKey)
         let urlSession = URLSession(configuration: .default)
@@ -95,7 +95,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testGetUser(handler: handler)
+                self.testGetMediaInfo(handler: handler, id: "2010369691894664427_5821462185")
             }
         }
     }
@@ -572,7 +572,7 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserMedia(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserMedia() faild during timeout")
         do {
-            try handler.getUserMedia(for: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+            try handler.getUserMedia(for: "apple", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1)) { (result) in
                 if result.isSucceeded {
                     print(result.value!)
                     print("[+] number of pages that include medias: \(result.value!.count)")
