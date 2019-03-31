@@ -55,7 +55,7 @@ public struct TrayItems: Codable, MediaModelProtocol {
 }
 
 public struct CandidatesModel: Codable {
-    var candidates: [ProfilePicVersionsModel]?
+    public var candidates: [ProfilePicVersionsModel]?
     
     public init(candidates: [ProfilePicVersionsModel]?) {
         self.candidates = candidates
