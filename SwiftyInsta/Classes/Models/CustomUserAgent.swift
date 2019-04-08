@@ -21,6 +21,20 @@ public struct CustomUserAgent {
     public let locale: String //ru_RU
     public let fbCode: String //95414346
     
+    public init(apiVersion: String, osName: String, osVersion: String, osRelease: String, dpi: String, resolution: String, company: String, model: String, modem: String, locale: String, fbCode: String) {
+        self.apiVersion = apiVersion
+        self.osName = osName
+        self.osVersion = osVersion
+        self.osRelease = osRelease
+        self.dpi = dpi
+        self.resolution = resolution
+        self.company = company
+        self.model = model
+        self.modem = modem
+        self.locale = locale
+        self.fbCode = fbCode
+    }
+    
     public func toString() -> String {
         //"Instagram 78.0.0.9.103 Android (21/5.0.2; 480dpi; 1080x1776; Sony; C6603; C6603; qcom; ru_RU; 95414346)"
         let userAgent = "Instagram %@ %@ (%@/%@; %@dpi; %@; %@; %@; %@; %@; %@; %@)"
