@@ -117,6 +117,16 @@ public class APIHandler: APIHandlerProtocol {
         }
     }
     
+    public func searchUser(username: String, completion: @escaping (Result<[UserModel]>) -> ()) throws {
+        // validate before logout.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.searchUser(username: username, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws {
         // validate before logout.
         try validateUser()

@@ -18,6 +18,7 @@ public protocol UserHandlerProtocol {
     func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) ->()) throws
     func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws
     func logout(completion: @escaping (Result<Bool>) -> ()) throws
+    func searchUser(username: String, completion: @escaping (Result<[UserModel]>) -> ()) throws
     func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws
     func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws
     func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
@@ -443,6 +444,40 @@ class UserHandler: UserHandlerProtocol {
                         }
                     } catch {
                         completion(Return.fail(error: error, response: .ok, value: nil))                    }
+                }
+            }
+        })
+    }
+    
+    func searchUser(username: String, completion: @escaping (Result<[UserModel]>) -> ()) throws {
+        let headers = [
+            Headers.HeaderTimeZoneOffsetKey: Headers.HeaderTimeZoneOffsetValue,
+            Headers.HeaderCountKey: Headers.HeaderCountValue,
+            Headers.HeaderRankTokenKey: HandlerSettings.shared.user!.rankToken
+        ]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let info = try decoder.decode(SearchUserModel.self, from: data)
+                        if let users = info.users {
+                            completion(Return.success(value: users))
+                        } else {
+                            // Couldn't find the user.
+                            let error = CustomErrors.unExpected("Couldn't find the user: \(username)")
+                            completion(Return.fail(error: error, response: .ok, value: nil))                        }
+                    } catch {
+                        completion(Return.fail(error: error, response: .ok, value: nil))
+                    }
+                } else {
+                    // nil data.
+                    let error = CustomErrors.unExpected("The data couldn’t be read because it is missing error when decoding JSON.")
+                    completion(Return.fail(error: error, response: .ok, value: nil))
                 }
             }
         })

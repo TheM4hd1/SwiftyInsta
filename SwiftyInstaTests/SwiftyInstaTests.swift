@@ -95,7 +95,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testGetMediaInfo(handler: handler, id: "2010369691894664427_5821462185")
+                self.testSearch(username: "apple", handler: handler)
             }
         }
     }
@@ -186,6 +186,23 @@ class SwiftyInstaTests: XCTestCase {
 //                self.testLogout(handler: handler)
 //            }
         }
+    }
+    
+    func testSearch(username: String, handler: APIHandlerProtocol) {
+        let exp = expectation(description: "testSearch() faild during timeout")
+        do {
+            try handler.searchUser(username: username, completion: { (result) in
+                if result.isSucceeded {
+                    result.value?.compactMap { print("username: ", $0.username )}
+                }
+                
+                exp.fulfill()
+            })
+        } catch {
+            print("Error: ", error)
+            exp.fulfill()
+        }
+        waitForExpectations(timeout: 60, handler: nil)
     }
     
     func testLogout(handler: APIHandlerProtocol) {
