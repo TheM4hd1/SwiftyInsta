@@ -83,17 +83,23 @@ class MediaHandler: MediaHandlerProtocol {
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let media = try decoder.decode(UserFeedModel.self, from: data)
-                        completion(Return.success(value: media.items?.first))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))                    }
+                if response?.statusCode == 200 {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let media = try decoder.decode(UserFeedModel.self, from: data)
+                            completion(Return.success(value: media.items?.first))
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil))
+                        }
+                    } else {
+                        let error = CustomErrors.unExpected("The data couldn’t be read because it is missing error when decoding JSON.")
+                        completion(Return.fail(error: error, response: .ok, value: nil))
+                    }
                 } else {
-                    let error = CustomErrors.unExpected("The data couldn’t be read because it is missing error when decoding JSON.")
-                    completion(Return.fail(error: error, response: .ok, value: nil))
+                    let error = CustomErrors.unExpected("Status Code: \(response?.statusCode ?? -1)")
+                    completion(Return.fail(error: error, response: .wrongRequest, value: nil))
                 }
             }
         }
