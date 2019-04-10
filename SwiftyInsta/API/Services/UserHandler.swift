@@ -91,7 +91,7 @@ class UserHandler: UserHandlerProtocol {
                 let signature = "\(HandlerSettings.shared.request!.generateSignature(signatureKey: Headers.HeaderIGSignatureValue)).\(HandlerSettings.shared.request!.getMessageString())"
                 
                 let body: [String: Any] = [
-                    Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                    Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!,
                     Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
                 ]
                 
