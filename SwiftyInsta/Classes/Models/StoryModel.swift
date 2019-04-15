@@ -85,3 +85,12 @@ public struct ConfigureStoryUploadModel: Codable {
         self.campera_position = campera_position
     }
 }
+
+public struct StoryViewers: Codable, BaseStatusResponseProtocol {
+    public var users: [UserModel]?
+    //public var nextMaxId: String?
+    //public var updatedMedia: MediaModel?
+    public var userCount: Int?
+    public var totalViewerCount: Int?
+    public var status: String?
+}

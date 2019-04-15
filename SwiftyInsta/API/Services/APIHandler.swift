@@ -537,6 +537,16 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try StoryHandler.shared.getStoryViewers(storyPk: storyPk, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
         // validate before request.
         try validateUser()

@@ -29,8 +29,15 @@ public struct TrayItems: Codable, MediaModelProtocol {
     public var expiringAt: Int?
     public var storyLocation: LocationModel?
     public var supportsReelReactions: Bool?
+    public var viewers: [UserShortModel]?
+    public var viewerCount: Int?
+    public var totalViewerCount: Int?
+    public var canReshare: Bool?
+    public var canReply: Bool?
+    public var isReelMedia: Bool?
     
-    public init(takenAt: Int?, pk: Int?, id: String?, deviceTimestamp: Int?, mediaType: Int?, code: String?, clientCacheKey: String?, filterType: Int?, imageVersions2: CandidatesModel?, originalWidth: Int?, originalHeight: Int?, organicTrackingToken: String?, user: UserShortModel?, caption: CaptionModel?, captionIsEdited: Bool?, photoOfYou: Bool?, canViewerSave: Bool?, expiringAt: Int?, storyLocation: LocationModel?, supportsReelReactions: Bool?) {
+    
+    public init(takenAt: Int?, pk: Int?, id: String?, deviceTimestamp: Int?, mediaType: Int?, code: String?, clientCacheKey: String?, filterType: Int?, imageVersions2: CandidatesModel?, originalWidth: Int?, originalHeight: Int?, organicTrackingToken: String?, user: UserShortModel?, caption: CaptionModel?, captionIsEdited: Bool?, photoOfYou: Bool?, canViewerSave: Bool?, expiringAt: Int?, storyLocation: LocationModel?, supportsReelReactions: Bool?, viewers: [UserShortModel]?, viewerCount: Int?, totalViewerCount: Int?, canReshare: Bool?, canReply: Bool?, isReelMedia: Bool?) {
         self.takenAt = takenAt
         self.pk = pk
         self.id = id
@@ -51,6 +58,12 @@ public struct TrayItems: Codable, MediaModelProtocol {
         self.expiringAt = expiringAt
         self.storyLocation = storyLocation
         self.supportsReelReactions = supportsReelReactions
+        self.viewers = viewers
+        self.viewerCount = viewerCount
+        self.totalViewerCount = totalViewerCount
+        self.canReply = canReply
+        self.canReshare = canReshare
+        self.isReelMedia = isReelMedia
     }
 }
 

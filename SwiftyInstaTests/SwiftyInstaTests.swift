@@ -95,7 +95,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testSearch(username: "apple", handler: handler)
+                self.testGetStoryViewers(handler: handler)
             }
         }
     }
@@ -1228,7 +1228,7 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserStory(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserStory() faild during timeout")
         do {
-            try handler.getUser(username: "username", completion: { (user) in
+            try handler.getUser(username: "swiftyinsta", completion: { (user) in
                 
                 // Test Get Story Reel
 //                try? handler.getUserStoryReelFeed(userId: user.value!.pk!, completion: { (result) in
@@ -1236,6 +1236,7 @@ class SwiftyInstaTests: XCTestCase {
 //                })
                 
                 try? handler.getUserStory(userId: user.value!.pk!, completion: { (result) in
+                    print(result.value!)
                     exp.fulfill()
                 })
                 
@@ -1252,6 +1253,26 @@ class SwiftyInstaTests: XCTestCase {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetStoryViewers(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "testGetStoryViewers() faild during timeout")
+        let storyPk = "2022853344112336157"
+        
+        try! handler.getStoryViewers(storyPk: storyPk, completion: { (result) in
+            result.value!.users!.forEach{ print($0.username!) }
+            exp.fulfill()
+        })
         
         waitForExpectations(timeout: 60) { (err) in
             if let err = err {

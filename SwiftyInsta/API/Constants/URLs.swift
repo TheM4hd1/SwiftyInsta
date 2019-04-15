@@ -76,6 +76,7 @@ struct URLs {
     private static let changeProfilePicture = "/accounts/change_profile_picture/"
     private static let editMedia = "/media/%@/edit_media/"
     private static let recoverByEmail = "/accounts/send_recovery_flow_email/"
+    private static let storyViewers = "/media/%@/list_reel_media_viewer/"
     
     
     // MARK: - Methods
@@ -569,5 +570,12 @@ struct URLs {
         }
         
         throw CustomErrors.urlCreationFaild("Cant create URL for recovery by email.")
+    }
+    
+    static func getStoryViewersUrl(pk: String) throws -> URL {
+        if let url = URL(string: baseInstagramApiUrl + String(format: storyViewers, pk)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for story viewers.")
     }
 }
