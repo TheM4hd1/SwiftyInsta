@@ -10,7 +10,7 @@ import Foundation
 
 public class HttpSettings {
     
-    static let shared = HttpSettings()
+    public static let shared = HttpSettings()
     private init() {
         
     }
@@ -18,7 +18,7 @@ public class HttpSettings {
     private var headers: [String: String] = [:]
     
     /// Any existing value for the field is replaced by the new value
-    func addValue(_ value: String, forHTTPHeaderField field: String) {
+    public func addValue(_ value: String, forHTTPHeaderField field: String) {
         headers.updateValue(value, forKey: field)
     }
     
