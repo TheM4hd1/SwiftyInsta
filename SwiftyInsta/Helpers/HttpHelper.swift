@@ -19,7 +19,7 @@ class HttpHelper {
     
     /// Only ```data: Data?``` or ```body: [String: Any]``` can use as ```httpBody```
     func sendAsync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String], data: Data? = nil, completion: @escaping completionHandler) {
-        HandlerSettings.shared.queue!.asyncAfter(deadline: .now() + HandlerSettings.shared.delay!.random()) { [unowned self] in
+        HandlerSettings.shared.queue!.asyncAfter(deadline: .now() + HandlerSettings.shared.delay!.random()) {
             var request = self.getDefaultRequest(for: url, method: method)
             self.addHeaders(to: &request, header: header)
             //addBody(to: &request, body: body)
