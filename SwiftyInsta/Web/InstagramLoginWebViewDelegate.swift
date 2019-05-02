@@ -2,7 +2,7 @@
 //  InstagramLoginWebView.swift
 //  SwiftyInsta
 //
-//  Created by Sehmus GOKCE on 15.04.2019. https://github.com/freeman4706
+//  Created by Sehmus GOKCE on 15.04.2019. (freeman4706@github)
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
@@ -118,9 +118,24 @@ public class InstagramLoginWebView: WKCookieWebView {
     }
     
     public func deleteAllCookies() {
+        
+        self.cleanEveryThing()
+        
         fetchCookies { (cookies) in
             for cookie in cookies! {
                 self.delete(cookie: cookie)
+            }
+        }
+    }
+    
+    func cleanEveryThing() {
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+        print("[WebCacheCleaner] All cookies deleted")
+        
+        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            records.forEach { record in
+                WKWebsiteDataStore.default().removeData(ofTypes: record.dataTypes, for: [record], completionHandler: {})
+                print("[WebCacheCleaner] Record \(record) deleted")
             }
         }
     }
@@ -152,9 +167,9 @@ public class InstagramLoginWebView: WKCookieWebView {
         self.fetchCookies(completion: { (cookies) in
             let instagramCookies =  cookies?.getInstagramCookies()
             
-            for cookie in instagramCookies! {
-                print(cookie)
-            }
+            //            for cookie in instagramCookies! {
+            //                print(cookie)
+            //            }
             
             self.isUserLoggedIn(instagramCookies: instagramCookies!)
         })
