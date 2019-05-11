@@ -95,7 +95,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testGetStoryViewers(handler: handler)
+                self.testGetUserStory(handler: handler)
             }
         }
     }
@@ -1236,7 +1236,19 @@ class SwiftyInstaTests: XCTestCase {
 //                })
                 
                 try? handler.getUserStory(userId: user.value!.pk!, completion: { (result) in
-                    print(result.value!)
+                    let items = result.value!.items!
+                    items.forEach({ (item) in
+                        let mediatype = String(item.mediaType!)
+                        if mediatype == MediaTypes.image.rawValue {
+                            print(item.imageVersions2!.candidates!)
+                            // handle resolution here or just take first one.
+                            //let url = item.imageVersions2!.candidates!.first!.url!
+                        } else if mediatype == MediaTypes.video.rawValue {
+                            print(item.videoVersions!)
+                            // handle resolution or just take first one
+                            //let url = item.videoVersions!.first!.url!
+                        }
+                    })
                     exp.fulfill()
                 })
                 

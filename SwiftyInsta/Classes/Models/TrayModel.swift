@@ -18,6 +18,7 @@ public struct TrayItems: Codable, MediaModelProtocol {
     public var clientCacheKey: String?
     public var filterType: Int?
     public var imageVersions2: CandidatesModel?
+    public var videoVersions: [VideoVersionModel]?
     public var originalWidth: Int?
     public var originalHeight: Int?
     public var organicTrackingToken: String?
