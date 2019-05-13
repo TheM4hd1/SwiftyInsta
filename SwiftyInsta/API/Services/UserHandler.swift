@@ -591,46 +591,51 @@ class UserHandler: UserHandlerProtocol {
     
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         
-        try getUser(username: username) { [weak self] (user) in
-            if user.isSucceeded {
-                // - Parameter searchQuery: search for specific username
-                let url = try! URLs.getUserFollowing(userPk: user.value?.pk, rankToken: HandlerSettings.shared.user!.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
-                var following: [UserShortModel] = []
-                self?.getFollowingList(from: url, completion: { (result) in
-                    if result.isSucceeded && result.value?.users != nil {
-                        following.append(contentsOf: result.value!.users!)
-                        completion(Return.success(value: following))
-                    } else {
-                        completion(Return.fail(error: result.info.error, response: .ok, value: nil))
-                    }
-                })
-            } else {
-                completion(Return.fail(error: user.info.error, response: .fail, value: nil))
-            }
-        }
+        try getUser(username: username, completion: { [weak self] (user) in
+            let url = try! URLs.getUserFollowing(userPk: user.value?.pk, rankToken: HandlerSettings.shared.user!.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
+            
+            self?.getFollowingList(pk: user.value?.pk, searchQuery: searchQuery, followings: [], url: url, paginationParameter: paginationParameter, completion: { (result) in
+                completion(Return.success(value: result))
+            })
+        })
     }
     
-    fileprivate func getFollowingList(from url: URL, completion: @escaping (Result<UserShortListModel>) -> ()) {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
+    fileprivate func getFollowingList(pk: Int?, searchQuery: String, followings: [UserShortModel], url: URL, paginationParameter: PaginationParameters, completion: @escaping ([UserShortModel]) -> ()) {
+        var _paginationParameter = paginationParameter
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            _paginationParameter.pagesLoaded += 1
+            if error != nil {
+                completion(followings)
             } else {
-                if response?.statusCode != 200 {
-                    let error = CustomErrors.unExpected("http error: \(String(describing: response?.statusCode))")
-                    completion(Return.fail(error: error, response: .fail, value: nil))
-                } else {
+                if response?.statusCode == 200 {
+                    var list = followings
                     if let data = data {
                         let decoder = JSONDecoder()
                         decoder.keyDecodingStrategy = .convertFromSnakeCase
                         do {
-                            let list = try decoder.decode(UserShortListModel.self, from: data)
-                            completion(Return.success(value: list))
+                            let decoded = try decoder.decode(UserShortListModel.self, from: data)
+                            list.append(contentsOf: decoded.users!)
+                            if let bigList = decoded.bigList, bigList {
+                                if !(decoded.nextMaxId?.isEmpty ?? true) && paginationParameter.pagesLoaded <= paginationParameter.maxPagesToLoad {
+                                    _paginationParameter.nextId = decoded.nextMaxId ?? ""
+                                    let url = try! URLs.getUserFollowing(userPk: pk, rankToken: HandlerSettings.shared.user!.rankToken, searchQuery: searchQuery, maxId: _paginationParameter.nextId)
+                                    self?.getFollowingList(pk: pk, searchQuery: searchQuery, followings: list, url: url, paginationParameter: _paginationParameter, completion: { (newusers) in
+                                        list.append(contentsOf: newusers)
+                                        completion(newusers)
+                                    })
+                                } else {
+                                    completion(list)
+                                }
+                                
+                            } else {
+                                completion(list)
+                            }
                         } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil))                        }
-                    } else {
-                        let error = CustomErrors.unExpected("The data couldn’t be read because it is missing error when decoding JSON.")
-                        completion(Return.fail(error: error, response: .ok, value: nil))
+                            completion(list)
+                        }
                     }
+                } else {
+                    completion(followings)
                 }
             }
         }
