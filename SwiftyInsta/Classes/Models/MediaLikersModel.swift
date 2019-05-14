@@ -9,9 +9,9 @@
 import Foundation
 
 public struct MediaLikersModel: Codable, BaseStatusResponseProtocol {
-    var users: [UserShortModel]?
-    var userCount: Int?
-    var status: String?
+    public var users: [UserShortModel]?
+    public var userCount: Int?
+    public var status: String?
     
     public init(users: [UserShortModel]?, userCount: Int?, status: String?) {
         self.users = users
