@@ -49,12 +49,14 @@ let handler = try! APIBuilder()
 ```
 
 ### Login
+
 ```swift
 try? handler.login { (result) in
     //result: Result<LoginResultModel>
 }
 ```
 
+aslo to prevent known login issues, you can use [Siwa](https://github.com/TheM4hd1/Siwa), a helper framework for SwiftyInsta
 #### Search User
 ```swift
 try? handler.getUser(username: "username", completion: { (result) in
