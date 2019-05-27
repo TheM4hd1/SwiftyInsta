@@ -41,3 +41,8 @@ public struct FollowResponseModel: Codable, BaseStatusResponseProtocol {
         self.status = status
     }
 }
+
+public struct FriendshipStatusesModel: Codable {
+    public let friendshipStatuses: [String: FriendshipStatusModel]
+    public let status: String
+}

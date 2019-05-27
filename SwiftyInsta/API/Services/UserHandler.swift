@@ -30,6 +30,7 @@ public protocol UserHandlerProtocol {
     func followUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func unFollowUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws
+    func getFriendshipStatuses(of userIds: [Int], completion: @escaping (Result<FriendshipStatusesModel>) -> ()) throws
     func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
@@ -876,6 +877,34 @@ class UserHandler: UserHandlerProtocol {
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
                     do {
                         let value = try decoder.decode(FriendshipStatusModel.self, from: data)
+                        completion(Return.success(value: value))
+                    } catch {
+                        completion(Return.fail(error: error, response: .ok, value: nil))
+                    }
+                }
+            }
+        }
+    }
+    
+    func getFriendshipStatuses(of userIds: [Int], completion: @escaping (Result<FriendshipStatusesModel>) -> ()) throws {
+        
+        let body = [
+            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "user_ids": userIds.map{String($0)}.joined(separator: ", "),
+            "radio_type": "wifi-none"
+        ]
+        
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getFriendshipStatusesUrl(), body: body, header: [:]) { (data, response, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(FriendshipStatusesModel.self, from: data)
                         completion(Return.success(value: value))
                     } catch {
                         completion(Return.fail(error: error, response: .ok, value: nil))

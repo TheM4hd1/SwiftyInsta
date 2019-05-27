@@ -55,6 +55,7 @@ struct URLs {
     private static let followUser = "/friendships/create/%ld/"
     private static let unFollowUser = "/friendships/destroy/%ld/"
     private static let friendshipStatus = "/friendships/show/%ld"
+    private static let friendshipStatuses = "/friendships/show_many/"
     private static let blockUser = "/friendships/block/%ld/"
     private static let unBlockUser = "/friendships/unblock/%ld/"
     private static let userTags = "/usertags/%ld/feed/"
@@ -362,6 +363,13 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for friendship status.")
+    }
+    
+    static func getFriendshipStatusesUrl() throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, friendshipStatuses)) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for current user.")
     }
     
     static func getBlockUrl(for user: Int) throws -> URL {

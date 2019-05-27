@@ -397,6 +397,16 @@ public class APIHandler: APIHandlerProtocol {
         }
     }
     
+    public func getFriendshipStatuses(of userIds: [Int], completion: @escaping (Result<FriendshipStatusesModel>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.getFriendshipStatuses(of: userIds) { (result) in
+            completion(result)
+        }
+        
+    }
+    
     public func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
