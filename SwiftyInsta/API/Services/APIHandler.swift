@@ -407,6 +407,15 @@ public class APIHandler: APIHandlerProtocol {
         
     }
     
+    public func getBlockedList(completion: @escaping (Result<BlockedUsersModel>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.getBlockedList(completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()

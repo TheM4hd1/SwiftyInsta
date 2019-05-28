@@ -89,6 +89,7 @@
 		11E148D82209F3300068C8AF /* HttpSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E148D72209F3300068C8AF /* HttpSettings.swift */; };
 		11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E2B134218F13D20095374A /* UserShortListModel.swift */; };
 		11F0CE6B2195CC2400C0F6A4 /* TimeLineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */; };
+		11F57CC4229D2E78001A1C0A /* BlockedUsersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */; };
 		E8314D5E2210652400D13BEA /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
 /* End PBXBuildFile section */
 
@@ -188,6 +189,7 @@
 		11E148D72209F3300068C8AF /* HttpSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpSettings.swift; sourceTree = "<group>"; };
 		11E2B134218F13D20095374A /* UserShortListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortListModel.swift; sourceTree = "<group>"; };
 		11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineModel.swift; sourceTree = "<group>"; };
+		11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersModel.swift; sourceTree = "<group>"; };
 		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -357,6 +359,7 @@
 				E8314D5D2210652400D13BEA /* UserTags.swift */,
 				1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */,
 				110454D4221DE7270080F986 /* AccountRecovery.swift */,
+				11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -559,6 +562,7 @@
 				11E148D82209F3300068C8AF /* HttpSettings.swift in Sources */,
 				11C487F8219B2A3B00E952A1 /* UserInfoModel.swift in Sources */,
 				11AE440521A99CD400BD9EFB /* UserHandler.swift in Sources */,
+				11F57CC4229D2E78001A1C0A /* BlockedUsersModel.swift in Sources */,
 				11905DFD2191C2C100FF297A /* CurrentUserModel.swift in Sources */,
 				112022982188AACF00CA58BA /* BaseStatusResponseModel.swift in Sources */,
 				117AACE922033B48008913FF /* TwoFactorEnums.swift in Sources */,

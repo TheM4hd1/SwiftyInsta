@@ -31,6 +31,7 @@ public protocol UserHandlerProtocol {
     func unFollowUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws
     func getFriendshipStatuses(of userIds: [Int], completion: @escaping (Result<FriendshipStatusesModel>) -> ()) throws
+    func getBlockedList(completion: @escaping (Result<BlockedUsersModel>) -> ()) throws
     func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
@@ -905,6 +906,25 @@ class UserHandler: UserHandlerProtocol {
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
                     do {
                         let value = try decoder.decode(FriendshipStatusesModel.self, from: data)
+                        completion(Return.success(value: value))
+                    } catch {
+                        completion(Return.fail(error: error, response: .ok, value: nil))
+                    }
+                }
+            }
+        }
+    }
+    
+    func getBlockedList(completion: @escaping (Result<BlockedUsersModel>) -> ()) throws {
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getBlockedList(), body: [:], header: [:]) { (data, res, err) in
+            if let error = err {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(BlockedUsersModel.self, from: data)
                         completion(Return.success(value: value))
                     } catch {
                         completion(Return.fail(error: error, response: .ok, value: nil))
