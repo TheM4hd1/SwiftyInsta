@@ -376,6 +376,35 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func approveFriendship(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.approveFriendship(userId: userId, completion: { (result) in
+            completion(result)
+        })
+
+    }
+    
+    public func rejectFriendship(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.rejectFriendship(userId: userId, completion: { (result) in
+            completion(result)
+        })
+
+    }
+    
+    public func pendingFriendships(completion: @escaping (Result<PendingFriendshipsModel>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.pendingFriendships(completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func followUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
