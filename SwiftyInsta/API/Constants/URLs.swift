@@ -52,6 +52,7 @@ struct URLs {
     private static let unlikeMedia = "/media/%@/unlike/"
     private static let mediaLikers = "/media/%@/likers/"
     private static let mediaComments = "/media/%@/comments/"
+    private static let removeFollower = "/friendships/remove_follower/%ld/"
     private static let followUser = "/friendships/create/%ld/"
     private static let unFollowUser = "/friendships/destroy/%ld/"
     private static let friendshipStatus = "/friendships/show/%ld"
@@ -343,6 +344,13 @@ struct URLs {
             return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for get media comments.")
+    }
+    
+    static func removeFollowerUrl(for user: Int) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: removeFollower, user))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for remove follower.")
     }
     
     static func getFollowUrl(for user: Int) throws -> URL {

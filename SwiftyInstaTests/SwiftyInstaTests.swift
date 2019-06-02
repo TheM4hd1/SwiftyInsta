@@ -95,7 +95,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testGetUserStory(handler: handler)
+                self.testRemoveFollower(handler: handler)
             }
         }
     }
@@ -288,10 +288,13 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserFollowers(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserFollowing() faild during timeout")
         do {
-            try handler.getUserFollowers(username: "", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 15), searchQuery: "", completion: { (result) in
+            try handler.getUserFollowers(username: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 15), searchQuery: "", completion: { (result) in
                 if result.isSucceeded {
                     guard let followers = result.value else { return }
                     print("[+] followers count: \(followers.count)")
+                    followers.forEach({ (follower) in
+                        print(String(format: "name: %@\nuser_id: %ld", follower.fullName!, follower.pk!))
+                    })
                 } else {
                     print("[-] \(result.info.message)")
                 }
@@ -299,6 +302,33 @@ class SwiftyInstaTests: XCTestCase {
             })
         } catch {
             print(error.localizedDescription)
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testRemoveFollower(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "removeFollower() faild during timeout")
+        do {
+            try handler.removeFollower(userId: 2291962059, completion: { (result) in
+                if result.isSucceeded {
+                    print("[+] user unfollowed")
+                }
+                
+                print(result)
+                exp.fulfill()
+            })
+        } catch {
+            print("[-] \(error.localizedDescription)")
             exp.fulfill()
         }
         

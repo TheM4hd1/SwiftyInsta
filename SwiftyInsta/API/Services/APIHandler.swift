@@ -367,6 +367,15 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func removeFollower(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.removeFollower(userId: userId, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func followUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
         // validate before request.
         try validateUser()
