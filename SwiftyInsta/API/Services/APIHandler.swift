@@ -604,6 +604,15 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try StoryHandler.shared.getStoryHighlights(userPk: userPk, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
         // validate before request.
         try validateUser()

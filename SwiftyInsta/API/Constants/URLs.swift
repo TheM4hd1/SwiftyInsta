@@ -83,7 +83,7 @@ struct URLs {
     private static let editMedia = "/media/%@/edit_media/"
     private static let recoverByEmail = "/accounts/send_recovery_flow_email/"
     private static let storyViewers = "/media/%@/list_reel_media_viewer/"
-    
+    private static let storyHighlights = "/highlights/%ld/highlights_tray/"
     
     // MARK: - Methods
     
@@ -625,5 +625,12 @@ struct URLs {
             return url
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for story viewers.")
+    }
+    
+    static func getStoryHighlightsUrl(userPk: Int) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: storyHighlights, userPk))) {
+            return url
+        }
+        throw CustomErrors.urlCreationFaild("Cant create URL for story highlights")
     }
 }

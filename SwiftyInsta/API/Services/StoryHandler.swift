@@ -14,6 +14,7 @@ public protocol StoryHandlerProtocol {
     func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws
     func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
     func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws
+    func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws
 }
 
 class StoryHandler: StoryHandlerProtocol {
@@ -192,6 +193,25 @@ class StoryHandler: StoryHandlerProtocol {
                     } else {
                         let err = CustomErrors.unExpected("status code: \(response?.statusCode ?? -1)")
                         completion(Return.fail(error: err, response: .fail, value: nil))
+                    }
+                }
+            }
+        }
+    }
+    
+    func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws {
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getStoryHighlightsUrl(userPk: userPk), body: [:], header: [:]) { (data, res, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(StoryHighlights.self, from: data)
+                        completion(Return.success(value: value))
+                    } catch {
+                        completion(Return.fail(error: error, response: .ok, value: nil))
                     }
                 }
             }

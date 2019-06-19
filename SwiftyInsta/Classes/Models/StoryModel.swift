@@ -94,3 +94,9 @@ public struct StoryViewers: Codable, BaseStatusResponseProtocol {
     public var totalViewerCount: Int?
     public var status: String?
 }
+
+public struct StoryHighlights: Codable {
+    public var tray: [TrayModel]
+    public var showEmptyState: Bool
+    public var status: String
+}

@@ -95,7 +95,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testRemoveFollower(handler: handler)
+                self.testGetStoryHighlights(handler: handler)
             }
         }
     }
@@ -1313,6 +1313,29 @@ class SwiftyInstaTests: XCTestCase {
         
         try! handler.getStoryViewers(storyPk: storyPk, completion: { (result) in
             result.value!.users!.forEach{ print($0.username!) }
+            exp.fulfill()
+        })
+        
+        waitForExpectations(timeout: 60) { (err) in
+            if let err = err {
+                fatalError(err.localizedDescription)
+            }
+            
+            if self.logoutAfterTest {
+                self.testLogout(handler: handler)
+            }
+        }
+    }
+    
+    func testGetStoryHighlights(handler: APIHandlerProtocol) {
+        let exp = expectation(description: "testGetStoryViewers() faild during timeout")
+        let userPk = 1697263047
+        
+        try! handler.getStoryHighlights(userPk: userPk, completion: { (result) in
+            if result.isSucceeded {
+                print("number of highlights: ", result.value?.tray.count)
+            }
+            
             exp.fulfill()
         })
         
