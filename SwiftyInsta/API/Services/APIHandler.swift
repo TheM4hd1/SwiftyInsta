@@ -613,6 +613,15 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (Result<Bool>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try StoryHandler.shared.markStoriesAsSeen(items: items, sourceId: sourceId, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
         // validate before request.
         try validateUser()

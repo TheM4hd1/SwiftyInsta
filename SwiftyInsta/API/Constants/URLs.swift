@@ -633,4 +633,8 @@ struct URLs {
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for story highlights")
     }
+    
+    static func markStoriesAsSeenUrl() -> URL {
+        return URL(string: "https://i.instagram.com/api/v2/media/seen/?reel=1&live_vod=0")!
+    }
 }

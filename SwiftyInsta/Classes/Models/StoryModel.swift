@@ -100,3 +100,16 @@ public struct StoryHighlights: Codable {
     public var showEmptyState: Bool
     public var status: String
 }
+
+public struct SeenStory: Codable {
+    let _uuid: String
+    let _uid: String
+    let _csrftoken: String
+    let container_module: String
+    let reels: [String: [String]]
+    let reel_media_skipped: [String: String]
+    let live_vods: [String: String]
+    let live_vods_skipped: [String: String]
+    let nuxes: [String: String]
+    let nuxes_skipped: [String: String]
+}

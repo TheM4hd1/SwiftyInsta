@@ -15,6 +15,7 @@ public protocol StoryHandlerProtocol {
     func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
     func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws
     func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws
+    func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (Result<Bool>) -> ()) throws
 }
 
 class StoryHandler: StoryHandlerProtocol {
@@ -212,6 +213,62 @@ class StoryHandler: StoryHandlerProtocol {
                         completion(Return.success(value: value))
                     } catch {
                         completion(Return.fail(error: error, response: .ok, value: nil))
+                    }
+                }
+            }
+        }
+    }
+    
+    func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (Result<Bool>) -> ()) throws {
+        var reels: [String: [String]] = [:]
+        let maxSeenAt = Int(Date().timeIntervalSince1970)
+        var seenAt = Int(maxSeenAt) - (3 * items.count)
+        
+        for item in items {
+            let takenAt = item.takenAt!
+            if seenAt < takenAt {
+                seenAt = takenAt + 2
+            }
+            
+            if seenAt > maxSeenAt {
+                seenAt = maxSeenAt
+            }
+            
+            let itemSourceId = (sourceId == nil) ? String(item.user!.pk!): sourceId!
+            let reelId = String(item.id!) + "_" + itemSourceId
+            reels[reelId] = [String(takenAt) + "_" + String(seenAt)]
+            seenAt += Int.random(in: 1...3)
+        }
+        
+        let data  = SeenStory(_uuid: HandlerSettings.shared.device!.deviceGuid.uuidString, _uid: String(HandlerSettings.shared.user!.loggedInUser.pk!), _csrftoken: HandlerSettings.shared.user!.csrfToken, container_module: "feed_timeline", reels: reels, reel_media_skipped: [:], live_vods: [:], live_vods_skipped: [:], nuxes: [:], nuxes_skipped: [:])
+        
+        let encoder = JSONEncoder()
+        let payload = String(data: try! encoder.encode(data), encoding: .utf8)!
+        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+        
+        let signature = "\(hash).\(payload)"
+        let body: [String: Any] = [
+            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+        ]
+        
+        // api version 2
+        let url = URLs.markStoriesAsSeenUrl()
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: body, header: [:]) { (data, res, err) in
+            if let err = err {
+                completion(Return.fail(error: err, response: .fail, value: false))
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    do {
+                        let value = try decoder.decode(BaseStatusResponseModel.self, from: data)
+                        if let status = value.status, status == "ok" {
+                            completion(Return.success(value: true))
+                        } else {
+                            completion(Return.fail(error: nil, response: .fail, value: false))
+                        }
+                    } catch {
+                        completion(Return.fail(error: err, response: .ok, value: false))
                     }
                 }
             }
