@@ -534,15 +534,14 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
-//    func uploadVideo(video: InstaVideo?, imageTumbnail: InstaPhoto?, caption: String?, completion: @escaping (Bool) -> ()) throws {
-//        // validate before request.
-//        try validateUser()
-//        try validateLoggedIn()
-//
-//        try MediaHandler.shared.uploadVideo(video: nil, imageTumbnail: nil, caption: nil, completion: { (result) in
-//            completion(result)
-//        })
-//    }
+    public func reportComment(mediaId: String, commentId: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try CommentHandler.shared.reportComment(mediaId: mediaId, commentId: commentId, completion: { (result) in
+            completion(result)
+        })
+    }
     
     public func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws {
         // validate before request.

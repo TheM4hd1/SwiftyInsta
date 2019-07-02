@@ -12,6 +12,7 @@ public protocol CommentHandlerProtocol {
     func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws
     func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws
     func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws
+    func reportComment(mediaId: String, commentId: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
 }
 
 class CommentHandler: CommentHandlerProtocol {
@@ -44,7 +45,7 @@ class CommentHandler: CommentHandlerProtocol {
                         do {
                             let newItem = try decoder.decode(MediaCommentsResponseModel.self, from: data)
                             commentList.append(newItem)
-                            if newItem.hasMoreComments! && newItem.nextMaxId != nil {
+                            if (newItem.hasMoreComments ?? false) && newItem.nextMaxId != nil {
                                 _paginationParameter.nextId = newItem.nextMaxId!
                                 let url = try! URLs.getComments(for: mediaId, maxId: _paginationParameter.nextId)
                                 self!.getCommentList(for: url, mediaId: mediaId, list: commentList, paginationParameter: _paginationParameter, completion: { (result) in
@@ -122,6 +123,38 @@ class CommentHandler: CommentHandlerProtocol {
                     } catch {
                         completion(false)
                     }
+                }
+            }
+        }
+    }
+    
+    func reportComment(mediaId: String, commentId: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws {
+        let content = [
+            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "reason": "1",
+            "comment_id": commentId,
+            "media_id": mediaId
+        ]
+        
+        let url = try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId)
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, res, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil))
+            } else {
+                if res?.statusCode == 200 {
+                    if let data = data {
+                        let decoder = JSONDecoder()
+                        do {
+                            let value = try decoder.decode(BaseStatusResponseModel.self, from: data)
+                            completion(Return.success(value: value))
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil))
+                        }
+                    }
+                } else {
+                    completion(Return.fail(error: nil, response: .unknown, value: nil))
                 }
             }
         }

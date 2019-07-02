@@ -84,6 +84,7 @@ struct URLs {
     private static let recoverByEmail = "/accounts/send_recovery_flow_email/"
     private static let storyViewers = "/media/%@/list_reel_media_viewer/"
     private static let storyHighlights = "/highlights/%ld/highlights_tray/"
+    private static let reportComment = "/media/%@/comment/%@/flag/"
     
     // MARK: - Methods
     
@@ -636,5 +637,13 @@ struct URLs {
     
     static func markStoriesAsSeenUrl() -> URL {
         return URL(string: "https://i.instagram.com/api/v2/media/seen/?reel=1&live_vod=0")!
+    }
+    
+    static func reportCommentUrl(mediaId: String, commentId: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: reportComment, mediaId, commentId))) {
+            return url
+        }
+        
+        throw CustomErrors.urlCreationFaild("Cant create URL for report comments")
     }
 }

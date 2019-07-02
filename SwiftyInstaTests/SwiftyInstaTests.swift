@@ -95,7 +95,7 @@ class SwiftyInstaTests: XCTestCase {
                 self.logoutAfterTest = true
                 
                 // FIXME: 'test function' you want to run after login.
-                self.testGetStoryHighlights(handler: handler)
+                self.testGetMediaComments(handler: handler)
             }
         }
     }
@@ -619,7 +619,7 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserMedia(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserMedia() faild during timeout")
         do {
-            try handler.getUserMedia(for: "apple", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1)) { (result) in
+            try handler.getUserMedia(for: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1)) { (result) in
                 if result.isSucceeded {
                     print(result.value!)
                     print("[+] number of pages that include medias: \(result.value!.count)")
@@ -1034,12 +1034,16 @@ class SwiftyInstaTests: XCTestCase {
     // MARK: - Comment Handler Methods
     
     func testGetMediaComments(handler: APIHandlerProtocol) {
-        let mediaId = "1909062118116718858_8766457680"
+        let mediaId = "2027973562639689483_8766457680"
         let exp = expectation(description: "likeMedia() faild during timeout")
         do {
             try handler.getMediaComments(mediaId: mediaId, paginationParameter:  PaginationParameters.maxPagesToLoad(maxPages: 5), completion: { (result) in
-                print("[+] first comment: \(result.value!.first!.comments!.first!)")
-                exp.fulfill()
+                //print("[+] first comment: \(result.value!.first!.comments!.first!)")
+                let commentId = result.value!.first!.comments!.first!.pk!
+                try! handler.reportComment(mediaId: mediaId, commentId: String(commentId), completion: { (result) in
+                    print(result)
+                    exp.fulfill()
+                })
             })
         } catch {
             print("[-] \(error.localizedDescription)")
