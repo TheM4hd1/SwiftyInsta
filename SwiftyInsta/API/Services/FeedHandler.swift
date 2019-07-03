@@ -123,7 +123,7 @@ class FeedHandler: FeedHandlerProtocol {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
             var timelineList = list
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(timelineList)
                 } else {
