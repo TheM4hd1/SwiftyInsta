@@ -430,7 +430,7 @@ class UserHandler: UserHandlerProtocol {
     }
     
     func logout(completion: @escaping (Result<Bool>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getLogoutUrl(), body: [:], header: [:], completion: { (data, response, error) in
+        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getLogoutUrl(), body: [:], header: [:], completion: { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .unknown, value: nil))
             } else {
