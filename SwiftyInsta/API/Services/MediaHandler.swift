@@ -10,6 +10,7 @@ import Foundation
 
 public protocol MediaHandlerProtocol {
     func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
+    func getUserMedia(for pk: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
     func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws
     func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
     func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
@@ -25,9 +26,7 @@ class MediaHandler: MediaHandlerProtocol {
     
     static let shared = MediaHandler()
     
-    private init() {
-        
-    }
+    private init() {}
     
     func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
         try UserHandler.shared.getUser(username: username, completion: { [weak self] (result) in
@@ -37,12 +36,33 @@ class MediaHandler: MediaHandlerProtocol {
         })
     }
     
+    /** Getting media with pk returns more accurate results */
+    func getUserMedia(for pk: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+        
+        try UserHandler.shared.getUser(id: pk, completion: { [weak self] (result) in
+            
+            if result.isSucceeded {
+                
+                if let user = result.value?.user {
+                    self!.getMediaList(from: try! URLs.getUserFeedUrl(userPk: user.pk), userPk: user.pk, list: [], paginationParameter: paginationParameter, completion: { (value) in
+                        completion(Return.success(value: value))
+                    })
+                } else {
+                    return completion(Return.fail(error: nil, response: ResponseTypes.fail, value: nil))
+                }
+                
+            }
+            
+        })
+    }
+    
     fileprivate func getMediaList(from url: URL, userPk: Int?, list: [UserFeedModel], paginationParameter: PaginationParameters, completion: @escaping ([UserFeedModel]) -> ()) {
         if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
             completion(list)
         } else {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
+            
             HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(list)

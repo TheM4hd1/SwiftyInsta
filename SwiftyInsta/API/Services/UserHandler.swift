@@ -24,6 +24,8 @@ public protocol UserHandlerProtocol {
     func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
     func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
+    func getUserFollowers(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
+    func getUserFollowing(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
     func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws
     func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws
@@ -46,9 +48,7 @@ class UserHandler: UserHandlerProtocol {
     
     static let shared = UserHandler()
 
-    private init() {
-        
-    }
+    private init() {}
     
     
     func login(cache: SessionCache, completion: @escaping (Result<LoginResultModel>) -> ()) throws {
@@ -532,6 +532,7 @@ class UserHandler: UserHandlerProtocol {
     }
     
     func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws {
+        
         HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getUserInfo(id: id), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
@@ -697,6 +698,39 @@ class UserHandler: UserHandlerProtocol {
                 }
             }
         }
+    }
+    
+    /** Searching with Pk returns more accurate results */
+    func getUserFollowers(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        try getUser(id: pk, completion: { [weak self] (user) in
+            if user.isSucceeded {
+                guard let pk = user.value?.user?.pk else {return}
+                guard let rankToken = HandlerSettings.shared.user else {return}
+                
+                guard let url = try? URLs.getUserFollowers(userPk: pk, rankToken: rankToken.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId) else {return}
+                
+                self?.getFollowersList(pk: pk, searchQuery: searchQuery, followers: [], url: url, paginationParameter: paginationParameter, completion: { (result) in
+                    completion(Return.success(value: result))
+                })
+            }
+        })
+    }
+    
+    /** Searching with Pk returns more accurate results */
+    func getUserFollowing(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        try getUser(id: pk, completion: { [weak self] (user) in
+            
+            if user.isSucceeded {
+                guard let pk = user.value?.user?.pk else {return}
+                guard let rankToken = HandlerSettings.shared.user else {return}
+                guard let url = try? URLs.getUserFollowing(userPk: pk, rankToken: rankToken.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId) else {return}
+                
+                self?.getFollowingList(pk: pk, searchQuery: searchQuery, followings: [], url: url, paginationParameter: paginationParameter, completion: { (result) in
+                    completion(Return.success(value: result))
+                })
+            }
+            
+        })
     }
 
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {

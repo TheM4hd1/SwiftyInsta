@@ -20,9 +20,7 @@ public protocol APIHandlerProtocol:
 
 public class APIHandler: APIHandlerProtocol {
     
-    public init() {
-        
-    }
+    public init() {}
     
     public init(request: RequestMessageModel, user: SessionStorage, device: AndroidDeviceModel, delay: DelayModel, urlSession: URLSession) {
         // TODO: - Update Handler Settings
@@ -167,6 +165,27 @@ public class APIHandler: APIHandlerProtocol {
         }
     }
     
+    /** Searching with Pk returns more accurate results */
+    public func getUserFollowers(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        try UserHandler.shared.getUserFollowers(pk: pk, paginationParameter: paginationParameter, searchQuery: searchQuery) { (result) in
+            completion(result)
+        }
+    }
+    
+    /** Searching with Pk returns more accurate results */
+    public func getUserFollowing(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.getUserFollowing(pk: pk, paginationParameter: paginationParameter, searchQuery: searchQuery) { (result) in
+            completion(result)
+        }
+    }
+    
     public func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
         // validate before request.
         try validateUser()
@@ -203,6 +222,17 @@ public class APIHandler: APIHandlerProtocol {
         try validateLoggedIn()
         
         try MediaHandler.shared.getUserMedia(for: username, paginationParameter: paginationParameter) { (result) in
+            completion(result)
+        }
+    }
+    
+    /** Fetching media with pk returns more accurate results */
+    public func getUserMedia(for pk: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.getUserMedia(for: pk, paginationParameter: paginationParameter) { (result) in
             completion(result)
         }
     }
