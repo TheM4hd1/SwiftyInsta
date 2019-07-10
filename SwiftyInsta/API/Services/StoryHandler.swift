@@ -26,7 +26,8 @@ class StoryHandler: StoryHandlerProtocol {
     }
     
     func getStoryFeed(completion: @escaping (Result<StoryFeedModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getStoryFeedUrl(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getStoryFeedUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -48,7 +49,8 @@ class StoryHandler: StoryHandlerProtocol {
     }
     
     func getUserStory(userId: Int, completion: @escaping (Result<TrayModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getUserStoryUrl(userId: userId), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getUserStoryUrl(userId: userId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -70,7 +72,8 @@ class StoryHandler: StoryHandlerProtocol {
     }
     
     func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getUserStoryFeed(userId: userId), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getUserStoryFeed(userId: userId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -122,7 +125,8 @@ class StoryHandler: StoryHandlerProtocol {
         
         let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -145,7 +149,14 @@ class StoryHandler: StoryHandlerProtocol {
     }
     
     fileprivate func configureStoryPhoto(uploadId: String, caption: String, completion: @escaping (UploadPhotoResponse?) -> ()) {
-        let data = ConfigureStoryUploadModel.init(_uuid: HandlerSettings.shared.device!.deviceGuid.uuidString, _uid: String(HandlerSettings.shared.user!.loggedInUser.pk!), _csrftoken: HandlerSettings.shared.user!.csrfToken, source_type: "1", caption: caption, upload_id: uploadId, disable_comments: false, configure_mode: 1, campera_position: "unknown")
+        
+        guard
+            let device = HandlerSettings.shared.device,
+            let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+            let csrfToken = HandlerSettings.shared.user?.csrfToken
+        else {return}
+        
+        let data = ConfigureStoryUploadModel.init(_uuid: device.deviceGuid.uuidString, _uid: String(pk), _csrftoken: csrfToken, source_type: "1", caption: caption, upload_id: uploadId, disable_comments: false, configure_mode: 1, campera_position: "unknown")
         
         let encoder = JSONEncoder()
         let payload = String(data: try! encoder.encode(data), encoding: .utf8)!
@@ -157,7 +168,8 @@ class StoryHandler: StoryHandlerProtocol {
             Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try! URLs.getConfigureStoryUrl(), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try! URLs.getConfigureStoryUrl(), body: body, header: [:]) { (data, response, error) in
             if error != nil {
                 completion(nil)
             } else {
@@ -176,7 +188,8 @@ class StoryHandler: StoryHandlerProtocol {
     }
     
     func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getStoryViewersUrl(pk: storyPk!), body: [:], header: [:]) { (data, response, err) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getStoryViewersUrl(pk: storyPk!), body: [:], header: [:]) { (data, response, err) in
             if let err = err {
                 print(err.localizedDescription)
                 completion(Return.fail(error: err, response: .fail, value: nil))
@@ -201,7 +214,8 @@ class StoryHandler: StoryHandlerProtocol {
     }
     
     func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getStoryHighlightsUrl(userPk: userPk), body: [:], header: [:]) { (data, res, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getStoryHighlightsUrl(userPk: userPk), body: [:], header: [:]) { (data, res, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -240,7 +254,12 @@ class StoryHandler: StoryHandlerProtocol {
             seenAt += Int.random(in: 1...3)
         }
         
-        let data  = SeenStory(_uuid: HandlerSettings.shared.device!.deviceGuid.uuidString, _uid: String(HandlerSettings.shared.user!.loggedInUser.pk!), _csrftoken: HandlerSettings.shared.user!.csrfToken, container_module: "feed_timeline", reels: reels, reel_media_skipped: [:], live_vods: [:], live_vods_skipped: [:], nuxes: [:], nuxes_skipped: [:])
+        guard
+            let device = HandlerSettings.shared.device,
+            let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+            let csrfToken = HandlerSettings.shared.user?.csrfToken
+        else {return}
+        let data  = SeenStory(_uuid: device.deviceGuid.uuidString, _uid: String(pk), _csrftoken: csrfToken, container_module: "feed_timeline", reels: reels, reel_media_skipped: [:], live_vods: [:], live_vods_skipped: [:], nuxes: [:], nuxes_skipped: [:])
         
         let encoder = JSONEncoder()
         let payload = String(data: try! encoder.encode(data), encoding: .utf8)!
@@ -254,7 +273,8 @@ class StoryHandler: StoryHandlerProtocol {
         
         // api version 2
         let url = URLs.markStoriesAsSeenUrl()
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: body, header: [:]) { (data, res, err) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: body, header: [:]) { (data, res, err) in
             if let err = err {
                 completion(Return.fail(error: err, response: .fail, value: false))
             } else {

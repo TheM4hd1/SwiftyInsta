@@ -330,8 +330,8 @@ class MediaHandler: MediaHandlerProtocol {
             content.append(string: "\n--\(uploadId)--\n\n")
             
             let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-            
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try! URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
+            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+            httpHelper.sendAsync(method: .post, url: try! URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(_uploadIds)
                 } else {
@@ -385,8 +385,8 @@ class MediaHandler: MediaHandlerProtocol {
             Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
             Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
         ]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(nil, error)
             } else {
@@ -435,7 +435,9 @@ class MediaHandler: MediaHandlerProtocol {
         content.append(string: "--\(uploadId)--\r\n\r\n")
         
         let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: [:], header: header, data: content) { (data, response, error) in
+        
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: [:], header: header, data: content) { (data, response, error) in
             if let error = error {
                 print("[-] error: ", error)
             } else {
@@ -539,8 +541,8 @@ class MediaHandler: MediaHandlerProtocol {
         content.append(string: "\n--\(uploadId)--\n\n")
         
         let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: [:], header: header, data: content) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: [:], header: header, data: content) { (data, response, error) in
             if error != nil {
                 completion(false)
             } else {
@@ -579,8 +581,8 @@ class MediaHandler: MediaHandlerProtocol {
             Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
             Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
         ]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: body, header: header) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: body, header: header) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -607,8 +609,8 @@ class MediaHandler: MediaHandlerProtocol {
             "_csrftoken": HandlerSettings.shared.user!.csrfToken,
             "media_id": mediaId,
         ]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: mediaType.rawValue), body: content, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: mediaType.rawValue), body: content, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -645,8 +647,8 @@ class MediaHandler: MediaHandlerProtocol {
             Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
             Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
         ]
-        
-        HandlerSettings.shared.httpHelper?.sendAsync(method: .post, url: try URLs.getEditMediaUrl(mediaId: mediaId), body: body, header: [:], completion: { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getEditMediaUrl(mediaId: mediaId), body: body, header: [:], completion: { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -669,7 +671,8 @@ class MediaHandler: MediaHandlerProtocol {
     }
     
     func getMediaLikers(mediaId: String, completion: @escaping (Result<MediaLikersModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper?.sendAsync(method: .get, url: try URLs.getMediaLikersUrl(mediaId: mediaId), body: [:], header: [:], completion: { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getMediaLikersUrl(mediaId: mediaId), body: [:], header: [:], completion: { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {

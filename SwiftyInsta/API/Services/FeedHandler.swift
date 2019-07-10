@@ -34,7 +34,8 @@ class FeedHandler: FeedHandlerProtocol {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
             var list = exploreList
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(list)
                 } else {
@@ -80,7 +81,9 @@ class FeedHandler: FeedHandlerProtocol {
         } else {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            
+            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(list)
                 } else {
@@ -123,7 +126,8 @@ class FeedHandler: FeedHandlerProtocol {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
             var timelineList = list
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+            httpHelper.sendAsync(method: .post, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(timelineList)
                 } else {

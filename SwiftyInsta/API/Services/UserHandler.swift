@@ -74,7 +74,8 @@ class UserHandler: UserHandlerProtocol {
     
     func login(completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws {
         // sending a 'GET' request to retrieve 'CSRF' token.
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .unknown, value: nil), nil)
             } else {
@@ -103,7 +104,8 @@ class UserHandler: UserHandlerProtocol {
                 ]
                 
                 // send login request
-                HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try! URLs.getLoginUrl(), body: body, header: headers, completion: { (data, response, error) in
+                guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+                httpHelper.sendAsync(method: .post, url: try! URLs.getLoginUrl(), body: body, header: headers, completion: { (data, response, error) in
                     if let error = error {
                         completion(Return.fail(error: error, response: .unknown, value: nil), nil)
                     } else {
@@ -199,7 +201,8 @@ class UserHandler: UserHandlerProtocol {
         
         let body = getTwoFactorLoginRequestBody(verificationCode: verificationCode, verificationMethod: verificationMethod)
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getTwoFactorLoginUrl(), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getTwoFactorLoginUrl(), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .unknown, value: nil), nil)
             } else {
@@ -268,7 +271,8 @@ class UserHandler: UserHandlerProtocol {
     func sendTwoFactorLoginSms(completion: @escaping (Result<Bool>) -> ()) throws {
         let body = getTwoFactorLoginSmsRequestBody()
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getSendTwoFactorLoginSmsUrl(), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getSendTwoFactorLoginSmsUrl(), body: body, header: [:]) { (data, response, error) in
             if response?.statusCode == 200 {
                 completion(Return.success(value: true))
             } else {
@@ -286,7 +290,8 @@ class UserHandler: UserHandlerProtocol {
             //"choice": "1"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: .fail))
             } else {
@@ -312,7 +317,8 @@ class UserHandler: UserHandlerProtocol {
             "choice": type.rawValue
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -337,7 +343,8 @@ class UserHandler: UserHandlerProtocol {
 
         let header = ["Host": "i.instagram.com"]
         let url = try URLs.getVerifyLoginUrl(challenge: HandlerSettings.shared.challenge!.apiPath)
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: body, header: header) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: body, header: header) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: .responseError), nil)
             } else {
@@ -368,7 +375,8 @@ class UserHandler: UserHandlerProtocol {
     // Its not working yet.
     func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 print(error.localizedDescription)
             } else {
@@ -416,7 +424,8 @@ class UserHandler: UserHandlerProtocol {
                     Headers.HeaderXGoogleADID: (HandlerSettings.shared.device!.googleAdId?.uuidString)!
                 ]
                 
-                    HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try! URLs.getCreateAccountUrl(), body: body, header: headers, completion: { (data, response, error) in
+                guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+                httpHelper.sendAsync(method: .post, url: try! URLs.getCreateAccountUrl(), body: body, header: headers, completion: { (data, response, error) in
                         if error != nil {
                             completion(false)
                         } else {
@@ -431,7 +440,8 @@ class UserHandler: UserHandlerProtocol {
     }
     
     func logout(completion: @escaping (Result<Bool>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getLogoutUrl(), body: [:], header: [:], completion: { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getLogoutUrl(), body: [:], header: [:], completion: { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .unknown, value: nil))
             } else {
@@ -463,7 +473,8 @@ class UserHandler: UserHandlerProtocol {
             Headers.HeaderRankTokenKey: HandlerSettings.shared.user!.rankToken
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -497,7 +508,8 @@ class UserHandler: UserHandlerProtocol {
             Headers.HeaderRankTokenKey: HandlerSettings.shared.user!.rankToken
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -534,7 +546,8 @@ class UserHandler: UserHandlerProtocol {
     
     func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws {
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getUserInfo(id: id), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getUserInfo(id: id), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -565,7 +578,8 @@ class UserHandler: UserHandlerProtocol {
         } else {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(list)
                 } else {
@@ -610,7 +624,8 @@ class UserHandler: UserHandlerProtocol {
     
     fileprivate func getFollowingList(pk: Int?, searchQuery: String, followings: [UserShortModel], url: URL, paginationParameter: PaginationParameters, completion: @escaping ([UserShortModel]) -> ()) {
         var _paginationParameter = paginationParameter
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
             _paginationParameter.pagesLoaded += 1
             if error != nil {
                 completion(followings)
@@ -662,7 +677,8 @@ class UserHandler: UserHandlerProtocol {
     
     fileprivate func getFollowersList(pk: Int?, searchQuery: String, followers: [UserShortModel], url: URL, paginationParameter: PaginationParameters, completion: @escaping ([UserShortModel]) -> ()) {
         var _paginationParameter = paginationParameter
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
             _paginationParameter.pagesLoaded += 1
             if error != nil {
                 completion(followers)
@@ -741,7 +757,8 @@ class UserHandler: UserHandlerProtocol {
             "_csrftoken": HandlerSettings.shared.user!.csrfToken
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getCurrentUser(), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getCurrentUser(), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -778,7 +795,8 @@ class UserHandler: UserHandlerProtocol {
         } else {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(list)
                 } else {
@@ -821,7 +839,8 @@ class UserHandler: UserHandlerProtocol {
         } else {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(list)
                 } else {
@@ -862,7 +881,8 @@ class UserHandler: UserHandlerProtocol {
             "radio_type": "wifi-none"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.removeFollowerUrl(for: userId), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.removeFollowerUrl(for: userId), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -889,7 +909,8 @@ class UserHandler: UserHandlerProtocol {
             "radio_type": "wifi-none"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.approveFriendshipUrl(for: userId), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.approveFriendshipUrl(for: userId), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -916,7 +937,8 @@ class UserHandler: UserHandlerProtocol {
             "radio_type": "wifi-none"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.rejectFriendshipUrl(for: userId), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.rejectFriendshipUrl(for: userId), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -935,7 +957,8 @@ class UserHandler: UserHandlerProtocol {
     }
     
     func pendingFriendships(completion: @escaping (Result<PendingFriendshipsModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.pendingFriendshipsUrl(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.pendingFriendshipsUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -962,7 +985,8 @@ class UserHandler: UserHandlerProtocol {
             "radio_type": "wifi-none"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getFollowUrl(for: userId), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getFollowUrl(for: userId), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -989,7 +1013,8 @@ class UserHandler: UserHandlerProtocol {
             "radio_type": "wifi-none"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getUnFollowUrl(for: userId), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getUnFollowUrl(for: userId), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -1008,7 +1033,8 @@ class UserHandler: UserHandlerProtocol {
     }
     
     func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getFriendshipStatusUrl(for: userId), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getFriendshipStatusUrl(for: userId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -1036,7 +1062,8 @@ class UserHandler: UserHandlerProtocol {
             "radio_type": "wifi-none"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getFriendshipStatusesUrl(), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getFriendshipStatusesUrl(), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -1055,7 +1082,8 @@ class UserHandler: UserHandlerProtocol {
     }
     
     func getBlockedList(completion: @escaping (Result<BlockedUsersModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getBlockedList(), body: [:], header: [:]) { (data, res, err) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getBlockedList(), body: [:], header: [:]) { (data, res, err) in
             if let error = err {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -1082,7 +1110,8 @@ class UserHandler: UserHandlerProtocol {
             "radio_type": "wifi-none"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getBlockUrl(for: userId), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getBlockUrl(for: userId), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -1109,7 +1138,8 @@ class UserHandler: UserHandlerProtocol {
             "radio_type": "wifi-none"
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getUnBlockUrl(for: userId), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getUnBlockUrl(for: userId), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -1134,7 +1164,8 @@ class UserHandler: UserHandlerProtocol {
     }
     
     func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .unknown, value: nil))
             } else {
@@ -1157,7 +1188,8 @@ class UserHandler: UserHandlerProtocol {
                     "_csrftoken": HandlerSettings.shared.user!.csrfToken
                 ]
                 
-                HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try! URLs.getRecoverByEmailUrl(), body: body, header: [:], completion: { (data, response, error) in
+                guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+                httpHelper.sendAsync(method: .post, url: try! URLs.getRecoverByEmailUrl(), body: body, header: [:], completion: { (data, response, error) in
                     if let error = error {
                         completion(Return.fail(error: error, response: .fail, value: nil))
                     } else {
