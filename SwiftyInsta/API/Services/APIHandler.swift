@@ -573,6 +573,12 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func reportUser(userPk: Int, completion: @escaping (Result<Bool>) -> ()) throws {
+        try UserHandler.shared.reportUser(userPk: userPk, completion: { (result) in
+            completion(result)
+        })
+    }
+    
     public func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws {
         // validate before request.
         try validateUser()

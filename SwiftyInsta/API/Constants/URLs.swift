@@ -85,6 +85,7 @@ struct URLs {
     private static let storyViewers = "/media/%@/list_reel_media_viewer/"
     private static let storyHighlights = "/highlights/%ld/highlights_tray/"
     private static let reportComment = "/media/%@/comment/%@/flag/"
+    private static let reportUser = "/users/%ld/flag_user/"
     
     // MARK: - Methods
     
@@ -645,5 +646,13 @@ struct URLs {
         }
         
         throw CustomErrors.urlCreationFaild("Cant create URL for report comments")
+    }
+    
+    static func reportUserUrl(userPk: Int) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: reportUser, userPk))) {
+            return url
+        }
+        
+        throw CustomErrors.urlCreationFaild("Cant create URL for report user")
     }
 }

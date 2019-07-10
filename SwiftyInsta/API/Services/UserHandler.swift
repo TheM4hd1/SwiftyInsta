@@ -42,6 +42,7 @@ public protocol UserHandlerProtocol {
     func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
     func recoverAccountBy(username: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
+    func reportUser(userPk: Int, completion: @escaping (Result<Bool>) -> ()) throws
 }
 
 class UserHandler: UserHandlerProtocol {
@@ -1177,5 +1178,31 @@ class UserHandler: UserHandlerProtocol {
                 })
             }
         }
+    }
+    
+    func reportUser(userPk: Int, completion: @escaping (Result<Bool>) -> ()) throws {
+        let url = try URLs.reportUserUrl(userPk: userPk)
+        guard let handler = HandlerSettings.shared.httpHelper else { return }
+        let body = [
+            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
+            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "user_id": String(userPk),
+            "source_name": "profile",
+            "is_spam": "true",
+            "reason_id": "1"
+        ]
+        
+        handler.sendAsync(method: .post, url: url, body: body, header: [:], completion: { (data, res, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: false))
+            } else {
+                if res?.statusCode == 200 {
+                    completion(Return.success(value: true))
+                } else {
+                    completion(Return.fail(error: nil, response: .wrongRequest, value: false))
+                }
+            }
+        })
     }
 }
