@@ -34,7 +34,8 @@ class CommentHandler: CommentHandlerProtocol {
         } else {
             var _paginationParameter = paginationParameter
             _paginationParameter.pagesLoaded += 1
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
+            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
                 if error != nil {
                     completion(list)
                 } else {
@@ -64,12 +65,19 @@ class CommentHandler: CommentHandlerProtocol {
     }
     
     func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws {
+        
+        guard
+            let device = HandlerSettings.shared.device,
+            let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+            let csrfToken = HandlerSettings.shared.user?.csrfToken
+        else {return}
+        
         let content = [
             "user_breadcrumb": String(Date().millisecondsSince1970),
             "idempotence_token": UUID.init().uuidString,
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "_uuid": device.deviceGuid.uuidString,
+            "_uid": String(pk),
+            "_csrftoken": csrfToken,
             "comment_text": text,
             "containermodule": "comments_feed_timeline",
             "radio_type": "wifi-none"
@@ -84,8 +92,8 @@ class CommentHandler: CommentHandlerProtocol {
             Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
             Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
         ]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getPostCommentUrl(mediaId: mediaId), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getPostCommentUrl(mediaId: mediaId), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -109,8 +117,8 @@ class CommentHandler: CommentHandlerProtocol {
             "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
             "_csrftoken": HandlerSettings.shared.user!.csrfToken
         ]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentPk), body: content, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentPk), body: content, header: [:]) { (data, response, error) in
             if error != nil {
                 completion(false)
             } else {
@@ -139,7 +147,9 @@ class CommentHandler: CommentHandlerProtocol {
         ]
         
         let url = try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId)
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, res, error) in
+        
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, res, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {

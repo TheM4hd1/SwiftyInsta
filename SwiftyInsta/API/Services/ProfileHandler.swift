@@ -27,10 +27,17 @@ class ProfileHandler: ProfileHandlerProtocol {
     
     func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
         let encoder = JSONEncoder()
+        
+        guard
+            let device = HandlerSettings.shared.device,
+            let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+            let csrfToken = HandlerSettings.shared.user?.csrfToken
+            else {return}
+        
         var content = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken
+            "_uuid": device.deviceGuid.uuidString,
+            "_uid": String(pk),
+            "_csrftoken": csrfToken
         ]
         
         let encodedContent = String(data: try! encoder.encode(content) , encoding: .utf8)!
@@ -40,7 +47,8 @@ class ProfileHandler: ProfileHandlerProtocol {
         content.updateValue(signature, forKey: Headers.HeaderIGSignatureKey)
         content.updateValue(Headers.HeaderIGSignatureVersionValue, forKey: Headers.HeaderIGSignatureVersionKey)
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.setPublicProfile(), body: content, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.setPublicProfile(), body: content, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -59,10 +67,17 @@ class ProfileHandler: ProfileHandlerProtocol {
     
     func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
         let encoder = JSONEncoder()
+        
+        guard
+            let device = HandlerSettings.shared.device,
+            let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+            let csrfToken = HandlerSettings.shared.user?.csrfToken
+            else {return}
+        
         var content = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken
+            "_uuid": device.deviceGuid.uuidString,
+            "_uid": String(pk),
+            "_csrftoken": csrfToken
         ]
         
         let encodedContent = String(data: try! encoder.encode(content) , encoding: .utf8)!
@@ -72,7 +87,8 @@ class ProfileHandler: ProfileHandlerProtocol {
         content.updateValue(signature, forKey: Headers.HeaderIGSignatureKey)
         content.updateValue(Headers.HeaderIGSignatureVersionValue, forKey: Headers.HeaderIGSignatureVersionKey)
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.setPrivateProfile(), body: content, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.setPrivateProfile(), body: content, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -91,16 +107,24 @@ class ProfileHandler: ProfileHandlerProtocol {
     }
     
     func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws {
+        
+        guard
+            let device = HandlerSettings.shared.device,
+            let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+            let csrfToken = HandlerSettings.shared.user?.csrfToken
+        else {return}
+        
         let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+            "_uuid": device.deviceGuid.uuidString,
+            "_uid": String(pk),
+            "_csrftoken": csrfToken,
             "old_password": oldPassword,
             "new_password1": newPassword,
             "new_password2": newPassword
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getChangePasswordUrl(), body: body, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getChangePasswordUrl(), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -125,7 +149,8 @@ class ProfileHandler: ProfileHandlerProtocol {
     }
 
     func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String = "", completion: @escaping (Result<EditProfileModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getEditProfileUrl(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getEditProfileUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -143,16 +168,23 @@ class ProfileHandler: ProfileHandlerProtocol {
                                 let _phone = phone.isEmpty ? user.user!.phoneNumber!: phone
                                 let _username = newUsername.isEmpty ? user.user!.username!: newUsername
                                 
+                                
+                                guard
+                                    let device = HandlerSettings.shared.device,
+                                    let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+                                    let csrfToken = HandlerSettings.shared.user?.csrfToken
+                                else {return}
+                                
                                 let content = [
                                     "external_url": _url,
                                     "gender": gender.rawValue,
                                     "phone_number": _phone,
-                                    "_csrftoken": HandlerSettings.shared.user!.csrfToken,
+                                    "_csrftoken": csrfToken,
                                     "username": _username,
                                     "first_name": _name,
-                                    "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
+                                    "_uid": String(pk),
                                     "biography": _biography,
-                                    "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+                                    "_uuid": device.deviceGuid.uuidString,
                                     "email": _email
                                 ]
                                 
@@ -184,14 +216,22 @@ class ProfileHandler: ProfileHandlerProtocol {
     }
     
     func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws {
+        
+        guard
+            let device = HandlerSettings.shared.device,
+            let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+            let csrfToken = HandlerSettings.shared.user?.csrfToken
+        else {return}
+        
         let content = [
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
+            "_csrftoken": csrfToken,
+            "_uid": String(pk),
+            "_uuid": device.deviceGuid.uuidString,
             "raw_text": bio
         ]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getEditBiographyUrl(), body: content, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getEditBiographyUrl(), body: content, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: false))
             } else {
@@ -218,15 +258,23 @@ class ProfileHandler: ProfileHandlerProtocol {
     }
     
     func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+        
+        guard
+        let device = HandlerSettings.shared.device,
+        let pk = HandlerSettings.shared.user?.loggedInUser.pk,
+        let csrfToken = HandlerSettings.shared.user?.csrfToken
+        else {return}
+        
         let content = [
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString
+            "_csrftoken": csrfToken,
+            "_uid": String(pk),
+            "_uuid": device.deviceGuid.uuidString
         ]
         
         let header = ["Host": "i.instagram.com"]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getRemoveProfilePictureUrl(), body: content, header: header) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getRemoveProfilePictureUrl(), body: content, header: header) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -275,7 +323,8 @@ class ProfileHandler: ProfileHandlerProtocol {
         
         let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
         
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getChangeProfilePictureUrl(), body: [:], header: header, data: content) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getChangeProfilePictureUrl(), body: [:], header: header, data: content) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {

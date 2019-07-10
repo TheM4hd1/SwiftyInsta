@@ -24,7 +24,8 @@ class MessageHandler: MessageHandlerProtocol {
     }
     
     func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getDirectInbox(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getDirectInbox(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -57,7 +58,8 @@ class MessageHandler: MessageHandlerProtocol {
         if !threadIds.isEmpty {
             content.updateValue("[\(threadIds)]", forKey: "thread_ids")
         }
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getDirectSendTextMessage(), body: content, header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .post, url: try URLs.getDirectSendTextMessage(), body: content, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -76,7 +78,8 @@ class MessageHandler: MessageHandlerProtocol {
     }
     
     func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getDirectThread(id: threadId), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getDirectThread(id: threadId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -100,7 +103,8 @@ class MessageHandler: MessageHandlerProtocol {
     }
     
     func getRecentDirectRecipients(completion: @escaping (Result<RecentRecipientsModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getRecentDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getRecentDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -119,7 +123,8 @@ class MessageHandler: MessageHandlerProtocol {
     }
     
     func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getRankedDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
+        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
+        httpHelper.sendAsync(method: .get, url: try URLs.getRankedDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
