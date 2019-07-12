@@ -11,6 +11,7 @@ import Foundation
 public protocol MediaHandlerProtocol {
     func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
     func getUserMedia(for pk: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
+    func getUserMedia(userPk: Int, maxId: String?, completion: @escaping (Result<UserFeedModel>, _ maxId: String?) -> ()) throws
     func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws
     func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
     func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
@@ -34,6 +35,31 @@ class MediaHandler: MediaHandlerProtocol {
                 completion(Return.success(value: value))
             })
         })
+    }
+    
+    func getUserMedia(userPk: Int, maxId: String?, completion: @escaping (Result<UserFeedModel>, String?) -> ()) throws {
+        let url = try URLs.getUserFeedUrl(userPk: userPk, maxId: maxId ?? "")
+        guard let httpHelper = HandlerSettings.shared.httpHelper else { return }
+        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { (data, res, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil), nil)
+            } else {
+                if let data = data {
+                    if res?.statusCode == 200 {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let value = try decoder.decode(UserFeedModel.self, from: data)
+                            completion(Return.success(value: value), value.nextMaxId)
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil), nil)
+                        }
+                    } else {
+                        completion(Return.fail(error: nil, response: .wrongRequest, value: nil), nil)
+                    }
+                }
+            }
+        }
     }
     
     /** Getting media with pk returns more accurate results */

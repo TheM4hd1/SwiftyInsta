@@ -149,7 +149,7 @@ struct URLs {
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for user followings.")
     }
-    
+        
     static func getUserFollowers(userPk: Int?, rankToken: String?, searchQuery: String = "", maxId: String = "") throws -> URL {
         guard let userPk = userPk, let rankToken = rankToken else {
             throw CustomErrors.urlCreationFaild("Cant create URL for user followers.\n nil inputs.")

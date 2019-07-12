@@ -175,6 +175,26 @@ public class APIHandler: APIHandlerProtocol {
         }
     }
     
+    /// receives followers from single page by passing maxId of page.
+    /// for first request, pass `nil` for `maxId` parameter.
+    public func getUserFollowers(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        try UserHandler.shared.getUserFollowers(userId: userId, maxId: maxId, searchQuery: searchQuery, completion: { (result, maxId) in
+            completion(result, maxId)
+        })
+    }
+    
+    /// receives following from single page by passing maxId of page.
+    /// for first request, pass `nil` for `maxId` parameter.
+    public func getUserFollowing(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        try UserHandler.shared.getUserFollowing(userId: userId, maxId: maxId, searchQuery: searchQuery, completion: { (result, maxId) in
+            completion(result, maxId)
+        })
+    }
+    
     /** Searching with Pk returns more accurate results */
     public func getUserFollowing(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         // validate before request.
@@ -224,6 +244,17 @@ public class APIHandler: APIHandlerProtocol {
         try MediaHandler.shared.getUserMedia(for: username, paginationParameter: paginationParameter) { (result) in
             completion(result)
         }
+    }
+    
+    /// receive user medias for a single page,
+    /// for first request pass `nil` to `maxId` parameter.
+    public func getUserMedia(userPk: Int, maxId: String?, completion: @escaping (Result<UserFeedModel>, String?) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.getUserMedia(userPk: userPk, maxId: maxId, completion: { (result, maxId) in
+            completion(result, maxId)
+        })
     }
     
     /** Fetching media with pk returns more accurate results */

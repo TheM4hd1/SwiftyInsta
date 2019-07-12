@@ -43,6 +43,8 @@ public protocol UserHandlerProtocol {
     func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
     func recoverAccountBy(username: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
     func reportUser(userPk: Int, completion: @escaping (Result<Bool>) -> ()) throws
+    func getUserFollowers(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, _ maxId: String?) -> ()) throws
+    func getUserFollowing(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, _ maxId: String?) -> ()) throws
 }
 
 class UserHandler: UserHandlerProtocol {
@@ -1236,5 +1238,59 @@ class UserHandler: UserHandlerProtocol {
                 }
             }
         })
+    }
+    
+    func getUserFollowers(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
+        guard let rankToken = HandlerSettings.shared.user?.rankToken else { return }
+        guard let httpHelper = HandlerSettings.shared.httpHelper else { return }
+        let url = try URLs.getUserFollowers(userPk: userId, rankToken: rankToken, searchQuery: searchQuery, maxId: maxId ?? "")
+        
+        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { (data, res, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil), nil)
+            } else {
+                if let data = data {
+                    if res?.statusCode == 200 {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let value = try decoder.decode(UserShortListModel.self, from: data)
+                            completion(Return.success(value: value), value.nextMaxId)
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil), nil)
+                        }
+                    } else {
+                        completion(Return.fail(error: nil, response: .wrongRequest, value: nil), nil)
+                    }
+                }
+            }
+        }
+    }
+    
+    func getUserFollowing(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
+        guard let rankToken = HandlerSettings.shared.user?.rankToken else { return }
+        guard let httpHelper = HandlerSettings.shared.httpHelper else { return }
+        let url = try URLs.getUserFollowing(userPk: userId, rankToken: rankToken, searchQuery: searchQuery, maxId: maxId ?? "")
+        
+        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { (data, res, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil), nil)
+            } else {
+                if let data = data {
+                    if res?.statusCode == 200 {
+                        let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
+                        do {
+                            let value = try decoder.decode(UserShortListModel.self, from: data)
+                            completion(Return.success(value: value), value.nextMaxId)
+                        } catch {
+                            completion(Return.fail(error: error, response: .ok, value: nil), nil)
+                        }
+                    } else {
+                        completion(Return.fail(error: nil, response: .wrongRequest, value: nil), nil)
+                    }
+                }
+            }
+        }
     }
 }
