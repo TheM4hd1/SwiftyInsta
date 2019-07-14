@@ -42,6 +42,7 @@
 		115F1257217FF1BF00ED3530 /* AndroidDeviceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */; };
 		115F1259217FF21E00ED3530 /* Devices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1258217FF21E00ED3530 /* Devices.swift */; };
 		1164FB532217FBB100A05EB1 /* CustomUserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */; };
+		1165DF9F22DB53B200D87D15 /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
 		116B149F21DEB64B00953A71 /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
 		116C3F3B21A6EBE5003084DD /* MediaTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116C3F3A21A6EBE5003084DD /* MediaTypes.swift */; };
 		1171E472218118A400579B04 /* DelayModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1171E471218118A400579B04 /* DelayModel.swift */; };
@@ -142,6 +143,7 @@
 		115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidDeviceGenerator.swift; sourceTree = "<group>"; };
 		115F1258217FF21E00ED3530 /* Devices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Devices.swift; sourceTree = "<group>"; };
 		1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUserAgent.swift; sourceTree = "<group>"; };
+		1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestReelsMediaFeed.swift; sourceTree = "<group>"; };
 		116B149E21DEB64B00953A71 /* SessionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCache.swift; sourceTree = "<group>"; };
 		116C3F3A21A6EBE5003084DD /* MediaTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTypes.swift; sourceTree = "<group>"; };
 		1171E471218118A400579B04 /* DelayModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelayModel.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 				1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */,
 				110454D4221DE7270080F986 /* AccountRecovery.swift */,
 				11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */,
+				1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -568,6 +571,7 @@
 				117AACE922033B48008913FF /* TwoFactorEnums.swift in Sources */,
 				117E65A221962ED5004626CC /* UserFeedModel.swift in Sources */,
 				114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */,
+				1165DF9F22DB53B200D87D15 /* RequestReelsMediaFeed.swift in Sources */,
 				11A95BEF21AC0B9800839250 /* StoryHandler.swift in Sources */,
 				115CA6DF21B0214800769B00 /* EditProfileModel.swift in Sources */,
 				114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */,

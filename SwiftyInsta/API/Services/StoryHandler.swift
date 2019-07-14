@@ -16,6 +16,10 @@ public protocol StoryHandlerProtocol {
     func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws
     func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws
     func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (Result<Bool>) -> ()) throws
+    /**
+     You can decode `Data` using `JSONDecoder`, it's the returned data from server.
+     */
+    func getReelsMediaFeed(feedList: [String], completion: @escaping (Result<StoryReelsFeedModel>, Data?) -> ()) throws
 }
 
 class StoryHandler: StoryHandlerProtocol {
@@ -289,6 +293,42 @@ class StoryHandler: StoryHandlerProtocol {
                         }
                     } catch {
                         completion(Return.fail(error: err, response: .ok, value: false))
+                    }
+                }
+            }
+        }
+    }
+    
+    func getReelsMediaFeed(feedList: [String], completion: @escaping (Result<StoryReelsFeedModel>, Data?) -> ()) throws {
+        let url = try URLs.getReelsMediaFeed()
+        guard let httpHelper = HandlerSettings.shared.httpHelper else { return }
+        guard let user = HandlerSettings.shared.user else { return }
+        guard let device = HandlerSettings.shared.device else { return }
+        
+        let data = RequestReelsMediaFeed(supported_capabilities_new: SupportedCapability.generate(), _uuid: device.deviceGuid.uuidString, _uid: String(user.loggedInUser.pk!), _csrftoken: user.csrfToken, user_ids: feedList, source: "feed_timeline")
+        
+        let encoder = JSONEncoder()
+        let payload = String(data: try! encoder.encode(data), encoding: .utf8)!
+        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+        
+        let signature = "\(hash).\(payload)"
+        let body: [String: Any] = [
+            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+        ]
+        
+        httpHelper.sendAsync(method: .post, url: url, body: body, header: [:]) { (data, res, error) in
+            if let error = error {
+                completion(Return.fail(error: error, response: .fail, value: nil), nil)
+            } else {
+                if let data = data {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    do {
+                        let value = try decoder.decode(StoryReelsFeedModel.self, from: data)
+                        completion(Return.success(value: value), data)
+                    } catch {
+                        completion(Return.fail(error: error, response: .ok, value: nil), nil)
                     }
                 }
             }

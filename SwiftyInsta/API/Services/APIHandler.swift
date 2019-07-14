@@ -688,6 +688,12 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
+    public func getReelsMediaFeed(feedList: [String], completion: @escaping (Result<StoryReelsFeedModel>, Data?) -> ()) throws {
+        try StoryHandler.shared.getReelsMediaFeed(feedList: feedList, completion: { (result, data) in
+            completion(result, data)
+        })
+    }
+    
     public func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
         // validate before request.
         try validateUser()

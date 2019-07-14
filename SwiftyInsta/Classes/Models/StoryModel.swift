@@ -61,6 +61,11 @@ public struct StoryReelFeedModel: Codable, BaseStatusResponseProtocol {
     }
 }
 
+public struct StoryReelsFeedModel: Codable, BaseStatusResponseProtocol {
+    public var reels: [String: TrayModel]?
+    public var status: String?
+}
+
 public struct ConfigureStoryUploadModel: Codable {
     public var _uuid: String
     public var _uid: String
