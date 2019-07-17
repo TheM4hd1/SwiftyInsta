@@ -642,6 +642,7 @@ class MediaHandler: MediaHandlerProtocol {
             } else {
                 if let data = data {
                     let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
                     do {
                         let value = try decoder.decode(DeleteMediaResponse.self, from: data)
                         completion(Return.success(value: value))

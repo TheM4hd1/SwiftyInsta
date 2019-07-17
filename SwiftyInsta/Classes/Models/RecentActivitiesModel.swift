@@ -115,10 +115,10 @@ public struct ArgsLinksModel: Codable {
     public var id: String?
     
     private enum CodingKeys: String, CodingKey {
-        case start = "start"
-        case end = "end"
-        case type = "type"
-        case id = "id"
+        case start
+        case end
+        case type
+        case id
     }
     
     public init(from decoder: Decoder) throws {
