@@ -20,7 +20,7 @@ class HttpHelper {
     /// Only ```data: Data?``` or ```body: [String: Any]``` can use as ```httpBody```
     func sendAsync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String], data: Data? = nil, completion: @escaping completionHandler) {
         HandlerSettings.shared.queue!.asyncAfter(deadline: .now() + HandlerSettings.shared.delay!.random()) {
-            var request = self.getDefaultRequest(for: url, method: body.isEmpty ? method : .post)
+            var request = self.getDefaultRequest(for: url, method: method)
             self.addHeaders(to: &request, header: header)
             //addBody(to: &request, body: body)
             
@@ -39,7 +39,7 @@ class HttpHelper {
     }
     
     func sendSync(method: HTTPMethods, url: URL, body: [String: Any], header: [String: String]) -> (Data?, HTTPURLResponse?, Error?) {
-        var request = getDefaultRequest(for: url, method: body.isEmpty ? method : .post)
+        var request = getDefaultRequest(for: url, method: method)
         var result: (Data?, HTTPURLResponse?, Error?)
         addHeaders(to: &request, header: header)
         addBody(to: &request, body: body)
