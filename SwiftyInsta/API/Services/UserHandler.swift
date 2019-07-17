@@ -1198,6 +1198,7 @@ class UserHandler: UserHandlerProtocol {
                         if let data = data {
                             if response?.statusCode == 200 {
                                 let decoder = JSONDecoder()
+                                decoder.keyDecodingStrategy = .convertFromSnakeCase
                                 do {
                                     let value = try decoder.decode(AccountRecovery.self, from: data)
                                     completion(Return.success(value: value))

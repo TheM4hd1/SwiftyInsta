@@ -98,21 +98,21 @@ public struct TrayModel: Codable {
     public var sourceToken: String?
     
     private enum CodingKeys: String, CodingKey {
-        case id = "id"
-        case latestReelMedia = "latest_reel_media"
-        case expiringAt = "expiring_at"
-        case seen = "seen"
-        case canReply = "can_reply"
-        case canReshare = "can_reshare"
-        case reelType = "reel_type"
-        case owner = "owner"
-        case user = "user"
-        case items = "items"
-        case prefetchCount = "prefetch_count"
-        case uniqueIntegerReelId = "unique_integer_reel_id"
-        case rankedPosition = "ranked_position"
-        case seenRankedPosition = "seen_ranked_position"
-        case sourceToken = "source_token"
+        case id
+        case latestReelMedia
+        case expiringAt
+        case seen
+        case canReply
+        case canReshare
+        case reelType
+        case owner
+        case user
+        case items
+        case prefetchCount
+        case uniqueIntegerReelId
+        case rankedPosition
+        case seenRankedPosition
+        case sourceToken
     }
     
     public init(from decoder: Decoder) throws {
@@ -152,10 +152,10 @@ public struct OwnerModel: Codable {
     public var profilePicUsername: String?
     
     private enum CodingKeys: String, CodingKey {
-        case type = "type"
-        case pk = "pk"
-        case profilePicUrl = "profile_pic_url"
-        case profilePicUsername = "profile_pic_username"
+        case type
+        case pk
+        case profilePicUrl
+        case profilePicUsername
     }
     
     public init(from decoder: Decoder) throws {

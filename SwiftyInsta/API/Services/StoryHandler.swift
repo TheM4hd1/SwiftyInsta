@@ -284,6 +284,7 @@ class StoryHandler: StoryHandlerProtocol {
             } else {
                 if let data = data {
                     let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
                     do {
                         let value = try decoder.decode(BaseStatusResponseModel.self, from: data)
                         if let status = value.status, status == "ok" {

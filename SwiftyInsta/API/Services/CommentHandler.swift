@@ -156,6 +156,7 @@ class CommentHandler: CommentHandlerProtocol {
                 if res?.statusCode == 200 {
                     if let data = data {
                         let decoder = JSONDecoder()
+                        decoder.keyDecodingStrategy = .convertFromSnakeCase
                         do {
                             let value = try decoder.decode(BaseStatusResponseModel.self, from: data)
                             completion(Return.success(value: value))
