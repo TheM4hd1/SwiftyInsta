@@ -82,7 +82,7 @@ struct PaginationHandler {
                                         return completionHandler(Return.success(value: fetched), paginationParamaters)
                                     }
                                     // load more.
-                                    paginationParamaters.nextMaxId = model.nextMaxId.flatMap { String($0) } ?? ""
+                                    paginationParamaters.nextMaxId = model.nextMaxId.flatMap { String($0) }
                                     guard paginationParamaters.nextMaxId != nil else {
                                         return completionHandler(Return.success(value: fetched), paginationParamaters)
                                     }
