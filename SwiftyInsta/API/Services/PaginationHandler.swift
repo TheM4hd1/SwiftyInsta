@@ -60,7 +60,7 @@ struct PaginationHandler {
                               url: endpoint,
                               body: [:],
                               header: [:]) { data, response, error in
-                                guard error != nil else {
+                                guard error == nil else {
                                     completionHandler(Return.fail(error: error, response: .fail, value: fetched), paginationParamaters)
                                     return
                                 }
