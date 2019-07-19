@@ -71,7 +71,7 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate {
         // check for cookies.
         guard let cookies = instagramCookies else { return }
         let filtered = cookies.filter { $0.name == "ds_user_id" || $0.name == "csrftoken" }
-        guard filtered.count == 2 else { return }
+        guard filtered.count >= 2 else { return }
         
         // deal with log in.
         let session = URLSession(configuration: .default)
@@ -101,7 +101,7 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate {
             HandlerSettings.shared.user!.loggedInUser = shortUserModel
             HandlerSettings.shared.user?.username = shortUserModel.username!
             HandlerSettings.shared.user!.rankToken = "\(HandlerSettings.shared.user!.loggedInUser.pk ?? 0)_\(HandlerSettings.shared.request!.phoneId )"
-            HandlerSettings.shared.user?.csrfToken = filtered.first(where: { $0.name == "csrftoken" })!.value
+            HandlerSettings.shared.user?.csrfToken = filtered.first(where: { $0.name == "csrftoken" && !$0.value.isEmpty })!.value
             
             let sessionCache = SessionCache.init(user: HandlerSettings.shared.user!, device: HandlerSettings.shared.device!, requestMessage: HandlerSettings.shared.request!, cookies: (HTTPCookieStorage.shared.cookies?.getInstagramCookies()?.toCookieData())!, isUserAuthenticated: true)
             // notify delegate if `!= nil`.
@@ -111,9 +111,8 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate {
 
     // MARK: Clean cookies
     private func fetchCookies() {
-        configuration.websiteDataStore.httpCookieStore.getAllCookies {
-            let instagramCookies = $0.getInstagramCookies()
-            self.isUserLoggedIn(instagramCookies: instagramCookies)
+        configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] in
+            self?.isUserLoggedIn(instagramCookies: $0)
         }
     }
     private func deleteAllCookies(completionHandler: @escaping () -> Void) {
