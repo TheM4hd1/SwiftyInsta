@@ -17,12 +17,12 @@ public struct UserFeedModel: Codable, FeedProtocol {
     public var items: [MediaModel]?
     
     private enum CodingKeys: String, CodingKey {
-        case nextMaxId = "nextMaxId"
-        case items = "items"
-        case numResults = "numResults"
-        case moreAvailable = "moreAvailable"
-        case autoLoadMoreEnabled = "autoLoadMoreEnabled"
-        case totalCount = "totalCount"
+        case nextMaxId
+        case items
+        case numResults
+        case moreAvailable
+        case autoLoadMoreEnabled
+        case totalCount
     }
     
     public init(from decoder: Decoder) throws {

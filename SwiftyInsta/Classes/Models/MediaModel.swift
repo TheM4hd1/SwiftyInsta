@@ -160,11 +160,11 @@ public struct MediaModel: Codable, MediaModelProtocol {
 }
 
 public struct DeleteMediaResponse: Codable, BaseStatusResponseProtocol {
-    public var did_delete: Bool?
+    public var didDelete: Bool?
     public var status: String?
     
-    public init(did_delete: Bool?, status: String?) {
-        self.did_delete = did_delete
+    public init(didDelete: Bool?, status: String?) {
+        self.didDelete = didDelete
         self.status = status
     }
 }

@@ -36,8 +36,8 @@ public struct TrayItems: Codable, MediaModelProtocol {
     public var canReshare: Bool?
     public var canReply: Bool?
     public var isReelMedia: Bool?
-    
-    
+
+
     public init(takenAt: Int?, pk: Int?, id: String?, deviceTimestamp: Int?, mediaType: Int?, code: String?, clientCacheKey: String?, filterType: Int?, imageVersions2: CandidatesModel?, originalWidth: Int?, originalHeight: Int?, organicTrackingToken: String?, user: UserShortModel?, caption: CaptionModel?, captionIsEdited: Bool?, photoOfYou: Bool?, canViewerSave: Bool?, expiringAt: Int?, storyLocation: LocationModel?, supportsReelReactions: Bool?, viewers: [UserShortModel]?, viewerCount: Int?, totalViewerCount: Int?, canReshare: Bool?, canReply: Bool?, isReelMedia: Bool?) {
         self.takenAt = takenAt
         self.pk = pk
@@ -70,7 +70,7 @@ public struct TrayItems: Codable, MediaModelProtocol {
 
 public struct CandidatesModel: Codable {
     public var candidates: [ProfilePicVersionsModel]?
-    
+
     public init(candidates: [ProfilePicVersionsModel]?) {
         self.candidates = candidates
     }
@@ -97,26 +97,26 @@ public struct TrayModel: Codable {
     public var seenRankedPosition: Int?
     public var sourceToken: String?
     public var muted: Bool?
-    
+
     private enum CodingKeys: String, CodingKey {
-        case id = "id"
-        case latestReelMedia = "latest_reel_media"
-        case expiringAt = "expiring_at"
-        case seen = "seen"
-        case canReply = "can_reply"
-        case canReshare = "can_reshare"
-        case reelType = "reel_type"
-        case owner = "owner"
-        case user = "user"
-        case items = "items"
-        case prefetchCount = "prefetch_count"
-        case uniqueIntegerReelId = "unique_integer_reel_id"
-        case rankedPosition = "ranked_position"
-        case seenRankedPosition = "seen_ranked_position"
-        case sourceToken = "source_token"
-        case muted = "muted"
+        case id
+        case latestReelMedia
+        case expiringAt
+        case seen
+        case canReply
+        case canReshare
+        case reelType
+        case owner
+        case user
+        case items
+        case prefetchCount
+        case uniqueIntegerReelId
+        case rankedPosition
+        case seenRankedPosition
+        case sourceToken
+        case muted
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(Int.self, forKey: .id) {
@@ -128,7 +128,7 @@ public struct TrayModel: Codable {
         } else {
             id = try container.decode(String.self, forKey: .id)
         }
-        
+
         latestReelMedia = try container.decodeIfPresent(Int.self, forKey: .latestReelMedia)
         expiringAt = try container.decodeIfPresent(Int.self, forKey: .expiringAt)
         seen = try container.decodeIfPresent(Double.self, forKey: .seen)
@@ -152,14 +152,14 @@ public struct OwnerModel: Codable {
     public var pk: String?
     public var profilePicUrl: String?
     public var profilePicUsername: String?
-    
+
     private enum CodingKeys: String, CodingKey {
-        case type = "type"
-        case pk = "pk"
-        case profilePicUrl = "profile_pic_url"
-        case profilePicUsername = "profile_pic_username"
+        case type
+        case pk
+        case profilePicUrl
+        case profilePicUsername
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(Int.self, forKey: .pk) {
@@ -171,7 +171,7 @@ public struct OwnerModel: Codable {
         } else {
             pk = try container.decode(String.self, forKey: .pk)
         }
-        
+
         type = try container.decodeIfPresent(String.self, forKey: .type)
         profilePicUrl = try container.decodeIfPresent(String.self, forKey: .profilePicUrl)
         profilePicUsername = try container.decodeIfPresent(String.self, forKey: .profilePicUsername)

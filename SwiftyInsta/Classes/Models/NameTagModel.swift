@@ -15,10 +15,10 @@ public struct NameTagModel: Codable {
     public var selfieSticker: Int?
     
     private enum CodingKeys: String, CodingKey {
-        case mode = "mode"
-        case gradient = "gradient"
-        case emoji = "emoji"
-        case selfieSticker = "selfie_sticker"
+        case mode
+        case gradient
+        case emoji
+        case selfieSticker
     }
     
     public init(from decoder: Decoder) throws {
