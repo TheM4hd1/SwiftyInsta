@@ -2,22 +2,36 @@
 //  PaginationParameters.swift
 //  SwiftyInsta
 //
-//  Created by Mahdi on 11/3/18.
+//  Modified by Stefano Bertagno on 11/3/18.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
 import Foundation
 
-public struct PaginationParameters {
-    public var maxPagesToLoad: Int = Int.max
-    public var pagesLoaded: Int = 0
-    public var nextId = ""
+public class PaginationParameters {
+    /// The maximum number of pages to load. Defaults to `1`.
+    public var maxPagesToLoad: Int
+    /// The number of pages already loaded. Defaults to `0`.
+    public var loadedPages: Int = 0
+    /// The next `maxId`. Defaults to `nil`.
+    public var nextMaxId: String?
     
-    private init(maxPages: Int) {
-        maxPagesToLoad = maxPages
+    /// Whether there's something left to load.
+    public var canLoadMore: Bool { return loadedPages < maxPagesToLoad }
+        
+    // MARK: Init
+    public init(maxId: String? = nil, maxPagesToLoad: Int = 1) {
+        precondition(maxPagesToLoad > 0, "`maxPagesToLoad` must be bigger than `0`.")
+        self.nextMaxId = maxId
+        self.maxPagesToLoad = maxPagesToLoad
     }
-    
+    public static let everything = PaginationParameters(maxId: nil, maxPagesToLoad: .max)
+        
+    // MARK: Obsolete
+    @available(*, unavailable, message: "use `init` instead.")
     public static func maxPagesToLoad(maxPages: Int) -> PaginationParameters {
-        return PaginationParameters(maxPages: maxPages)
+        fatalError("`maxPagesToLoad(maxPages:)` was removed.")
     }
 }
+
+public typealias PaginationResponse<R> = (_ response: R, _ parameters: PaginationParameters) -> Void

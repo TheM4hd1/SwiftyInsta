@@ -3,13 +3,17 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi Makhdumi on 11/24/18.
+//  Modified by Stefano Bertagno on 7/19/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
 import Foundation
 
 public protocol CommentHandlerProtocol {
-    func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws
+    func getMediaComments(mediaId: String,
+                          paginationParameters: PaginationParameters,
+                          updateHandler: PaginationResponse<MediaCommentsResponseModel>?,
+                          completionHandler: @escaping PaginationResponse<Result<[MediaCommentsResponseModel]>>) throws
     func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws
     func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws
     func reportComment(mediaId: String, commentId: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
@@ -22,46 +26,15 @@ class CommentHandler: CommentHandlerProtocol {
         
     }
     
-    func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws {
-        getCommentList(for: try URLs.getComments(for: mediaId), mediaId: mediaId, list: [], paginationParameter: paginationParameter) { (value) in
-            completion(Return.success(value: value))
-        }
-    }
-    
-    fileprivate func getCommentList(for url: URL, mediaId: String, list: [MediaCommentsResponseModel], paginationParameter: PaginationParameters, completion: @escaping ([MediaCommentsResponseModel]) -> ()) {
-        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
-            completion(list)
-        } else {
-            var _paginationParameter = paginationParameter
-            _paginationParameter.pagesLoaded += 1
-            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
-                if error != nil {
-                    completion(list)
-                } else {
-                    if let data = data {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        var commentList = list
-                        do {
-                            let newItem = try decoder.decode(MediaCommentsResponseModel.self, from: data)
-                            commentList.append(newItem)
-                            if (newItem.hasMoreComments ?? false) && newItem.nextMaxId != nil {
-                                _paginationParameter.nextId = newItem.nextMaxId!
-                                let url = try! URLs.getComments(for: mediaId, maxId: _paginationParameter.nextId)
-                                self!.getCommentList(for: url, mediaId: mediaId, list: commentList, paginationParameter: _paginationParameter, completion: { (result) in
-                                    completion(result)
-                                })
-                            } else {
-                                completion(commentList)
-                            }
-                        } catch {
-                            completion(list)
-                        }
-                    }
-                }
-            }
-        }
+    func getMediaComments(mediaId: String,
+                          paginationParameters: PaginationParameters,
+                          updateHandler: PaginationResponse<MediaCommentsResponseModel>?,
+                          completionHandler: @escaping PaginationResponse<Result<[MediaCommentsResponseModel]>>) throws {
+        PaginationHandler.getPages(MediaCommentsResponseModel.self,
+                                   for: paginationParameters,
+                                   at: { try URLs.getComments(for: mediaId, maxId: $0.nextMaxId ?? "") },
+                                   updateHandler: updateHandler,
+                                   completionHandler: completionHandler)
     }
     
     func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws {
