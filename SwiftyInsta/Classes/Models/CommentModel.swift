@@ -33,7 +33,7 @@ public struct CommentModel: Codable {
     }
 }
 
-public struct MediaCommentsResponseModel: Codable, BaseStatusResponseProtocol {
+public struct MediaCommentsResponseModel: Codable, PaginationProtocol, BaseStatusResponseProtocol {
     public var commentLikesEnabled: Bool?
     public var comments: [CommentModel]?
     public var commentCount: Int?

@@ -19,7 +19,6 @@ public protocol APIHandlerProtocol:
 }
 
 public class APIHandler: APIHandlerProtocol {
-    
     public init() {}
     
     public init(request: RequestMessageModel, user: SessionStorage, device: AndroidDeviceModel, delay: DelayModel, urlSession: URLSession) {
@@ -144,68 +143,7 @@ public class APIHandler: APIHandlerProtocol {
             completion(result)
         }
     }
-    
-    public func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
         
-        try UserHandler.shared.getUserFollowing(username: username, paginationParameter: paginationParameter, searchQuery: searchQuery) { (result) in
-            completion(result)
-        }
-    }
-    
-    public func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
-        
-        try UserHandler.shared.getUserFollowers(username: username, paginationParameter: paginationParameter, searchQuery: searchQuery) { (result) in
-            completion(result)
-        }
-    }
-    
-    /** Searching with Pk returns more accurate results */
-    public func getUserFollowers(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
-        try UserHandler.shared.getUserFollowers(pk: pk, paginationParameter: paginationParameter, searchQuery: searchQuery) { (result) in
-            completion(result)
-        }
-    }
-    
-    /// receives followers from single page by passing maxId of page.
-    /// for first request, pass `nil` for `maxId` parameter.
-    public func getUserFollowers(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
-        try validateUser()
-        try validateLoggedIn()
-        try UserHandler.shared.getUserFollowers(userId: userId, maxId: maxId, searchQuery: searchQuery, completion: { (result, maxId) in
-            completion(result, maxId)
-        })
-    }
-    
-    /// receives following from single page by passing maxId of page.
-    /// for first request, pass `nil` for `maxId` parameter.
-    public func getUserFollowing(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
-        try validateUser()
-        try validateLoggedIn()
-        try UserHandler.shared.getUserFollowing(userId: userId, maxId: maxId, searchQuery: searchQuery, completion: { (result, maxId) in
-            completion(result, maxId)
-        })
-    }
-    
-    /** Searching with Pk returns more accurate results */
-    public func getUserFollowing(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
-        
-        try UserHandler.shared.getUserFollowing(pk: pk, paginationParameter: paginationParameter, searchQuery: searchQuery) { (result) in
-            completion(result)
-        }
-    }
-    
     public func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
         // validate before request.
         try validateUser()
@@ -216,56 +154,112 @@ public class APIHandler: APIHandlerProtocol {
         }
     }
     
-    public func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws {
+    public func getUserTags(user: UserReference,
+                            paginationParameters: PaginationParameters,
+                            updateHandler: PaginationResponse<UserFeedModel>?,
+                            completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+
+        try UserHandler.shared.getUserTags(user: user,
+                                                paginationParameters: paginationParameters,
+                                                updateHandler: updateHandler,
+                                                completionHandler: completionHandler)
+    }
+    
+    public func getUserFollowing(user: UserReference,
+                                 filteringProfilesMatchingQuery query: String?,
+                                 paginationParameters: PaginationParameters,
+                                 updateHandler: PaginationResponse<UserShortListModel>?,
+                                 completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+
+        try UserHandler.shared.getUserFollowing(user: user,
+                                                filteringProfilesMatchingQuery: query,
+                                                paginationParameters: paginationParameters,
+                                                updateHandler: updateHandler,
+                                                completionHandler: completionHandler)
+    }
+    
+    public func getUserFollowers(user: UserReference,
+                                 filteringProfilesMatchingQuery query: String?,
+                                 paginationParameters: PaginationParameters,
+                                 updateHandler: PaginationResponse<UserShortListModel>?,
+                                 completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+
+        try UserHandler.shared.getUserFollowers(user: user,
+                                                filteringProfilesMatchingQuery: query,
+                                                paginationParameters: paginationParameters,
+                                                updateHandler: updateHandler,
+                                                completionHandler: completionHandler)
+    }
+    
+    public func getRecentActivities(paginationParameters: PaginationParameters,
+                                    updateHandler: PaginationResponse<RecentActivitiesModel>?,
+                                    completionHandler: @escaping PaginationResponse<Result<[RecentActivitiesModel]>>) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+
+        try UserHandler.shared.getRecentActivities(paginationParameters: paginationParameters,
+                                                   updateHandler: updateHandler,
+                                                   completionHandler: completionHandler)
+    }
+    
+    public func getRecentFollowingActivities(paginationParameters: PaginationParameters,
+                                             updateHandler: PaginationResponse<RecentFollowingsActivitiesModel>?,
+                                             completionHandler: @escaping PaginationResponse<Result<[RecentFollowingsActivitiesModel]>>) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+
+        try UserHandler.shared.getRecentFollowingActivities(paginationParameters: paginationParameters,
+                                                            updateHandler: updateHandler,
+                                                            completionHandler: completionHandler)
+    }
+
+    public func getExploreFeeds(paginationParameters: PaginationParameters,
+                                updateHandler: PaginationResponse<ExploreFeedModel>?,
+                                completionHandler: @escaping PaginationResponse<Result<[ExploreFeedModel]>>) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
         
-        try FeedHandler.shared.getExploreFeeds(paginationParameter: paginationParameter) { (result) in
-            completion(result)
-        }
+        try FeedHandler.shared.getExploreFeeds(paginationParameters: paginationParameters,
+                                               updateHandler: updateHandler,
+                                               completionHandler: completionHandler)
     }
     
-    public func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws {
+    public func getUserTimeLine(paginationParameters: PaginationParameters,
+                                updateHandler: PaginationResponse<TimeLineModel>?,
+                                completionHandler: @escaping PaginationResponse<Result<[TimeLineModel]>>) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
         
-        try FeedHandler.shared.getUserTimeLine(paginationParameter: paginationParameter) { (result) in
-            completion(result)
-        }
+        try FeedHandler.shared.getUserTimeLine(paginationParameters: paginationParameters,
+                                               updateHandler: updateHandler,
+                                               completionHandler: completionHandler)
     }
     
-    public func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+    public func getUserMedia(user: UserReference,
+                             paginationParameters: PaginationParameters,
+                             updateHandler: PaginationResponse<UserFeedModel>?,
+                             completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
         
-        try MediaHandler.shared.getUserMedia(for: username, paginationParameter: paginationParameter) { (result) in
-            completion(result)
-        }
-    }
-    
-    /// receive user medias for a single page,
-    /// for first request pass `nil` to `maxId` parameter.
-    public func getUserMedia(userPk: Int, maxId: String?, completion: @escaping (Result<UserFeedModel>, String?) -> ()) throws {
-        try validateUser()
-        try validateLoggedIn()
-        
-        try MediaHandler.shared.getUserMedia(userPk: userPk, maxId: maxId, completion: { (result, maxId) in
-            completion(result, maxId)
-        })
-    }
-    
-    /** Fetching media with pk returns more accurate results */
-    public func getUserMedia(for pk: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
-        
-        try MediaHandler.shared.getUserMedia(for: pk, paginationParameter: paginationParameter) { (result) in
-            completion(result)
-        }
+        try MediaHandler.shared.getUserMedia(user: user,
+                                             paginationParameters: paginationParameters,
+                                             updateHandler: updateHandler,
+                                             completionHandler: completionHandler)
     }
     
     public func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
@@ -278,36 +272,20 @@ public class APIHandler: APIHandlerProtocol {
         }
     }
     
-    public func getTagFeed(tagName: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[TagFeedModel]>) -> ()) throws {
+    public func getTagFeed(tag: String,
+                           paginationParameters: PaginationParameters,
+                           updateHandler: PaginationResponse<TagFeedModel>?,
+                           completionHandler: @escaping PaginationResponse<Result<[TagFeedModel]>>) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
         
-        try FeedHandler.shared.getTagFeed(tagName: tagName, paginationParameter: paginationParameter) { (result) in
-            completion(result)
-        }
+        try FeedHandler.shared.getTagFeed(tag: tag,
+                                          paginationParameters: paginationParameters,
+                                          updateHandler: updateHandler,
+                                          completionHandler: completionHandler)
     }
-    
-    public func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
         
-        try UserHandler.shared.getRecentActivities(paginationParameter: paginationParameter) { (result) in
-            completion(result)
-        }
-    }
-    
-    public func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
-        
-        try UserHandler.shared.getRecentFollowingActivities(paginationParameter: paginationParameter) { (result) in
-            completion(result)
-        }
-    }
-    
     public func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws {
         // validate before request.
         try validateUser()
@@ -418,14 +396,18 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
-    public func getMediaComments(mediaId: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws {
+    public func getMediaComments(mediaId: String,
+                                 paginationParameters: PaginationParameters,
+                                 updateHandler: PaginationResponse<MediaCommentsResponseModel>?,
+                                 completionHandler: @escaping PaginationResponse<Result<[MediaCommentsResponseModel]>>) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
         
-        try CommentHandler.shared.getMediaComments(mediaId: mediaId, paginationParameter: paginationParameter, completion: { (result) in
-            completion(result)
-        })
+        try CommentHandler.shared.getMediaComments(mediaId: mediaId,
+                                                   paginationParameters: paginationParameters,
+                                                   updateHandler: updateHandler,
+                                                   completionHandler: completionHandler)
     }
     
     public func removeFollower(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
@@ -534,17 +516,7 @@ public class APIHandler: APIHandlerProtocol {
             completion(result)
         })
     }
-    
-    public func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
-        // validate before request.
-        try validateUser()
-        try validateLoggedIn()
         
-        try UserHandler.shared.getUserTags(userId: userId, paginationParameter: paginationParameter, completion: { (result) in
-            completion(result)
-        })
-    }
-    
     public func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
         // validate before request.
         try validateUser()
@@ -775,3 +747,205 @@ public class APIHandler: APIHandlerProtocol {
     }
 }
 
+// MARK: Deprecated and obsoleted.
+public extension APIHandler {
+    @available(*, deprecated, message: "use `getExploreFeeds(paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try FeedHandler.shared.getExploreFeeds(paginationParameters: paginationParameter,
+                                               updateHandler: nil,
+                                               completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getTagFeed(tag:paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getTagFeed(tagName: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[TagFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try FeedHandler.shared.getTagFeed(tag: tagName,
+                                          paginationParameters: paginationParameter,
+                                          updateHandler: nil,
+                                          completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getUserTimeLine(paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getUserTimeLine(paginationParameter: PaginationParameters, completion: @escaping (Result<[TimeLineModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try FeedHandler.shared.getUserTimeLine(paginationParameters: paginationParameter,
+                                               updateHandler: nil,
+                                               completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getMediaComments(mediaId:paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getMediaComments(mediaId: String,
+                                 paginationParameter: PaginationParameters,
+                                 completion: @escaping (Result<[MediaCommentsResponseModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try CommentHandler.shared.getMediaComments(mediaId: mediaId,
+                                                   paginationParameters: paginationParameter,
+                                                   updateHandler: nil,
+                                                   completionHandler: { response, _ in completion(response) })
+    }
+
+    @available(*, deprecated, message: "use `getUserMedia(for:paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.getUserMedia(user: .username(username),
+                                             paginationParameters: paginationParameter,
+                                             updateHandler: nil,
+                                             completionHandler: { response, _ in completion(response) })
+    }
+    
+    /// receive user medias for a single page,
+    /// for first request pass `nil` to `maxId` parameter.
+    @available(*, deprecated, message: "use `getUserMedia(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getUserMedia(userPk: Int, maxId: String?, completion: @escaping (Result<UserFeedModel>, String?) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.getUserMedia(user: .pk(userPk),
+                                             paginationParameters: .init(maxId: maxId, maxPagesToLoad: 1),
+                                             updateHandler: { response, parameters in completion(Return.success(value: response), parameters.nextMaxId) },
+                                             completionHandler: { _, _ in })
+    }
+    
+    /** Fetching media with pk returns more accurate results */
+    @available(*, deprecated, message: "use `getUserMedia(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getUserMedia(for pk: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try MediaHandler.shared.getUserMedia(user: .pk(pk),
+                                             paginationParameters: paginationParameter,
+                                             updateHandler: nil,
+                                             completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getUserFollowing(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.getUserFollowing(user: .username(username),
+                                                filteringProfilesMatchingQuery: searchQuery,
+                                                paginationParameters: paginationParameter,
+                                                updateHandler: nil,
+                                                completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getUserFollowers(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.getUserFollowers(user: .username(username),
+                                                filteringProfilesMatchingQuery: searchQuery,
+                                                paginationParameters: paginationParameter,
+                                                updateHandler: nil,
+                                                completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getUserFollowers(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    /** Searching with Pk returns more accurate results */
+    func getUserFollowers(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        try UserHandler.shared.getUserFollowing(user: .pk(pk),
+                                                filteringProfilesMatchingQuery: searchQuery,
+                                                paginationParameters: paginationParameter,
+                                                updateHandler: nil,
+                                                completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getUserFollowers(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    /// receives followers from single page by passing maxId of page.
+    /// for first request, pass `nil` for `maxId` parameter.
+    func getUserFollowers(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        try UserHandler.shared.getUserFollowers(user: .pk(userId),
+                                                filteringProfilesMatchingQuery: searchQuery,
+                                                paginationParameters: .init(maxId: maxId, maxPagesToLoad: 1),
+                                                updateHandler: { response, parameters in completion(Return.success(value: response), parameters.nextMaxId) },
+                                                completionHandler: { _, _ in })
+    }
+    
+    @available(*, deprecated, message: "use `getUserFollowing(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    /// receives following from single page by passing maxId of page.
+    /// for first request, pass `nil` for `maxId` parameter.
+    func getUserFollowing(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
+        try validateUser()
+        try validateLoggedIn()
+        try UserHandler.shared.getUserFollowing(user: .pk(userId),
+                                                filteringProfilesMatchingQuery: searchQuery,
+                                                paginationParameters: .init(maxId: maxId, maxPagesToLoad: 1),
+                                                updateHandler: { response, parameters in completion(Return.success(value: response), parameters.nextMaxId) },
+                                                completionHandler: { _, _ in })
+    }
+    
+    @available(*, deprecated, message: "use `getUserFollowing(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    /** Searching with Pk returns more accurate results */
+    func getUserFollowing(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+
+        try UserHandler.shared.getUserFollowers(user: .pk(pk),
+                                                filteringProfilesMatchingQuery: searchQuery,
+                                                paginationParameters: paginationParameter,
+                                                updateHandler: nil,
+                                                completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getRecentActivities(paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.getRecentActivities(paginationParameters: paginationParameter,
+                                                   updateHandler: nil,
+                                                   completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getRecentFollowingActivities(paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.getRecentFollowingActivities(paginationParameters: paginationParameter,
+                                                            updateHandler: nil,
+                                                            completionHandler: { response, _ in completion(response) })
+    }
+    
+    @available(*, deprecated, message: "use `getUserTags(user:paginationParameters:updateHandler:completionHandler:)` instead.")
+    func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
+        // validate before request.
+        try validateUser()
+        try validateLoggedIn()
+        
+        try UserHandler.shared.getUserTags(user: .pk(userId),
+                                           paginationParameters: paginationParameter,
+                                           updateHandler: nil,
+                                           completionHandler: { response, _ in completion(response) })
+    }
+}

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct UserFeedModel: Codable, FeedProtocol {
+public struct UserFeedModel: Codable, PaginationProtocol {
     public var autoLoadMoreEnabled: Bool?
     public var moreAvailable: Bool?
     public var nextMaxId: String?

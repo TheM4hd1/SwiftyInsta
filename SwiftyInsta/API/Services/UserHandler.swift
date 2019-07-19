@@ -8,6 +8,11 @@
 
 import Foundation
 
+public enum UserReference {
+    case pk(Int)
+    case username(String)
+}
+
 public protocol UserHandlerProtocol {
     func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws
     func login(completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws
@@ -21,14 +26,27 @@ public protocol UserHandlerProtocol {
     func searchUser(username: String, completion: @escaping (Result<[UserModel]>) -> ()) throws
     func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws
     func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws
-    func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
-    func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
-    func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
-    func getUserFollowers(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
-    func getUserFollowing(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws
+    func getUserTags(user: UserReference,
+                     paginationParameters: PaginationParameters,
+                     updateHandler: PaginationResponse<UserFeedModel>?,
+                     completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws
+    func getUserFollowing(user: UserReference,
+                          filteringProfilesMatchingQuery query: String?,
+                          paginationParameters: PaginationParameters,
+                          updateHandler: PaginationResponse<UserShortListModel>?,
+                          completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws
+    func getUserFollowers(user: UserReference,
+                          filteringProfilesMatchingQuery query: String?,
+                          paginationParameters: PaginationParameters,
+                          updateHandler: PaginationResponse<UserShortListModel>?,
+                          completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
-    func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws
-    func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws
+    func getRecentActivities(paginationParameters: PaginationParameters,
+                             updateHandler: PaginationResponse<RecentActivitiesModel>?,
+                             completionHandler: @escaping PaginationResponse<Result<[RecentActivitiesModel]>>) throws
+    func getRecentFollowingActivities(paginationParameters: PaginationParameters,
+                                      updateHandler: PaginationResponse<RecentFollowingsActivitiesModel>?,
+                                      completionHandler: @escaping PaginationResponse<Result<[RecentFollowingsActivitiesModel]>>) throws
     func removeFollower(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func approveFriendship(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
     func rejectFriendship(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
@@ -43,8 +61,6 @@ public protocol UserHandlerProtocol {
     func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
     func recoverAccountBy(username: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
     func reportUser(userPk: Int, completion: @escaping (Result<Bool>) -> ()) throws
-    func getUserFollowers(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, _ maxId: String?) -> ()) throws
-    func getUserFollowing(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, _ maxId: String?) -> ()) throws
 }
 
 class UserHandler: UserHandlerProtocol {
@@ -567,191 +583,97 @@ class UserHandler: UserHandlerProtocol {
         }
     }
     
-    func getUserTags(userId: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
-        userTagsList(from: try URLs.getUserTagsUrl(userPk: userId, rankToken: HandlerSettings.shared.user!.rankToken), userId: userId, rankToken: HandlerSettings.shared.user!.rankToken, list: [], paginationParameter: paginationParameter) { (value) in
-            completion(Return.success(value: value))
-        }
-    }
-    
-    fileprivate func userTagsList(from url: URL, userId: Int, rankToken: String, list: [UserFeedModel], paginationParameter: PaginationParameters, completion: @escaping ([UserFeedModel]) -> ())
-    {
-        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
-            completion(list)
-        } else {
-            var _paginationParameter = paginationParameter
-            _paginationParameter.pagesLoaded += 1
-            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
-                if error != nil {
-                    completion(list)
-                } else {
-                    if let data = data {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        var usertagsList = list
-                        do {
-                            let newItems = try decoder.decode(UserFeedModel.self, from: data)
-                            usertagsList.append(newItems)
-                            if newItems.moreAvailable! {
-                                _paginationParameter.nextId = newItems.nextMaxId!
-                                let url = try! URLs.getUserTagsUrl(userPk: userId, rankToken: rankToken, maxId: _paginationParameter.nextId)
-                                self!.userTagsList(from: url, userId: userId, rankToken: rankToken, list: usertagsList, paginationParameter: _paginationParameter, completion: { (result) in
-                                    completion(result)
-                                })
-                            } else {
-                                completion(usertagsList)
-                            }
-                        } catch {
-                            print(error, error.localizedDescription)
-                            completion(list)
-                        }
-                    } else {
-                        completion(list)
-                    }
-                }
+    func getUserTags(user: UserReference,
+                     paginationParameters: PaginationParameters,
+                     updateHandler: PaginationResponse<UserFeedModel>?,
+                     completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws {
+        switch user {
+        case .username(let username):
+            // fetch username.
+            try UserHandler.shared.getUser(username: username) { [weak self] in
+                try? self?.getUserTags(user: .pk($0.value?.pk ?? 0),
+                                       paginationParameters: paginationParameters,
+                                       updateHandler: updateHandler,
+                                       completionHandler: completionHandler)
             }
+        case .pk(let pk):
+            // load user media directly.
+            PaginationHandler.getPages(UserFeedModel.self,
+                                       for: paginationParameters,
+                                       at: { try URLs.getUserTagsUrl(userPk: pk, rankToken: HandlerSettings.shared.user!.rankToken, maxId: $0.nextMaxId ?? "") },
+                                       updateHandler: updateHandler,
+                                       completionHandler: completionHandler)
         }
     }
-    
-    func getUserFollowing(username: String, paginationParameter: PaginationParameters, searchQuery: String = "", completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
         
-        try getUser(username: username, completion: { [weak self] (user) in
-            let url = try! URLs.getUserFollowing(userPk: user.value?.pk, rankToken: HandlerSettings.shared.user!.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
-            
-            self?.getFollowingList(pk: user.value?.pk, searchQuery: searchQuery, followings: [], url: url, paginationParameter: paginationParameter, completion: { (result) in
-                completion(Return.success(value: result))
-            })
-        })
-    }
-    
-    fileprivate func getFollowingList(pk: Int?, searchQuery: String, followings: [UserShortModel], url: URL, paginationParameter: PaginationParameters, completion: @escaping ([UserShortModel]) -> ()) {
-        var _paginationParameter = paginationParameter
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
-            _paginationParameter.pagesLoaded += 1
-            if error != nil {
-                completion(followings)
-            } else {
-                if response?.statusCode == 200 {
-                    var list = followings
-                    if let data = data {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let decoded = try decoder.decode(UserShortListModel.self, from: data)
-                            list.append(contentsOf: decoded.users!)
-                            if let bigList = decoded.bigList, bigList {
-                                if !(decoded.nextMaxId?.isEmpty ?? true) && paginationParameter.pagesLoaded <= paginationParameter.maxPagesToLoad {
-                                    _paginationParameter.nextId = decoded.nextMaxId ?? ""
-                                    let url = try! URLs.getUserFollowing(userPk: pk, rankToken: HandlerSettings.shared.user!.rankToken, searchQuery: searchQuery, maxId: _paginationParameter.nextId)
-                                    self?.getFollowingList(pk: pk, searchQuery: searchQuery, followings: list, url: url, paginationParameter: _paginationParameter, completion: { (newusers) in
-                                        list.append(contentsOf: newusers)
-                                        completion(newusers)
-                                    })
-                                } else {
-                                    completion(list)
-                                }
-                                
-                            } else {
-                                completion(list)
-                            }
-                        } catch {
-                            completion(list)
-                        }
-                    }
-                } else {
-                    completion(followings)
-                }
+    func getUserFollowing(user: UserReference,
+                          filteringProfilesMatchingQuery query: String? = nil,
+                          paginationParameters: PaginationParameters,
+                          updateHandler: PaginationResponse<UserShortListModel>?,
+                          completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws {
+        switch user {
+        case .username(let username):
+            // fetch username.
+            try UserHandler.shared.getUser(username: username) { [weak self] in
+                try? self?.getUserFollowing(user: .pk($0.value?.pk ?? 0),
+                                            filteringProfilesMatchingQuery: query,
+                                            paginationParameters: paginationParameters,
+                                            updateHandler: updateHandler,
+                                            completionHandler: completionHandler)
             }
+        case .pk(let pk):
+            // load user info directly.
+            PaginationHandler.getPages(UserShortListModel.self,
+                                       for: paginationParameters,
+                                       at: { try URLs.getUserFollowing(userPk: pk,
+                                                                       rankToken: HandlerSettings.shared.user!.rankToken,
+                                                                       searchQuery: query ?? "",
+                                                                       maxId: $0.nextMaxId ?? "") },
+                                       updateHandler: updateHandler,
+                                       completionHandler: { response, parameters in
+                                        let users = response.value?.reduce([]) { $0+($1.users ?? []) }
+                                        completionHandler(Result(isSucceeded: response.isSucceeded,
+                                                                 info: response.info,
+                                                                 value: users),
+                                                          parameters)
+            })
         }
     }
 
-    func getUserFollowers(username: String, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        
-         try getUser(username: username, completion: { [weak self] (user) in
-            let url = try! URLs.getUserFollowers(userPk: user.value?.pk, rankToken: HandlerSettings.shared.user!.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId)
-            
-            self?.getFollowersList(pk: user.value?.pk, searchQuery: searchQuery, followers: [], url: url, paginationParameter: paginationParameter, completion: { (result) in
-                completion(Return.success(value: result))
-            })
-        })
-    }
-    
-    fileprivate func getFollowersList(pk: Int?, searchQuery: String, followers: [UserShortModel], url: URL, paginationParameter: PaginationParameters, completion: @escaping ([UserShortModel]) -> ()) {
-        var _paginationParameter = paginationParameter
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
-            _paginationParameter.pagesLoaded += 1
-            if error != nil {
-                completion(followers)
-            } else {
-                if response?.statusCode == 200 {
-                    var list = followers
-                    if let data = data {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let decoded = try decoder.decode(UserShortListModel.self, from: data)
-                            list.append(contentsOf: decoded.users!)
-                            if let bigList = decoded.bigList, bigList {
-                                if !(decoded.nextMaxId?.isEmpty ?? true) && paginationParameter.pagesLoaded <= paginationParameter.maxPagesToLoad {
-                                    _paginationParameter.nextId = decoded.nextMaxId ?? ""
-                                    let url = try! URLs.getUserFollowers(userPk: pk, rankToken: HandlerSettings.shared.user!.rankToken, searchQuery: searchQuery, maxId: _paginationParameter.nextId)
-                                    self?.getFollowersList(pk: pk, searchQuery: searchQuery, followers: list, url: url, paginationParameter: _paginationParameter, completion: { (newusers) in
-                                        list.append(contentsOf: newusers)
-                                        completion(newusers)
-                                    })
-                                } else {
-                                    completion(list)
-                                }
-                                
-                            } else {
-                                completion(list)
-                            }
-                        } catch {
-                            completion(list)
-                        }
-                    }
-                } else {
-                    completion(followers)
-                }
+    func getUserFollowers(user: UserReference,
+                          filteringProfilesMatchingQuery query: String?,
+                          paginationParameters: PaginationParameters,
+                          updateHandler: PaginationResponse<UserShortListModel>?,
+                          completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws {
+        switch user {
+        case .username(let username):
+            // fetch username.
+            try UserHandler.shared.getUser(username: username) { [weak self] in
+                try? self?.getUserFollowers(user: .pk($0.value?.pk ?? 0),
+                                            filteringProfilesMatchingQuery: query,
+                                            paginationParameters: paginationParameters,
+                                            updateHandler: updateHandler,
+                                            completionHandler: completionHandler)
             }
+        case .pk(let pk):
+            // load user info directly.
+            PaginationHandler.getPages(UserShortListModel.self,
+                                       for: paginationParameters,
+                                       at: { try URLs.getUserFollowers(userPk: pk,
+                                                                       rankToken: HandlerSettings.shared.user!.rankToken,
+                                                                       searchQuery: query ?? "",
+                                                                       maxId: $0.nextMaxId ?? "") },
+                                       updateHandler: updateHandler,
+                                       completionHandler: { response, parameters in
+                                        let users = response.value?.reduce([]) { $0+($1.users ?? []) }
+                                        completionHandler(Result(isSucceeded: response.isSucceeded,
+                                                                 info: response.info,
+                                                                 value: users),
+                                                          parameters)
+            })
         }
     }
     
-    /** Searching with Pk returns more accurate results */
-    func getUserFollowers(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        try getUser(id: pk, completion: { [weak self] (user) in
-            if user.isSucceeded {
-                guard let pk = user.value?.user?.pk else {return}
-                guard let rankToken = HandlerSettings.shared.user else {return}
-                
-                guard let url = try? URLs.getUserFollowers(userPk: pk, rankToken: rankToken.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId) else {return}
-                
-                self?.getFollowersList(pk: pk, searchQuery: searchQuery, followers: [], url: url, paginationParameter: paginationParameter, completion: { (result) in
-                    completion(Return.success(value: result))
-                })
-            }
-        })
-    }
-    
-    /** Searching with Pk returns more accurate results */
-    func getUserFollowing(pk: Int, paginationParameter: PaginationParameters, searchQuery: String, completion: @escaping (Result<[UserShortModel]>) -> ()) throws {
-        try getUser(id: pk, completion: { [weak self] (user) in
-            
-            if user.isSucceeded {
-                guard let pk = user.value?.user?.pk else {return}
-                guard let rankToken = HandlerSettings.shared.user else {return}
-                guard let url = try? URLs.getUserFollowing(userPk: pk, rankToken: rankToken.rankToken, searchQuery: searchQuery, maxId: paginationParameter.nextId) else {return}
-                
-                self?.getFollowingList(pk: pk, searchQuery: searchQuery, followings: [], url: url, paginationParameter: paginationParameter, completion: { (result) in
-                    completion(Return.success(value: result))
-                })
-            }
-            
-        })
-    }
-
     func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
         let body = [
             "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
@@ -785,93 +707,24 @@ class UserHandler: UserHandlerProtocol {
         }
     }
 
-    func getRecentActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentActivitiesModel]>) -> ()) throws {
-        getRecentList(from: try URLs.getRecentActivities(), list: [], paginationParameter: paginationParameter) { (value) in
-            completion(Return.success(value: value))
-        }
-    }
-    
-    fileprivate func getRecentList(from url: URL, list: [RecentActivitiesModel], paginationParameter: PaginationParameters, completion: @escaping ([RecentActivitiesModel]) -> ()) {
-        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
-            completion(list)
-        } else {
-            var _paginationParameter = paginationParameter
-            _paginationParameter.pagesLoaded += 1
-            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
-                if error != nil {
-                    completion(list)
-                } else {
-                    if let data = data {
-                        var activitiesList = list
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let newItems = try decoder.decode(RecentActivitiesModel.self, from: data)
-                            activitiesList.append(newItems)
-                            if (newItems.aymf?.moreAvailable)! {
-                                _paginationParameter.nextId = newItems.aymf!.nextMaxId!
-                                let url = try! URLs.getRecentActivities(maxId: _paginationParameter.nextId)
-                                self!.getRecentList(from: url, list: activitiesList, paginationParameter: _paginationParameter, completion: { (result) in
-                                    completion(result)
-                                })
-                            } else {
-                                completion(activitiesList)
-                            }
-                        } catch {
-                            completion(list)
-                        }
-                    } else {
-                        completion(list)
-                    }
-                }
-            }
-        }
-    }
-    
-    func getRecentFollowingActivities(paginationParameter: PaginationParameters, completion: @escaping (Result<[RecentFollowingsActivitiesModel]>) -> ()) throws {
-        getRecentFollowingList(from: try URLs.getRecentFollowingActivities(), list: [], paginationParameter: paginationParameter) { (value) in
-            completion(Return.success(value: value))
-        }
+    func getRecentActivities(paginationParameters: PaginationParameters,
+                             updateHandler: PaginationResponse<RecentActivitiesModel>?,
+                             completionHandler: @escaping PaginationResponse<Result<[RecentActivitiesModel]>>) throws {
+        PaginationHandler.getPages(RecentActivitiesModel.self,
+                                   for: paginationParameters,
+                                   at: { try URLs.getRecentActivities(maxId: $0.nextMaxId ?? "") },
+                                   updateHandler: updateHandler,
+                                   completionHandler: completionHandler)
     }
 
-    fileprivate func getRecentFollowingList(from url: URL, list: [RecentFollowingsActivitiesModel], paginationParameter: PaginationParameters, completion: @escaping ([RecentFollowingsActivitiesModel]) -> ()) {
-        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
-            completion(list)
-        } else {
-            var _paginationParameter = paginationParameter
-            _paginationParameter.pagesLoaded += 1
-            guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-            httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
-                if error != nil {
-                    completion(list)
-                } else {
-                    if let data = data {
-                        var activitiesList = list
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let newItems = try decoder.decode(RecentFollowingsActivitiesModel.self, from: data)
-                            activitiesList.append(newItems)
-                            if newItems.nextMaxId != nil {
-                                _paginationParameter.nextId = String(newItems.nextMaxId!)
-                                let url = try! URLs.getRecentFollowingActivities(maxId: _paginationParameter.nextId)
-                                self!.getRecentFollowingList(from: url, list: activitiesList, paginationParameter: _paginationParameter, completion: { (result) in
-                                    completion(result)
-                                })
-                            } else {
-                                completion(activitiesList)
-                            }
-                        } catch {
-                            print(error, error.localizedDescription)
-                            completion(list)
-                        }
-                    } else {
-                        completion(list)
-                    }
-                }
-            }
-        }
+    func getRecentFollowingActivities(paginationParameters: PaginationParameters,
+                                      updateHandler: PaginationResponse<RecentFollowingsActivitiesModel>?,
+                                      completionHandler: @escaping PaginationResponse<Result<[RecentFollowingsActivitiesModel]>>) throws {
+        PaginationHandler.getPages(RecentFollowingsActivitiesModel.self,
+                                   for: paginationParameters,
+                                   at: { try URLs.getRecentFollowingActivities(maxId: $0.nextMaxId ?? "") },
+                                   updateHandler: updateHandler,
+                                   completionHandler: completionHandler)
     }
     
     func removeFollower(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
@@ -1239,59 +1092,5 @@ class UserHandler: UserHandlerProtocol {
                 }
             }
         })
-    }
-    
-    func getUserFollowers(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
-        guard let rankToken = HandlerSettings.shared.user?.rankToken else { return }
-        guard let httpHelper = HandlerSettings.shared.httpHelper else { return }
-        let url = try URLs.getUserFollowers(userPk: userId, rankToken: rankToken, searchQuery: searchQuery, maxId: maxId ?? "")
-        
-        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { (data, res, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil), nil)
-            } else {
-                if let data = data {
-                    if res?.statusCode == 200 {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let value = try decoder.decode(UserShortListModel.self, from: data)
-                            completion(Return.success(value: value), value.nextMaxId)
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil), nil)
-                        }
-                    } else {
-                        completion(Return.fail(error: nil, response: .wrongRequest, value: nil), nil)
-                    }
-                }
-            }
-        }
-    }
-    
-    func getUserFollowing(userId: Int, maxId: String?, searchQuery: String, completion: @escaping (Result<UserShortListModel>, String?) -> ()) throws {
-        guard let rankToken = HandlerSettings.shared.user?.rankToken else { return }
-        guard let httpHelper = HandlerSettings.shared.httpHelper else { return }
-        let url = try URLs.getUserFollowing(userPk: userId, rankToken: rankToken, searchQuery: searchQuery, maxId: maxId ?? "")
-        
-        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { (data, res, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil), nil)
-            } else {
-                if let data = data {
-                    if res?.statusCode == 200 {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let value = try decoder.decode(UserShortListModel.self, from: data)
-                            completion(Return.success(value: value), value.nextMaxId)
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil), nil)
-                        }
-                    } else {
-                        completion(Return.fail(error: nil, response: .wrongRequest, value: nil), nil)
-                    }
-                }
-            }
-        }
     }
 }

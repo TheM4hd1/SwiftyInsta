@@ -9,9 +9,10 @@
 import Foundation
 
 public protocol MediaHandlerProtocol {
-    func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
-    func getUserMedia(for pk: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws
-    func getUserMedia(userPk: Int, maxId: String?, completion: @escaping (Result<UserFeedModel>, _ maxId: String?) -> ()) throws
+    func getUserMedia(user: UserReference,
+                      paginationParameters: PaginationParameters,
+                      updateHandler: PaginationResponse<UserFeedModel>?,
+                      completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws
     func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws
     func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
     func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
@@ -29,101 +30,29 @@ class MediaHandler: MediaHandlerProtocol {
     
     private init() {}
     
-    func getUserMedia(for username: String, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
-        try UserHandler.shared.getUser(username: username, completion: { [weak self] (result) in
-            self!.getMediaList(from: try! URLs.getUserFeedUrl(userPk: result.value?.pk), userPk: result.value?.pk, list: [], paginationParameter: paginationParameter, completion: { (value) in
-                completion(Return.success(value: value))
-            })
-        })
-    }
-    
-    func getUserMedia(userPk: Int, maxId: String?, completion: @escaping (Result<UserFeedModel>, String?) -> ()) throws {
-        let url = try URLs.getUserFeedUrl(userPk: userPk, maxId: maxId ?? "")
-        guard let httpHelper = HandlerSettings.shared.httpHelper else { return }
-        httpHelper.sendAsync(method: .get, url: url, body: [:], header: [:]) { (data, res, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil), nil)
-            } else {
-                if let data = data {
-                    if res?.statusCode == 200 {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let value = try decoder.decode(UserFeedModel.self, from: data)
-                            completion(Return.success(value: value), value.nextMaxId)
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil), nil)
-                        }
-                    } else {
-                        completion(Return.fail(error: nil, response: .wrongRequest, value: nil), nil)
-                    }
-                }
+    func getUserMedia(user: UserReference,
+                      paginationParameters: PaginationParameters,
+                      updateHandler: PaginationResponse<UserFeedModel>?,
+                      completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws {
+        switch user {
+        case .username(let username):
+            // fetch username.
+            try UserHandler.shared.getUser(username: username) { [weak self] in
+                try? self?.getUserMedia(user: .pk($0.value?.pk ?? 0),
+                                        paginationParameters: paginationParameters,
+                                        updateHandler: updateHandler,
+                                        completionHandler: completionHandler)
             }
+        case .pk(let pk):
+            // load user media directly.
+            PaginationHandler.getPages(UserFeedModel.self,
+                                       for: paginationParameters,
+                                       at: { try URLs.getUserFeedUrl(userPk: pk, maxId: $0.nextMaxId ?? "") },
+                                       updateHandler: updateHandler,
+                                       completionHandler: completionHandler)
         }
     }
     
-    /** Getting media with pk returns more accurate results */
-    func getUserMedia(for pk: Int, paginationParameter: PaginationParameters, completion: @escaping (Result<[UserFeedModel]>) -> ()) throws {
-        
-        try UserHandler.shared.getUser(id: pk, completion: { [weak self] (result) in
-            
-            if result.isSucceeded {
-                
-                if let user = result.value?.user {
-                    self!.getMediaList(from: try! URLs.getUserFeedUrl(userPk: user.pk), userPk: user.pk, list: [], paginationParameter: paginationParameter, completion: { (value) in
-                        completion(Return.success(value: value))
-                    })
-                } else {
-                    return completion(Return.fail(error: nil, response: ResponseTypes.fail, value: nil))
-                }
-                
-            }
-            
-        })
-    }
-    
-    fileprivate func getMediaList(from url: URL, userPk: Int?, list: [UserFeedModel], paginationParameter: PaginationParameters, completion: @escaping ([UserFeedModel]) -> ()) {
-        if paginationParameter.pagesLoaded == paginationParameter.maxPagesToLoad {
-            completion(list)
-        } else {
-            var _paginationParameter = paginationParameter
-            _paginationParameter.pagesLoaded += 1
-            
-            HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: url, body: [:], header: [:]) { [weak self] (data, response, error) in
-                if error != nil {
-                    completion(list)
-                } else {
-                    if response?.statusCode != 200 {
-                        completion(list)
-                    } else {
-                        if let data = data {
-                            let decoder = JSONDecoder()
-                            decoder.keyDecodingStrategy = .convertFromSnakeCase
-                            var mediaList = list
-                            do {
-                                let newItems = try decoder.decode(UserFeedModel.self, from: data)
-                                mediaList.append(newItems)
-                                if newItems.moreAvailable! {
-                                    _paginationParameter.nextId = newItems.nextMaxId!
-                                    let url = try URLs.getUserFeedUrl(userPk: userPk, maxId: _paginationParameter.nextId)
-                                    self!.getMediaList(from: url, userPk: userPk, list: mediaList, paginationParameter: _paginationParameter, completion: { (result) in
-                                        completion(result)
-                                    })
-                                } else {
-                                    completion(mediaList)
-                                }
-                            } catch {
-                                completion(list)
-                            }
-                        } else {
-                            completion(list)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
         HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getMediaUrl(mediaId: mediaId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
