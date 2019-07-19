@@ -83,7 +83,7 @@ struct PaginationHandler {
                                     }
                                     // load more.
                                     paginationParamaters.nextMaxId = model.nextMaxId.flatMap { String($0) }
-                                    guard paginationParamaters.nextMaxId != nil else {
+                                    guard !(paginationParamaters.nextMaxId ?? "").isEmpty else {
                                         return completionHandler(Return.success(value: fetched), paginationParamaters)
                                     }
                                     getPage()
