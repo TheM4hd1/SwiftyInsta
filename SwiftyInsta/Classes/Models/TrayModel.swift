@@ -36,8 +36,8 @@ public struct TrayItems: Codable, MediaModelProtocol {
     public var canReshare: Bool?
     public var canReply: Bool?
     public var isReelMedia: Bool?
-    
-    
+
+
     public init(takenAt: Int?, pk: Int?, id: String?, deviceTimestamp: Int?, mediaType: Int?, code: String?, clientCacheKey: String?, filterType: Int?, imageVersions2: CandidatesModel?, originalWidth: Int?, originalHeight: Int?, organicTrackingToken: String?, user: UserShortModel?, caption: CaptionModel?, captionIsEdited: Bool?, photoOfYou: Bool?, canViewerSave: Bool?, expiringAt: Int?, storyLocation: LocationModel?, supportsReelReactions: Bool?, viewers: [UserShortModel]?, viewerCount: Int?, totalViewerCount: Int?, canReshare: Bool?, canReply: Bool?, isReelMedia: Bool?) {
         self.takenAt = takenAt
         self.pk = pk
@@ -70,7 +70,7 @@ public struct TrayItems: Codable, MediaModelProtocol {
 
 public struct CandidatesModel: Codable {
     public var candidates: [ProfilePicVersionsModel]?
-    
+
     public init(candidates: [ProfilePicVersionsModel]?) {
         self.candidates = candidates
     }
@@ -96,7 +96,8 @@ public struct TrayModel: Codable {
     public var rankedPosition: Int?
     public var seenRankedPosition: Int?
     public var sourceToken: String?
-    
+    public var muted: Bool?
+
     private enum CodingKeys: String, CodingKey {
         case id
         case latestReelMedia
@@ -113,8 +114,9 @@ public struct TrayModel: Codable {
         case rankedPosition
         case seenRankedPosition
         case sourceToken
+        case muted
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(Int.self, forKey: .id) {
@@ -126,7 +128,7 @@ public struct TrayModel: Codable {
         } else {
             id = try container.decode(String.self, forKey: .id)
         }
-        
+
         latestReelMedia = try container.decodeIfPresent(Int.self, forKey: .latestReelMedia)
         expiringAt = try container.decodeIfPresent(Int.self, forKey: .expiringAt)
         seen = try container.decodeIfPresent(Double.self, forKey: .seen)
@@ -141,7 +143,7 @@ public struct TrayModel: Codable {
         rankedPosition = try container.decodeIfPresent(Int.self, forKey: .rankedPosition)
         seenRankedPosition = try container.decodeIfPresent(Int.self, forKey: .seenRankedPosition)
         sourceToken = try container.decodeIfPresent(String.self, forKey: .sourceToken)
-        
+        muted = try container.decodeIfPresent(Bool.self, forKey: .muted)
     }
 }
 
@@ -150,14 +152,14 @@ public struct OwnerModel: Codable {
     public var pk: String?
     public var profilePicUrl: String?
     public var profilePicUsername: String?
-    
+
     private enum CodingKeys: String, CodingKey {
         case type
         case pk
         case profilePicUrl
         case profilePicUsername
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(Int.self, forKey: .pk) {
@@ -169,7 +171,7 @@ public struct OwnerModel: Codable {
         } else {
             pk = try container.decode(String.self, forKey: .pk)
         }
-        
+
         type = try container.decodeIfPresent(String.self, forKey: .type)
         profilePicUrl = try container.decodeIfPresent(String.self, forKey: .profilePicUrl)
         profilePicUsername = try container.decodeIfPresent(String.self, forKey: .profilePicUsername)
