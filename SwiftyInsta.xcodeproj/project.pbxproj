@@ -189,7 +189,7 @@
 		11E2B134218F13D20095374A /* UserShortListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortListModel.swift; sourceTree = "<group>"; };
 		11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineModel.swift; sourceTree = "<group>"; };
 		11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersModel.swift; sourceTree = "<group>"; };
-		E063077122E253060015AA92 /* PaginationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PaginationHandler.swift; path = ../../../../../../../../../System/Volumes/Data/Users/stefanobertagno/Documents/Development/Libraries/SwiftyInsta/SwiftyInsta/API/Services/PaginationHandler.swift; sourceTree = "<group>"; };
+		E063077122E253060015AA92 /* PaginationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationHandler.swift; sourceTree = "<group>"; };
 		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
