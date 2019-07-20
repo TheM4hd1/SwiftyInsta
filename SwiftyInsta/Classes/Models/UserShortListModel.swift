@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct UserShortListModel: Codable, BaseStatusResponseProtocol {
+public struct UserShortListModel: Codable, BaseStatusResponseProtocol, PaginationProtocol {
     public var status: String?
     public var nextMaxId: String? = ""
     public var bigList: Bool?

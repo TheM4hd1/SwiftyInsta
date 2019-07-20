@@ -89,6 +89,7 @@
 		11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E2B134218F13D20095374A /* UserShortListModel.swift */; };
 		11F0CE6B2195CC2400C0F6A4 /* TimeLineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */; };
 		11F57CC4229D2E78001A1C0A /* BlockedUsersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */; };
+		E063077222E253060015AA92 /* PaginationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E063077122E253060015AA92 /* PaginationHandler.swift */; };
 		E8314D5E2210652400D13BEA /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
 /* End PBXBuildFile section */
 
@@ -188,6 +189,7 @@
 		11E2B134218F13D20095374A /* UserShortListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortListModel.swift; sourceTree = "<group>"; };
 		11F0CE6A2195CC2400C0F6A4 /* TimeLineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineModel.swift; sourceTree = "<group>"; };
 		11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersModel.swift; sourceTree = "<group>"; };
+		E063077122E253060015AA92 /* PaginationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PaginationHandler.swift; path = ../../../../../../../../../System/Volumes/Data/Users/stefanobertagno/Documents/Development/Libraries/SwiftyInsta/SwiftyInsta/API/Services/PaginationHandler.swift; sourceTree = "<group>"; };
 		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -268,6 +270,7 @@
 				115F1240217FE98000ED3530 /* APIHandler.swift */,
 				11AE43FC21A99CD400BD9EFB /* CommentHandler.swift */,
 				11AE43FD21A99CD400BD9EFB /* FeedHandler.swift */,
+				E063077122E253060015AA92 /* PaginationHandler.swift */,
 				11AE440221A99CD400BD9EFB /* MediaHandler.swift */,
 				11AE440021A99CD400BD9EFB /* MessageHandler.swift */,
 				11AE43FF21A99CD400BD9EFB /* ProfileHandler.swift */,
@@ -614,6 +617,7 @@
 				1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */,
 				11B9568421945C67006661A6 /* LocationModel.swift in Sources */,
 				115F1253217FEFF200ED3530 /* SessionStorage.swift in Sources */,
+				E063077222E253060015AA92 /* PaginationHandler.swift in Sources */,
 				1104CD092180621400F855BA /* HTTPMethods.swift in Sources */,
 				11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */,
 				11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */,
