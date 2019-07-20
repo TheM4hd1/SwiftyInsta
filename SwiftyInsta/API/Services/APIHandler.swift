@@ -745,10 +745,8 @@ public class APIHandler: APIHandlerProtocol {
             throw CustomErrors.runTimeError("empty request message.")
         }
     }
-}
 
-// MARK: Deprecated and obsoleted.
-public extension APIHandler {
+    // MARK: Deprecated and obsoleted.
     @available(*, deprecated, message: "use `getExploreFeeds(paginationParameters:updateHandler:completionHandler:)` instead.")
     func getExploreFeeds(paginationParameter: PaginationParameters, completion: @escaping (Result<[ExploreFeedModel]>) -> ()) throws {
         // validate before request.
@@ -818,7 +816,7 @@ public extension APIHandler {
         try validateLoggedIn()
         
         try MediaHandler.shared.getUserMedia(user: .pk(userPk),
-                                             paginationParameters: .init(maxId: maxId, maxPagesToLoad: 1),
+                                             paginationParameters: .init(startingAt: maxId, maxPagesToLoad: 1),
                                              updateHandler: { response, parameters in completion(Return.success(value: response), parameters.nextMaxId) },
                                              completionHandler: { _, _ in })
     }
@@ -883,7 +881,7 @@ public extension APIHandler {
         try validateLoggedIn()
         try UserHandler.shared.getUserFollowers(user: .pk(userId),
                                                 filteringProfilesMatchingQuery: searchQuery,
-                                                paginationParameters: .init(maxId: maxId, maxPagesToLoad: 1),
+                                                paginationParameters: .init(startingAt: maxId, maxPagesToLoad: 1),
                                                 updateHandler: { response, parameters in completion(Return.success(value: response), parameters.nextMaxId) },
                                                 completionHandler: { _, _ in })
     }
@@ -896,7 +894,7 @@ public extension APIHandler {
         try validateLoggedIn()
         try UserHandler.shared.getUserFollowing(user: .pk(userId),
                                                 filteringProfilesMatchingQuery: searchQuery,
-                                                paginationParameters: .init(maxId: maxId, maxPagesToLoad: 1),
+                                                paginationParameters: .init(startingAt: maxId, maxPagesToLoad: 1),
                                                 updateHandler: { response, parameters in completion(Return.success(value: response), parameters.nextMaxId) },
                                                 completionHandler: { _, _ in })
     }

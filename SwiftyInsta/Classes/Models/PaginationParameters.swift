@@ -20,12 +20,12 @@ public class PaginationParameters {
     public var canLoadMore: Bool { return loadedPages < maxPagesToLoad }
         
     // MARK: Init
-    public init(maxId: String? = nil, maxPagesToLoad: Int = 1) {
+    public init(startingAt maxId: String? = nil, maxPagesToLoad: Int = 1) {
         precondition(maxPagesToLoad > 0, "`maxPagesToLoad` must be bigger than `0`.")
         self.nextMaxId = maxId
         self.maxPagesToLoad = maxPagesToLoad
     }
-    public static let everything = PaginationParameters(maxId: nil, maxPagesToLoad: .max)
+    public static let everything = PaginationParameters(startingAt: nil, maxPagesToLoad: .max)
         
     // MARK: Obsolete
     @available(*, unavailable, message: "use `init` instead.")

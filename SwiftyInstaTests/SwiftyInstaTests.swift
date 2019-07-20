@@ -193,7 +193,7 @@ class SwiftyInstaTests: XCTestCase {
         do {
             try handler.searchUser(username: username, completion: { (result) in
                 if result.isSucceeded {
-                    result.value?.compactMap { print("username: ", $0.username )}
+                    result.value?.forEach { print("username: ", $0.username as Any) }
                 }
                 
                 exp.fulfill()
@@ -260,7 +260,11 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserFollowing(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserFollowing() faild during timeout")
         do {
-            try handler.getUserFollowing(username: "mehdi.makhdumi", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1), searchQuery: "", completion: { (result) in
+            try handler.getUserFollowing(user: .username("swiftyinsta"),
+                                         filteringProfilesMatchingQuery: nil,
+                                         paginationParameters: .init(startingAt: nil, maxPagesToLoad: 15),
+                                         updateHandler: nil,
+                                         completionHandler: { result, _ in
                 if result.isSucceeded {
                     guard let following = result.value else { return }
                     print("[+] following count: \(following.count)")
@@ -288,7 +292,11 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserFollowers(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserFollowing() faild during timeout")
         do {
-            try handler.getUserFollowers(username: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 15), searchQuery: "", completion: { (result) in
+            try handler.getUserFollowers(user: .username("swiftyinsta"),
+                                         filteringProfilesMatchingQuery: nil,
+                                         paginationParameters: .init(startingAt: nil, maxPagesToLoad: 15),
+                                         updateHandler: nil,
+                                         completionHandler: { result, _ in
                 if result.isSucceeded {
                     guard let followers = result.value else { return }
                     print("[+] followers count: \(followers.count)")
@@ -506,7 +514,10 @@ class SwiftyInstaTests: XCTestCase {
         do {
             try handler.getUser(username: userToGetTags, completion: { (user) in
                 if user.isSucceeded {
-                    try? handler.getUserTags(userId: user.value!.pk!, paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5), completion: { (result) in
+                    try? handler.getUserTags(user: .pk(user.value?.pk ?? -1),
+                                             paginationParameters: .init(startingAt: nil, maxPagesToLoad: 5),
+                                             updateHandler: nil,
+                                             completionHandler: { result, _ in
                         if result.isSucceeded {
                             print("[+] first page items: \(result.value!.first!.totalCount!)")
                         }
@@ -536,14 +547,16 @@ class SwiftyInstaTests: XCTestCase {
     func testGetExploreFeed(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getExploreFeed() faild during timeout")
         do {
-            try handler.getExploreFeeds(paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+            try handler.getExploreFeeds(paginationParameters: .init(startingAt: nil, maxPagesToLoad: 5),
+                                        updateHandler: nil,
+                                        completionHandler: { result, _ in
                 if result.isSucceeded {
                     print("[+] Data received.")
                 } else {
                     print("[-] \(result.info)")
                 }
                 exp.fulfill()
-            }
+            })
         } catch {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
@@ -563,7 +576,10 @@ class SwiftyInstaTests: XCTestCase {
     func testGetTagFeed(handler: APIHandlerProtocol, tag: String) {
         let exp = expectation(description: "getTagFeed() faild during timeout")
         do {
-            try handler.getTagFeed(tagName: tag, paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5), completion: { (result) in
+            try handler.getTagFeed(tag: tag,
+                                   paginationParameters: .init(startingAt: nil, maxPagesToLoad: 5),
+                                   updateHandler: nil,
+                                   completionHandler: { result, _ in
                 if result.isSucceeded {
                     print("[+] first username of each page who used this tagname:")
                     _ = result.value!.map { print("[+] \($0.items!.first!.caption!.user!.fullName!)") }
@@ -589,7 +605,8 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserTimeLine(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getTimeLine() faild during timeout")
         do {
-            try handler.getUserTimeLine(paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+            try handler.getUserTimeLine(paginationParameters: .init(startingAt: nil, maxPagesToLoad: 5),
+                                        updateHandler: nil) { result, _ in
                 if result.isSucceeded {
                     print("[+] Data received.")
                 } else {
@@ -619,13 +636,16 @@ class SwiftyInstaTests: XCTestCase {
     func testGetUserMedia(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getUserMedia() faild during timeout")
         do {
-            try handler.getUserMedia(for: "swiftyinsta", paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 1)) { (result) in
+            try handler.getUserMedia(user: .username("swiftyinsta"),
+                                     paginationParameters: .init(startingAt: nil, maxPagesToLoad: 5),
+                                     updateHandler: nil,
+                                     completionHandler: { result, _ in
                 if result.isSucceeded {
                     print(result.value!)
                     print("[+] number of pages that include medias: \(result.value!.count)")
                 }
                 exp.fulfill()
-            }
+            })
         } catch {
             print("[-] \(error.localizedDescription)")
             exp.fulfill()
@@ -670,12 +690,14 @@ class SwiftyInstaTests: XCTestCase {
     func testGetRecentActivities(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getRecentActivities() faild during timeout")
         do {
-            try handler.getRecentFollowingActivities(paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+            try handler.getRecentActivities(paginationParameters: .init(startingAt: nil, maxPagesToLoad: 5),
+                                            updateHandler: nil,
+                                            completionHandler: { result, _ in
                 if result.isSucceeded {
                     print("[+] \(result.value!)")
                 }
                 exp.fulfill()
-            }
+            })
         } catch {
             print(error.localizedDescription)
             exp.fulfill()
@@ -695,12 +717,14 @@ class SwiftyInstaTests: XCTestCase {
     func testGetRecentFollowingActivities(handler: APIHandlerProtocol) {
         let exp = expectation(description: "getRecentFollowingActivities() faild during timeout")
         do {
-            try handler.getRecentFollowingActivities(paginationParameter: PaginationParameters.maxPagesToLoad(maxPages: 5)) { (result) in
+            try handler.getRecentFollowingActivities(paginationParameters: .init(startingAt: nil, maxPagesToLoad: 5),
+                                                     updateHandler: nil,
+                                                     completionHandler: { result, _ in
                 if result.isSucceeded {
                     print("[+] \(result.value!)")
                 }
                 exp.fulfill()
-            }
+            })
         } catch {
             print(error.localizedDescription)
             exp.fulfill()
@@ -1037,13 +1061,14 @@ class SwiftyInstaTests: XCTestCase {
         let mediaId = "2027973562639689483_8766457680"
         let exp = expectation(description: "likeMedia() faild during timeout")
         do {
-            try handler.getMediaComments(mediaId: mediaId, paginationParameter:  PaginationParameters.maxPagesToLoad(maxPages: 5), completion: { (result) in
-                //print("[+] first comment: \(result.value!.first!.comments!.first!)")
-                let commentId = result.value!.first!.comments!.first!.pk!
-                try! handler.reportComment(mediaId: mediaId, commentId: String(commentId), completion: { (result) in
-                    print(result)
-                    exp.fulfill()
-                })
+            try handler.getMediaComments(mediaId: mediaId,
+                                         paginationParameters: .init(startingAt: nil, maxPagesToLoad: 5),
+                                         updateHandler: { newPage, _ in print(newPage) },
+                                         completionHandler: { result, _ in
+                                            guard let commentId = result.value?.first?.comments?.first?.pk else { return }
+                                            try? handler.reportComment(mediaId: mediaId,
+                                                                       commentId: String(commentId),
+                                                                       completion: { print($0); exp.fulfill() })
             })
         } catch {
             print("[-] \(error.localizedDescription)")
@@ -1337,7 +1362,7 @@ class SwiftyInstaTests: XCTestCase {
         
         try! handler.getStoryHighlights(userPk: userPk, completion: { (result) in
             if result.isSucceeded {
-                print("number of highlights: ", result.value?.tray.count)
+                print("number of highlights: ", result.value?.tray.count as Any)
             }
             
             exp.fulfill()
