@@ -72,7 +72,7 @@ public class APIHandler {
                              completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
         switch request {
         case .cache(let cache):
-            accounts.authenticate(cache: cache) { [weak self] response in
+            users.authenticate(cache: cache) { [weak self] response in
                 guard let handler = self else { return completionHandler(.failure(CustomErrors.runTimeError("`weak` reference was released."))) }
                 handler.settings.queues.response.async {
                     completionHandler(response.map { ($0, handler) })
@@ -110,7 +110,7 @@ public class APIHandler {
         
     /// Log out.
     public func invalidate(completionHandler: @escaping (Result<Bool, Error>) -> Void) throws {
-        accounts.logOut { [weak self] in
+        users.logOut { [weak self] in
             // empty response if needed.
             if (try? $0.get()) == true { self?.response = nil }
             completionHandler($0)
@@ -125,7 +125,7 @@ public class APIHandler {
 
     // MARK: Handlers
     /// `UserHandler` endpoints manager.
-    public private(set) lazy var accounts: UserHandler = .init(handler: self)
+    public private(set) lazy var users: UserHandler = .init(handler: self)
     /// `CommentHandler` endpoints manager.
     public private(set) lazy var comments: CommentHandler = .init(handler: self)
     /// `FeedHandler` endpoints manager.
@@ -133,11 +133,11 @@ public class APIHandler {
     /// `MediaHandler` endpoints manager.
     public private(set) lazy var media: MediaHandler = .init(handler: self)
     /// `MessageHandler` endpoints manager.
-    /*var messages: MessageHandler { return MessageHandler(handler: self) }
+    public private(set) lazy var messages: MessageHandler = .init(handler: self)
     /// `ProfileHandler` endpoints manager.
-    var profiles: ProfileHandler { return ProfileHandler(handler: self) }
+    public private(set) lazy var profile: ProfileHandler = .init(handler: self)
     /// `StoryHandler` endpoints manager.
-    var stories: StoryHandler { return StoryHandler(handler: self) }*/
+    public private(set) lazy var stories: StoryHandler = .init(handler: self)
 }
 
 // MARK: Other

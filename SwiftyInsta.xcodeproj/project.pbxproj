@@ -84,6 +84,9 @@
 		E0F49BA122E49E34004C3E7F /* FeedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FD21A99CD400BD9EFB /* FeedHandler.swift */; };
 		E0F49BA222E4A53D004C3E7F /* UserHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FE21A99CD400BD9EFB /* UserHandler.swift */; };
 		E0F49BA322E4D864004C3E7F /* MediaHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE440221A99CD400BD9EFB /* MediaHandler.swift */; };
+		E0F49BA422E4F0D3004C3E7F /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE440021A99CD400BD9EFB /* MessageHandler.swift */; };
+		E0F49BA522E505CF004C3E7F /* StoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A95BEE21AC0B9800839250 /* StoryHandler.swift */; };
+		E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FF21A99CD400BD9EFB /* ProfileHandler.swift */; };
 		E8314D5E2210652400D13BEA /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
 /* End PBXBuildFile section */
 
@@ -526,8 +529,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1104CD0D218062DD00F855BA /* AndroidDeviceModel.swift in Sources */,
+				E0F49BA422E4F0D3004C3E7F /* MessageHandler.swift in Sources */,
 				114B848421871E9B00F84161 /* PhoneVerificationSettingsModel.swift in Sources */,
 				1143E0C821809E7700D9FF31 /* ResponseTypes.swift in Sources */,
+				E0F49BA522E505CF004C3E7F /* StoryHandler.swift in Sources */,
 				11E148D82209F3300068C8AF /* HttpSettings.swift in Sources */,
 				11C487F8219B2A3B00E952A1 /* UserInfoModel.swift in Sources */,
 				11F57CC4229D2E78001A1C0A /* BlockedUsersModel.swift in Sources */,
@@ -535,6 +540,7 @@
 				112022982188AACF00CA58BA /* BaseStatusResponseModel.swift in Sources */,
 				117AACE922033B48008913FF /* TwoFactorEnums.swift in Sources */,
 				117E65A221962ED5004626CC /* UserFeedModel.swift in Sources */,
+				E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */,
 				114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */,
 				1165DF9F22DB53B200D87D15 /* RequestReelsMediaFeed.swift in Sources */,
 				115CA6DF21B0214800769B00 /* EditProfileModel.swift in Sources */,

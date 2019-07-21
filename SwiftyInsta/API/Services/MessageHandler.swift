@@ -9,131 +9,59 @@
 
 import Foundation
 
-public protocol MessageHandlerProtocol {
-    func getDirectInbox(completion: @escaping (InstagramResult<DirectInboxModel>) -> ()) throws
-    func sendDirect(to userId: String, in threadId: String, with text: String, completion: @escaping (InstagramResult<DirectSendMessageResponseModel>) -> ()) throws
-    func getDirectThreadById(threadId: String, completion: @escaping (InstagramResult<ThreadModel>) -> ()) throws
-    func getRecentDirectRecipients(completion: @escaping (InstagramResult<RecentRecipientsModel>) -> ()) throws
-    func getRankedDirectRecipients(completion: @escaping (InstagramResult<RankedRecipientsModel>) -> ()) throws
+public enum MessageRecipients {
+    case users([Int])
+    case thread(String)
 }
 
 public class MessageHandler: Handler {
-    func getDirectInbox(completion: @escaping (InstagramResult<DirectInboxModel>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getDirectInbox(), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(DirectInboxModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
+    /// Get the user's inbox.
+    public func inbox(completionHandler: @escaping (Result<DirectInboxModel, Error>) -> Void) {
+        requests.decodeAsync(DirectInboxModel.self,
+                             method: .get,
+                             url: try! URLs.getDirectSendTextMessage(),
+                             completionHandler: completionHandler)
     }
-    
-    func sendDirect(to userIds: String, in threadIds: String, with text: String, completion: @escaping (InstagramResult<DirectSendMessageResponseModel>) -> ()) throws {
-        var content = [
-            "text": text,
-            "action": "send_item"
-        ]
-        
-        if !userIds.isEmpty {
-            content.updateValue("[[\(userIds)]]", forKey: "recipient_users")
-        } else {
-            throw CustomErrors.unExpected("Please provide at least one recipient.")
+
+    /// Send message to user(s) in thred.
+    public func send(_ text: String,
+                     to receipients: MessageRecipients,
+                     completionHandler: @escaping (Result<DirectSendMessageResponseModel, Error>) -> Void) {
+        var body = ["text": text,
+                    "action": "send_item"]
+        switch receipients {
+        case .users(let users): body["receipient_users"] = "[[\(users.map(String.init).joined(separator: ","))]]"
+        case .thread(let thread): body["thread_ids"] = "[\(thread)]"
         }
         
-        if !threadIds.isEmpty {
-            content.updateValue("[\(threadIds)]", forKey: "thread_ids")
-        }
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getDirectSendTextMessage(), body: content, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(DirectSendMessageResponseModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
+        requests.decodeAsync(DirectSendMessageResponseModel.self,
+                             method: .get,
+                             url: try! URLs.getDirectSendTextMessage(),
+                             body: .parameters(body),
+                             completionHandler: completionHandler)
     }
     
-    func getDirectThreadById(threadId: String, completion: @escaping (InstagramResult<ThreadModel>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getDirectThread(id: threadId), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    if response?.statusCode == 404 {
-                        let error = CustomErrors.unExpected("thread not found.")
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    } else {
-                        do {
-                            let value =  try decoder.decode(ThreadModel.self, from: data)
-                            completion(Return.success(value: value))
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil))
-                        }
-                    }
-                }
-            }
-        }
+    /// Get thread by id.
+    public func `in`(thread: String, completionHandler: @escaping (Result<ThreadModel, Error>) -> Void) {
+        requests.decodeAsync(ThreadModel.self,
+                             method: .get,
+                             url: try! URLs.getDirectThread(id: thread),
+                             completionHandler: completionHandler)
     }
-    
-    func getRecentDirectRecipients(completion: @escaping (InstagramResult<RecentRecipientsModel>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getRecentDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(RecentRecipientsModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
+
+    /// Get recent receipients.
+    public func recent(completionHandler: @escaping (Result<RecentRecipientsModel, Error>) -> Void) {
+        requests.decodeAsync(RecentRecipientsModel.self,
+                             method: .get,
+                             url: try! URLs.getRecentDirectRecipients(),
+                             completionHandler: completionHandler)
     }
-    
-    func getRankedDirectRecipients(completion: @escaping (InstagramResult<RankedRecipientsModel>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getRankedDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(RankedRecipientsModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
+
+    /// Get ranked receipients.
+    public func ranked(completionHandler: @escaping (Result<RankedRecipientsModel, Error>) -> Void) {
+        requests.decodeAsync(RankedRecipientsModel.self,
+                             method: .get,
+                             url: try! URLs.getRankedDirectRecipients(),
+                             completionHandler: completionHandler)
     }
 }
