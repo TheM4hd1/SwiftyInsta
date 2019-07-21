@@ -3,6 +3,7 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi Makhdumi on 11/23/18.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
@@ -12,28 +13,23 @@ public protocol MediaHandlerProtocol {
     func getUserMedia(user: UserReference,
                       paginationParameters: PaginationParameters,
                       updateHandler: PaginationResponse<UserFeedModel>?,
-                      completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws
-    func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws
+                      completionHandler: @escaping PaginationResponse<InstagramResult<[UserFeedModel]>>) throws
+    func getMediaInfo(mediaId: String, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws
     func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
     func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
-    func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
-    func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws
-    func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws
-    func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws
-    func editMedia(mediaId: String, caption: String, tags: UserTags, completion: @escaping (Result<MediaModel>) -> ()) throws
-    func getMediaLikers(mediaId: String, completion: @escaping (Result<MediaLikersModel>) -> ()) throws
+    func uploadPhoto(photo: InstaPhoto, completion: @escaping (InstagramResult<UploadPhotoResponse>) -> ()) throws
+    func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (InstagramResult<UploadPhotoAlbumResponse>) -> ()) throws
+    func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws
+    func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (InstagramResult<DeleteMediaResponse>) -> ()) throws
+    func editMedia(mediaId: String, caption: String, tags: UserTags, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws
+    func getMediaLikers(mediaId: String, completion: @escaping (InstagramResult<MediaLikersModel>) -> ()) throws
 }
 
-class MediaHandler: MediaHandlerProtocol {
-    
-    static let shared = MediaHandler()
-    
-    private init() {}
-    
+public class MediaHandler: Handler {
     func getUserMedia(user: UserReference,
                       paginationParameters: PaginationParameters,
                       updateHandler: PaginationResponse<UserFeedModel>?,
-                      completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws {
+                      completionHandler: @escaping PaginationResponse<InstagramResult<[UserFeedModel]>>) throws {
         switch user {
         case .username(let username):
             // fetch username.
@@ -45,7 +41,7 @@ class MediaHandler: MediaHandlerProtocol {
             }
         case .pk(let pk):
             // load user media directly.
-            PaginationHandler.getPages(UserFeedModel.self,
+            PaginationHelper.getPages(UserFeedModel.self,
                                        for: paginationParameters,
                                        at: { try URLs.getUserFeedUrl(userPk: pk, maxId: $0.nextMaxId ?? "") },
                                        updateHandler: updateHandler,
@@ -53,7 +49,7 @@ class MediaHandler: MediaHandlerProtocol {
         }
     }
     
-    func getMediaInfo(mediaId: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+    func getMediaInfo(mediaId: String, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws {
         HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getMediaUrl(mediaId: mediaId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
@@ -122,7 +118,7 @@ class MediaHandler: MediaHandlerProtocol {
         }
     }
     
-    func uploadPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
+    func uploadPhoto(photo: InstaPhoto, completion: @escaping (InstagramResult<UploadPhotoResponse>) -> ()) throws {
         let uploadId = HandlerSettings.shared.request!.generateUploadId()
         var content = Data()
         content.append(string: "--\(uploadId)\n")
@@ -228,7 +224,7 @@ class MediaHandler: MediaHandlerProtocol {
         }
     }
     
-    func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (Result<UploadPhotoAlbumResponse>) -> ()) throws {
+    func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (InstagramResult<UploadPhotoAlbumResponse>) -> ()) throws {
         getUploadIdsForPhotoAlbum(uploadIds: [], photos: photos) { [weak self] (uploadIds) in
             self!.configureMediaAlbum(uploadIds: uploadIds, caption: caption, completion: { (value, error) in
                 if let error = error {
@@ -362,7 +358,7 @@ class MediaHandler: MediaHandlerProtocol {
     // Make sure file is valid (correct format, codecs, width, height and aspect ratio)
     // also its important to provide fileName.extenstion in InstaVideo
     // to convert video to data you need to pass file's URL to Data.init(contentsOf: URL)
-    func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (Result<MediaModel>) -> ()) throws {
+    func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws {
         let url = try! URLs.getUploadVideoUrl()
         let uploadId = HandlerSettings.shared.request!.generateUploadId()
         var content = Data()
@@ -515,7 +511,7 @@ class MediaHandler: MediaHandlerProtocol {
         
     }
     
-    private func configureUploadVideo(video: InstaVideo, uploadId: String, caption: String, completion: @escaping (Result<MediaModel>) -> ()) {
+    private func configureUploadVideo(video: InstaVideo, uploadId: String, caption: String, completion: @escaping (InstagramResult<MediaModel>) -> ()) {
         let url = try! URLs.getConfigureMediaUrl()
         let header = [Headers.HeaderContentTypeKey: Headers.HeaderContentTypeApplicationFormValue,
                       "Host": "i.instagram.com"]
@@ -557,7 +553,7 @@ class MediaHandler: MediaHandlerProtocol {
         }
     }
     
-    func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (Result<DeleteMediaResponse>) -> ()) throws {
+    func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (InstagramResult<DeleteMediaResponse>) -> ()) throws {
         let content = [
             "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
             "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
@@ -583,7 +579,7 @@ class MediaHandler: MediaHandlerProtocol {
         }
     }
     
-    func editMedia(mediaId: String, caption: String, tags: UserTags, completion: @escaping (Result<MediaModel>) -> ()) throws {
+    func editMedia(mediaId: String, caption: String, tags: UserTags, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws {
         let encoder = JSONEncoder()
         let tagPayload = try! encoder.encode(tags)
         
@@ -626,7 +622,7 @@ class MediaHandler: MediaHandlerProtocol {
         })
     }
     
-    func getMediaLikers(mediaId: String, completion: @escaping (Result<MediaLikersModel>) -> ()) throws {
+    func getMediaLikers(mediaId: String, completion: @escaping (InstagramResult<MediaLikersModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getMediaLikersUrl(mediaId: mediaId), body: [:], header: [:], completion: { (data, response, error) in
             if let error = error {

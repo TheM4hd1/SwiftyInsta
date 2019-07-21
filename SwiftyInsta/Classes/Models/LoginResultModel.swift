@@ -3,6 +3,7 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi on 10/25/18.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
@@ -17,4 +18,5 @@ public enum LoginResultModel {
     case badSecurityCode
     case exception
     case responseError
+    case pending
 }

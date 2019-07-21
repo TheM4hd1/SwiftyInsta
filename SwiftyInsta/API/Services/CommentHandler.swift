@@ -3,144 +3,85 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi Makhdumi on 11/24/18.
-//  Modified by Stefano Bertagno on 7/19/19.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
 import Foundation
 
-public protocol CommentHandlerProtocol {
-    func getMediaComments(mediaId: String,
-                          paginationParameters: PaginationParameters,
-                          updateHandler: PaginationResponse<MediaCommentsResponseModel>?,
-                          completionHandler: @escaping PaginationResponse<Result<[MediaCommentsResponseModel]>>) throws
-    func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws
-    func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws
-    func reportComment(mediaId: String, commentId: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
-}
-
-class CommentHandler: CommentHandlerProtocol {
-    static let shared = CommentHandler()
-    
-    private init() {
-        
+public class CommentHandler: Handler {
+    /// Fetch all comments for media.
+    public func `for`(media mediaId: String,
+                      with paginationParameters: PaginationParameters,
+                      updateHandler: PaginationUpdateHandler<MediaCommentsResponseModel>?,
+                      completionHandler: @escaping PaginationCompletionHandler<MediaCommentsResponseModel>) {
+        pages.fetch(MediaCommentsResponseModel.self,
+                    with: paginationParameters,
+                    at: { try URLs.getComments(for: mediaId, maxId: $0.nextMaxId ?? "") },
+                    updateHandler: updateHandler,
+                    completionHandler: completionHandler)
     }
     
-    func getMediaComments(mediaId: String,
-                          paginationParameters: PaginationParameters,
-                          updateHandler: PaginationResponse<MediaCommentsResponseModel>?,
-                          completionHandler: @escaping PaginationResponse<Result<[MediaCommentsResponseModel]>>) throws {
-        PaginationHandler.getPages(MediaCommentsResponseModel.self,
-                                   for: paginationParameters,
-                                   at: { try URLs.getComments(for: mediaId, maxId: $0.nextMaxId ?? "") },
-                                   updateHandler: updateHandler,
-                                   completionHandler: completionHandler)
-    }
-    
-    func addComment(mediaId: String, comment text: String, completion: @escaping (Result<CommentResponse>) -> ()) throws {
-        
-        guard
-            let device = HandlerSettings.shared.device,
-            let pk = HandlerSettings.shared.user?.loggedInUser.pk,
-            let csrfToken = HandlerSettings.shared.user?.csrfToken
-        else {return}
-        
-        let content = [
-            "user_breadcrumb": String(Date().millisecondsSince1970),
-            "idempotence_token": UUID.init().uuidString,
-            "_uuid": device.deviceGuid.uuidString,
-            "_uid": String(pk),
-            "_csrftoken": csrfToken,
-            "comment_text": text,
-            "containermodule": "comments_feed_timeline",
-            "radio_type": "wifi-none"
-        ]
+    /// Add comment to media.
+    public func add(_ comment: String, to mediaId: String, completionHandler: @escaping (Result<CommentResponse, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        let content = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                       "_uid": storage.dsUserId,
+                       "_csrftoken": storage.csrfToken,
+                       "user_breadcrumb": String(Date().millisecondsSince1970),
+                       "idempotence_token": UUID.init().uuidString,
+                       "comment_text": comment,
+                       "containermodule": "comments_feed_timeline",
+                       "radio_type": "wifi-none"]
         
         let encoder = JSONEncoder()
         let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
-        // Creating Post Request Body
         let signature = "\(hash).\(payload)"
         let body: [String: Any] = [
             Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
             Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
         ]
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getPostCommentUrl(mediaId: mediaId), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(CommentResponse.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
-    }
-    
-    func deleteComment(mediaId: String, commentPk: String, completion: @escaping (Bool) -> ()) throws {
-        let content = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken
-        ]
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentPk), body: content, header: [:]) { (data, response, error) in
-            if error != nil {
-                completion(false)
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let status = try decoder.decode(BaseStatusResponseModel.self, from: data)
-                        completion(status.isOk())
-                    } catch {
-                        completion(false)
-                    }
-                }
-            }
-        }
-    }
-    
-    func reportComment(mediaId: String, commentId: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws {
-        let content = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "reason": "1",
-            "comment_id": commentId,
-            "media_id": mediaId
-        ]
         
-        let url = try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId)
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, res, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if res?.statusCode == 200 {
-                    if let data = data {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let value = try decoder.decode(BaseStatusResponseModel.self, from: data)
-                            completion(Return.success(value: value))
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil))
-                        }
-                    }
-                } else {
-                    completion(Return.fail(error: nil, response: .unknown, value: nil))
-                }
-            }
+        requests.decodeAsync(CommentResponse.self,
+                             method: .post,
+                             url: try! URLs.getPostCommentUrl(mediaId: mediaId),
+                             body: .parameters(body),
+                             completionHandler: completionHandler)
+    }
+
+    /// Delete a comment.
+    public func delete(comment commentId: String, in mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
+        let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                    "_uid": storage.dsUserId,
+                    "_csrftoken": storage.csrfToken]
+        requests.decodeAsync(BaseStatusResponseModel.self,
+                             method: .post,
+                             url: try! URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentId),
+                             body: .parameters(body),
+                             completionHandler: { completionHandler($0.map { $0.isOk() }) })
+    }
+
+    /// Report a comment.
+    public func report(comment commentId: String, in mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                    "_uid": storage.dsUserId,
+                    "_csrftoken": storage.csrfToken,
+                    "reason": "1",
+                    "comment_id": commentId,
+                    "media_id": mediaId]
+        requests.decodeAsync(BaseStatusResponseModel.self,
+                             method: .post,
+                             url: try! URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId),
+                             body: .parameters(body),
+                             completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
 }

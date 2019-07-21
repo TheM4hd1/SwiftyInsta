@@ -3,6 +3,7 @@
 //  SwiftyInsta
 //
 //  Modified by Stefano Bertagno on 11/3/18.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
@@ -33,5 +34,3 @@ public class PaginationParameters {
         fatalError("`maxPagesToLoad(maxPages:)` was removed.")
     }
 }
-
-public typealias PaginationResponse<R> = (_ response: R, _ parameters: PaginationParameters) -> Void

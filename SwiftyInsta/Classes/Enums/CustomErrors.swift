@@ -3,6 +3,7 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi on 10/24/18.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
@@ -11,6 +12,7 @@ import Foundation
 public enum CustomErrors: Error {
     case urlCreationFaild(_ description: String)
     case runTimeError(_ description: String)
+    case weakReferenceReleased
     case invalidCredentials
     case twoFactorAuthentication
     case invalidTwoFactorCode
@@ -28,6 +30,8 @@ extension CustomErrors: LocalizedError {
             return description
         case .runTimeError(let description):
             return description
+        case .weakReferenceReleased:
+            return "`weak` reference was released."
         case .invalidCredentials:
             return "Invalid Credentials."
         case .unExpected(let description):

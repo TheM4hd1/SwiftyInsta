@@ -3,33 +3,28 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi on 11/26/18.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
 import Foundation
 
 public protocol StoryHandlerProtocol {
-    func getStoryFeed(completion: @escaping (Result<StoryFeedModel>) -> ()) throws
-    func getUserStory(userId: Int, completion: @escaping (Result<TrayModel>) -> ()) throws
-    func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws
-    func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
-    func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws
-    func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws
-    func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (Result<Bool>) -> ()) throws
+    func getStoryFeed(completion: @escaping (InstagramResult<StoryFeedModel>) -> ()) throws
+    func getUserStory(userId: Int, completion: @escaping (InstagramResult<TrayModel>) -> ()) throws
+    func getUserStoryReelFeed(userId: Int, completion: @escaping (InstagramResult<StoryReelFeedModel>) -> ()) throws
+    func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (InstagramResult<UploadPhotoResponse>) -> ()) throws
+    func getStoryViewers(storyPk: String?, completion: @escaping (InstagramResult<StoryViewers>) -> ()) throws
+    func getStoryHighlights(userPk: Int, completion: @escaping (InstagramResult<StoryHighlights>) -> ()) throws
+    func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (InstagramResult<Bool>) -> ()) throws
     /**
      You can decode `Data` using `JSONDecoder`, it's the returned data from server.
      */
-    func getReelsMediaFeed(feedList: [String], completion: @escaping (Result<StoryReelsFeedModel>, Data?) -> ()) throws
+    func getReelsMediaFeed(feedList: [String], completion: @escaping (InstagramResult<StoryReelsFeedModel>, Data?) -> ()) throws
 }
 
-class StoryHandler: StoryHandlerProtocol {
-    static let shared = StoryHandler()
-    
-    private init() {
-        
-    }
-    
-    func getStoryFeed(completion: @escaping (Result<StoryFeedModel>) -> ()) throws {
+public class StoryHandler: Handler {
+    func getStoryFeed(completion: @escaping (InstagramResult<StoryFeedModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getStoryFeedUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -52,7 +47,7 @@ class StoryHandler: StoryHandlerProtocol {
         }
     }
     
-    func getUserStory(userId: Int, completion: @escaping (Result<TrayModel>) -> ()) throws {
+    func getUserStory(userId: Int, completion: @escaping (InstagramResult<TrayModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getUserStoryUrl(userId: userId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -75,7 +70,7 @@ class StoryHandler: StoryHandlerProtocol {
         }
     }
     
-    func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws {
+    func getUserStoryReelFeed(userId: Int, completion: @escaping (InstagramResult<StoryReelFeedModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getUserStoryFeed(userId: userId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -98,7 +93,7 @@ class StoryHandler: StoryHandlerProtocol {
         }
     }
     
-    func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws {
+    func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (InstagramResult<UploadPhotoResponse>) -> ()) throws {
         let uploadId = HandlerSettings.shared.request!.generateUploadId()
         var content = Data()
         content.append(string: "--\(uploadId)\n")
@@ -191,7 +186,7 @@ class StoryHandler: StoryHandlerProtocol {
         }
     }
     
-    func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws {
+    func getStoryViewers(storyPk: String?, completion: @escaping (InstagramResult<StoryViewers>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getStoryViewersUrl(pk: storyPk!), body: [:], header: [:]) { (data, response, err) in
             if let err = err {
@@ -217,7 +212,7 @@ class StoryHandler: StoryHandlerProtocol {
         }
     }
     
-    func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws {
+    func getStoryHighlights(userPk: Int, completion: @escaping (InstagramResult<StoryHighlights>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getStoryHighlightsUrl(userPk: userPk), body: [:], header: [:]) { (data, res, error) in
             if let error = error {
@@ -237,7 +232,7 @@ class StoryHandler: StoryHandlerProtocol {
         }
     }
     
-    func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (Result<Bool>) -> ()) throws {
+    func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (InstagramResult<Bool>) -> ()) throws {
         var reels: [String: [String]] = [:]
         let maxSeenAt = Int(Date().timeIntervalSince1970)
         var seenAt = Int(maxSeenAt) - (3 * items.count)
@@ -300,7 +295,7 @@ class StoryHandler: StoryHandlerProtocol {
         }
     }
     
-    func getReelsMediaFeed(feedList: [String], completion: @escaping (Result<StoryReelsFeedModel>, Data?) -> ()) throws {
+    func getReelsMediaFeed(feedList: [String], completion: @escaping (InstagramResult<StoryReelsFeedModel>, Data?) -> ()) throws {
         let url = try URLs.getReelsMediaFeed()
         guard let httpHelper = HandlerSettings.shared.httpHelper else { return }
         guard let user = HandlerSettings.shared.user else { return }

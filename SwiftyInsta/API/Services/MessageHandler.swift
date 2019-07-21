@@ -3,27 +3,22 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi Makhdumi on 11/23/18.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
 import Foundation
 
 public protocol MessageHandlerProtocol {
-    func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws
-    func sendDirect(to userId: String, in threadId: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws
-    func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws
-    func getRecentDirectRecipients(completion: @escaping (Result<RecentRecipientsModel>) -> ()) throws
-    func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws
+    func getDirectInbox(completion: @escaping (InstagramResult<DirectInboxModel>) -> ()) throws
+    func sendDirect(to userId: String, in threadId: String, with text: String, completion: @escaping (InstagramResult<DirectSendMessageResponseModel>) -> ()) throws
+    func getDirectThreadById(threadId: String, completion: @escaping (InstagramResult<ThreadModel>) -> ()) throws
+    func getRecentDirectRecipients(completion: @escaping (InstagramResult<RecentRecipientsModel>) -> ()) throws
+    func getRankedDirectRecipients(completion: @escaping (InstagramResult<RankedRecipientsModel>) -> ()) throws
 }
 
-class MessageHandler: MessageHandlerProtocol {
-    static let shared = MessageHandler()
-    
-    private init() {
-        
-    }
-    
-    func getDirectInbox(completion: @escaping (Result<DirectInboxModel>) -> ()) throws {
+public class MessageHandler: Handler {
+    func getDirectInbox(completion: @escaping (InstagramResult<DirectInboxModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getDirectInbox(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -43,7 +38,7 @@ class MessageHandler: MessageHandlerProtocol {
         }
     }
     
-    func sendDirect(to userIds: String, in threadIds: String, with text: String, completion: @escaping (Result<DirectSendMessageResponseModel>) -> ()) throws {
+    func sendDirect(to userIds: String, in threadIds: String, with text: String, completion: @escaping (InstagramResult<DirectSendMessageResponseModel>) -> ()) throws {
         var content = [
             "text": text,
             "action": "send_item"
@@ -77,7 +72,7 @@ class MessageHandler: MessageHandlerProtocol {
         }
     }
     
-    func getDirectThreadById(threadId: String, completion: @escaping (Result<ThreadModel>) -> ()) throws {
+    func getDirectThreadById(threadId: String, completion: @escaping (InstagramResult<ThreadModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getDirectThread(id: threadId), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -102,7 +97,7 @@ class MessageHandler: MessageHandlerProtocol {
         }
     }
     
-    func getRecentDirectRecipients(completion: @escaping (Result<RecentRecipientsModel>) -> ()) throws {
+    func getRecentDirectRecipients(completion: @escaping (InstagramResult<RecentRecipientsModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getRecentDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -122,7 +117,7 @@ class MessageHandler: MessageHandlerProtocol {
         }
     }
     
-    func getRankedDirectRecipients(completion: @escaping (Result<RankedRecipientsModel>) -> ()) throws {
+    func getRankedDirectRecipients(completion: @escaping (InstagramResult<RankedRecipientsModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getRankedDirectRecipients(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {

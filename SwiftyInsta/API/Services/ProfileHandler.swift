@@ -3,29 +3,24 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi Makhdumi on 11/23/18.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
 import Foundation
 
 public protocol ProfileHandlerProtocol {
-    func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
-    func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws
-    func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws
-    func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (Result<EditProfileModel>) -> ()) throws
-    func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws
-    func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws
-    func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (Result<EditProfileModel>) -> ()) throws
+    func setAccountPublic(completion: @escaping (InstagramResult<ProfilePrivacyResponseModel>) -> ()) throws
+    func setAccountPrivate(completion: @escaping (InstagramResult<ProfilePrivacyResponseModel>) -> ()) throws
+    func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (InstagramResult<BaseStatusResponseModel>) -> ()) throws
+    func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String, completion: @escaping (InstagramResult<EditProfileModel>) -> ()) throws
+    func editBiography(text bio: String, completion: @escaping (InstagramResult<Bool>) -> ()) throws
+    func removeProfilePicture(completion: @escaping (InstagramResult<EditProfileModel>) -> ()) throws
+    func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (InstagramResult<EditProfileModel>) -> ()) throws
 }
 
-class ProfileHandler: ProfileHandlerProtocol {
-    static let shared = ProfileHandler()
-    
-    private init() {
-        
-    }
-    
-    func setAccountPublic(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
+public class ProfileHandler: Handler {
+    func setAccountPublic(completion: @escaping (InstagramResult<ProfilePrivacyResponseModel>) -> ()) throws {
         let encoder = JSONEncoder()
         
         guard
@@ -65,7 +60,7 @@ class ProfileHandler: ProfileHandlerProtocol {
         }
     }
     
-    func setAccountPrivate(completion: @escaping (Result<ProfilePrivacyResponseModel>) -> ()) throws {
+    func setAccountPrivate(completion: @escaping (InstagramResult<ProfilePrivacyResponseModel>) -> ()) throws {
         let encoder = JSONEncoder()
         
         guard
@@ -106,7 +101,7 @@ class ProfileHandler: ProfileHandlerProtocol {
         }
     }
     
-    func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (Result<BaseStatusResponseModel>) -> ()) throws {
+    func setNewPassword(oldPassword: String, newPassword: String, completion: @escaping (InstagramResult<BaseStatusResponseModel>) -> ()) throws {
         
         guard
             let device = HandlerSettings.shared.device,
@@ -148,7 +143,7 @@ class ProfileHandler: ProfileHandlerProtocol {
         }
     }
 
-    func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String = "", completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+    func editProfile(name: String, biography: String, url: String, email: String, phone: String, gender: GenderTypes, newUsername: String = "", completion: @escaping (InstagramResult<EditProfileModel>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getEditProfileUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -215,7 +210,7 @@ class ProfileHandler: ProfileHandlerProtocol {
         }
     }
     
-    func editBiography(text bio: String, completion: @escaping (Result<Bool>) -> ()) throws {
+    func editBiography(text bio: String, completion: @escaping (InstagramResult<Bool>) -> ()) throws {
         
         guard
             let device = HandlerSettings.shared.device,
@@ -257,7 +252,7 @@ class ProfileHandler: ProfileHandlerProtocol {
         }
     }
     
-    func removeProfilePicture(completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+    func removeProfilePicture(completion: @escaping (InstagramResult<EditProfileModel>) -> ()) throws {
         
         guard
         let device = HandlerSettings.shared.device,
@@ -296,7 +291,7 @@ class ProfileHandler: ProfileHandlerProtocol {
         }
     }
     
-    func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (Result<EditProfileModel>) -> ()) throws {
+    func uploadProfilePicture(photo: InstaPhoto, completion: @escaping (InstagramResult<EditProfileModel>) -> ()) throws {
         let uploadId = HandlerSettings.shared.request!.generateUploadId()
         var content = Data()
         content.append(string: "--\(uploadId)\n")
