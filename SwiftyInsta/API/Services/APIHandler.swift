@@ -125,15 +125,15 @@ public class APIHandler {
 
     // MARK: Handlers
     /// `UserHandler` endpoints manager.
-    private(set) lazy var accounts: UserHandler = .init(handler: self)
+    public private(set) lazy var accounts: UserHandler = .init(handler: self)
     /// `CommentHandler` endpoints manager.
-    private(set) lazy var comments: CommentHandler = .init(handler: self)
+    public private(set) lazy var comments: CommentHandler = .init(handler: self)
     /// `FeedHandler` endpoints manager.
-    /*var feeds: FeedHandler { return FeedHandler(handler: self) }
+    public private(set) lazy var feeds: FeedHandler = .init(handler: self)
     /// `MediaHandler` endpoints manager.
-    var media: MediaHandler { return MediaHandler(handler: self) }
+    public private(set) lazy var media: MediaHandler = .init(handler: self)
     /// `MessageHandler` endpoints manager.
-    var messages: MessageHandler { return MessageHandler(handler: self) }
+    /*var messages: MessageHandler { return MessageHandler(handler: self) }
     /// `ProfileHandler` endpoints manager.
     var profiles: ProfileHandler { return ProfileHandler(handler: self) }
     /// `StoryHandler` endpoints manager.

@@ -9,117 +9,88 @@
 
 import Foundation
 
-public protocol MediaHandlerProtocol {
-    func getUserMedia(user: UserReference,
-                      paginationParameters: PaginationParameters,
-                      updateHandler: PaginationResponse<UserFeedModel>?,
-                      completionHandler: @escaping PaginationResponse<InstagramResult<[UserFeedModel]>>) throws
-    func getMediaInfo(mediaId: String, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws
-    func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
-    func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws
-    func uploadPhoto(photo: InstaPhoto, completion: @escaping (InstagramResult<UploadPhotoResponse>) -> ()) throws
-    func uploadPhotoAlbum(photos: [InstaPhoto], caption: String, completion: @escaping (InstagramResult<UploadPhotoAlbumResponse>) -> ()) throws
-    func uploadVideo(video: InstaVideo, imageThumbnail: InstaPhoto, caption: String, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws
-    func deleteMedia(mediaId: String, mediaType: MediaTypes, completion: @escaping (InstagramResult<DeleteMediaResponse>) -> ()) throws
-    func editMedia(mediaId: String, caption: String, tags: UserTags, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws
-    func getMediaLikers(mediaId: String, completion: @escaping (InstagramResult<MediaLikersModel>) -> ()) throws
-}
-
 public class MediaHandler: Handler {
-    func getUserMedia(user: UserReference,
-                      paginationParameters: PaginationParameters,
-                      updateHandler: PaginationResponse<UserFeedModel>?,
-                      completionHandler: @escaping PaginationResponse<InstagramResult<[UserFeedModel]>>) throws {
+    /// Get user media.
+    public func media(byUser user: UserReference,
+                      with paginationParameters: PaginationParameters,
+                      updateHandler: PaginationUpdateHandler<UserFeedModel>?,
+                      completionHandler: @escaping PaginationCompletionHandler<UserFeedModel>) {
         switch user {
-        case .username(let username):
+        case .username:
             // fetch username.
-            try UserHandler.shared.getUser(username: username) { [weak self] in
-                try? self?.getUserMedia(user: .pk($0.value?.pk ?? 0),
-                                        paginationParameters: paginationParameters,
-                                        updateHandler: updateHandler,
-                                        completionHandler: completionHandler)
+            self.handler.accounts.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased), paginationParameters)
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.media(byUser: .pk(user!.pk!),
+                                  with: paginationParameters,
+                                  updateHandler: updateHandler,
+                                  completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error), paginationParameters)
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")), paginationParameters)
+                }
             }
         case .pk(let pk):
-            // load user media directly.
-            PaginationHelper.getPages(UserFeedModel.self,
-                                       for: paginationParameters,
-                                       at: { try URLs.getUserFeedUrl(userPk: pk, maxId: $0.nextMaxId ?? "") },
-                                       updateHandler: updateHandler,
-                                       completionHandler: completionHandler)
+            // load media directly.
+            pages.fetch(UserFeedModel.self,
+                        with: paginationParameters,
+                        at: { try URLs.getUserFeedUrl(userPk: pk, maxId: $0.nextMaxId ?? "") },
+                        updateHandler: updateHandler,
+                        completionHandler: completionHandler)
         }
     }
     
-    func getMediaInfo(mediaId: String, completion: @escaping (InstagramResult<MediaModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getMediaUrl(mediaId: mediaId), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if response?.statusCode == 200 {
-                    if let data = data {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let media = try decoder.decode(UserFeedModel.self, from: data)
-                            completion(Return.success(value: media.items?.first))
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil))
-                        }
-                    } else {
-                        let error = CustomErrors.unExpected("The data couldn’t be read because it is missing error when decoding JSON.")
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                } else {
-                    let error = CustomErrors.unExpected("Status Code: \(response?.statusCode ?? -1)")
-                    completion(Return.fail(error: error, response: .wrongRequest, value: nil))
-                }
-            }
-        }
-    }
-    
-    func likeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "media_id": mediaId
-        ]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getLikeMediaUrl(mediaId: mediaId), body: body, header: [:]) { (data, response, error) in
-            if error != nil {
-                completion(false)
-            } else {
-                if response?.statusCode == 200 {
-                    completion(true)
-                } else {
-                    completion(false)
-                }
-            }
-        }
+    /// Get media info.
+    public func info(for mediaId: String, completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
+        requests.decodeAsync(MediaModel.self,
+                             method: .get,
+                             url: try! URLs.getMediaUrl(mediaId: mediaId),
+                             completionHandler: completionHandler)
     }
 
-    func unLikeMedia(mediaId: String, completion: @escaping (Bool) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "media_id": mediaId
-        ]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getUnLikeMediaUrl(mediaId: mediaId), body: body, header: [:]) { (data, response, error) in
-            if error != nil {
-                completion(false)
-            } else {
-                if response?.statusCode == 200 {
-                    completion(true)
-                } else {
-                    completion(false)
-                }
-            }
+    /// Like media.
+    public func like(media mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
+        let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                    "_uid": storage.dsUserId,
+                    "_csrftoken": storage.csrfToken,
+                    "media_id": mediaId]
+
+        requests.decodeAsync(BaseStatusResponseModel.self,
+                             method: .post,
+                             url: try! URLs.getLikeMediaUrl(mediaId: mediaId),
+                             body: .parameters(body),
+                             completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
-    
-    func uploadPhoto(photo: InstaPhoto, completion: @escaping (InstagramResult<UploadPhotoResponse>) -> ()) throws {
-        let uploadId = HandlerSettings.shared.request!.generateUploadId()
+
+    /// Unlike media.
+    public func unlike(media mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                    "_uid": storage.dsUserId,
+                    "_csrftoken": storage.csrfToken,
+                    "media_id": mediaId]
+
+        requests.decodeAsync(BaseStatusResponseModel.self,
+                             method: .post,
+                             url: try! URLs.getUnLikeMediaUrl(mediaId: mediaId),
+                             body: .parameters(body),
+                             completionHandler: { completionHandler($0.map { $0.isOk() }) })
+    }
+
+    /// Upload photo.
+    public func upload(photo: InstaPhoto, completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        let uploadId = String(Date().millisecondsSince1970 / 1000)
+        // prepare content.
         var content = Data()
         content.append(string: "--\(uploadId)\n")
         content.append(string: "Content-Type: text/plain; charset=utf-8\n")
@@ -128,11 +99,11 @@ public class MediaHandler: Handler {
         content.append(string: "--\(uploadId)\n")
         content.append(string: "Content-Type: text/plain; charset=utf-8\n")
         content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\n\n")
-        content.append(string: "\(HandlerSettings.shared.device!.deviceGuid.uuidString)\n")
+        content.append(string: "\(handler.settings.device.deviceGuid.uuidString)\n")
         content.append(string: "--\(uploadId)\n")
         content.append(string: "Content-Type: text/plain; charset=utf-8\n")
         content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\n\n")
-        content.append(string: "\(HandlerSettings.shared.user!.csrfToken)\n")
+        content.append(string: "\(storage.csrfToken)\n")
         content.append(string: "--\(uploadId)\n")
         content.append(string: "Content-Type: text/plain; charset=utf-8\n")
         content.append(string: "Content-Disposition: form-data; name=\"image_compression\"\n\n")
@@ -141,41 +112,46 @@ public class MediaHandler: Handler {
         content.append(string: "Content-Transfer-Encoding: binary\n")
         content.append(string: "Content-Type: application/octet-stream\n")
         content.append(string: "Content-Disposition: form-data; name=photo; filename=pending_media_\(uploadId).jpg; filename*=utf-8''pending_media_\(uploadId).jpg\n\n")
-        
+
         let imageData = photo.image.jpegData(compressionQuality: 1)
-        
         content.append(imageData!)
         content.append(string: "\n--\(uploadId)--\n\n")
-        
-        let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-        
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .post, url: try URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let res = try decoder.decode(UploadPhotoResponse.self, from: data)
-                        if res.status! == "ok" {
-                            self!.configureMedia(photo: photo, uploadId: uploadId, caption: photo.caption, completion: { (media, error) in
-                                if let error = error {
-                                    completion(Return.fail(error: error, response: .ok, value: nil))
-                                } else {
-                                    completion(Return.success(value: media))
+        let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
+
+        requests.decodeAsync(UploadPhotoResponse.self,
+                             method: .post,
+                             url: try! URLs.getUploadPhotoUrl(),
+                             body: .data(content),
+                             headers: headers,
+                             deliverOnResponseQueue: false) { [weak self] in
+                                guard let me = self, let handler = me.handler else {
+                                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
                                 }
-                            })
-                        } else {
-                            let error = CustomErrors.unExpected("failed status response from server.)")
-                            completion(Return.fail(error: error, response: .ok, value: nil))
-                        }
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
+                                switch $0 {
+                                case .failure(let error):
+                                    handler.settings.queues.response.async {
+                                        completionHandler(.failure(error))
+                                    }
+                                case .success(let decoded):
+                                    guard decoded.status == "ok" else {
+                                        handler.settings.queues.response.async {
+                                            completionHandler(.failure(CustomErrors.noError))
+                                        }
+                                    }
+                                    me.configure(photo: photo,
+                                                 with: uploadId,
+                                                 caption: photo.caption,
+                                                 completionHandler: completionHandler)
+                                }
         }
+    }
+    
+    /// Set up photo.
+    func configure(photo: InstaPhoto,
+                   with uploadId: String,
+                   caption: String,
+                   completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
+        
     }
     
     fileprivate func configureMedia(photo: InstaPhoto, uploadId: String, caption: String, completion: @escaping (UploadPhotoResponse?, Error?) -> ()) {

@@ -11,10 +11,10 @@ import Foundation
 
 public class CommentHandler: Handler {
     /// Fetch all comments for media.
-    public func `for`(media mediaId: String,
-                      with paginationParameters: PaginationParameters,
-                      updateHandler: PaginationUpdateHandler<MediaCommentsResponseModel>?,
-                      completionHandler: @escaping PaginationCompletionHandler<MediaCommentsResponseModel>) {
+    public func all(forMedia mediaId: String,
+                    with paginationParameters: PaginationParameters,
+                    updateHandler: PaginationUpdateHandler<MediaCommentsResponseModel>?,
+                    completionHandler: @escaping PaginationCompletionHandler<MediaCommentsResponseModel>) {
         pages.fetch(MediaCommentsResponseModel.self,
                     with: paginationParameters,
                     at: { try URLs.getComments(for: mediaId, maxId: $0.nextMaxId ?? "") },
