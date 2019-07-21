@@ -133,4 +133,15 @@ class HttpHelper {
             request.httpBody = data.data(using: String.Encoding.utf8)
         }
     }
+    
+    func setCookies(_ cookiesData: [Data]) {
+        var cookies = [HTTPCookie]()
+        for data in cookiesData {
+            if let cookieFromData = HTTPCookie.loadCookie(using: data) {
+                cookies.append(cookieFromData)
+            }
+        }
+
+        try? HTTPCookieStorage.shared.setCookies(cookies, for: URLs.getInstagramCookieUrl(), mainDocumentURL: nil)
+    }
 }

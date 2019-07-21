@@ -20,6 +20,7 @@ public class UserHandler: Handler {
         // update handler.
         handler.settings.device = cache.device
         handler.response = .init(model: .pending, cache: cache)
+        requests.setCookies(cache.cookies)
         // fetch the user.
         getCurrentUser { [weak self] in
             switch $0 {

@@ -45,18 +45,18 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         self.completionHandler = completionHandler
         // wipe all cookies and wait to load.
         deleteAllCookies { [weak self] in
-            guard let self = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+            guard let me = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
             let url = URL(string: "https://www.instagram.com/accounts/login/")!
             // in some iOS versions, use-agent needs to be different.
             // this use-agent works on iOS 11.4 and iOS 12.0+
             // but it won't work on lower versions.
             if #available(iOS 11.4, *) {
-                self.customUserAgent = "(Linux; Android 5.0; iPhone Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36"
+                me.customUserAgent = "(Linux; Android 5.0; iPhone Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36"
             } else {
-                self.customUserAgent = "(Linux; Android 4.4.2; SCH-I545 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.111 Mobile Safari/537.36"
+                me.customUserAgent = "(Linux; Android 4.4.2; SCH-I545 Build/KOT49H) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.111 Mobile Safari/537.36"
             }
             // load request.
-            self.load(URLRequest(url: url))
+            me.load(URLRequest(url: url))
         }
     }
 

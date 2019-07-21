@@ -36,7 +36,7 @@ public class APIHandler {
         /// The queue used to deliver responses. Defaults to `DispatchQueue.global(qos: .utility)`.
         public var queues: Queues
         /// The device. Defaults to a random device.
-        public var device: AndroidDeviceModel { didSet { headers["User-Agent"] = device.userAgent.string }}
+        public var device: AndroidDeviceModel { didSet { headers[Headers.HeaderUserAgentKey] = device.userAgent.string }}
         /// The url session. Defaults to `.shared`.
         public var session: URLSession
         /// The default headers. Defaults to `[:]`.
@@ -116,21 +116,18 @@ public class APIHandler {
             completionHandler($0)
         }
     }
-}
-
-// MARK: Accessories
-public extension APIHandler {
+    
     // MARK: Helpers
     /// Accessory for `HttpHelper(handler: self)`.
-    internal var requests: HttpHelper { return HttpHelper(handler: self) }
+    internal lazy var requests: HttpHelper = .init(handler: self)
     /// Accessory for `PaginationHelper(handler: self)`.
-    internal var pages: PaginationHelper { return PaginationHelper(handler: self) }
+    internal lazy var pages: PaginationHelper = .init(handler: self)
 
     // MARK: Handlers
     /// `UserHandler` endpoints manager.
-    var accounts: UserHandler { return UserHandler(handler: self) }
+    private(set) lazy var accounts: UserHandler = .init(handler: self)
     /// `CommentHandler` endpoints manager.
-    var comments: CommentHandler { return CommentHandler(handler: self) }
+    private(set) lazy var comments: CommentHandler = .init(handler: self)
     /// `FeedHandler` endpoints manager.
     /*var feeds: FeedHandler { return FeedHandler(handler: self) }
     /// `MediaHandler` endpoints manager.
@@ -147,8 +144,8 @@ public extension APIHandler {
 /// An abstract `struct` holding login references .
 public struct Login {
     public enum Request {
-        @available(*, unavailable, message: "use `Siwa` library instead to manage custom log in. https://github.com/TheM4hd1/Siwa")
-        /// Log in with username and password. **Use the `Siwa` library instead**
+        @available(*, unavailable, message: "use `Siwa` instead to manage custom log in. (https://github.com/TheM4hd1/Siwa)")
+        /// Log in with username and password. **Use  `Siwa` instead ** (https://github.com/TheM4hd1/Siwa)
         case user(String, password: String)
                 
         @available(iOS 11, *)
