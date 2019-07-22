@@ -8,23 +8,23 @@
 
 import Foundation
 
-public protocol PaginationProtocol {
+protocol PaginationProtocol {
     associatedtype Id: Hashable & LosslessStringConvertible
     var autoLoadMoreEnabled: Bool? { get }
     var moreAvailable: Bool? { get }
     var nextMaxId: Id? { get }
     var numResults: Int? { get }
 }
-public extension PaginationProtocol {
+extension PaginationProtocol {
     var autoLoadMoreEnabled: Bool? { return nil }
     var moreAvailable: Bool? { return nil }
     var numResults: Int? { return nil }
 }
 
-public protocol NestedPaginationProtocol: PaginationProtocol {
+protocol NestedPaginationProtocol: PaginationProtocol {
     static var nextMaxIdPath: KeyPath<Self, Id?> { get }
 }
-public extension NestedPaginationProtocol {
+extension NestedPaginationProtocol {
     var nextMaxId: Id? { return self[keyPath: Self.nextMaxIdPath] }
 }
 
@@ -36,6 +36,9 @@ class PaginationHelper: Handler {
     func fetch<M>(_ result: M.Type,
                   with paginationParamaters: PaginationParameters,
                   at url: @escaping (PaginationParameters) throws -> URL,
+                  body: ((PaginationParameters) -> HttpHelper.Body?)? = nil,
+                  headers: ((PaginationParameters) -> [String: String])? = nil,
+                  delay: ClosedRange<Double>? = nil,
                   updateHandler: PaginationUpdateHandler<M>?,
                   completionHandler: @escaping PaginationCompletionHandler<M>) where M: Decodable & PaginationProtocol {
         // check for valid pagination.
@@ -59,7 +62,13 @@ class PaginationHelper: Handler {
                 }
             }
             // fetch values.
-            handler.requests.decodeAsync(M.self, method: .get, url: endpoint, deliverOnResponseQueue: false) { [weak self] in
+            handler.requests.decodeAsync(M.self,
+                                         method: .get,
+                                         url: endpoint,
+                                         body: body?(paginationParamaters),
+                                         headers: headers?(paginationParamaters) ?? [:],
+                                         deliverOnResponseQueue: false,
+                                         delay: delay) { [weak self] in
                 guard let handler = self?.handler else {
                     return completionHandler(.failure(CustomErrors.weakReferenceReleased), paginationParamaters)
                 }
