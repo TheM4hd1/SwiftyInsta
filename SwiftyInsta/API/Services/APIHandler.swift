@@ -166,6 +166,38 @@ public struct Login {
             self.model = model
             self.cache = cache
         }
+        
+        /// Store the response **if valid** in the user's keychain.
+        /// You can save the returned value safely in your `UserDefaults`, or your database
+        /// and then retrieve the `SessionCache` when needed.
+        /// - Returns: The `key` used to store `SessionCache` in your keychahin (the logged user's `pk`). `nil` otherwise.
+        public func persist() -> String? {
+            let encoder = JSONEncoder()
+            
+            guard model == .success,
+                let cache = cache,
+                let dsUserId = cache.storage?.dsUserId,
+                !dsUserId.isEmpty,
+                let data = try? encoder.encode(cache) else { return nil }
+            // update keychain.
+            let keychain = KeychainSwift()
+            keychain.set(data, forKey: dsUserId)
+            return dsUserId
+        }
+    }
+}
+public extension SessionCache {
+    /// Init a `SessionCache` with the data stored in the user's keychain
+    /// and persisted through `Login.Response.persist()`.
+    /// - Parameters:
+    ///     - key:  The `String` returned by `Login.Response.persist()`
+    /// - Returns: The `SessionCache` if valid `Data` is found in the keychain, `nil` otherwise.
+    static func persisted(with key: String) -> SessionCache? {
+        let keychain = KeychainSwift()
+        let decoder = JSONDecoder()
+        guard let data = keychain.getData(key) else { return nil }
+        // decode and return.
+        return try? decoder.decode(SessionCache.self, from: data)
     }
 }
 
