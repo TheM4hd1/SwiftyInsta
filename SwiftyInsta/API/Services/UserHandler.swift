@@ -22,7 +22,7 @@ public class UserHandler: Handler {
         handler.response = .init(model: .pending, cache: cache)
         requests.setCookies(cache.cookies)
         // fetch the user.
-        current { [weak self] in
+        current(delay: 0...0) { [weak self] in
             switch $0 {
             case .success(let model):
                 // update user info alone.
@@ -57,6 +57,10 @@ public class UserHandler: Handler {
 
     // MARK: Endpoints
     public func current(completionHandler: @escaping (Result<CurrentUserModel, Error>) -> Void) {
+        current(delay: nil, completionHandler: completionHandler)
+    }
+    
+    func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<CurrentUserModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -68,6 +72,7 @@ public class UserHandler: Handler {
                              method: .get,
                              url: try! URLs.getCurrentUser(),
                              body: .parameters(body),
+                             delay: delay,
                              completionHandler: completionHandler)
     }
     

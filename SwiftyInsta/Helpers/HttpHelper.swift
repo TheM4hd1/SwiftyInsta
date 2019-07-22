@@ -9,6 +9,7 @@
 
 import Foundation
 
+
 class HttpHelper {
     typealias CompletionResult = Result<(Data?, HTTPURLResponse?), Error>
     typealias CompletionHandler = (CompletionResult) -> Void
@@ -29,8 +30,9 @@ class HttpHelper {
                         body: Body? = nil,
                         headers: [String: String] = [:],
                         deliverOnResponseQueue: Bool = true,
+                        delay: ClosedRange<Double>? = nil,
                         completionHandler: @escaping (Result<D, Error>) -> Void) where D: Decodable {
-        sendAsync(method: method, url: url, body: body, headers: headers) { [weak self] in
+        sendAsync(method: method, url: url, body: body, headers: headers, delay: delay) { [weak self] in
             guard let handler = self?.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
             let result = $0.flatMap { data, response -> Result<D, Error> in
                 do {
@@ -51,9 +53,10 @@ class HttpHelper {
                    url: URL,
                    body: Body? = nil,
                    headers: [String: String] = [:],
+                   delay: ClosedRange<Double>? = nil,
                    completionHandler: @escaping CompletionHandler) {
         // prepare for requesting `url`.
-        let delay = handler.settings.delay.flatMap { Double.random(in: $0) } ?? 0
+        let delay = (delay ?? handler.settings.delay).flatMap { Double.random(in: $0) } ?? 0
         handler.settings.queues.request.asyncAfter(deadline: .now()+delay) { [weak self] in
             guard let me = self, let handler = me.handler else {
                 return completionHandler(.failure(CustomErrors.runTimeError("`weak` reference was released.")))
