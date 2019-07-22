@@ -10,8 +10,12 @@
 import Foundation
 
 public struct SessionStorage: Codable {
+    /// The user `pk`.
     public var dsUserId: String
-    public var csrfToken: String
-    public var rankToken: String
+    /// The logged in user info.
     public var user: CurrentUser?
+
+    var csrfToken: String
+    var sessionId: String
+    var rankToken: String
 }

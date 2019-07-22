@@ -14,8 +14,6 @@ public struct SessionCache: Codable {
     public var storage: SessionStorage?
     /// The device in use.
     public var device: AndroidDeviceModel
-    /// The cookies.
-    public let cookies: [Data]
     
     /// use this function from Siwa framework.
     public static func from(cookies: [Data]) -> SessionCache {
@@ -23,4 +21,6 @@ public struct SessionCache: Codable {
                      device: AndroidDeviceGenerator.getRandomAndroidDevice(),
                      cookies: cookies)
     }
+    
+    let cookies: [Data]
 }

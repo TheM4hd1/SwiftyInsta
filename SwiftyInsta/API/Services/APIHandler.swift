@@ -86,8 +86,8 @@ public class APIHandler {
                 case .failure(let error): completionHandler(.failure(error))
                 case .success(let instagramCookies):
                     let cookies = instagramCookies.filter({ $0.domain.contains("instagram.com") })
-                    let filtered = cookies.filter { $0.name == "ds_user_id" || $0.name == "csrftoken" }
-                    guard filtered.count >= 2 else {
+                    let filtered = cookies.filter { $0.name == "ds_user_id" || $0.name == "csrftoken" || $0.name == "sessionid" }
+                    guard filtered.count >= 3 else {
                         return handler.settings.queues.response.async {
                             completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` response.")))
                         }
@@ -95,11 +95,13 @@ public class APIHandler {
                     // prepare cache.
                     let dsUserId = filtered.first(where: { $0.name == "ds_user_id" })!.value
                     let csrfToken = filtered.first(where: { $0.name == "csrftoken" })!.value
+                    let sessionId = filtered.first(where: { $0.name == "sessionid" })!.value
                     let rankToken = dsUserId+"_"+handler.settings.device.phoneGuid.uuidString
                     let cache = SessionCache(storage: SessionStorage(dsUserId: dsUserId,
+                                                                     user: nil,
                                                                      csrfToken: csrfToken,
-                                                                     rankToken: rankToken,
-                                                                     user: nil),
+                                                                     sessionId: sessionId,
+                                                                     rankToken: rankToken),
                                              device: handler.settings.device,
                                              cookies: cookies.toCookieData())
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
