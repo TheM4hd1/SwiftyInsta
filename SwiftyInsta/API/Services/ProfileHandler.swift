@@ -109,12 +109,12 @@ public class ProfileHandler: Handler {
                                             completionHandler(.failure(CustomErrors.noError))
                                         }
                                     }
-                                    let _name = (name ?? "").isEmpty ? decoded.user!.fullName!: name!
-                                    let _biography = (biography ?? "").isEmpty ? decoded.user!.biography!: biography!
-                                    let _url = (url ?? "").isEmpty ? decoded.user!.externalUrl!: url!
-                                    let _email = (email ?? "").isEmpty ? decoded.user!.email!: email!
-                                    let _phone = (phone ?? "").isEmpty ? decoded.user!.phoneNumber!: phone!
-                                    let _username = (username ?? "").isEmpty ? decoded.user!.username!: username!
+                                    let _name = (name ?? "").isEmpty ? decoded.user!.fullName!: (name ?? "")
+                                    let _biography = (biography ?? "").isEmpty ? decoded.user!.biography!: (biography ?? "")
+                                    let _url = (url ?? "").isEmpty ? decoded.user!.externalUrl!: (url ?? "")
+                                    let _email = (email ?? "").isEmpty ? decoded.user!.email!: (email ?? "")
+                                    let _phone = (phone ?? "").isEmpty ? decoded.user!.phoneNumber!: (phone ?? "")
+                                    let _username = (username ?? "").isEmpty ? decoded.user!.username!: (username ?? "")
                                     
                                     let content = ["external_url": _url,
                                                    "gender": gender.rawValue,
