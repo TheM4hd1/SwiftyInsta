@@ -88,6 +88,7 @@
 		E0F49BA422E4F0D3004C3E7F /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE440021A99CD400BD9EFB /* MessageHandler.swift */; };
 		E0F49BA522E505CF004C3E7F /* StoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A95BEE21AC0B9800839250 /* StoryHandler.swift */; };
 		E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FF21A99CD400BD9EFB /* ProfileHandler.swift */; };
+		E4D5126941274C34767B5018 /* Pods_SwiftyInsta.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0399BC7C5334CFA67195C838 /* Pods_SwiftyInsta.framework */; };
 		E8314D5E2210652400D13BEA /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
 /* End PBXBuildFile section */
 
@@ -102,6 +103,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0399BC7C5334CFA67195C838 /* Pods_SwiftyInsta.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftyInsta.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		110454D4221DE7270080F986 /* AccountRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRecovery.swift; sourceTree = "<group>"; };
 		1104CD082180621400F855BA /* HTTPMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethods.swift; sourceTree = "<group>"; };
 		1104CD0A2180627400F855BA /* CustomErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomErrors.swift; sourceTree = "<group>"; };
@@ -184,6 +186,8 @@
 		11E2B134218F13D20095374A /* UserShortListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortListModel.swift; sourceTree = "<group>"; };
 		11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineModel.swift; sourceTree = "<group>"; };
 		11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockedUsersModel.swift; sourceTree = "<group>"; };
+		362E6E34E10F9827FDD883E6 /* Pods-SwiftyInsta.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta/Pods-SwiftyInsta.release.xcconfig"; sourceTree = "<group>"; };
+		8124B37DD4186069CED57CD5 /* Pods-SwiftyInsta.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta/Pods-SwiftyInsta.debug.xcconfig"; sourceTree = "<group>"; };
 		E063077122E253060015AA92 /* PaginationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationHelper.swift; sourceTree = "<group>"; };
 		E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainSwiftDistrib.swift; path = "../../../../../../../../System/Volumes/Data/Users/stefanobertagno/Documents/Development/Libraries/SwiftyInsta/SwiftyInsta/Supporting Files/KeychainSwiftDistrib.swift"; sourceTree = "<group>"; };
 		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
@@ -194,6 +198,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4D5126941274C34767B5018 /* Pods_SwiftyInsta.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,6 +219,8 @@
 				115F1209217FDD8B00ED3530 /* SwiftyInsta */,
 				115F1214217FDD8B00ED3530 /* SwiftyInstaTests */,
 				115F1208217FDD8B00ED3530 /* Products */,
+				4FC7FDE0C3395E85E7E96117 /* Pods */,
+				A7D7525F4960588A1C95FED3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -419,6 +426,24 @@
 			path = Web;
 			sourceTree = "<group>";
 		};
+		4FC7FDE0C3395E85E7E96117 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8124B37DD4186069CED57CD5 /* Pods-SwiftyInsta.debug.xcconfig */,
+				362E6E34E10F9827FDD883E6 /* Pods-SwiftyInsta.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		A7D7525F4960588A1C95FED3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0399BC7C5334CFA67195C838 /* Pods_SwiftyInsta.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -439,6 +464,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 115F121B217FDD8B00ED3530 /* Build configuration list for PBXNativeTarget "SwiftyInsta" */;
 			buildPhases = (
+				71D907A8472B531B95401245 /* [CP] Check Pods Manifest.lock */,
 				115F1202217FDD8B00ED3530 /* Headers */,
 				115F1203217FDD8B00ED3530 /* Sources */,
 				115F1204217FDD8B00ED3530 /* Frameworks */,
@@ -525,6 +551,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		71D907A8472B531B95401245 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SwiftyInsta-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		115F1203217FDD8B00ED3530 /* Sources */ = {
@@ -753,6 +804,7 @@
 		};
 		115F121C217FDD8B00ED3530 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8124B37DD4186069CED57CD5 /* Pods-SwiftyInsta.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
@@ -780,6 +832,7 @@
 		};
 		115F121D217FDD8B00ED3530 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 362E6E34E10F9827FDD883E6 /* Pods-SwiftyInsta.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";

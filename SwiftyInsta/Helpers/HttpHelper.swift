@@ -8,7 +8,7 @@
 //
 
 import Foundation
-
+import Gzip
 
 class HttpHelper {
     typealias CompletionResult = Result<(Data?, HTTPURLResponse?), Error>
@@ -18,6 +18,7 @@ class HttpHelper {
     enum Body {
         case parameters([String: Any])
         case data(Data)
+        case gzip([String: Any])
     }
     
     init(handler: APIHandler) {
@@ -67,6 +68,10 @@ class HttpHelper {
             switch body {
             case .parameters(let parameters)?: me.addBody(to: &request, body: parameters)
             case .data(let data)?: request.httpBody = data
+            case .gzip(let parameters)?:
+                me.addHeaders(to: &request, header: ["Content-Encoding": "gzip"])
+                me.addBody(to: &request, body: parameters)
+                request.httpBody = request.httpBody.flatMap { try? $0.gzipped() }
             default: break
             }
             // start task.
