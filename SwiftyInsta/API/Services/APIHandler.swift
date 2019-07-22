@@ -31,7 +31,7 @@ public class APIHandler {
             }
         }
         
-        /// The delay. Defaults to `1...5`. `nil` for no delay.
+        /// The delay. Defaults to `1...2`. `nil` for no delay.
         public var delay: ClosedRange<Double>?
         /// The queue used to deliver responses. Defaults to `DispatchQueue.global(qos: .utility)`.
         public var queues: Queues
@@ -42,7 +42,7 @@ public class APIHandler {
         /// The default headers. Defaults to `[:]`.
         var headers: [String: String] = [:]
         
-        public init(delay: ClosedRange<Double>? = 1...5,
+        public init(delay: ClosedRange<Double>? = 1...2,
                     queues: Queues = .init(),
                     device: AndroidDeviceModel? = nil,
                     session: URLSession = .shared) {
