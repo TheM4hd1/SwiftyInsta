@@ -9,6 +9,17 @@
 
 import Foundation
 
+public extension Error {
+    /// Returns `true` if `self` is `AuthenticationError.checkpoint` or `AuthenticationError.twoFactor`, `false` otherwise.
+    var requiresInstagramCode: Bool {
+        guard let error = self as? AuthenticationError else { return false }
+        switch error {
+        case .checkpoint, .twoFactor: return true
+        default: return false
+        }
+    }
+}
+
 public enum AuthenticationError: Error, LocalizedError {
     case checkpoint
     case checkpointLoop
