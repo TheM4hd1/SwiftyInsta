@@ -189,7 +189,7 @@
 		362E6E34E10F9827FDD883E6 /* Pods-SwiftyInsta.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta/Pods-SwiftyInsta.release.xcconfig"; sourceTree = "<group>"; };
 		8124B37DD4186069CED57CD5 /* Pods-SwiftyInsta.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta/Pods-SwiftyInsta.debug.xcconfig"; sourceTree = "<group>"; };
 		E063077122E253060015AA92 /* PaginationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationHelper.swift; sourceTree = "<group>"; };
-		E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KeychainSwiftDistrib.swift; path = "../../../../../../../../System/Volumes/Data/Users/stefanobertagno/Documents/Development/Libraries/SwiftyInsta/SwiftyInsta/Supporting Files/KeychainSwiftDistrib.swift"; sourceTree = "<group>"; };
+		E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSwiftDistrib.swift; sourceTree = "<group>"; };
 		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -432,7 +432,6 @@
 				8124B37DD4186069CED57CD5 /* Pods-SwiftyInsta.debug.xcconfig */,
 				362E6E34E10F9827FDD883E6 /* Pods-SwiftyInsta.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
