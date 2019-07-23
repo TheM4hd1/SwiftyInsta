@@ -24,7 +24,7 @@ platform :ios, '10.0'
 use_frameworks!
 
 target '<Your Target Name>' do
-    pod 'SwiftyInsta', '~> 7.0'
+    pod 'SwiftyInsta', '~> 2.0'
 end
 ```
 Then, run the following command:
