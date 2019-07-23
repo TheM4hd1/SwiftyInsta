@@ -47,7 +47,14 @@ self.credentials = Credentials(username: /* username */, password: /* password *
 self.handler = APIHandler()
 handler.authenticate(with: .credentials(credentials)) {
     switch $0 {
-    case .success(_, _): /* persist as usual */
+    case .success(let response, _): 
+        print("Login successful.")
+        // persist cache safely in the keychain for logging in again in the future.
+        guard let key = response.persist() else { return print("`SessionCache` could not be persisted.") }
+        // store the `key` wherever you want, so you can access the `SessionCache` later.
+        // `UserDefaults` is just an example.
+        UserDefaults.standard.set(key, forKey: "current.account")
+        UserDefaults.standard.synchronize()
     case .failure(let error):
         if error.requiresInstagramCode {
             /* update interface to ask for code */
@@ -101,7 +108,7 @@ class LoginViewController: UIViewController {
 }
 ```
 
-### `SessionCache` (+ `Siwa`)
+### `SessionCache`
 If you've already persisted a user's `SessionCache`:
 
 ```swift
@@ -116,8 +123,7 @@ handler.authenticate(with: .cache(cache)) { _ in
     /* do something here */
 }
 ```
-
-If you don't want to use `LoginWebView` or you need to support iOS 10.0, you can use [Siwa](https://github.com/TheM4hd1/Siwa), retrieve the `SessionCache` and pass it to the authentication method above (don't forget to `persist()` the `Login.Response`).
+(`1.*` `SessionCache`s are not compatible with `2.0`: you are going to need to log in again)
 
 ## Documentation
 
