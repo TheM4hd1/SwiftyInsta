@@ -21,7 +21,7 @@ public extension Error {
 }
 
 public enum AuthenticationError: Error, LocalizedError {
-    case checkpoint
+    case checkpoint(suggestions: [String]?)
     case checkpointLoop
     case invalidPassword
     case invalidUsername

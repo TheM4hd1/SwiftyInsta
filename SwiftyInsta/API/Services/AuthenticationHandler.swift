@@ -67,11 +67,13 @@ class AuthenticationHandler: Handler {
                                             }
                                         case .success(let response):
                                             // check for status.
-                                            if let url = response.checkpointUrl.flatMap(URL.init) {
+                                            if let url = response.checkpointUrl.flatMap(URLs.checkpoint) {
                                                 user.completionHandler = completionHandler
                                                 user.response = .challenge(url)
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.checkpoint))
+                                                me.challengeInfo(for: user) { form in
+                                                    handler.settings.queues.response.async {
+                                                        completionHandler(.failure(AuthenticationError.checkpoint(suggestions: form?.suggestion)))
+                                                    }
                                                 }
                                                 // ask for verification code.
                                                 me.challenge(csrfToken: csrfToken, url: url, verification: user.verification) {
@@ -168,6 +170,29 @@ class AuthenticationHandler: Handler {
                                     completionHandler(CustomErrors.runTimeError("Invalid response."))
                                 }
                             }
+        }
+    }
+    
+    func challengeInfo(for user: Credentials, completionHandler: @escaping (ChallengeForm?) -> Void) {
+        guard case .challenge(let url) = user.response else { return completionHandler(nil) }
+        requests.sendAsync(method: .get, url: url) { [weak self] in
+            guard let me = self, let handler = me.handler else { return completionHandler(nil) }
+            switch $0 {
+            case .success(let data?, _):
+                let string = String(data: data, encoding: .utf8)!
+                guard string.contains("window._sharedData = ") else { return completionHandler(nil) }
+                // parse.
+                let dataPartOne = string.components(separatedBy: "window._sharedData = ")[1]
+                let rawData = dataPartOne.components(separatedBy: ";</script>")[0]
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let decoded = try? decoder.decode(ChallengeForm.self, from: rawData.data(using: .utf8)!)
+                completionHandler(decoded)
+            default:
+                handler.settings.queues.response.async {
+                    completionHandler(nil)
+                }
+            }
         }
     }
     

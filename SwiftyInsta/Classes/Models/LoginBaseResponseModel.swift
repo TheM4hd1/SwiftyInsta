@@ -8,18 +8,18 @@
 
 import Foundation
 
-public struct LoginBaseResponseModel: Codable, BaseStatusResponseProtocol{
-    public var message: String?
-    public var invalidCredentials: Bool?
-    public var errorType: String?
-    public var errorTitle: String?
-    public var status: String?
-    public var twoFactorRequired: Bool?
-    public var twoFactorInfo: TwoFactorLoginInfoModel?
-    public var checkpointChallengeRequired: Bool?
-    public var challenge: ChallengeModel?
+struct LoginBaseResponseModel: Codable, BaseStatusResponseProtocol{
+    var message: String?
+    var invalidCredentials: Bool?
+    var errorType: String?
+    var errorTitle: String?
+    var status: String?
+    var twoFactorRequired: Bool?
+    var twoFactorInfo: TwoFactorLoginInfoModel?
+    var checkpointChallengeRequired: Bool?
+    var challenge: ChallengeModel?
     
-    public init(message: String?, invalidCredentials: Bool?, errorType: String?, errorTitle: String?, status: String?, twoFactorRequired: Bool?, twoFactorInfo: TwoFactorLoginInfoModel?, checkpointChallengeRequired: Bool?, challenge: ChallengeModel?) {
+    init(message: String?, invalidCredentials: Bool?, errorType: String?, errorTitle: String?, status: String?, twoFactorRequired: Bool?, twoFactorInfo: TwoFactorLoginInfoModel?, checkpointChallengeRequired: Bool?, challenge: ChallengeModel?) {
         self.message = message
         self.invalidCredentials = invalidCredentials
         self.errorType = errorType
