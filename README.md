@@ -7,7 +7,7 @@
 **Instagram** offers two kinds of APIs to developers. The [Instagram API Platform](https://www.instagram.com/developer/) (extremely limited in functionality and close to being discontinued), and the [Instagram Graph API](https://developers.facebook.com/docs/instagram-api) for _Business_ and _Creator_ accounts only.
 
 However, **Instagram** apps rely on a third type of _API_, the so-called **Private API** or _Unofficial API_, and [SwiftyInsta](https://github.com/TheM4hd1/SwiftyInsta) is an **iOS client** for them, written entirely in **Swift**.
-You can try and create a better Instagram experience for your users, or write bots for automatic different tasks.
+You can try and create a better Instagram experience for your users, or write bots for automating different tasks.
 
 These _Private API_ require no _token_ or _app registration_ but they're not _authorized_ by Instagram for external use.
 Use this at your own risk.
