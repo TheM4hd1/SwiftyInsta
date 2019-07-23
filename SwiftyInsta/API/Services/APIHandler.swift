@@ -171,16 +171,16 @@ public struct Credentials {
         didSet {
             // notify a change.
             guard code != nil else { return }
-            codeHandler?(self)
+            handler?.authentication.code(for: self)
         }
     }
     
+    /// The code handler.
+    weak var handler: APIHandler?
     /// The _csrfToken_.
     var csrfToken: String?
     /// The response model.
     var response: Response = .unknown
-    /// The code handler.
-    var codeHandler: ((Credentials) -> Void)?
     /// The completion handler.
     var completionHandler: ((Result<(Login.Response, APIHandler), Error>) -> Void)?
     

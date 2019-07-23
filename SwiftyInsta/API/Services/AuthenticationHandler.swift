@@ -30,7 +30,7 @@ class AuthenticationHandler: Handler {
     func authenticate(user: Credentials, completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
         // update user.
         var user = user
-        user.codeHandler = { [weak self] in self?.code(for: $0) }
+        user.handler = handler
         // remove cookies.
         HTTPCookieStorage.shared.removeCookies(since: .distantPast)
         // ask for login.
