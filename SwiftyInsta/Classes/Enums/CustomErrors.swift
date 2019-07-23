@@ -9,6 +9,24 @@
 
 import Foundation
 
+public enum AuthenticationError: Error, LocalizedError {
+    case checkpoint
+    case checkpointLoop
+    case invalidPassword
+    case invalidUsername
+    case twoFactor
+    
+    public var localizedDescription: String {
+        switch self {
+        case .checkpoint: return "Checkpoint required.\nThe user will receive a code shortly through their preferred verification method.\nPass it back to  `Credentials.code` and wait for the response in this same `completionHandler`."
+        case .checkpointLoop: return "Checkpoint loop.\nLog in from the Instagram app and then try again."
+        case .twoFactor: return "Two factor required.\nThe user will receive a code shortly through their preferred verification method.\nPass it back to  `Credentials.code` and wait for the response in this same `completionHandler`."
+        case .invalidUsername: return "Invalid username."
+        case .invalidPassword: return "Invalid password."
+        }
+    }
+}
+
 public enum CustomErrors: Error {
     case urlCreationFaild(_ description: String)
     case runTimeError(_ description: String)

@@ -14,48 +14,7 @@ public enum UserReference {
     case username(String)
 }
 
-public class UserHandler: Handler {    
-    // MARK: Authentication
-    func authenticate(cache: SessionCache, completionHandler: @escaping (Result<Login.Response, Error>) -> Void) {
-        // update handler.
-        handler.settings.device = cache.device
-        handler.response = .init(model: .pending, cache: cache)
-        requests.setCookies(cache.cookies)
-        // fetch the user.
-        current(delay: 0...0) { [weak self] in
-            switch $0 {
-            case .success(let model):
-                // update user info alone.
-                if let user = model.user { self?.handler.response?.cache?.storage?.user = user }
-                completionHandler(.success(.init(model: .success, cache: cache)))
-            case .failure(let error): completionHandler(.failure(error))
-            }
-        }
-    }
-    
-    func logOut(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard handler.user != nil else {
-            return handler.settings.queues.response.async {
-                completionHandler(.failure(CustomErrors.runTimeError("User is not logged in.")))
-            }
-        }
-        handler.requests.sendAsync(method: .post, url: try! URLs.getLogoutUrl()) { [weak self] in
-            guard let handler = self?.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
-            let result = $0.flatMap { data, response -> Result<Bool, Error> in
-                do {
-                    guard let data = data, response?.statusCode == 200 else { throw CustomErrors.runTimeError("Invalid response.") }
-                    // decode data.
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let decoded = try decoder.decode(BaseStatusResponseModel.self, from: data)
-                    return .success(decoded.isOk())
-                } catch { return .failure(error) }
-            }
-            handler.settings.queues.response.async { completionHandler(result) }
-        }
-    }
-
-    // MARK: Endpoints
+public class UserHandler: Handler {
     public func current(completionHandler: @escaping (Result<CurrentUserModel, Error>) -> Void) {
         current(delay: nil, completionHandler: completionHandler)
     }

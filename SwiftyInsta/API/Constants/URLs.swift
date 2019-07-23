@@ -21,6 +21,11 @@ struct URLs {
     private static let apiSuffix = api + apiVersion
     private static let baseInstagramApiUrl = instagramUrl + apiSuffix
 
+    // MARK: - Login
+    private static let loginPath = "/accounts/login/ajax/"
+    private static let twoFactorPath = "/accounts/login/ajax/two_factor/"
+    private static let twoFactorResendPath = "/accounts/send_two_factor_login_sms/"
+
     // MARK: - Endpoints
     private static let accountCreate = "/accounts/create/"
     private static let accountLogin = "/accounts/login/"
@@ -89,7 +94,26 @@ struct URLs {
     private static let reelsMediaFeed = "/feed/reels_media/"
     
     // MARK: - Methods
+    static func home() -> URL {
+        return URL(string: instagramCookieUrl)!
+    }
     
+    static func login() -> URL {
+        return URL(string: String(format: "%@%@", instagramCookieUrl, loginPath))!
+    }
+    
+    static func checkpoint(url: String) -> URL {
+        return URL(string: String(format: "%@%@", instagramCookieUrl, url))!
+    }
+    
+    static func twoFactor() -> URL {
+        return URL(string: String(format: "%@%@", instagramCookieUrl, twoFactorPath))!
+    }
+    
+    static func resendTwoFactorCode() -> URL {
+        return URL(string: String(format: "%@%@", instagramCookieUrl, twoFactorResendPath))!
+    }
+
     static func getInstagramUrl() throws -> URL {
         if let url = URL(string: instagramUrl) {
             return url
