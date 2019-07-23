@@ -1,5 +1,5 @@
 //
-//  TimeLineModel.swift
+//  TimelineModel.swift
 //  SwiftyInsta
 //
 //  Created by Mahdi on 11/9/18.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct TimeLineModel: Codable, PaginationProtocol, BaseStatusResponseProtocol {
+public struct TimelineModel: Codable, PaginationProtocol, BaseStatusResponseProtocol {
     public var autoLoadMoreEnabled: Bool?
     public var moreAvailable: Bool?
     public var nextMaxId: String?

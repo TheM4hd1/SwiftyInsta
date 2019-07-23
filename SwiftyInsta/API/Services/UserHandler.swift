@@ -3,6 +3,7 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi Makhdumi on 11/23/18.
+//  V. 2.0 by Stefano Bertagno on 7/21/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
@@ -13,386 +14,70 @@ public enum UserReference {
     case username(String)
 }
 
-public protocol UserHandlerProtocol {
-    func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws
-    func login(completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws
-    func login(cache: SessionCache, completion: @escaping (Result<LoginResultModel>) -> ()) throws
-    func twoFactorLogin(verificationCode: String, useBackupCode: Bool, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws
-    func sendTwoFactorLoginSms(completion: @escaping (Result<Bool>) -> ()) throws
-    func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws
-    func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) ->()) throws
-    func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws
-    func logout(completion: @escaping (Result<Bool>) -> ()) throws
-    func searchUser(username: String, completion: @escaping (Result<[UserModel]>) -> ()) throws
-    func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws
-    func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws
-    func getUserTags(user: UserReference,
-                     paginationParameters: PaginationParameters,
-                     updateHandler: PaginationResponse<UserFeedModel>?,
-                     completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws
-    func getUserFollowing(user: UserReference,
-                          filteringProfilesMatchingQuery query: String?,
-                          paginationParameters: PaginationParameters,
-                          updateHandler: PaginationResponse<UserShortListModel>?,
-                          completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws
-    func getUserFollowers(user: UserReference,
-                          filteringProfilesMatchingQuery query: String?,
-                          paginationParameters: PaginationParameters,
-                          updateHandler: PaginationResponse<UserShortListModel>?,
-                          completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws
-    func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws
-    func getRecentActivities(paginationParameters: PaginationParameters,
-                             updateHandler: PaginationResponse<RecentActivitiesModel>?,
-                             completionHandler: @escaping PaginationResponse<Result<[RecentActivitiesModel]>>) throws
-    func getRecentFollowingActivities(paginationParameters: PaginationParameters,
-                                      updateHandler: PaginationResponse<RecentFollowingsActivitiesModel>?,
-                                      completionHandler: @escaping PaginationResponse<Result<[RecentFollowingsActivitiesModel]>>) throws
-    func removeFollower(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
-    func approveFriendship(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
-    func rejectFriendship(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
-    func pendingFriendships(completion: @escaping (Result<PendingFriendshipsModel>) -> ()) throws
-    func followUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
-    func unFollowUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
-    func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws
-    func getFriendshipStatuses(of userIds: [Int], completion: @escaping (Result<FriendshipStatusesModel>) -> ()) throws
-    func getBlockedList(completion: @escaping (Result<BlockedUsersModel>) -> ()) throws
-    func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
-    func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws
-    func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
-    func recoverAccountBy(username: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws
-    func reportUser(userPk: Int, completion: @escaping (Result<Bool>) -> ()) throws
-}
-
-class UserHandler: UserHandlerProtocol {
-    
-    static let shared = UserHandler()
-
-    private init() {}
-    
-    
-    func login(cache: SessionCache, completion: @escaping (Result<LoginResultModel>) -> ()) throws {
-        if cache.isUserAuthenticated {
-            HandlerSettings.shared.isUserAuthenticated = cache.isUserAuthenticated
-            HandlerSettings.shared.device = cache.device
-            HandlerSettings.shared.user = cache.user
-            HandlerSettings.shared.request = cache.requestMessage
-            HandlerSettings.shared.httpHelper?.setCookies(cache.cookies)
-            
-            try getCurrentUser { (result) in
-                if result.isSucceeded {
-                    completion(Return.success(value: .success))
-                } else {
-                    completion(Return.fail(error: result.info.error, response: ResponseTypes.fail, value: nil))
-                }
-            }
-        } else {
-            throw CustomErrors.runTimeError("bad cache info.")
-        }
-    }
-    
-    func login(completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws {
-        // sending a 'GET' request to retrieve 'CSRF' token.
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .unknown, value: nil), nil)
-            } else {
-                // find CSRF token
-                let fields = response?.allHeaderFields
-                let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields as! [String : String], for: (response?.url)!)
-                
-                for cookie in cookies {
-                    if cookie.name == "csrftoken" {
-                        HandlerSettings.shared.user!.csrfToken = cookie.value
-                        break
-                    }
-                }
-            
-                let headers = [
-                    "csrf": (HandlerSettings.shared.user!.csrfToken),
-                    Headers.HeaderXGoogleADID: (HandlerSettings.shared.device!.googleAdId?.uuidString)!
-                ]
-                
-                // Creating Post Request Body
-                let signature = "\(HandlerSettings.shared.request!.generateSignature(signatureKey: Headers.HeaderIGSignatureValue)).\(HandlerSettings.shared.request!.getMessageString())"
-                
-                let body: [String: Any] = [
-                    Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!,
-                    Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
-                ]
-                
-                // send login request
-                guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-                httpHelper.sendAsync(method: .post, url: try! URLs.getLoginUrl(), body: body, header: headers, completion: { (data, response, error) in
-                    if let error = error {
-                        completion(Return.fail(error: error, response: .unknown, value: nil), nil)
-                    } else {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        
-                        if let data = data {
-                            print(String(data: data, encoding: .utf8)!)
-                            if response?.statusCode != 200 {
-                                do {
-                                    var loginFailReason = try decoder.decode(LoginBaseResponseModel.self, from: data)
-                                    if loginFailReason.errorType == nil {
-                                        loginFailReason.errorType = ""
-                                    }
-                                    guard let errorType = loginFailReason.errorType else { return }
-                                    if loginFailReason.invalidCredentials ?? false || errorType == "bad_password" {
-                                        let value = (errorType == "bad_password" ? LoginResultModel.badPassword : LoginResultModel.invalidUser)
-                                        completion(Return.fail(error: CustomErrors.invalidCredentials, response: .fail, value: value), nil)
-                                        
-                                    } else if loginFailReason.twoFactorRequired ?? false {
-                                        HandlerSettings.shared.twoFactor = loginFailReason.twoFactorInfo
-                                        
-                                        if loginFailReason.twoFactorInfo?.totpTwoFactorOn == true {
-                                            completion(Return.fail(error: CustomErrors.twoFactorAuthentication, response: .totp, value: .twoFactorRequired), nil)
-                                        } else {
-                                            completion(Return.fail(error: CustomErrors.twoFactorAuthentication, response: .sms(obfuscatedPhoneNumber: loginFailReason.twoFactorInfo!.obfuscatedPhoneNumber), value: .twoFactorRequired), nil)
-                                        }
-                                        
-                                    } else if loginFailReason.checkpointChallengeRequired ?? false || errorType == "checkpoint_challenge_required" {
-                                        HandlerSettings.shared.challenge = loginFailReason.challenge
-                                        completion(Return.fail(error: CustomErrors.challengeRequired, response: .ok, value: .challengeRequired), nil)
-                                    } else {
-                                        completion(Return.fail(error: CustomErrors.unExpected(loginFailReason.errorType ?? "unexpected error type."), response: .ok, value: .exception), nil)
-                                    }
-                                } catch {
-                                    completion(Return.fail(error: error, response: .ok, value: nil), nil)
-                                }
-                                
-                            } else {
-                                do {
-                                    let loginInfo = try decoder.decode(LoginResponseModel.self, from: data)
-                                    HandlerSettings.shared.user!.loggedInUser = loginInfo.loggedInUser
-                                    HandlerSettings.shared.isUserAuthenticated = (loginInfo.loggedInUser.username?.lowercased() == HandlerSettings.shared.user!.username.lowercased())
-                                    HandlerSettings.shared.user!.rankToken = "\(HandlerSettings.shared.user!.loggedInUser.pk ?? 0)_\(HandlerSettings.shared.request!.phoneId )"
-                                    
-                                    let sessionCache = SessionCache.init(user: HandlerSettings.shared.user!, device: HandlerSettings.shared.device!, requestMessage: HandlerSettings.shared.request!, cookies: (HTTPCookieStorage.shared.cookies?.getInstagramCookies()?.toCookieData())!, isUserAuthenticated: true)
-                                    completion(Return.success(value: .success), sessionCache)
-                                } catch {
-                                    completion(Return.fail(error: error, response: .ok, value: nil), nil)
-                                }
-                            }
-                        }
-                    }
-                })
+public class UserHandler: Handler {    
+    // MARK: Authentication
+    func authenticate(cache: SessionCache, completionHandler: @escaping (Result<Login.Response, Error>) -> Void) {
+        // update handler.
+        handler.settings.device = cache.device
+        handler.response = .init(model: .pending, cache: cache)
+        requests.setCookies(cache.cookies)
+        // fetch the user.
+        current(delay: 0...0) { [weak self] in
+            switch $0 {
+            case .success(let model):
+                // update user info alone.
+                if let user = model.user { self?.handler.response?.cache?.storage?.user = user }
+                completionHandler(.success(.init(model: .success, cache: cache)))
+            case .failure(let error): completionHandler(.failure(error))
             }
         }
     }
     
-    private func getTwoFactorLoginRequestBody(verificationCode: String, verificationMethod: String) -> [String: Any] {
-        let content = [
-            "verification_code": verificationCode,
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "two_factor_identifier" : HandlerSettings.shared.twoFactor!.twoFactorIdentifier,
-            "username": HandlerSettings.shared.user!.username,
-            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "device_id":  RequestMessageModel.generateDeviceIdFromGuid(guid: HandlerSettings.shared.device!.deviceGuid),
-            "verification_method": verificationMethod
-        ]
-        
-        let encoder = JSONEncoder()
-        let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
-        
-        let signature = "\(hash).\(payload)"
-        let body: [String: Any] = [
-            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
-        ]
-        
-        return body
-    }
-    
-    func twoFactorLogin(verificationCode: String, useBackupCode: Bool, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws {
-        var verificationMethod = TwoFactorVerificationMethodsEnum.none.rawValue
-        
-        if useBackupCode {
-            verificationMethod = TwoFactorVerificationMethodsEnum.backup.rawValue
-        } else if HandlerSettings.shared.twoFactor?.totpTwoFactorOn == true {
-            verificationMethod = TwoFactorVerificationMethodsEnum.totp.rawValue
-        } else if HandlerSettings.shared.twoFactor?.smsTwoFactorOn == true {
-            verificationMethod = TwoFactorVerificationMethodsEnum.sms.rawValue
-        }
-        
-        let body = getTwoFactorLoginRequestBody(verificationCode: verificationCode, verificationMethod: verificationMethod)
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getTwoFactorLoginUrl(), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .unknown, value: nil), nil)
-            } else {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                
-                if let data = data {
-                    if response?.statusCode != 200 {
-                        do {
-                            var loginFailReason = try decoder.decode(LoginBaseResponseModel.self, from: data)
-                            if loginFailReason.errorType == nil {
-                                loginFailReason.errorType = ""
-                            }
-                            guard let errorType = loginFailReason.errorType else { return }
-                            if errorType == TwoFactorLoginErrorTypeEnum.invalidCode.rawValue {
-                                completion(Return.fail(error: CustomErrors.invalidTwoFactorCode, response: .fail, value: nil), nil)
-                            } else if errorType == TwoFactorLoginErrorTypeEnum.missingCode.rawValue {
-                                completion(Return.fail(error: CustomErrors.missingTwoFactorCode, response: .fail, value: nil), nil)
-                            } else {
-                                completion(Return.fail(error: CustomErrors.unExpected("unExpected Error"), response: .fail, value: nil), nil)
-                            }
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil), nil)
-                        }
-                    } else {
-                        do {
-                            let loginInfo = try decoder.decode(LoginResponseModel.self, from: data)
-                            HandlerSettings.shared.user!.loggedInUser = loginInfo.loggedInUser
-                            HandlerSettings.shared.isUserAuthenticated = (loginInfo.loggedInUser.username?.lowercased() == HandlerSettings.shared.user!.username.lowercased())
-                            HandlerSettings.shared.user!.rankToken = "\(HandlerSettings.shared.user!.loggedInUser.pk ?? 0)_\(HandlerSettings.shared.request!.phoneId )"
-                            
-                            let sessionCache = SessionCache.init(user: HandlerSettings.shared.user!, device: HandlerSettings.shared.device!, requestMessage: HandlerSettings.shared.request!, cookies: (HTTPCookieStorage.shared.cookies?.getInstagramCookies()?.toCookieData())!, isUserAuthenticated: true)
-                            completion(Return.success(value: .success), sessionCache)
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil), nil)
-                        }
-                    }
-                }
+    func logOut(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        guard handler.user != nil else {
+            return handler.settings.queues.response.async {
+                completionHandler(.failure(CustomErrors.runTimeError("User is not logged in.")))
             }
         }
-    }
-    
-    private func getTwoFactorLoginSmsRequestBody() -> [String: Any]{
-        let content = [
-            "two_factor_identifier" : HandlerSettings.shared.twoFactor!.twoFactorIdentifier,
-            "username": HandlerSettings.shared.user!.username,
-            "device_id": RequestMessageModel.generateDeviceIdFromGuid(guid: HandlerSettings.shared.device!.deviceGuid),
-            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            ]
-        
-        let encoder = JSONEncoder()
-        let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
-        
-        let signature = "\(hash).\(payload)"
-        let body: [String: Any] = [
-            Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-            Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
-        ]
-        
-        return body
-    }
-    
-    // resend twofactor sms
-    func sendTwoFactorLoginSms(completion: @escaping (Result<Bool>) -> ()) throws {
-        let body = getTwoFactorLoginSmsRequestBody()
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getSendTwoFactorLoginSmsUrl(), body: body, header: [:]) { (data, response, error) in
-            if response?.statusCode == 200 {
-                completion(Return.success(value: true))
-            } else {
-                completion(Return.fail(error: error, response: .fail, value: false))
-            }
-        }
-    }
-    
-    func challengeLogin(completion: @escaping (Result<ResponseTypes>) -> ()) throws {
-        let url = URL(string: HandlerSettings.shared.challenge!.url)!
-        let content = [
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "device_id": HandlerSettings.shared.device!.deviceId
-            //"choice": "1"
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: .fail))
-            } else {
-                if response?.statusCode == 200 {
-                    if let data = data {
-                        if String(data: data, encoding: .utf8)!.contains("security code to verify your account") {
-                            completion(Return.success(value: .verifyMethodRequired))
-                        }
-                    }
-                } else {
-                    completion(Return.fail(error: nil, response: .wrongRequest, value: .wrongRequest))
-                }
-            }
-        }
-    }
-    
-    func verifyMethod(of type: VerifyTypes, completion: @escaping (Result<VerifyResponse>) -> ()) throws {
-        let url = URL(string: HandlerSettings.shared.challenge!.url)!
-        let content = [
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "device_id": HandlerSettings.shared.device!.deviceId,
-            "choice": type.rawValue
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: url, body: content, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    if String(data: data, encoding: .utf8)!.contains("Enter Security Code") {
-                        completion(Return.success(value: .codeSent))
-                    } else {
-                        completion(Return.fail(error: nil, response: .ok, value: .badChoice))
-                    }
-                }
-            }
-        }
-    }
-    
-    func sendVerifyCode(securityCode: String, completion: @escaping (Result<LoginResultModel>, SessionCache?) -> ()) throws {
-        let body: [String: Any] = [
-            "security_code": securityCode,
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "device_id": HandlerSettings.shared.device!.deviceId
-        ]
-
-        let header = ["Host": "i.instagram.com"]
-        let url = try URLs.getVerifyLoginUrl(challenge: HandlerSettings.shared.challenge!.apiPath)
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: url, body: body, header: header) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: .responseError), nil)
-            } else {
-                if let data = data {
+        handler.requests.sendAsync(method: .post, url: try! URLs.getLogoutUrl()) { [weak self] in
+            guard let handler = self?.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+            let result = $0.flatMap { data, response -> Result<Bool, Error> in
+                do {
+                    guard let data = data, response?.statusCode == 200 else { throw CustomErrors.runTimeError("Invalid response.") }
+                    // decode data.
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let loginInfo = try decoder.decode(LoginResponseModel.self, from: data)
-                        if loginInfo.status! == "ok" {
-                            HandlerSettings.shared.user!.loggedInUser = loginInfo.loggedInUser
-                            HandlerSettings.shared.isUserAuthenticated = (loginInfo.loggedInUser.username?.lowercased() == HandlerSettings.shared.user!.username.lowercased())
-                            HandlerSettings.shared.user!.rankToken = "\(HandlerSettings.shared.user!.loggedInUser.pk ?? 0)_\(HandlerSettings.shared.request!.phoneId )"
-                            let sessionCache = SessionCache.init(user: HandlerSettings.shared.user!, device: HandlerSettings.shared.device!, requestMessage: HandlerSettings.shared.request!, cookies: (HTTPCookieStorage.shared.cookies?.getInstagramCookies()?.toCookieData())!, isUserAuthenticated: true)
-
-                            completion(Return.success(value: .success), sessionCache)
-                        } else {
-                            let error = CustomErrors.runTimeError("Please check the code we sent you and try again.")
-                            completion(Return.fail(error: error, response: .fail, value: .badSecurityCode), nil)
-                        }
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: .exception), nil)
-                    }
-                }
+                    let decoded = try decoder.decode(BaseStatusResponseModel.self, from: data)
+                    return .success(decoded.isOk())
+                } catch { return .failure(error) }
             }
+            handler.settings.queues.response.async { completionHandler(result) }
         }
+    }
+
+    // MARK: Endpoints
+    public func current(completionHandler: @escaping (Result<CurrentUserModel, Error>) -> Void) {
+        current(delay: nil, completionHandler: completionHandler)
+    }
+    
+    func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<CurrentUserModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                    "_uid": storage.dsUserId,
+                    "_csrftoken": storage.csrfToken]
+        
+        requests.decodeAsync(CurrentUserModel.self,
+                             method: .get,
+                             url: try! URLs.getCurrentUser(),
+                             body: .parameters(body),
+                             delay: delay,
+                             completionHandler: completionHandler)
     }
     
     // Its not working yet.
-    func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
-        
+    /*func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -455,459 +140,405 @@ class UserHandler: UserHandlerProtocol {
                     })
             }
         }
-    }
-    
-    func logout(completion: @escaping (Result<Bool>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getLogoutUrl(), body: [:], header: [:], completion: { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .unknown, value: nil))
-            } else {
-                if let data  = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    
-                    do {
-                        let logoutInfo = try decoder.decode(BaseStatusResponseModel.self, from: data)
-                        if response?.statusCode != 200 {
-                            completion(Return.fail(error: error, response: .fail, value: nil))
-                        } else {
-                            if logoutInfo.isOk() {
-                                HandlerSettings.shared.isUserAuthenticated = false
-                                completion(Return.success(value: true))
-                            }
-                        }
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))                    }
-                }
-            }
-        })
-    }
-    
-    func searchUser(username: String, completion: @escaping (Result<[UserModel]>) -> ()) throws {
-        let headers = [
-            Headers.HeaderTimeZoneOffsetKey: Headers.HeaderTimeZoneOffsetValue,
-            Headers.HeaderCountKey: Headers.HeaderCountValue,
-            Headers.HeaderRankTokenKey: HandlerSettings.shared.user!.rankToken
-        ]
+    }*/
         
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let info = try decoder.decode(SearchUserModel.self, from: data)
-                        if let users = info.users {
-                            completion(Return.success(value: users))
-                        } else {
-                            // Couldn't find the user.
-                            let error = CustomErrors.unExpected("Couldn't find the user: \(username)")
-                            completion(Return.fail(error: error, response: .ok, value: nil))                        }
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                } else {
-                    // nil data.
-                    let error = CustomErrors.unExpected("The data couldn’t be read because it is missing error when decoding JSON.")
-                    completion(Return.fail(error: error, response: .ok, value: nil))
-                }
-            }
-        })
-    }
-    
-    func getUser(username: String, completion: @escaping (Result<UserModel>) -> ()) throws {
-        let headers = [
-            Headers.HeaderTimeZoneOffsetKey: Headers.HeaderTimeZoneOffsetValue,
-            Headers.HeaderCountKey: Headers.HeaderCountValue,
-            Headers.HeaderRankTokenKey: HandlerSettings.shared.user!.rankToken
-        ]
+    /// Search for users matching the query.
+    public func search(forUsersMatching query: String, completionHandler: @escaping (Result<[UserModel], Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        let headers = [Headers.HeaderTimeZoneOffsetKey: Headers.HeaderTimeZoneOffsetValue,
+                       Headers.HeaderCountKey: Headers.HeaderCountValue,
+                       Headers.HeaderRankTokenKey: storage.rankToken]
         
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getUserUrl(username: username), body: [:], header: headers, completion: { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let info = try decoder.decode(SearchUserModel.self, from: data)
-                        if let user = info.users?.first {
-                            if let pk = user.pk {
-                                if pk < 1 {
-                                    // Incorrect pk.
-                                    let error = CustomErrors.unExpected("Incorrect pk: \(pk)")
-                                    completion(Return.fail(error: error, response: .ok, value: nil))
-                                } else {
-                                    // user found.
-                                    completion(Return.success(value: user))                                }
-                            }
-                        } else {
-                            // Couldn't find the user.
-                            let error = CustomErrors.unExpected("Couldn't find the user: \(username)")
-                            completion(Return.fail(error: error, response: .ok, value: nil))                        }
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                } else {
-                    // nil data.
-                    let error = CustomErrors.unExpected("The data couldn’t be read because it is missing error when decoding JSON.")
-                    completion(Return.fail(error: error, response: .ok, value: nil))
-                }
-            }
-        })
-    }
-    
-    func getUser(id: Int, completion: @escaping (Result<UserInfoModel>) -> ()) throws {
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getUserInfo(id: id), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(UserInfoModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
+        requests.decodeAsync(SearchUserModel.self,
+                             method: .get,
+                             url: try! URLs.getUserUrl(username: query),
+                             headers: headers,
+                             deliverOnResponseQueue: true) {
+                                completionHandler($0.map { $0.users ?? [] })
         }
     }
     
-    func getUserTags(user: UserReference,
-                     paginationParameters: PaginationParameters,
-                     updateHandler: PaginationResponse<UserFeedModel>?,
-                     completionHandler: @escaping PaginationResponse<Result<[UserFeedModel]>>) throws {
+    /// Get user matching username.
+    public func user(_ user: UserReference, completionHandler: @escaping (Result<UserModel?, Error>) -> Void) {
         switch user {
         case .username(let username):
             // fetch username.
-            try UserHandler.shared.getUser(username: username) { [weak self] in
-                try? self?.getUserTags(user: .pk($0.value?.pk ?? 0),
-                                       paginationParameters: paginationParameters,
-                                       updateHandler: updateHandler,
-                                       completionHandler: completionHandler)
-            }
-        case .pk(let pk):
-            // load user media directly.
-            PaginationHandler.getPages(UserFeedModel.self,
-                                       for: paginationParameters,
-                                       at: { try URLs.getUserTagsUrl(userPk: pk, rankToken: HandlerSettings.shared.user!.rankToken, maxId: $0.nextMaxId ?? "") },
-                                       updateHandler: updateHandler,
-                                       completionHandler: completionHandler)
-        }
-    }
-        
-    func getUserFollowing(user: UserReference,
-                          filteringProfilesMatchingQuery query: String? = nil,
-                          paginationParameters: PaginationParameters,
-                          updateHandler: PaginationResponse<UserShortListModel>?,
-                          completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws {
-        switch user {
-        case .username(let username):
-            // fetch username.
-            try UserHandler.shared.getUser(username: username) { [weak self] in
-                try? self?.getUserFollowing(user: .pk($0.value?.pk ?? 0),
-                                            filteringProfilesMatchingQuery: query,
-                                            paginationParameters: paginationParameters,
-                                            updateHandler: updateHandler,
-                                            completionHandler: completionHandler)
+            search(forUsersMatching: username) {
+                completionHandler($0.map { $0.first(where: { $0.username == username })})
             }
         case .pk(let pk):
             // load user info directly.
-            PaginationHandler.getPages(UserShortListModel.self,
-                                       for: paginationParameters,
-                                       at: { try URLs.getUserFollowing(userPk: pk,
-                                                                       rankToken: HandlerSettings.shared.user!.rankToken,
-                                                                       searchQuery: query ?? "",
-                                                                       maxId: $0.nextMaxId ?? "") },
-                                       updateHandler: updateHandler,
-                                       completionHandler: { response, parameters in
-                                        let users = response.value?.reduce([]) { $0+($1.users ?? []) }
-                                        completionHandler(Result(isSucceeded: response.isSucceeded,
-                                                                 info: response.info,
-                                                                 value: users),
-                                                          parameters)
-            })
+            requests.decodeAsync(UserInfoModel.self,
+                                 method: .get,
+                                 url: try! URLs.getUserInfo(id: pk)) {
+                                    completionHandler($0.map { $0.user })
+            }
         }
     }
-
-    func getUserFollowers(user: UserReference,
-                          filteringProfilesMatchingQuery query: String?,
-                          paginationParameters: PaginationParameters,
-                          updateHandler: PaginationResponse<UserShortListModel>?,
-                          completionHandler: @escaping PaginationResponse<Result<[UserShortModel]>>) throws {
+    
+    /// Get user's tagged posts.
+    public func tagged(user: UserReference,
+                       with paginationParameters: PaginationParameters,
+                       updateHandler: PaginationUpdateHandler<UserFeedModel>?,
+                       completionHandler: @escaping PaginationCompletionHandler<UserFeedModel>) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
+                                     paginationParameters)
+        }
         switch user {
-        case .username(let username):
+        case .username:
             // fetch username.
-            try UserHandler.shared.getUser(username: username) { [weak self] in
-                try? self?.getUserFollowers(user: .pk($0.value?.pk ?? 0),
-                                            filteringProfilesMatchingQuery: query,
-                                            paginationParameters: paginationParameters,
-                                            updateHandler: updateHandler,
-                                            completionHandler: completionHandler)
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased), paginationParameters)
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.tagged(user: .pk(user!.pk!),
+                                   with: paginationParameters,
+                                   updateHandler: updateHandler,
+                                   completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error), paginationParameters)
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")), paginationParameters)
+                }
             }
         case .pk(let pk):
-            // load user info directly.
-            PaginationHandler.getPages(UserShortListModel.self,
-                                       for: paginationParameters,
-                                       at: { try URLs.getUserFollowers(userPk: pk,
-                                                                       rankToken: HandlerSettings.shared.user!.rankToken,
-                                                                       searchQuery: query ?? "",
-                                                                       maxId: $0.nextMaxId ?? "") },
-                                       updateHandler: updateHandler,
-                                       completionHandler: { response, parameters in
-                                        let users = response.value?.reduce([]) { $0+($1.users ?? []) }
-                                        completionHandler(Result(isSucceeded: response.isSucceeded,
-                                                                 info: response.info,
-                                                                 value: users),
-                                                          parameters)
-            })
+            // load user tags directly.
+            pages.fetch(UserFeedModel.self,
+                        with: paginationParameters,
+                        at: { try URLs.getUserTagsUrl(userPk: pk,
+                                                      rankToken: storage.rankToken,
+                                                      maxId: $0.nextMaxId ?? "") },
+                        updateHandler: updateHandler,
+                        completionHandler: completionHandler)
         }
     }
     
-    func getCurrentUser(completion: @escaping (Result<CurrentUserModel>) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(format: "%ld", HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getCurrentUser(), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if response?.statusCode == 200 {
-                    if let data = data {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let currentUser = try decoder.decode(CurrentUserModel.self, from: data)
-                            completion(Return.success(value: currentUser))
-                        } catch {
-                            completion(Return.fail(error: error, response: .ok, value: nil))
-                        }
-                    } else {
-                        let error = CustomErrors.runTimeError("The data couldn’t be read because it is missing error when decoding JSON.")
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                } else {
-                    completion(Return.fail(error: error, response: .loginRequired, value: nil))
+    /// Get `user`'s **followers**.
+    public func following(user: UserReference,
+                          usersMatchinQuery query: String? = nil,
+                          with paginationParameters: PaginationParameters,
+                          updateHandler: PaginationUpdateHandler<UserShortListModel>?,
+                          completionHandler: @escaping PaginationCompletionHandler<UserShortListModel>) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
+                                     paginationParameters)
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased), paginationParameters)
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.following(user: .pk(user!.pk!),
+                                      usersMatchinQuery: query,
+                                      with: paginationParameters,
+                                      updateHandler: updateHandler,
+                                      completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error), paginationParameters)
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")), paginationParameters)
                 }
             }
+        case .pk(let pk):
+            // load user followers directly.
+            pages.fetch(UserShortListModel.self,
+                        with: paginationParameters,
+                        at: { try URLs.getUserFollowers(userPk: pk,
+                                                        rankToken: storage.rankToken,
+                                                        searchQuery: query ?? "",
+                                                        maxId: $0.nextMaxId ?? "") },
+                        updateHandler: updateHandler,
+                        completionHandler: completionHandler)
+        }
+    }
+    
+    /// Get  accounts followed by`user` (**following**).
+    public func followed(byUser user: UserReference,
+                         usersMatchinQuery query: String? = nil,
+                         with paginationParameters: PaginationParameters,
+                         updateHandler: PaginationUpdateHandler<UserShortListModel>?,
+                         completionHandler: @escaping PaginationCompletionHandler<UserShortListModel>) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
+                                     paginationParameters)
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased), paginationParameters)
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.followed(byUser: .pk(user!.pk!),
+                                     usersMatchinQuery: query,
+                                     with: paginationParameters,
+                                     updateHandler: updateHandler,
+                                     completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error), paginationParameters)
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")), paginationParameters)
+                }
+            }
+        case .pk(let pk):
+            // load user following directly.
+            pages.fetch(UserShortListModel.self,
+                        with: paginationParameters,
+                        at: { try URLs.getUserFollowing(userPk: pk,
+                                                        rankToken: storage.rankToken,
+                                                        searchQuery: query ?? "",
+                                                        maxId: $0.nextMaxId ?? "") },
+                        updateHandler: updateHandler,
+                        completionHandler: completionHandler)
         }
     }
 
-    func getRecentActivities(paginationParameters: PaginationParameters,
-                             updateHandler: PaginationResponse<RecentActivitiesModel>?,
-                             completionHandler: @escaping PaginationResponse<Result<[RecentActivitiesModel]>>) throws {
-        PaginationHandler.getPages(RecentActivitiesModel.self,
-                                   for: paginationParameters,
-                                   at: { try URLs.getRecentActivities(maxId: $0.nextMaxId ?? "") },
-                                   updateHandler: updateHandler,
-                                   completionHandler: completionHandler)
+    /// Get recent activities.
+    public func recentActivities(with paginationParameters: PaginationParameters,
+                                 updateHandler: PaginationUpdateHandler<RecentActivitiesModel>?,
+                                 completionHandler: @escaping PaginationCompletionHandler<RecentActivitiesModel>) {
+        pages.fetch(RecentActivitiesModel.self,
+                    with: paginationParameters,
+                    at: { try URLs.getRecentActivities(maxId: $0.nextMaxId ?? "") },
+                    updateHandler: updateHandler,
+                    completionHandler: completionHandler)
     }
 
-    func getRecentFollowingActivities(paginationParameters: PaginationParameters,
-                                      updateHandler: PaginationResponse<RecentFollowingsActivitiesModel>?,
-                                      completionHandler: @escaping PaginationResponse<Result<[RecentFollowingsActivitiesModel]>>) throws {
-        PaginationHandler.getPages(RecentFollowingsActivitiesModel.self,
-                                   for: paginationParameters,
-                                   at: { try URLs.getRecentFollowingActivities(maxId: $0.nextMaxId ?? "") },
-                                   updateHandler: updateHandler,
-                                   completionHandler: completionHandler)
+    /// Get recent following activities.
+    public func recentFollowingActivities(with paginationParameters: PaginationParameters,
+                                          updateHandler: PaginationUpdateHandler<RecentFollowingsActivitiesModel>?,
+                                          completionHandler: @escaping PaginationCompletionHandler<RecentFollowingsActivitiesModel>) {
+        pages.fetch(RecentFollowingsActivitiesModel.self,
+                    with: paginationParameters,
+                    at: { try URLs.getRecentFollowingActivities(maxId: $0.nextMaxId ?? "") },
+                    updateHandler: updateHandler,
+                    completionHandler: completionHandler)
     }
-    
-    func removeFollower(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "user_id": String(userId),
-            "radio_type": "wifi-none"
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.removeFollowerUrl(for: userId), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(FollowResponseModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
+
+    /// Unfollow user.
+    public func remove(follower user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.remove(follower: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
                 }
             }
+        case .pk(let pk):
+            // unfollow user directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "radio_type": "wifi-none"]
+            
+            requests.decodeAsync(FollowResponseModel.self,
+                                 method: .get,
+                                 url: try! URLs.removeFollowerUrl(for: pk),
+                                 body: .parameters(body),
+                                 completionHandler: completionHandler)
+        }
+    }
+
+    /// Approve friendship.
+    public func approveRequest(from user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.approveRequest(from: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
+                }
+            }
+        case .pk(let pk):
+            // approve friendship directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "radio_type": "wifi-none"]
+            
+            requests.decodeAsync(FollowResponseModel.self,
+                                 method: .get,
+                                 url: try! URLs.approveFriendshipUrl(for: pk),
+                                 body: .parameters(body),
+                                 completionHandler: completionHandler)
         }
     }
     
-    func approveFriendship(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "user_id": String(userId),
-            "radio_type": "wifi-none"
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.approveFriendshipUrl(for: userId), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(FollowResponseModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
+    /// Reject friendship.
+    public func rejectRequest(from user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.rejectRequest(from: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
                 }
             }
+        case .pk(let pk):
+            // reject friendship directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "radio_type": "wifi-none"]
+            
+            requests.decodeAsync(FollowResponseModel.self,
+                                 method: .get,
+                                 url: try! URLs.rejectFriendshipUrl(for: pk),
+                                 body: .parameters(body),
+                                 completionHandler: completionHandler)
+        }
+    }
+
+    /// Get all pending friendship requests.
+    public func pendingRequests(completionHandler: @escaping (Result<PendingFriendshipsModel, Error>) -> Void) {
+        requests.decodeAsync(PendingFriendshipsModel.self,
+                             method: .get,
+                             url: try! URLs.pendingFriendshipsUrl(),
+                             completionHandler: completionHandler)
+    }
+
+    /// Follow user.
+    public func follow(user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.follow(user: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
+                }
+            }
+        case .pk(let pk):
+            // follow user directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "radio_type": "wifi-none"]
+            
+            requests.decodeAsync(FollowResponseModel.self,
+                                 method: .get,
+                                 url: try! URLs.getFollowUrl(for: pk),
+                                 body: .parameters(body),
+                                 completionHandler: completionHandler)
         }
     }
     
-    func rejectFriendship(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "user_id": String(userId),
-            "radio_type": "wifi-none"
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.rejectFriendshipUrl(for: userId), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(FollowResponseModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
+    /// Unfollow user.
+    public func unfollow(user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.unfollow(user: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
                 }
             }
+        case .pk(let pk):
+            // follow user directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "radio_type": "wifi-none"]
+            
+            requests.decodeAsync(FollowResponseModel.self,
+                                 method: .get,
+                                 url: try! URLs.getUnFollowUrl(for: pk),
+                                 body: .parameters(body),
+                                 completionHandler: completionHandler)
         }
     }
-    
-    func pendingFriendships(completion: @escaping (Result<PendingFriendshipsModel>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.pendingFriendshipsUrl(), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(PendingFriendshipsModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
+
+    /// Friendship status.
+    public func friendshipStatus(withUser user: UserReference, completionHandler: @escaping (Result<FriendshipStatusModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.friendshipStatus(withUser: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
                 }
             }
+        case .pk(let pk):
+            // follow user directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "radio_type": "wifi-none"]
+            
+            requests.decodeAsync(FriendshipStatusModel.self,
+                                 method: .get,
+                                 url: try! URLs.getFriendshipStatusUrl(for: pk),
+                                 body: .parameters(body),
+                                 completionHandler: completionHandler)
         }
     }
-    
-    func followUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "user_id": String(userId),
-            "radio_type": "wifi-none"
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getFollowUrl(for: userId), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(FollowResponseModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
-    }
-    
-    func unFollowUser(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "user_id": String(userId),
-            "radio_type": "wifi-none"
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getUnFollowUrl(for: userId), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(FollowResponseModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
-    }
-    
-    func getFriendshipStatus(of userId: Int, completion: @escaping (Result<FriendshipStatusModel>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getFriendshipStatusUrl(for: userId), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(FriendshipStatusModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
-    }
-    
-    func getFriendshipStatuses(of userIds: [Int], completion: @escaping (Result<FriendshipStatusesModel>) -> ()) throws {
+
+    /*func getFriendshipStatuses(of userIds: [Int], completion: @escaping (InstagramResult<FriendshipStatusesModel>) -> ()) throws {
         
         let body = [
             "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
@@ -934,91 +565,94 @@ class UserHandler: UserHandlerProtocol {
                 }
             }
         }
-    }
+    }*/
     
-    func getBlockedList(completion: @escaping (Result<BlockedUsersModel>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getBlockedList(), body: [:], header: [:]) { (data, res, err) in
-            if let error = err {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(BlockedUsersModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
+    /// Get blocked users.
+    public func blocked(completionHandler: @escaping (Result<BlockedUsersModel, Error>) -> Void) {
+        requests.decodeAsync(BlockedUsersModel.self,
+                             method: .get,
+                             url: try! URLs.getBlockedList(),
+                             completionHandler: completionHandler)
+    }
+
+    /// Block user.
+    public func block(user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.block(user: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
                 }
             }
+        case .pk(let pk):
+            // block directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "radio_type": "wifi-none"]
+            
+            requests.decodeAsync(FollowResponseModel.self,
+                                 method: .get,
+                                 url: try! URLs.getBlockUrl(for: pk),
+                                 body: .parameters(body),
+                                 completionHandler: completionHandler)
         }
     }
-    
-    func block(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "user_id": String(userId),
-            "radio_type": "wifi-none"
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getBlockUrl(for: userId), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(FollowResponseModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
+
+    /// Unblock user.
+    public func unblock(user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.unblock(user: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
                 }
             }
+        case .pk(let pk):
+            // unblock user directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "radio_type": "wifi-none"]
+            
+            requests.decodeAsync(FollowResponseModel.self,
+                                 method: .get,
+                                 url: try! URLs.getUnBlockUrl(for: pk),
+                                 body: .parameters(body),
+                                 completionHandler: completionHandler)
         }
     }
-    
-    func unBlock(userId: Int, completion: @escaping (Result<FollowResponseModel>) -> ()) throws {
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "user_id": String(userId),
-            "radio_type": "wifi-none"
-        ]
-        
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getUnBlockUrl(for: userId), body: body, header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(FollowResponseModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                }
-            }
-        }
-    }
-    
-    func recoverAccountBy(username: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws {
+
+    /*
+    func recoverAccountBy(username: String, completion: @escaping (InstagramResult<AccountRecovery>) -> ()) throws {
         try recoverAccountBy(email: username) { (result) in
             completion(result)
         }
     }
     
-    func recoverAccountBy(email: String, completion: @escaping (Result<AccountRecovery>) -> ()) throws {
+    func recoverAccountBy(email: String, completion: @escaping (InstagramResult<AccountRecovery>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
         httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
@@ -1066,31 +700,42 @@ class UserHandler: UserHandlerProtocol {
                 })
             }
         }
-    }
+    }*/
     
-    func reportUser(userPk: Int, completion: @escaping (Result<Bool>) -> ()) throws {
-        let url = try URLs.reportUserUrl(userPk: userPk)
-        guard let handler = HandlerSettings.shared.httpHelper else { return }
-        let body = [
-            "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-            "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-            "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-            "user_id": String(userPk),
-            "source_name": "profile",
-            "is_spam": "true",
-            "reason_id": "1"
-        ]
-        
-        handler.sendAsync(method: .post, url: url, body: body, header: [:], completion: { (data, res, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: false))
-            } else {
-                if res?.statusCode == 200 {
-                    completion(Return.success(value: true))
-                } else {
-                    completion(Return.fail(error: nil, response: .wrongRequest, value: false))
+    /// Report user.
+    public func report(user: UserReference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        guard let storage = handler.response?.cache?.storage else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        }
+        switch user {
+        case .username:
+            // fetch username.
+            self.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                }
+                switch $0 {
+                case .success(let user) where user?.pk != nil:
+                    handler.report(user: .pk(user!.pk!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
                 }
             }
-        })
+        case .pk(let pk):
+            // report user directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_id": String(pk),
+                        "source_name": "profile",
+                        "is_spam": "true",
+                        "reason_id": "1"]
+            
+            requests.decodeAsync(BaseStatusResponseModel.self,
+                                 method: .post,
+                                 url: try! URLs.reportUserUrl(userPk: pk),
+                                 body: .parameters(body),
+                                 completionHandler: { completionHandler($0.map { $0.isOk() }) })
+        }
     }
 }

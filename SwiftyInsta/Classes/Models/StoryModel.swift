@@ -76,9 +76,9 @@ public struct ConfigureStoryUploadModel: Codable {
     //var edits
     public var disable_comments: Bool
     public var configure_mode: Int
-    public var campera_position: String
+    public var camera_position: String
     
-    public init(_uuid: String, _uid: String, _csrftoken: String, source_type: String, caption: String, upload_id: String, disable_comments: Bool, configure_mode: Int, campera_position: String) {
+    public init(_uuid: String, _uid: String, _csrftoken: String, source_type: String, caption: String, upload_id: String, disable_comments: Bool, configure_mode: Int, camera_position: String) {
         self._uuid = _uuid
         self._uid = _uid
         self._csrftoken = _csrftoken
@@ -87,7 +87,7 @@ public struct ConfigureStoryUploadModel: Codable {
         self.upload_id = upload_id
         self.disable_comments = disable_comments
         self.configure_mode = configure_mode
-        self.campera_position = campera_position
+        self.camera_position = camera_position
     }
 }
 
