@@ -15,7 +15,7 @@ struct URLs {
     
     // MARK: - Base Url
     private static let instagramUrl = "https://i.instagram.com"
-    private static let instagramCookieUrl = "https://www.instagram.com/"
+    private static let instagramCookieUrl = "https://www.instagram.com"
     private static let api = "/api"
     private static let apiVersion = "/v1"
     private static let apiSuffix = api + apiVersion

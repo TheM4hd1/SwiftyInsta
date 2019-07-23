@@ -38,7 +38,8 @@ class AuthenticationHandler: Handler {
             // analyze response.
             switch $0 {
             case .failure(let error): handler.settings.queues.response.async { completionHandler(.failure(error)) }
-            case .success(_, let response?):
+            case .success(_, let response) where response != nil:
+                let response = response!
                 // obtain cookies.
                 let cookies = HTTPCookie.cookies(withResponseHeaderFields: response.allHeaderFields as? [String: String] ?? [:],
                                                  for: response.url!)
@@ -151,7 +152,8 @@ class AuthenticationHandler: Handler {
                                 handler.settings.queues.response.async {
                                     completionHandler(error)
                                 }
-                            case .success(let data?, _):
+                            case .success(let data, _) where data != nil:
+                                let data = data!
                                 let string = String(data: data, encoding: .utf8)!
                                 // check for error.
                                 if string.contains("Enter the 6-digit code")
@@ -178,7 +180,8 @@ class AuthenticationHandler: Handler {
         requests.sendAsync(method: .get, url: url) { [weak self] in
             guard let me = self, let handler = me.handler else { return completionHandler(nil) }
             switch $0 {
-            case .success(let data?, _):
+            case .success(let data, _) where data != nil:
+                let data = data!
                 let string = String(data: data, encoding: .utf8)!
                 guard string.contains("window._sharedData = ") else { return completionHandler(nil) }
                 // parse.
@@ -234,7 +237,8 @@ class AuthenticationHandler: Handler {
                 handler.settings.queues.response.async {
                     completionHandler(.failure(error))
                 }
-            case .success(let data?, _):
+            case .success(let data, _) where data != nil:
+                let data = data!
                 let string = String(data: data, encoding: .utf8)!
                 // check for redirect.
                 if string.contains("CHALLENGE_REDIRECTION") {
@@ -289,7 +293,8 @@ class AuthenticationHandler: Handler {
                 handler.settings.queues.response.async {
                     completionHandler(.failure(error))
                 }
-            case .success(_, let response?):
+            case .success(_, let response) where response != nil:
+                let response = response!
                 switch response.statusCode {
                 case 200:
                     // log in.
@@ -343,7 +348,8 @@ class AuthenticationHandler: Handler {
                 handler.settings.queues.response.async {
                     completionHandler(.failure(error))
                 }
-            case .success(let data?, _):
+            case .success(let data, _) where data != nil:
+                let data = data!
                 let string = String(data: data, encoding: .utf8)!
                 if string.contains("two_factor_required") {
                     let decoder = JSONDecoder()
