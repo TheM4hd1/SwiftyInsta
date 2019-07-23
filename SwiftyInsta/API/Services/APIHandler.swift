@@ -72,12 +72,14 @@ public class APIHandler {
                              completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
         switch request {
         case .cache(let cache):
-            users.authenticate(cache: cache) { [weak self] response in
+            authentication.authenticate(cache: cache) { [weak self] response in
                 guard let handler = self else { return completionHandler(.failure(CustomErrors.runTimeError("`weak` reference was released."))) }
                 handler.settings.queues.response.async {
                     completionHandler(response.map { ($0, handler) })
                 }
             }
+        case .user(let credentials):
+            authentication.authenticate(user: credentials, completionHandler: completionHandler)
         case .webView(let webView):
             webView.authenticate { [weak self] in
                 guard let handler = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
@@ -112,7 +114,7 @@ public class APIHandler {
         
     /// Log out.
     public func invalidate(completionHandler: @escaping (Result<Bool, Error>) -> Void) throws {
-        users.logOut { [weak self] in
+        authentication.invalidate { [weak self] in
             // empty response if needed.
             if (try? $0.get()) == true { self?.response = nil }
             completionHandler($0)
@@ -126,6 +128,8 @@ public class APIHandler {
     internal lazy var pages: PaginationHelper = .init(handler: self)
 
     // MARK: Handlers
+    /// `AuthenticationHandler` endpoints manager.
+    lazy var authentication: AuthenticationHandler = .init(handler: self)
     /// `UserHandler` endpoints manager.
     public private(set) lazy var users: UserHandler = .init(handler: self)
     /// `CommentHandler` endpoints manager.
@@ -143,12 +147,58 @@ public class APIHandler {
 }
 
 // MARK: Other
+/// A class holding reference to the `base authentication` user.
+public struct Credentials {
+    /// Prefered verification method.
+    public enum Verification: String { case email = "1", text = "0" }
+    /// Response.
+    enum Response {
+        case challenge(URL)
+        case twoFactor(String)
+        case success
+        case failure
+        case unknown
+    }
+    
+    /// The username.
+    public private(set) var username: String
+    /// The password.
+    var password: String
+    /// The verification method.
+    public var verification: Verification
+    /// The code.
+    public var code: String? {
+        didSet {
+            // notify a change.
+            guard code != nil else { return }
+            handler?.authentication.code(for: self)
+        }
+    }
+    
+    /// The code handler.
+    weak var handler: APIHandler?
+    /// The _csrfToken_.
+    var csrfToken: String?
+    /// The response model.
+    var response: Response = .unknown
+    /// The completion handler.
+    var completionHandler: ((Result<(Login.Response, APIHandler), Error>) -> Void)?
+    
+    // MARK: Init
+    public init(username: String,
+                password: String,
+                verifyBy verification: Verification) {
+        self.username = username
+        self.password = password
+        self.verification = verification
+    }
+}
+
 /// An abstract `struct` holding login references .
 public struct Login {
     public enum Request {
-        @available(*, unavailable, message: "use `Siwa` instead to manage custom log in. (https://github.com/TheM4hd1/Siwa)")
-        /// Log in with username and password. **Use  `Siwa` instead ** (https://github.com/TheM4hd1/Siwa)
-        case user(String, password: String)
+        /// Log in with username and password.
+        case user(Credentials)
                 
         @available(iOS 11, *)
         /// Log in through web view.

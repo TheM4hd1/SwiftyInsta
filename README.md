@@ -40,6 +40,30 @@ To use this library in your project manually you may:
 -->
 
 ## Login
+### `Credentials`
+```swift
+// these need to be strong references.
+self.credentials = Credentials(username: /* username */, password: /* password */, verifyBy: .text)
+self.handler = APIHandler()
+handler.authenticate(with: .credentials(credentials)) {
+    switch $0 {
+    case .success(_, _): /* persist as usual */
+    case .failure(let error):
+        if error.requiresInstagramCode {
+            /* update interface to ask for code */
+        } else {
+            /* notify the user */
+        }
+    }
+}
+```
+
+Once the user has typed the two factor authentication code or challenge code, you simply do
+```swift
+self.credentials.code = /* the code */
+```
+And the `completionHandler` in the previous `authenticate(with: completionHandler:)` will automatically catch the response.
+
 
 ### `LoginWebView` (> iOS 11)
 ```swift

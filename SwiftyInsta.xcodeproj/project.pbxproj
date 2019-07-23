@@ -81,6 +81,7 @@
 		11F0CE6B2195CC2400C0F6A4 /* TimelineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */; };
 		11F57CC4229D2E78001A1C0A /* BlockedUsersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */; };
 		E063077222E253060015AA92 /* PaginationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E063077122E253060015AA92 /* PaginationHelper.swift */; };
+		E07EBC8B22E74DDA0031647F /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
 		E0978EDA22E5B1FF00179111 /* KeychainSwiftDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */; };
 		E0F49BA122E49E34004C3E7F /* FeedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FD21A99CD400BD9EFB /* FeedHandler.swift */; };
 		E0F49BA222E4A53D004C3E7F /* UserHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FE21A99CD400BD9EFB /* UserHandler.swift */; };
@@ -189,6 +190,7 @@
 		362E6E34E10F9827FDD883E6 /* Pods-SwiftyInsta.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta/Pods-SwiftyInsta.release.xcconfig"; sourceTree = "<group>"; };
 		8124B37DD4186069CED57CD5 /* Pods-SwiftyInsta.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta/Pods-SwiftyInsta.debug.xcconfig"; sourceTree = "<group>"; };
 		E063077122E253060015AA92 /* PaginationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationHelper.swift; sourceTree = "<group>"; };
+		E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AuthenticationHandler.swift; path = ../../../../../../../../../System/Volumes/Data/Users/stefanobertagno/Documents/Development/Libraries/SwiftyInsta/SwiftyInsta/API/Services/AuthenticationHandler.swift; sourceTree = "<group>"; };
 		E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSwiftDistrib.swift; sourceTree = "<group>"; };
 		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -278,6 +280,7 @@
 				11AE43FF21A99CD400BD9EFB /* ProfileHandler.swift */,
 				11AE43FE21A99CD400BD9EFB /* UserHandler.swift */,
 				11A95BEE21AC0B9800839250 /* StoryHandler.swift */,
+				E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -638,6 +641,7 @@
 				1104CD0F2180639000F855BA /* RequestMessageModel.swift in Sources */,
 				11848602218A1DDB0067FFD6 /* UserModel.swift in Sources */,
 				11B95674219453B7006661A6 /* ExploreFeedItemModel.swift in Sources */,
+				E07EBC8B22E74DDA0031647F /* AuthenticationHandler.swift in Sources */,
 				11848606218A21DA0067FFD6 /* NameTagModel.swift in Sources */,
 				112C1FD021998AEC00A698D5 /* DirectInboxModel.swift in Sources */,
 				114B84862187200500F84161 /* ChallengeModel.swift in Sources */,

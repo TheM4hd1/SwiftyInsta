@@ -8,14 +8,24 @@
 
 import Foundation
 
-public enum TwoFactorVerificationMethodsEnum: String {
-    case none = "0"
-    case sms = "1"
-    case backup = "2"
-    case totp = "3"
+public enum VerificationResponse {
+    case codeSent
+    case failed
+    case unknown
 }
 
-public enum TwoFactorLoginErrorTypeEnum: String {
-    case invalidCode = "sms_code_validation_code_invalid"
-    case missingCode = "sms_code_validation_code_missing"
+public enum ChallengeVerificationResponse {
+    case accepted
+    case checkpointDismiss
+    case incorrect
+    case loginFailed
+    case noRedirect
+    case unknown
+}
+
+public enum TwofactorVerificationResponse {
+    case invalidCode
+    case success
+    case failed
+    case unknown
 }

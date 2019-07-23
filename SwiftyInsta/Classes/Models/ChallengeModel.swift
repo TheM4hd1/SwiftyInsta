@@ -8,15 +8,61 @@
 
 import Foundation
 
-public struct ChallengeModel: Codable {
-    public var url: String
-    public var apiPath: String
-    public var hideWebviewHeader: Bool
-    public var lock: Bool
-    public var logout: Bool
-    public var nativeFlow: Bool
+struct ChallengeForm: Codable {
+    var entryData: EntryData?
     
-    public init(url: String, apiPath: String, hideWebviewHeader: Bool, lock: Bool, logout: Bool, nativeFlow: Bool) {
+    /// Compute and return the suggestion.
+    var suggestion: [String]? {
+        guard let values = entryData?.Challenge?.first?.extraData?.content?.last?.fields?.first?.values,
+            values.count == 2 else { return nil }
+        let first = values[0]
+        let last = values[1]
+        // check for.
+        return Array(Set([first.label, last.label].compactMap { $0 }))
+    }
+}
+extension ChallengeForm {
+    struct EntryData: Codable {
+        var Challenge: [EntryDataChallengeItem]?
+    }
+}
+extension ChallengeForm.EntryData {
+    struct EntryDataChallengeItem: Codable {
+        var extraData: ChallengeItemExtraData?
+    }
+}
+extension ChallengeForm.EntryData.EntryDataChallengeItem {
+    struct ChallengeItemExtraData: Codable {
+        var content: [ExtraDataContent]?
+    }
+}
+extension ChallengeForm.EntryData.EntryDataChallengeItem.ChallengeItemExtraData {
+    struct ExtraDataContent: Codable {
+        var fields: [ContentField]?
+    }
+}
+extension ChallengeForm.EntryData.EntryDataChallengeItem.ChallengeItemExtraData.ExtraDataContent {
+    struct ContentField: Codable {
+        var values: [FieldsItem]?
+    }
+}
+extension ChallengeForm.EntryData.EntryDataChallengeItem.ChallengeItemExtraData.ExtraDataContent.ContentField {
+    struct FieldsItem: Codable {
+        var label: String?
+        var selected: Bool?
+        var value: Int?
+    }
+}
+
+struct ChallengeModel: Codable {
+    var url: String
+    var apiPath: String
+    var hideWebviewHeader: Bool
+    var lock: Bool
+    var logout: Bool
+    var nativeFlow: Bool
+    
+    init(url: String, apiPath: String, hideWebviewHeader: Bool, lock: Bool, logout: Bool, nativeFlow: Bool) {
         self.url = url
         self.apiPath = apiPath
         self.hideWebviewHeader = hideWebviewHeader
