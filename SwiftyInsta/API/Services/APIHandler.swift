@@ -167,12 +167,20 @@ public struct Credentials {
     /// The verification method.
     public var verification: Verification
     /// The code.
-    public var code: String?
+    public var code: String? {
+        didSet {
+            // notify a change.
+            guard code != nil else { return }
+            codeHandler?(self)
+        }
+    }
     
     /// The _csrfToken_.
     var csrfToken: String?
     /// The response model.
     var response: Response = .unknown
+    /// The code handler.
+    var codeHandler: ((Credentials) -> Void)?
     /// The completion handler.
     var completionHandler: ((Result<(Login.Response, APIHandler), Error>) -> Void)?
     

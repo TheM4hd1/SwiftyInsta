@@ -30,6 +30,7 @@ class AuthenticationHandler: Handler {
     func authenticate(user: Credentials, completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
         // update user.
         var user = user
+        user.codeHandler = { [weak self] in self?.code(for: $0) }
         // remove cookies.
         HTTPCookieStorage.shared.removeCookies(since: .distantPast)
         // ask for login.
@@ -56,10 +57,11 @@ class AuthenticationHandler: Handler {
                                "X-Requested-With": "XMLHttpRequest",
                                "Referer": "https://instagram.com/"]
                 me.requests.decodeAsync(CredentialsAuthenticationResponse.self,
-                                        method: .get,
+                                        method: .post,
                                         url: URLs.login(),
                                         body: .parameters(body),
                                         headers: headers,
+                                        checkingValidStatusCode: false,
                                         delay: 0...0) {
                                         switch $0 {
                                         case .failure(let error):

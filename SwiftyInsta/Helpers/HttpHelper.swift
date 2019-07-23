@@ -30,6 +30,7 @@ class HttpHelper {
                         url: URL,
                         body: Body? = nil,
                         headers: [String: String] = [:],
+                        checkingValidStatusCode: Bool = true,
                         deliverOnResponseQueue: Bool = true,
                         delay: ClosedRange<Double>? = nil,
                         completionHandler: @escaping (Result<D, Error>) -> Void) where D: Decodable {
@@ -37,7 +38,9 @@ class HttpHelper {
             guard let handler = self?.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
             let result = $0.flatMap { data, response -> Result<D, Error> in
                 do {
-                    guard let data = data, response?.statusCode == 200 else { throw CustomErrors.runTimeError("Invalid response.") }
+                    guard let data = data, !checkingValidStatusCode || response?.statusCode == 200 else {
+                        throw CustomErrors.runTimeError("Invalid response.")
+                    }
                     // decode data.
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
