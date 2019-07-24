@@ -10,7 +10,7 @@ before_install:
 xcode_workspace: SwiftyInsta.xcworkspace
 matrix:
   include:
-    - xcode_scheme: SwiftyInsta
+    - xcode_scheme: SwiftyInsta.iOS
       xcode_sdk: iphonesimulator13.0
     - xcode_scheme: SwiftyInsta.macOS
       xcode_sdk: macosx10.15
