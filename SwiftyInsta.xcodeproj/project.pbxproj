@@ -28,8 +28,6 @@
 		114B84862187200500F84161 /* ChallengeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B84852187200500F84161 /* ChallengeModel.swift */; };
 		115CA6DD21AFFB2700769B00 /* GenderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DC21AFFB2700769B00 /* GenderTypes.swift */; };
 		115CA6DF21B0214800769B00 /* EditProfileModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DE21B0214800769B00 /* EditProfileModel.swift */; };
-		115F1211217FDD8B00ED3530 /* SwiftyInsta_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 115F1207217FDD8B00ED3530 /* SwiftyInsta_iOS.framework */; };
-		115F1216217FDD8B00ED3530 /* SwiftyInstaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1215217FDD8B00ED3530 /* SwiftyInstaTests.swift */; };
 		115F1218217FDD8B00ED3530 /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		115F1241217FE98000ED3530 /* APIHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1240217FE98000ED3530 /* APIHandler.swift */; };
 		115F1244217FEA4400ED3530 /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
@@ -72,7 +70,6 @@
 		11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */; };
 		11C439D4219A429B00467381 /* ProfilePrivacyResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C439D3219A429B00467381 /* ProfilePrivacyResponseModel.swift */; };
 		11C487F8219B2A3B00E952A1 /* UserInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C487F7219B2A3B00E952A1 /* UserInfoModel.swift */; };
-		11C5F4DE21A059F4001EC550 /* testbundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 11C5F4DD21A059F4001EC550 /* testbundle.bundle */; };
 		11D2AE0A21A02023007D7F1F /* CreateAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */; };
 		11D3779D22674E340023CF07 /* LoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D3779C22674E340023CF07 /* LoginWebView.swift */; };
 		11DDE51F21A1F94B00754F0F /* AndroidVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */; };
@@ -333,16 +330,6 @@
 		E8314D5E2210652400D13BEA /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		115F1212217FDD8B00ED3530 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 115F11FE217FDD8B00ED3530 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 115F1206217FDD8B00ED3530;
-			remoteInfo = SwiftyInsta;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		110454D4221DE7270080F986 /* AccountRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRecovery.swift; sourceTree = "<group>"; };
 		1104CD082180621400F855BA /* HTTPMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethods.swift; sourceTree = "<group>"; };
@@ -368,9 +355,6 @@
 		115F1207217FDD8B00ED3530 /* SwiftyInsta_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		115F120A217FDD8B00ED3530 /* SwiftyInsta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftyInsta.h; sourceTree = "<group>"; };
 		115F120B217FDD8B00ED3530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		115F1210217FDD8B00ED3530 /* SwiftyInsta.iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftyInsta.iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		115F1215217FDD8B00ED3530 /* SwiftyInstaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftyInstaTests.swift; sourceTree = "<group>"; };
-		115F1217217FDD8B00ED3530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		115F1240217FE98000ED3530 /* APIHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIHandler.swift; sourceTree = "<group>"; };
 		115F1243217FEA4400ED3530 /* Headers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Headers.swift; sourceTree = "<group>"; };
 		115F1245217FEA5200ED3530 /* URLs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLs.swift; sourceTree = "<group>"; };
@@ -418,7 +402,6 @@
 		11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationParameters.swift; sourceTree = "<group>"; };
 		11C439D3219A429B00467381 /* ProfilePrivacyResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePrivacyResponseModel.swift; sourceTree = "<group>"; };
 		11C487F7219B2A3B00E952A1 /* UserInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModel.swift; sourceTree = "<group>"; };
-		11C5F4DD21A059F4001EC550 /* testbundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = testbundle.bundle; sourceTree = "<group>"; };
 		11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountModel.swift; sourceTree = "<group>"; };
 		11D3779C22674E340023CF07 /* LoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebView.swift; sourceTree = "<group>"; };
 		11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidVersion.swift; sourceTree = "<group>"; };
@@ -464,14 +447,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		115F120D217FDD8B00ED3530 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				115F1211217FDD8B00ED3530 /* SwiftyInsta_iOS.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E006E39E22E87DFC002DB4BB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -503,7 +478,6 @@
 			isa = PBXGroup;
 			children = (
 				115F1209217FDD8B00ED3530 /* SwiftyInsta */,
-				115F1214217FDD8B00ED3530 /* SwiftyInstaTests */,
 				E006E3A222E87DFC002DB4BB /* SwiftyInsta.macOS */,
 				E006E3CB22E87E2C002DB4BB /* SwiftyInsta.tvOS */,
 				E006E3E722E87E42002DB4BB /* SwiftyInsta.watchOS */,
@@ -517,7 +491,6 @@
 			isa = PBXGroup;
 			children = (
 				115F1207217FDD8B00ED3530 /* SwiftyInsta_iOS.framework */,
-				115F1210217FDD8B00ED3530 /* SwiftyInsta.iOSTests.xctest */,
 				E006E3A122E87DFC002DB4BB /* SwiftyInsta_macOS.framework */,
 				E006E3CA22E87E2C002DB4BB /* SwiftyInsta_tvOS.framework */,
 				E006E3E622E87E42002DB4BB /* SwiftyInsta_watchOS.framework */,
@@ -535,16 +508,6 @@
 				115F1234217FE5FE00ED3530 /* Supporting Files */,
 			);
 			path = SwiftyInsta;
-			sourceTree = "<group>";
-		};
-		115F1214217FDD8B00ED3530 /* SwiftyInstaTests */ = {
-			isa = PBXGroup;
-			children = (
-				11C5F4DD21A059F4001EC550 /* testbundle.bundle */,
-				115F1215217FDD8B00ED3530 /* SwiftyInstaTests.swift */,
-				115F1217217FDD8B00ED3530 /* Info.plist */,
-			);
-			path = SwiftyInstaTests;
 			sourceTree = "<group>";
 		};
 		115F1234217FE5FE00ED3530 /* Supporting Files */ = {
@@ -839,24 +802,6 @@
 			productReference = 115F1207217FDD8B00ED3530 /* SwiftyInsta_iOS.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		115F120F217FDD8B00ED3530 /* SwiftyInsta.iOSTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 115F121E217FDD8B00ED3530 /* Build configuration list for PBXNativeTarget "SwiftyInsta.iOSTests" */;
-			buildPhases = (
-				115F120C217FDD8B00ED3530 /* Sources */,
-				115F120D217FDD8B00ED3530 /* Frameworks */,
-				115F120E217FDD8B00ED3530 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				115F1213217FDD8B00ED3530 /* PBXTargetDependency */,
-			);
-			name = SwiftyInsta.iOSTests;
-			productName = SwiftyInstaTests;
-			productReference = 115F1210217FDD8B00ED3530 /* SwiftyInsta.iOSTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		E006E3A022E87DFC002DB4BB /* SwiftyInsta.macOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E006E3B222E87DFC002DB4BB /* Build configuration list for PBXNativeTarget "SwiftyInsta.macOS" */;
@@ -928,9 +873,6 @@
 						CreatedOnToolsVersion = 10.0;
 						LastSwiftMigration = 1000;
 					};
-					115F120F217FDD8B00ED3530 = {
-						CreatedOnToolsVersion = 10.0;
-					};
 					E006E3A022E87DFC002DB4BB = {
 						CreatedOnToolsVersion = 11.0;
 					};
@@ -955,7 +897,6 @@
 			projectRoot = "";
 			targets = (
 				115F1206217FDD8B00ED3530 /* SwiftyInsta.iOS */,
-				115F120F217FDD8B00ED3530 /* SwiftyInsta.iOSTests */,
 				E006E3A022E87DFC002DB4BB /* SwiftyInsta.macOS */,
 				E006E3C922E87E2C002DB4BB /* SwiftyInsta.tvOS */,
 				E006E3E522E87E42002DB4BB /* SwiftyInsta.watchOS */,
@@ -965,14 +906,6 @@
 
 /* Begin PBXResourcesBuildPhase section */
 		115F1205217FDD8B00ED3530 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				11C5F4DE21A059F4001EC550 /* testbundle.bundle in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		115F120E217FDD8B00ED3530 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1175,14 +1108,6 @@
 				11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */,
 				11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */,
 				115CA6DD21AFFB2700769B00 /* GenderTypes.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		115F120C217FDD8B00ED3530 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				115F1216217FDD8B00ED3530 /* SwiftyInstaTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1437,14 +1362,6 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		115F1213217FDD8B00ED3530 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 115F1206217FDD8B00ED3530 /* SwiftyInsta.iOS */;
-			targetProxy = 115F1212217FDD8B00ED3530 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
 		115F1219217FDD8B00ED3530 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1619,42 +1536,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		115F121F217FDD8B00ED3530 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = SwiftyInstaTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.TheM4hd1.SwiftyInstaTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		115F1220217FDD8B00ED3530 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = SwiftyInstaTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.TheM4hd1.SwiftyInstaTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1834,15 +1715,6 @@
 			buildConfigurations = (
 				115F121C217FDD8B00ED3530 /* Debug */,
 				115F121D217FDD8B00ED3530 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		115F121E217FDD8B00ED3530 /* Build configuration list for PBXNativeTarget "SwiftyInsta.iOSTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				115F121F217FDD8B00ED3530 /* Debug */,
-				115F1220217FDD8B00ED3530 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
