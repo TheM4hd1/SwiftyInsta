@@ -3,18 +3,15 @@ language: swift
 osx_image: xcode11
 
 before_install:
-- pod init
-- curl https://gist.githubusercontent.com/sbertix/2e8a618086e1bc50ba57e2cfc443a1ab/raw/cfdb8bc96ce430befef98e14269f7e4d62f13f10/SwiftyInsta.podfile --output Podfile
-- pod install
+  - pod init
+  - curl https://gist.githubusercontent.com/sbertix/2e8a618086e1bc50ba57e2cfc443a1ab/raw/cfdb8bc96ce430befef98e14269f7e4d62f13f10/SwiftyInsta.podfile --output Podfile
+  - pod install
 
-xcode_workspace: SwiftyInsta.xcworkspace
-matrix:
-  include:
-    - xcode_scheme: SwiftyInsta.iOS
-      xcode_sdk: iphonesimulator13.0
-    - xcode_scheme: SwiftyInsta.macOS
-      xcode_sdk: macosx10.15
-    - xcode_scheme: SwiftyInsta.tvOS
-      xcode_sdk: appletvsimulator13.0
-    - xcode_scheme: SwiftyInsta.watchOS
-      xcode_sdk: watchsimulator6.0
+env:
+  matrix:
+    - SCHEME='SwiftyInsta.iOS'      SDK='iphonesimulator'
+    - SCHEME='SwiftyInsta.macOS'    SDK='macosx'
+    - SCHEME='SwiftyInsta.tvOS'     SDK='appletvsimulator'
+    - SCHEME='SwiftyInsta.watchOS'  SDK='watchsimulator'
+script:
+  - xcodebuild clean build -workspace SwiftyInsta.xcworkspace -scheme ${SCHEME} -sdk ${SDK} -configuration Debug | xcpretty -c
