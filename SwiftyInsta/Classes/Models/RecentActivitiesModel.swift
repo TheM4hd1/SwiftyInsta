@@ -126,11 +126,7 @@ public struct ArgsLinksModel: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(Int.self, forKey: .id) {
-            if let value = value {
-                id = String(value)
-            } else {
-                id = try container.decode(String.self, forKey: .id)
-            }
+            id = String(value)
         } else {
             id = try container.decode(String.self, forKey: .id)
         }

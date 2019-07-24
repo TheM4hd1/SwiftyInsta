@@ -24,11 +24,7 @@ public struct NameTagModel: Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(String.self, forKey: .gradient) {
-            if let value = value {
-                gradient = Int(value)
-            } else {
-                gradient = try container.decode(Int.self, forKey: .gradient)
-            }
+            gradient = Int(value)
         } else {
             gradient = try container.decode(Int.self, forKey: .gradient)
         }

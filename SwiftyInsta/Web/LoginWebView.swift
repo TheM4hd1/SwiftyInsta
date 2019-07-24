@@ -6,7 +6,6 @@
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
-#if os(iOS)
 import UIKit
 import WebKit
 
@@ -84,4 +83,3 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         fetchCookies()
     }
 }
-#endif
