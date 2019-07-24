@@ -21,6 +21,7 @@
 		112E735E2180E8DF0048A8D7 /* CommonHMAC.h in Headers */ = {isa = PBXBuildFile; fileRef = 112E735D2180E8DF0048A8D7 /* CommonHMAC.h */; };
 		1131A45421974F9D00497992 /* TagFeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1131A45321974F9D00497992 /* TagFeedModel.swift */; };
 		1135EA60219B5C2D00DCB739 /* CommentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1135EA5F219B5C2D00DCB739 /* CommentModel.swift */; };
+		1141BDA122E85AD800D987FF /* PermalinkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1141BDA022E85AD800D987FF /* PermalinkModel.swift */; };
 		1143E0C821809E7700D9FF31 /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
 		114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */; };
 		114B848221871E1500F84161 /* TwoFactorLoginInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */; };
@@ -119,6 +120,7 @@
 		112E735D2180E8DF0048A8D7 /* CommonHMAC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonHMAC.h; sourceTree = "<group>"; };
 		1131A45321974F9D00497992 /* TagFeedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagFeedModel.swift; sourceTree = "<group>"; };
 		1135EA5F219B5C2D00DCB739 /* CommentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentModel.swift; sourceTree = "<group>"; };
+		1141BDA022E85AD800D987FF /* PermalinkModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermalinkModel.swift; sourceTree = "<group>"; };
 		1143E0C721809E7700D9FF31 /* ResponseTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseTypes.swift; sourceTree = "<group>"; };
 		114B847F21871D1300F84161 /* LoginBaseResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginBaseResponseModel.swift; sourceTree = "<group>"; };
 		114B848121871E1500F84161 /* TwoFactorLoginInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLoginInfoModel.swift; sourceTree = "<group>"; };
@@ -358,6 +360,7 @@
 				110454D4221DE7270080F986 /* AccountRecovery.swift */,
 				11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */,
 				1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */,
+				1141BDA022E85AD800D987FF /* PermalinkModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -587,6 +590,7 @@
 				1104CD0D218062DD00F855BA /* AndroidDeviceModel.swift in Sources */,
 				E0F49BA422E4F0D3004C3E7F /* MessageHandler.swift in Sources */,
 				114B848421871E9B00F84161 /* PhoneVerificationSettingsModel.swift in Sources */,
+				1141BDA122E85AD800D987FF /* PermalinkModel.swift in Sources */,
 				1143E0C821809E7700D9FF31 /* ResponseTypes.swift in Sources */,
 				E0F49BA522E505CF004C3E7F /* StoryHandler.swift in Sources */,
 				11E148D82209F3300068C8AF /* HttpSettings.swift in Sources */,

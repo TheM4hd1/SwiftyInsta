@@ -590,4 +590,11 @@ public class MediaHandler: Handler {
                              url: try! URLs.getMediaLikersUrl(mediaId: mediaId),
                              completionHandler: completionHandler)
     }
+    
+    /// Get media permalink.
+    public func permalink(ofMedia mediaId: String, completionHandler: @escaping (Result<PermalinkModel, Error>) -> Void) {
+        requests.decodeAsync(PermalinkModel.self,
+                             method: .get, url: try! URLs.getPermalink(mediaId: mediaId),
+                             completionHandler: completionHandler)
+    }
 }
