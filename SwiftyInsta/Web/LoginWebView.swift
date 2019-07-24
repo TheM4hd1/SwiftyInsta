@@ -83,4 +83,3 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         fetchCookies()
     }
 }
-

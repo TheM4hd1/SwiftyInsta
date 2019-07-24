@@ -8,6 +8,17 @@
 
 import Foundation
 
+#if os(OSX)
+    import AppKit
+    public typealias Image = NSImage
+#elseif os(watchOS)
+    import WatchKit
+    public typealias Image = UIImage
+#else
+    import UIKit
+    public typealias Image = UIImage
+#endif
+
 public protocol UploadMediaProtocol {
     var caption: String {get}
     var width: Int {get}
@@ -15,12 +26,12 @@ public protocol UploadMediaProtocol {
 }
 
 public struct InstaPhoto: UploadMediaProtocol {
-    public var image: UIImage
+    public var image: Image
     public var caption: String
     public var width: Int
     public var height: Int
     
-    public init(image: UIImage, caption: String, width: Int, height: Int) {
+    public init(image: Image, caption: String, width: Int, height: Int) {
         self.image = image
         self.caption = caption
         self.width = width

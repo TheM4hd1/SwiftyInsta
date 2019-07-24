@@ -198,7 +198,11 @@ public class ProfileHandler: Handler {
         content.append(string: "Content-Type: application/octet-stream\n")
         content.append(string: "Content-Disposition: form-data; name=\"profile_pic\"; filename=r\(uploadId).jpg; filename*=utf-8''r\(uploadId).jpg\n\n")
         
-        let imageData = photo.image.jpegData(compressionQuality: 1)
+        #if os(macOS)
+            let imageData = photo.image.tiffRepresentation
+        #else
+            let imageData = photo.image.jpegData(compressionQuality: 1)
+        #endif
         content.append(imageData!)
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]

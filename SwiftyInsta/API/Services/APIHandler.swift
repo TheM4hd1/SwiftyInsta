@@ -80,6 +80,7 @@ public class APIHandler {
             }
         case .user(let credentials):
             authentication.authenticate(user: credentials, completionHandler: completionHandler)
+        #if os(iOS)
         case .webView(let webView):
             webView.authenticate { [weak self] in
                 guard let handler = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
@@ -109,6 +110,7 @@ public class APIHandler {
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             }
+        #endif
         }
     }
         
@@ -199,12 +201,13 @@ public struct Login {
     public enum Request {
         /// Log in with username and password.
         case user(Credentials)
-                
+               
+        #if os(iOS)
         @available(iOS 11, *)
         /// Log in through web view.
         case webView(LoginWebView)
+        #endif
         
-        @available(iOS 10, *)   // `@available(_)` added simply to avoid a visual glitch in Xcode
         /// Log in using `SessionCache` (either a stored one, or through `Siwa`).
         case cache(SessionCache)
     }
