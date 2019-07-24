@@ -4,6 +4,5 @@ language: swift
 before_install:
 - pod init
 - curl https://gist.githubusercontent.com/TheM4hd1/6552b8d612bacc4f8766610beb0ba266/raw/1544b8580dbe0969c374131761be9c2aecc0cc58/SwiftyInsta.podfile --output Podfile
-- pod update
 - pod install
 script: xcodebuild clean build -workspace SwiftyInsta.xcworkspace -scheme "SwiftyInsta" -sdk iphonesimulator -destination "platform=iOS Simulator,OS=12.1,name=iPhone X"
