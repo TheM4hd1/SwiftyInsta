@@ -1,3 +1,5 @@
 /Pods/**
 /Pod*
 *.xcworkspace/**
+.DS_Store
+_config.yml
