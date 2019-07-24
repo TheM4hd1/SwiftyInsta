@@ -11,10 +11,10 @@ xcode_workspace: SwiftyInsta.xcworkspace
 matrix:
   include:
     - xcode_scheme: SwiftyInsta
-      xcode_sdk: iphonesimulator10.0
+      xcode_sdk: iphonesimulator13.0
     - xcode_scheme: SwiftyInsta.macOS
-      xcode_sdk: macosx10.12
+      xcode_sdk: macosx10.15
     - xcode_scheme: SwiftyInsta.tvOS
-      xcode_sdk: tvos10.0
+      xcode_sdk: appletvsimulator13.0
     - xcode_scheme: SwiftyInsta.watchOS
-      xcode_sdk: watchos3.0
+      xcode_sdk: watchsimulator6.0
