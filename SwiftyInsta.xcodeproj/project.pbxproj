@@ -321,6 +321,9 @@
 		E089AFEC22E8A88200AE815D /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; };
 		E089AFED22E8A88200AE815D /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; };
 		E0978EDA22E5B1FF00179111 /* KeychainSwiftDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */; };
+		E0F2355022E9A89A0039F5A6 /* PermalinkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1141BDA022E85AD800D987FF /* PermalinkModel.swift */; };
+		E0F2355122E9A89A0039F5A6 /* PermalinkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1141BDA022E85AD800D987FF /* PermalinkModel.swift */; };
+		E0F2355222E9A8A00039F5A6 /* PermalinkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1141BDA022E85AD800D987FF /* PermalinkModel.swift */; };
 		E0F49BA122E49E34004C3E7F /* FeedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FD21A99CD400BD9EFB /* FeedHandler.swift */; };
 		E0F49BA222E4A53D004C3E7F /* UserHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FE21A99CD400BD9EFB /* UserHandler.swift */; };
 		E0F49BA322E4D864004C3E7F /* MediaHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE440221A99CD400BD9EFB /* MediaHandler.swift */; };
@@ -1091,6 +1094,7 @@
 				E006E3FD22E87EFE002DB4BB /* ResponseTypes.swift in Sources */,
 				E006E42922E87EFE002DB4BB /* UploadMediaModel.swift in Sources */,
 				E006E43422E87EFE002DB4BB /* PaginationHelper.swift in Sources */,
+				E0F2355022E9A89A0039F5A6 /* PermalinkModel.swift in Sources */,
 				E006E42E22E87EFE002DB4BB /* UserTags.swift in Sources */,
 				E006E41222E87EFE002DB4BB /* NameTagModel.swift in Sources */,
 				E006E43622E87EFE002DB4BB /* Extensions.swift in Sources */,
@@ -1174,6 +1178,7 @@
 				E006E44A22E87EFF002DB4BB /* ResponseTypes.swift in Sources */,
 				E006E47622E87EFF002DB4BB /* UploadMediaModel.swift in Sources */,
 				E006E48122E87EFF002DB4BB /* PaginationHelper.swift in Sources */,
+				E0F2355122E9A89A0039F5A6 /* PermalinkModel.swift in Sources */,
 				E006E47B22E87EFF002DB4BB /* UserTags.swift in Sources */,
 				E006E45F22E87EFF002DB4BB /* NameTagModel.swift in Sources */,
 				E006E48322E87EFF002DB4BB /* Extensions.swift in Sources */,
@@ -1257,6 +1262,7 @@
 				E006E49722E87F00002DB4BB /* ResponseTypes.swift in Sources */,
 				E006E4C322E87F00002DB4BB /* UploadMediaModel.swift in Sources */,
 				E006E4CE22E87F00002DB4BB /* PaginationHelper.swift in Sources */,
+				E0F2355222E9A8A00039F5A6 /* PermalinkModel.swift in Sources */,
 				E006E4C822E87F00002DB4BB /* UserTags.swift in Sources */,
 				E006E4AC22E87F00002DB4BB /* NameTagModel.swift in Sources */,
 				E006E4D022E87F00002DB4BB /* Extensions.swift in Sources */,
