@@ -302,25 +302,10 @@ public class StoryHandler: Handler {
                              completionHandler: completionHandler)
     }
 
-    func getStoryArchive(completion: @escaping (Result<StoryArchiveFeedModel>) -> ()) throws {
-        HandlerSettings.shared.httpHelper!.sendAsync(method: .get, url: try URLs.getStoryArchiveUrl(), body: [:], header: [:]) { (data, response, error) in
-            if let error = error {
-                completion(Return.fail(error: error, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    do {
-                        let value = try decoder.decode(StoryArchiveFeedModel.self, from: data)
-                        completion(Return.success(value: value))
-                    } catch {
-                        completion(Return.fail(error: error, response: .ok, value: nil))
-                    }
-                } else {
-                    let error = CustomErrors.unExpected("The data couldn’t be read because it is missing error when decoding JSON.")
-                    completion(Return.fail(error: error, response: .ok, value: nil))
-                }
-            }
-        }
+    func archive(completionHandler: @escaping (Result<StoryArchiveFeedModel, Error>) -> Void) {
+        requests.decodeAsync(StoryArchiveFeedModel.self,
+                             method: .get,
+                             url: URLs.getStoryArchiveUrl(),
+                             completionHandler: completionHandler)
     }
 }

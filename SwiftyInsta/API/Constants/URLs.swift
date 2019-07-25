@@ -699,7 +699,7 @@ struct URLs {
         fatalError("Invalid url.")
     }
 
-    static func getStoryArchiveUrl() throws -> URL {
+    static func getStoryArchiveUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, storyArchive)) {
             return url
         }

@@ -71,7 +71,7 @@ public struct StoryArchiveFeedModel: Codable, BaseStatusResponseProtocol {
     public var numResults: Int?
     public var items: [StoryArchiveModel]?
     public var status: String?
-    
+
     public init(moreAvailable: Bool?, numResults: Int?, items: [StoryArchiveModel]?) {
         self.moreAvailable = moreAvailable
         self.numResults = numResults
@@ -82,7 +82,7 @@ public struct StoryArchiveFeedModel: Codable, BaseStatusResponseProtocol {
 public struct StoryArchiveModel: Codable {
     public var id: String?
     public var mediaCount: Int?
-    
+
     public init(id: String?, mediaCount: Int?) {
         self.id = id
         self.mediaCount = mediaCount
