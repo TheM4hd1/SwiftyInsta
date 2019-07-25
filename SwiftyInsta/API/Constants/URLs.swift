@@ -10,9 +10,9 @@ import Foundation
 
 /// Private Instagram API
 struct URLs {
-    
+
     private init() {}
-    
+
     // MARK: - Base Url
     private static let instagramUrl = "https://i.instagram.com"
     private static let instagramCookieUrl = "https://www.instagram.com"
@@ -93,121 +93,124 @@ struct URLs {
     private static let reportUser = "/users/%ld/flag_user/"
     private static let reelsMediaFeed = "/feed/reels_media/"
     private static let permalink = "/media/%@/permalink/"
-    
+
     // MARK: - Methods
     static func home() -> URL {
-        return URL(string: instagramCookieUrl)!
-    }
-    
-    static func login() -> URL {
-        return URL(string: String(format: "%@%@", instagramCookieUrl, loginPath))!
-    }
-    
-    static func checkpoint(url: String) -> URL {
-        return URL(string: String(format: "%@%@", instagramCookieUrl, url))!
-    }
-    
-    static func twoFactor() -> URL {
-        return URL(string: String(format: "%@%@", instagramCookieUrl, twoFactorPath))!
-    }
-    
-    static func resendTwoFactorCode() -> URL {
-        return URL(string: String(format: "%@%@", instagramCookieUrl, twoFactorResendPath))!
+        if let url = URL(string: instagramCookieUrl) { return url }
+        fatalError("Invalid url.")
     }
 
-    static func getInstagramUrl() throws -> URL {
+    static func login() -> URL {
+        if let url =  URL(string: String(format: "%@%@", instagramCookieUrl, loginPath)) { return url }
+        fatalError("Invalid url.")
+    }
+
+    static func checkpoint(url: String) -> URL {
+        if let url = URL(string: String(format: "%@%@", instagramCookieUrl, url)) { return url }
+        fatalError("Invalid url.")
+    }
+
+    static func twoFactor() -> URL {
+        if let url = URL(string: String(format: "%@%@", instagramCookieUrl, twoFactorPath)) { return url }
+        fatalError("Invalid url.")
+    }
+
+    static func resendTwoFactorCode() -> URL {
+        if let url = URL(string: String(format: "%@%@", instagramCookieUrl, twoFactorResendPath)) { return url }
+        fatalError("Invalid url.")
+    }
+
+    static func getInstagramUrl() -> URL {
         if let url = URL(string: instagramUrl) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for instagram main url.")
+        fatalError("Invalid url.")
     }
-    
-    static func getCreateAccountUrl() throws -> URL {
+
+    static func getCreateAccountUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, accountCreate)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for user creation")
+        fatalError("Invalid url.")
     }
-    
-    static func getLoginUrl() throws -> URL {
+
+    static func getLoginUrl() -> URL {
         if let url = URL(string: baseInstagramApiUrl + accountLogin) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for instagram login url.")
+        fatalError("Invalid url.")
     }
-    
-    static func getLogoutUrl() throws -> URL {
+
+    static func getLogoutUrl() -> URL {
         if let url = URL(string: baseInstagramApiUrl + accountLogout) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for instagram logout url.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUserUrl(username: String) throws -> URL {
+
+    static func getUserUrl(username: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, searchUser)) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             urlComponent?.queryItems = [URLQueryItem(name: "q", value: username)]
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for instagram user page.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUserFollowing(userPk: Int?, rankToken: String?, searchQuery: String = "", maxId: String = "") throws -> URL {
+
+    static func getUserFollowing(userPk: Int?, rankToken: String?, searchQuery: String = "", maxId: String = "") -> URL {
         guard let userPk = userPk, let rankToken = rankToken else {
-            throw CustomErrors.urlCreationFaild("Cant create URL for user followings.\n nil inputs.")
-        }
+            fatalError("Invalid url.")        }
 
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userFollowing, userPk))) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             var queryItems: [URLQueryItem] = []
             queryItems.append(URLQueryItem(name: "rank_token", value: rankToken))
-            
+
             if !maxId.isEmpty {
                 queryItems.append(URLQueryItem(name: "max_id", value: maxId))
             }
-            
+
             if !searchQuery.isEmpty {
                 queryItems.append(URLQueryItem(name: "query", value: searchQuery))
             }
-            
+
             urlComponent?.queryItems = queryItems
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for user followings.")
+        fatalError("Invalid url.")
     }
-        
-    static func getUserFollowers(userPk: Int?, rankToken: String?, searchQuery: String = "", maxId: String = "") throws -> URL {
+
+    static func getUserFollowers(userPk: Int?, rankToken: String?, searchQuery: String = "", maxId: String = "") -> URL {
         guard let userPk = userPk, let rankToken = rankToken else {
-            throw CustomErrors.urlCreationFaild("Cant create URL for user followers.\n nil inputs.")
-        }
-        
+            fatalError("Invalid url.")        }
+
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userFollowers, userPk))) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             var queryItems: [URLQueryItem] = []
             queryItems.append(URLQueryItem(name: "rank_token", value: rankToken))
-            
+
             if !maxId.isEmpty {
                 queryItems.append(URLQueryItem(name: "max_id", value: maxId))
             }
-            
+
             if !searchQuery.isEmpty {
                 queryItems.append(URLQueryItem(name: "query", value: searchQuery))
             }
-            
+
             urlComponent?.queryItems = queryItems
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for user followers.")
+        fatalError("Invalid url.")
     }
-    
-    static func getCurrentUser() throws -> URL {
+
+    static func getCurrentUser() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, currentUser)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for current user.")
+        fatalError("Invalid url.")
     }
-    
-    static func getExploreFeedUrl(maxId: String = "") throws -> URL {
+
+    static func getExploreFeedUrl(maxId: String = "") -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, exploreFeed)) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if !maxId.isEmpty {
@@ -215,10 +218,10 @@ struct URLs {
             }
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for exploring feed.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUserTimeLineUrl(maxId: String = "") throws -> URL {
+
+    static func getUserTimeLineUrl(maxId: String = "") -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, userTimeLine)) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if !maxId.isEmpty {
@@ -226,45 +229,44 @@ struct URLs {
             }
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for timeline feed.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUserFeedUrl(userPk: Int?, maxId: String = "") throws -> URL {
+
+    static func getUserFeedUrl(userPk: Int?, maxId: String = "") -> URL {
         guard let userPk = userPk else {
-            throw CustomErrors.urlCreationFaild("Cant create URL for user feed.\n nil input.")
-        }
-        
+            fatalError("Invalid url.")        }
+
         if let url = URL(string: String(format: "%@%@%ld", baseInstagramApiUrl, userFeed, userPk)) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if !maxId.isEmpty {
                 urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
             }
-            
+
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for user feed.")
+        fatalError("Invalid url.")
     }
-    
-    static func getMediaUrl(mediaId: String) throws -> URL {
+
+    static func getMediaUrl(mediaId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: mediaInfo, mediaId))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for media info by id.")
+        fatalError("Invalid url.")
     }
-    
-    static func getTagFeed(for tag: String, maxId: String = "") throws -> URL {
+
+    static func getTagFeed(for tag: String, maxId: String = "") -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: tagFeed, tag))) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if !maxId.isEmpty {
                 urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
             }
-            
+
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for exploring tag.")
+        fatalError("Invalid url.")
     }
-    
-    static func getRecentActivities(maxId: String = "") throws -> URL {
+
+    static func getRecentActivities(maxId: String = "") -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, recentActivities)) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if !maxId.isEmpty {
@@ -274,10 +276,10 @@ struct URLs {
             }
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for recent activities.")
+        fatalError("Invalid url.")
     }
-    
-    static func getRecentFollowingActivities(maxId: String = "") throws -> URL {
+
+    static func getRecentFollowingActivities(maxId: String = "") -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, recentFollowingActivities)) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if !maxId.isEmpty {
@@ -285,416 +287,414 @@ struct URLs {
             }
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for recent followings activities.")
+        fatalError("Invalid url.")
     }
-    
-    static func getDirectInbox() throws -> URL {
+
+    static func getDirectInbox() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, directInbox)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for direct inbox.")
+        fatalError("Invalid url.")
     }
-    
-    static func getDirectSendTextMessage() throws -> URL {
+
+    static func getDirectSendTextMessage() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, directSendMessage)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for sending direct message.")
+        fatalError("Invalid url.")
     }
-    
-    static func getDirectThread(id: String) throws -> URL {
+
+    static func getDirectThread(id: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: directThread, id))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for get direct thread by id.")
+        fatalError("Invalid url.")
     }
-    
-    static func getRecentDirectRecipients() throws -> URL {
+
+    static func getRecentDirectRecipients() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, recentRecipients)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for get recent recipients")
+        fatalError("Invalid url.")
     }
-    
-    static func getRankedDirectRecipients() throws -> URL {
+
+    static func getRankedDirectRecipients() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, rankedRecipients)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for get ranked recipients")
+        fatalError("Invalid url.")
     }
-    
-    static func setPublicProfile() throws -> URL {
+
+    static func setPublicProfile() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, setAccountPublic)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for set public profile")
+        fatalError("Invalid url.")
     }
-    
-    static func setPrivateProfile() throws -> URL {
+
+    static func setPrivateProfile() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, setAccountPrivate)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for set private profile")
+        fatalError("Invalid url.")
     }
-    
-    static func getChangePasswordUrl() throws -> URL {
+
+    static func getChangePasswordUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, changePassword)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for change password.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUserInfo(id: Int) throws -> URL {
+
+    static func getUserInfo(id: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userInfo, id))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for get userinfo.")
+        fatalError("Invalid url.")
     }
-    
-    static func getLikeMediaUrl(mediaId: String) throws -> URL {
+
+    static func getLikeMediaUrl(mediaId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: likeMedia, mediaId))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for like media.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUnLikeMediaUrl(mediaId: String) throws -> URL {
+
+    static func getUnLikeMediaUrl(mediaId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: unlikeMedia, mediaId))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for unlike media.")
+        fatalError("Invalid url.")
     }
-    
-    static func getComments(for mediaId: String, maxId: String = "") throws -> URL {
+
+    static func getComments(for mediaId: String, maxId: String = "") -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: mediaComments, mediaId))) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             if !maxId.isEmpty {
                 urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
             }
-            
+
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for get media comments.")
+        fatalError("Invalid url.")
     }
-    
-    static func removeFollowerUrl(for user: Int) throws -> URL {
+
+    static func removeFollowerUrl(for user: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: removeFollower, user))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for remove follower.")
+        fatalError("Invalid url.")
     }
-    
-    static func approveFriendshipUrl(for user: Int) throws -> URL {
+
+    static func approveFriendshipUrl(for user: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: approveFriendship, user))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for approve friendship.")
+        fatalError("Invalid url.")
     }
-    
-    static func rejectFriendshipUrl(for user: Int) throws -> URL {
+
+    static func rejectFriendshipUrl(for user: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: rejectFriendship, user))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for reject friendship.")
+        fatalError("Invalid url.")
     }
 
-    static func pendingFriendshipsUrl() throws -> URL {
+    static func pendingFriendshipsUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, pendingFriendships)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for pending friendships.")
+        fatalError("Invalid url.")
     }
-    
-    static func getFollowUrl(for user: Int) throws -> URL {
+
+    static func getFollowUrl(for user: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: followUser, user))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for follow user.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUnFollowUrl(for user: Int) throws -> URL {
+
+    static func getUnFollowUrl(for user: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: unFollowUser, user))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for unfollow user.")
+        fatalError("Invalid url.")
     }
-    
-    static func getFriendshipStatusUrl(for user: Int) throws -> URL {
+
+    static func getFriendshipStatusUrl(for user: Int) -> URL {
         if let url = URL(string: String(format: "%@%@/", baseInstagramApiUrl, String(format: friendshipStatus, user))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for friendship status.")
+        fatalError("Invalid url.")
     }
-    
-    static func getFriendshipStatusesUrl() throws -> URL {
+
+    static func getFriendshipStatusesUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, friendshipStatuses)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for current user.")
+        fatalError("Invalid url.")
     }
-    
-    static func getBlockedList() throws -> URL {
+
+    static func getBlockedList() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, blockedList)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for blockedList.")
+        fatalError("Invalid url.")
     }
-    
-    static func getBlockUrl(for user: Int) throws -> URL {
+
+    static func getBlockUrl(for user: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: blockUser, user))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for blocking user.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUnBlockUrl(for user: Int) throws -> URL {
+
+    static func getUnBlockUrl(for user: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: unBlockUser, user))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for unblocking user.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUserTagsUrl(userPk: Int, rankToken: String, maxId: String = "") throws -> URL {
+
+    static func getUserTagsUrl(userPk: Int, rankToken: String, maxId: String = "") -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userTags, userPk))) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             var queries = [
                 URLQueryItem(name: "rank_token", value: rankToken),
                 URLQueryItem(name: "ranked_content", value: "true")
             ]
-            
+
             if !maxId.isEmpty {
                 queries.append(URLQueryItem(name: "max_id", value: maxId))
             }
             urlComponent?.queryItems = queries
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for get user tags.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUploadPhotoUrl() throws -> URL {
+
+    static func getUploadPhotoUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, uploadPhoto)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for upload photo.")
+        fatalError("Invalid url.")
     }
-    
-    static func getConfigureMediaUrl() throws -> URL {
+
+    static func getConfigureMediaUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, configureMedia)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for configuring media.")
+        fatalError("Invalid url.")
     }
-    
-    static func getConfigureMediaAlbumUrl() throws -> URL {
+
+    static func getConfigureMediaAlbumUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, configureMediaAlbum)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for configuring media album.")
+        fatalError("Invalid url.")
     }
-    
-    static func getPostCommentUrl(mediaId: String) throws -> URL {
+
+    static func getPostCommentUrl(mediaId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: postComment, mediaId))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for post comment.")
+        fatalError("Invalid url.")
     }
-    
-    static func getDeleteCommentUrl(mediaId: String, commentId: String) throws -> URL {
+
+    static func getDeleteCommentUrl(mediaId: String, commentId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: deleteComment, mediaId, commentId))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for delete comment.")
+        fatalError("Invalid url.")
     }
-    
-    static func getDeleteMediaUrl(mediaId: String, mediaType: String) throws -> URL {
+
+    static func getDeleteMediaUrl(mediaId: String, mediaType: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: deleteMedia, mediaId, mediaType))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for delete media.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUploadVideoUrl() throws -> URL {
+
+    static func getUploadVideoUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, uploadVideo)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for upload video.")
+        fatalError("Invalid url.")
     }
-    
-    static func getStoryFeedUrl() throws -> URL {
+
+    static func getStoryFeedUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, storyFeed)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for get stories feed.")
+        fatalError("Invalid url.")
     }
-    
-    static func getUserStoryUrl(userId: Int) throws -> URL {
+
+    static func getUserStoryUrl(userId: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userStory, userId))) {
             return url
         } else {
-            throw CustomErrors.urlCreationFaild("Cant create URL for get user story.")
-        }
+            fatalError("Invalid url.")        }
     }
-    
-    static func getUserStoryFeed(userId: Int) throws -> URL {
+
+    static func getUserStoryFeed(userId: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: userStoryFeed, userId))) {
             return url
         } else {
-            throw CustomErrors.urlCreationFaild("Cant create URL for get user story feed.")
-        }
+            fatalError("Invalid url.")        }
     }
-    
-    static func getConfigureStoryUrl() throws -> URL {
+
+    static func getConfigureStoryUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, configureStory)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for configuring story.")
+        fatalError("Invalid url.")
     }
-    
-    static func getEditProfileUrl() throws -> URL {
+
+    static func getEditProfileUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, editProfile)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for editing profile.")
+        fatalError("Invalid url.")
     }
-    
-    static func getSaveEditProfileUrl() throws -> URL {
+
+    static func getSaveEditProfileUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, saveEditProfile)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for editing profile.")
+        fatalError("Invalid url.")
     }
-    
-    static func getEditBiographyUrl() throws -> URL {
+
+    static func getEditBiographyUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, editBiography)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for editing biography.")
+        fatalError("Invalid url.")
     }
-    
-    static func getRemoveProfilePictureUrl() throws -> URL {
+
+    static func getRemoveProfilePictureUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, removeProfilePicture)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for removing profile picture.")
+        fatalError("Invalid url.")
     }
-    
-    static func getChangeProfilePictureUrl() throws -> URL {
+
+    static func getChangeProfilePictureUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, changeProfilePicture)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for changing profile picture.")
+        fatalError("Invalid url.")
     }
-    
-    static func getChallengeLoginUrl(url: String, guid: String, deviceId: String) throws -> URL {
+
+    static func getChallengeLoginUrl(url: String, guid: String, deviceId: String) -> URL {
         if let url = URL(string: url) {
             var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
             let queries = [URLQueryItem(name: "guid", value: guid), URLQueryItem(name: "device_id", value: deviceId)]
             urlComponent?.queryItems = queries
             return (urlComponent?.url)!
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for challenge login.")
+        fatalError("Invalid url.")
     }
-    
-    static func getVerifyLoginUrl(challenge: String) throws -> URL {
+
+    static func getVerifyLoginUrl(challenge: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, challenge)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for verify login.")
+        fatalError("Invalid url.")
     }
-    
-    static func getEditMediaUrl(mediaId: String) throws -> URL {
+
+    static func getEditMediaUrl(mediaId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: editMedia, mediaId))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for verify login.")
+        fatalError("Invalid url.")
     }
-    
-    static func getMediaLikersUrl(mediaId: String) throws -> URL {
+
+    static func getMediaLikersUrl(mediaId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: mediaLikers, mediaId))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for media likers.")
+        fatalError("Invalid url.")
     }
-    
-    static func getInstagramCookieUrl() throws -> URL {
+
+    static func getInstagramCookieUrl() -> URL {
         if let url = URL(string: instagramCookieUrl) {
             return url
         }
-        
-        throw CustomErrors.urlCreationFaild("Cant create URL for instagram cookies.")
+
+        fatalError("Invalid url.")
     }
-    
-    static func getTwoFactorLoginUrl() throws -> URL {
+
+    static func getTwoFactorLoginUrl() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, accountTwoFactorLogin)) {
             return url
         }
-        
-        throw CustomErrors.urlCreationFaild("Cant create URL for two factor login.")
+
+        fatalError("Invalid url.")
     }
-    
-    static func getSendTwoFactorLoginSmsUrl() throws -> URL {
+
+    static func getSendTwoFactorLoginSmsUrl() -> URL {
         if let url = URL(string: baseInstagramApiUrl + accountSendTwoFactorLoginSms) {
             return url
         }
-        
-        throw CustomErrors.urlCreationFaild("Cant create URL for send two factor login sms.")
+
+        fatalError("Invalid url.")
     }
-    
-    static func getRecoverByEmailUrl() throws -> URL {
+
+    static func getRecoverByEmailUrl() -> URL {
         if let url = URL(string: baseInstagramApiUrl + recoverByEmail) {
             return url
         }
-        
-        throw CustomErrors.urlCreationFaild("Cant create URL for recovery by email.")
+
+        fatalError("Invalid url.")
     }
-    
-    static func getStoryViewersUrl(pk: String) throws -> URL {
+
+    static func getStoryViewersUrl(pk: String) -> URL {
         if let url = URL(string: baseInstagramApiUrl + String(format: storyViewers, pk)) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for story viewers.")
+        fatalError("Invalid url.")
     }
-    
-    static func getStoryHighlightsUrl(userPk: Int) throws -> URL {
+
+    static func getStoryHighlightsUrl(userPk: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: storyHighlights, userPk))) {
             return url
         }
-        throw CustomErrors.urlCreationFaild("Cant create URL for story highlights")
+        fatalError("Invalid url.")
     }
-    
+
     static func markStoriesAsSeenUrl() -> URL {
-        return URL(string: "https://i.instagram.com/api/v2/media/seen/?reel=1&live_vod=0")!
+        if let url = URL(string: "https://i.instagram.com/api/v2/media/seen/?reel=1&live_vod=0") { return url }
+        fatalError("Invalid url.")
     }
-    
-    static func reportCommentUrl(mediaId: String, commentId: String) throws -> URL {
+
+    static func reportCommentUrl(mediaId: String, commentId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: reportComment, mediaId, commentId))) {
             return url
         }
-        
-        throw CustomErrors.urlCreationFaild("Cant create URL for report comments")
+        fatalError("Invalid url.")
     }
-    
-    static func reportUserUrl(userPk: Int) throws -> URL {
+
+    static func reportUserUrl(userPk: Int) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: reportUser, userPk))) {
             return url
         }
-        
-        throw CustomErrors.urlCreationFaild("Cant create URL for report user")
+
+        fatalError("Invalid url.")
     }
-    
-    static func getReelsMediaFeed() throws -> URL {
+
+    static func getReelsMediaFeed() -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, reelsMediaFeed)) {
             return url
         }
-        
-        throw CustomErrors.urlCreationFaild("Cant create URL for reels media feed.")
+
+        fatalError("Invalid url.")
     }
-    
-    static func getPermalink(mediaId: String) throws -> URL {
+
+    static func getPermalink(mediaId: String) -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: permalink, mediaId))) {
             return url
         }
-        
-        throw CustomErrors.urlCreationFaild("Cant create URL for media permalink")
+
+        fatalError("Invalid url.")
     }
 }

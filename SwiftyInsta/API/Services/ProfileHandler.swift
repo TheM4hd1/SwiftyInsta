@@ -20,16 +20,17 @@ public class ProfileHandler: Handler {
                        "_uid": storage.dsUserId,
                        "_csrftoken": storage.csrfToken]
         let encoder = JSONEncoder()
-
-        let encodedContent = String(data: try! encoder.encode(content) , encoding: .utf8)!
-        let hash = encodedContent.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureKey)
+        guard let encodedContent = try? String(data: encoder.encode(content), encoding: .utf8) else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+        }
+        let hash = encodedContent.hmac(algorithm: .SHA256, key: Headers.igSignatureKey)
         let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
-        content.updateValue(signature, forKey: Headers.HeaderIGSignatureKey)
-        content.updateValue(Headers.HeaderIGSignatureVersionValue, forKey: Headers.HeaderIGSignatureVersionKey)
-        
+        content.updateValue(signature, forKey: Headers.igSignatureKey)
+        content.updateValue(Headers.igSignatureVersionValue, forKey: Headers.igSignatureVersionKey)
+
         requests.decodeAsync(ProfilePrivacyResponseModel.self,
                              method: .post,
-                             url: try! URLs.setPublicProfile(),
+                             url: URLs.setPublicProfile(),
                              body: .parameters(content),
                              completionHandler: completionHandler)
     }
@@ -44,16 +45,17 @@ public class ProfileHandler: Handler {
                        "_uid": storage.dsUserId,
                        "_csrftoken": storage.csrfToken]
         let encoder = JSONEncoder()
-
-        let encodedContent = String(data: try! encoder.encode(content) , encoding: .utf8)!
-        let hash = encodedContent.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureKey)
+        guard let encodedContent = try? String(data: encoder.encode(content), encoding: .utf8) else {
+            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+        }
+        let hash = encodedContent.hmac(algorithm: .SHA256, key: Headers.igSignatureKey)
         let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
-        content.updateValue(signature, forKey: Headers.HeaderIGSignatureKey)
-        content.updateValue(Headers.HeaderIGSignatureVersionValue, forKey: Headers.HeaderIGSignatureVersionKey)
-        
+        content.updateValue(signature, forKey: Headers.igSignatureKey)
+        content.updateValue(Headers.igSignatureVersionValue, forKey: Headers.igSignatureVersionKey)
+
         requests.decodeAsync(ProfilePrivacyResponseModel.self,
                              method: .post,
-                             url: try! URLs.setPrivateProfile(),
+                             url: URLs.setPrivateProfile(),
                              body: .parameters(content),
                              completionHandler: completionHandler)
     }
@@ -74,7 +76,7 @@ public class ProfileHandler: Handler {
                        "new_password2": password]
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: try! URLs.getChangePasswordUrl(),
+                             url: URLs.getChangePasswordUrl(),
                              body: .parameters(content),
                              completionHandler: completionHandler)
     }
@@ -93,7 +95,7 @@ public class ProfileHandler: Handler {
         }
         requests.decodeAsync(EditProfileModel.self,
                              method: .get,
-                             url: try! URLs.getEditProfileUrl(),
+                             url: URLs.getEditProfileUrl(),
                              deliverOnResponseQueue: false) { [weak self] in
                                 guard let me = self, let handler = me.handler else {
                                     return completionHandler(.failure(CustomErrors.weakReferenceReleased))
@@ -109,28 +111,33 @@ public class ProfileHandler: Handler {
                                             completionHandler(.failure(CustomErrors.noError))
                                         }
                                     }
-                                    let _name = (name ?? "").isEmpty ? decoded.user!.fullName!: (name ?? "")
-                                    let _biography = (biography ?? "").isEmpty ? decoded.user!.biography!: (biography ?? "")
-                                    let _url = (url ?? "").isEmpty ? decoded.user!.externalUrl!: (url ?? "")
-                                    let _email = (email ?? "").isEmpty ? decoded.user!.email!: (email ?? "")
-                                    let _phone = (phone ?? "").isEmpty ? decoded.user!.phoneNumber!: (phone ?? "")
-                                    let _username = (username ?? "").isEmpty ? decoded.user!.username!: (username ?? "")
-                                    
-                                    let content = ["external_url": _url,
+                                    guard let user = decoded.user else {
+                                        return handler.settings.queues.response.async {
+                                            completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                                        }
+                                    }
+                                    let name = name ?? user.fullName ?? ""
+                                    let biography = biography ?? user.biography ?? ""
+                                    let email = email ?? user.email ?? ""
+                                    let phone = phone ?? user.phoneNumber ?? ""
+                                    let username = username ?? user.username ?? ""
+                                    let url = url ?? user.externalUrl ?? ""
+
+                                    let content = ["external_url": url,
                                                    "gender": gender.rawValue,
-                                                   "phone_number": _phone,
+                                                   "phone_number": phone,
                                                    "_csrftoken": storage.csrfToken,
-                                                   "username": _username,
-                                                   "first_name": _name,
+                                                   "username": username,
+                                                   "first_name": name,
                                                    "_uid": storage.dsUserId,
-                                                   "biography": _biography,
+                                                   "biography": biography,
                                                    "_uuid": handler.settings.device.deviceGuid.uuidString,
-                                                   "email": _email]
+                                                   "email": email]
                                     let headers = ["Host": "i.instagram.com"]
-                                    
+
                                     handler.requests.decodeAsync(EditProfileModel.self,
                                                                  method: .post,
-                                                                 url: try! URLs.getSaveEditProfileUrl(),
+                                                                 url: URLs.getSaveEditProfileUrl(),
                                                                  body: .parameters(content),
                                                                  headers: headers,
                                                                  completionHandler: completionHandler)
@@ -147,10 +154,10 @@ public class ProfileHandler: Handler {
                        "_uid": storage.dsUserId,
                        "_uuid": handler!.settings.device.deviceGuid.uuidString,
                        "raw_text": biography]
-        
+
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: try! URLs.getEditBiographyUrl(),
+                             url: URLs.getEditBiographyUrl(),
                              body: .parameters(content),
                              completionHandler: completionHandler)
     }
@@ -164,10 +171,10 @@ public class ProfileHandler: Handler {
                        "_uid": storage.dsUserId,
                        "_uuid": handler!.settings.device.deviceGuid.uuidString]
         let headers = ["Host": "i.instagram.com"]
-        
+
         requests.decodeAsync(EditProfileModel.self,
                              method: .post,
-                             url: try! URLs.getRemoveProfilePictureUrl(),
+                             url: URLs.getRemoveProfilePictureUrl(),
                              body: .parameters(content),
                              headers: headers,
                              completionHandler: completionHandler)
@@ -196,8 +203,11 @@ public class ProfileHandler: Handler {
         content.append(string: "--\(uploadId)\n")
         content.append(string: "Content-Transfer-Encoding: binary\n")
         content.append(string: "Content-Type: application/octet-stream\n")
-        content.append(string: "Content-Disposition: form-data; name=\"profile_pic\"; filename=r\(uploadId).jpg; filename*=utf-8''r\(uploadId).jpg\n\n")
-        
+        content.append(string: ["Content-Disposition: form-data;",
+                                "name=\"profile_pic\";",
+                                "filename=r\(uploadId).jpg;",
+                                "filename*=utf-8''r\(uploadId).jpg\n\n"].joined(separator: " "))
+
         #if os(macOS)
             let imageData = photo.image.tiffRepresentation
         #else
@@ -206,10 +216,10 @@ public class ProfileHandler: Handler {
         content.append(imageData!)
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-        
+
         requests.decodeAsync(EditProfileModel.self,
                              method: .post,
-                             url: try! URLs.getChangePasswordUrl(),
+                             url: URLs.getChangePasswordUrl(),
                              body: .data(content),
                              headers: headers,
                              completionHandler: completionHandler)

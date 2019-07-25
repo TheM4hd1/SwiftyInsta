@@ -9,19 +9,19 @@
 import Foundation
 
 public class HttpSettings {
-    
+
     public static let shared = HttpSettings()
     private init() {
-        
+
     }
-    
+
     private var headers: [String: String] = [:]
-    
+
     /// Any existing value for the field is replaced by the new value
     public func addValue(_ value: String, forHTTPHeaderField field: String) {
         headers.updateValue(value, forKey: field)
     }
-    
+
     func getHeaders() -> [String: String] {
         return headers
     }

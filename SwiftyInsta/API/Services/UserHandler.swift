@@ -18,7 +18,7 @@ public class UserHandler: Handler {
     public func current(completionHandler: @escaping (Result<CurrentUserModel, Error>) -> Void) {
         current(delay: nil, completionHandler: completionHandler)
     }
-    
+
     func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<CurrentUserModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
@@ -26,19 +26,20 @@ public class UserHandler: Handler {
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
-        
+
         requests.decodeAsync(CurrentUserModel.self,
                              method: .get,
-                             url: try! URLs.getCurrentUser(),
+                             url: URLs.getCurrentUser(),
                              body: .parameters(body),
                              delay: delay,
                              completionHandler: completionHandler)
     }
-    
+
+    // swiftlint:disable line_length
     // Its not working yet.
     /*func createAccount(account: CreateAccountModel, completion: @escaping (Bool) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
+        httpHelper.sendAsync(method: .get, url: URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 print(error.localizedDescription)
             } else {
@@ -51,7 +52,7 @@ public class UserHandler: Handler {
                         break
                     }
                 }
-                
+
                 let content = [
                     "allow_contacts_sync": "true",
                     "sn_result": "API_ERROR:+null",
@@ -70,24 +71,24 @@ public class UserHandler: Handler {
                     "password": account.password,
                     "gdpr_s": "[0,2,0,null]"
                 ]
-                
+
                 let encoder = JSONEncoder()
                 let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
-                let hash = payload.hmac(algorithm: .SHA256, key: Headers.HeaderIGSignatureValue)
+                let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
                 // Creating Post Request Body
                 let signature = "\(hash).\(payload)"
                 let body: [String: Any] = [
                     Headers.HeaderIGSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-                    Headers.HeaderIGSignatureVersionKey: Headers.HeaderIGSignatureVersionValue
+                    Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
                 ]
-                
+
                 let headers: [String: String] = [
                     "X-IG-App-ID": "567067343352427",
                     Headers.HeaderXGoogleADID: (HandlerSettings.shared.device!.googleAdId?.uuidString)!
                 ]
-                
+
                 guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-                httpHelper.sendAsync(method: .post, url: try! URLs.getCreateAccountUrl(), body: body, header: headers, completion: { (data, response, error) in
+                httpHelper.sendAsync(method: .post, url: URLs.getCreateAccountUrl(), body: body, header: headers, completion: { (data, response, error) in
                         if error != nil {
                             completion(false)
                         } else {
@@ -100,25 +101,26 @@ public class UserHandler: Handler {
             }
         }
     }*/
-        
+    // swiftlint:enable line_length
+
     /// Search for users matching the query.
     public func search(forUsersMatching query: String, completionHandler: @escaping (Result<[UserModel], Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
-        let headers = [Headers.HeaderTimeZoneOffsetKey: Headers.HeaderTimeZoneOffsetValue,
-                       Headers.HeaderCountKey: Headers.HeaderCountValue,
-                       Headers.HeaderRankTokenKey: storage.rankToken]
-        
+        let headers = [Headers.timeZoneOffsetKey: Headers.timeZoneOffsetValue,
+                       Headers.countKey: Headers.countValue,
+                       Headers.rankTokenKey: storage.rankToken]
+
         requests.decodeAsync(SearchUserModel.self,
                              method: .get,
-                             url: try! URLs.getUserUrl(username: query),
+                             url: URLs.getUserUrl(username: query),
                              headers: headers,
                              deliverOnResponseQueue: true) {
                                 completionHandler($0.map { $0.users ?? [] })
         }
     }
-    
+
     /// Get user matching username.
     public func user(_ user: UserReference, completionHandler: @escaping (Result<UserModel?, Error>) -> Void) {
         switch user {
@@ -131,12 +133,12 @@ public class UserHandler: Handler {
             // load user info directly.
             requests.decodeAsync(UserInfoModel.self,
                                  method: .get,
-                                 url: try! URLs.getUserInfo(id: pk)) {
+                                 url: URLs.getUserInfo(id: pk)) {
                                     completionHandler($0.map { $0.user })
             }
         }
     }
-    
+
     /// Get user's tagged posts.
     public func tagged(user: UserReference,
                        with paginationParameters: PaginationParameters,
@@ -167,14 +169,14 @@ public class UserHandler: Handler {
             // load user tags directly.
             pages.fetch(UserFeedModel.self,
                         with: paginationParameters,
-                        at: { try URLs.getUserTagsUrl(userPk: pk,
+                        at: { URLs.getUserTagsUrl(userPk: pk,
                                                       rankToken: storage.rankToken,
                                                       maxId: $0.nextMaxId ?? "") },
                         updateHandler: updateHandler,
                         completionHandler: completionHandler)
         }
     }
-    
+
     /// Get `user`'s **followers**.
     public func following(user: UserReference,
                           usersMatchinQuery query: String? = nil,
@@ -207,7 +209,7 @@ public class UserHandler: Handler {
             // load user followers directly.
             pages.fetch(UserShortListModel.self,
                         with: paginationParameters,
-                        at: { try URLs.getUserFollowers(userPk: pk,
+                        at: { URLs.getUserFollowers(userPk: pk,
                                                         rankToken: storage.rankToken,
                                                         searchQuery: query ?? "",
                                                         maxId: $0.nextMaxId ?? "") },
@@ -215,7 +217,7 @@ public class UserHandler: Handler {
                         completionHandler: completionHandler)
         }
     }
-    
+
     /// Get  accounts followed by`user` (**following**).
     public func followed(byUser user: UserReference,
                          usersMatchinQuery query: String? = nil,
@@ -248,7 +250,7 @@ public class UserHandler: Handler {
             // load user following directly.
             pages.fetch(UserShortListModel.self,
                         with: paginationParameters,
-                        at: { try URLs.getUserFollowing(userPk: pk,
+                        at: { URLs.getUserFollowing(userPk: pk,
                                                         rankToken: storage.rankToken,
                                                         searchQuery: query ?? "",
                                                         maxId: $0.nextMaxId ?? "") },
@@ -263,7 +265,7 @@ public class UserHandler: Handler {
                                  completionHandler: @escaping PaginationCompletionHandler<RecentActivitiesModel>) {
         pages.fetch(RecentActivitiesModel.self,
                     with: paginationParameters,
-                    at: { try URLs.getRecentActivities(maxId: $0.nextMaxId ?? "") },
+                    at: { URLs.getRecentActivities(maxId: $0.nextMaxId ?? "") },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -274,7 +276,7 @@ public class UserHandler: Handler {
                                           completionHandler: @escaping PaginationCompletionHandler<RecentFollowingsActivitiesModel>) {
         pages.fetch(RecentFollowingsActivitiesModel.self,
                     with: paginationParameters,
-                    at: { try URLs.getRecentFollowingActivities(maxId: $0.nextMaxId ?? "") },
+                    at: { URLs.getRecentFollowingActivities(maxId: $0.nextMaxId ?? "") },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -305,10 +307,10 @@ public class UserHandler: Handler {
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
-            
+
             requests.decodeAsync(FollowResponseModel.self,
                                  method: .get,
-                                 url: try! URLs.removeFollowerUrl(for: pk),
+                                 url: URLs.removeFollowerUrl(for: pk),
                                  body: .parameters(body),
                                  completionHandler: completionHandler)
         }
@@ -340,15 +342,15 @@ public class UserHandler: Handler {
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
-            
+
             requests.decodeAsync(FollowResponseModel.self,
                                  method: .get,
-                                 url: try! URLs.approveFriendshipUrl(for: pk),
+                                 url: URLs.approveFriendshipUrl(for: pk),
                                  body: .parameters(body),
                                  completionHandler: completionHandler)
         }
     }
-    
+
     /// Reject friendship.
     public func rejectRequest(from user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
@@ -375,10 +377,10 @@ public class UserHandler: Handler {
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
-            
+
             requests.decodeAsync(FollowResponseModel.self,
                                  method: .get,
-                                 url: try! URLs.rejectFriendshipUrl(for: pk),
+                                 url: URLs.rejectFriendshipUrl(for: pk),
                                  body: .parameters(body),
                                  completionHandler: completionHandler)
         }
@@ -388,7 +390,7 @@ public class UserHandler: Handler {
     public func pendingRequests(completionHandler: @escaping (Result<PendingFriendshipsModel, Error>) -> Void) {
         requests.decodeAsync(PendingFriendshipsModel.self,
                              method: .get,
-                             url: try! URLs.pendingFriendshipsUrl(),
+                             url: URLs.pendingFriendshipsUrl(),
                              completionHandler: completionHandler)
     }
 
@@ -418,15 +420,15 @@ public class UserHandler: Handler {
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
-            
+
             requests.decodeAsync(FollowResponseModel.self,
                                  method: .get,
-                                 url: try! URLs.getFollowUrl(for: pk),
+                                 url: URLs.getFollowUrl(for: pk),
                                  body: .parameters(body),
                                  completionHandler: completionHandler)
         }
     }
-    
+
     /// Unfollow user.
     public func unfollow(user: UserReference, completionHandler: @escaping (Result<FollowResponseModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
@@ -453,10 +455,10 @@ public class UserHandler: Handler {
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
-            
+
             requests.decodeAsync(FollowResponseModel.self,
                                  method: .get,
-                                 url: try! URLs.getUnFollowUrl(for: pk),
+                                 url: URLs.getUnFollowUrl(for: pk),
                                  body: .parameters(body),
                                  completionHandler: completionHandler)
         }
@@ -488,17 +490,17 @@ public class UserHandler: Handler {
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
-            
+
             requests.decodeAsync(FriendshipStatusModel.self,
                                  method: .get,
-                                 url: try! URLs.getFriendshipStatusUrl(for: pk),
+                                 url: URLs.getFriendshipStatusUrl(for: pk),
                                  body: .parameters(body),
                                  completionHandler: completionHandler)
         }
     }
 
     /*func getFriendshipStatuses(of userIds: [Int], completion: @escaping (InstagramResult<FriendshipStatusesModel>) -> ()) throws {
-        
+
         let body = [
             "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
             "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
@@ -506,9 +508,9 @@ public class UserHandler: Handler {
             "user_ids": userIds.map{String($0)}.joined(separator: ", "),
             "radio_type": "wifi-none"
         ]
-        
+
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .post, url: try URLs.getFriendshipStatusesUrl(), body: body, header: [:]) { (data, response, error) in
+        httpHelper.sendAsync(method: .post, url: URLs.getFriendshipStatusesUrl(), body: body, header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .fail, value: nil))
             } else {
@@ -525,12 +527,12 @@ public class UserHandler: Handler {
             }
         }
     }*/
-    
+
     /// Get blocked users.
     public func blocked(completionHandler: @escaping (Result<BlockedUsersModel, Error>) -> Void) {
         requests.decodeAsync(BlockedUsersModel.self,
                              method: .get,
-                             url: try! URLs.getBlockedList(),
+                             url: URLs.getBlockedList(),
                              completionHandler: completionHandler)
     }
 
@@ -560,10 +562,10 @@ public class UserHandler: Handler {
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
-            
+
             requests.decodeAsync(FollowResponseModel.self,
                                  method: .get,
-                                 url: try! URLs.getBlockUrl(for: pk),
+                                 url: URLs.getBlockUrl(for: pk),
                                  body: .parameters(body),
                                  completionHandler: completionHandler)
         }
@@ -595,39 +597,40 @@ public class UserHandler: Handler {
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
-            
+
             requests.decodeAsync(FollowResponseModel.self,
                                  method: .get,
-                                 url: try! URLs.getUnBlockUrl(for: pk),
+                                 url: URLs.getUnBlockUrl(for: pk),
                                  body: .parameters(body),
                                  completionHandler: completionHandler)
         }
     }
 
+    // swiftlint:disable line_length
     /*
     func recoverAccountBy(username: String, completion: @escaping (InstagramResult<AccountRecovery>) -> ()) throws {
         try recoverAccountBy(email: username) { (result) in
             completion(result)
         }
     }
-    
+
     func recoverAccountBy(email: String, completion: @escaping (InstagramResult<AccountRecovery>) -> ()) throws {
         guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
+        httpHelper.sendAsync(method: .get, url: URLs.getInstagramUrl(), body: [:], header: [:]) { (data, response, error) in
             if let error = error {
                 completion(Return.fail(error: error, response: .unknown, value: nil))
             } else {
                 // find CSRF token
                 let fields = response?.allHeaderFields
                 let cookies = HTTPCookie.cookies(withResponseHeaderFields: fields as! [String : String], for: (response?.url)!)
-                
+
                 for cookie in cookies {
                     if cookie.name == "csrftoken" {
                         HandlerSettings.shared.user!.csrfToken = cookie.value
                         break
                     }
                 }
-                
+
                 let body = [
                     "query": email,
                     "adid": UUID.init().uuidString,
@@ -635,9 +638,9 @@ public class UserHandler: Handler {
                     "guid": HandlerSettings.shared.device!.deviceGuid.uuidString,
                     "_csrftoken": HandlerSettings.shared.user!.csrfToken
                 ]
-                
+
                 guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-                httpHelper.sendAsync(method: .post, url: try! URLs.getRecoverByEmailUrl(), body: body, header: [:], completion: { (data, response, error) in
+                httpHelper.sendAsync(method: .post, url: URLs.getRecoverByEmailUrl(), body: body, header: [:], completion: { (data, response, error) in
                     if let error = error {
                         completion(Return.fail(error: error, response: .fail, value: nil))
                     } else {
@@ -660,7 +663,8 @@ public class UserHandler: Handler {
             }
         }
     }*/
-    
+    // swiftlint:enable line_length
+
     /// Report user.
     public func report(user: UserReference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
@@ -689,10 +693,10 @@ public class UserHandler: Handler {
                         "source_name": "profile",
                         "is_spam": "true",
                         "reason_id": "1"]
-            
+
             requests.decodeAsync(BaseStatusResponseModel.self,
                                  method: .post,
-                                 url: try! URLs.reportUserUrl(userPk: pk),
+                                 url: URLs.reportUserUrl(userPk: pk),
                                  body: .parameters(body),
                                  completionHandler: { completionHandler($0.map { $0.isOk() }) })
         }

@@ -13,7 +13,7 @@ public struct StoryModel: Codable {
     public var topLive: TopLiveModel?
     public var isPortrait: Bool?
     public var tray: [TrayModel]?
-    
+
     public init(id: Int?, topLive: TopLiveModel?, isPortrait: Bool?, tray: [TrayModel]?) {
         self.id = id
         self.topLive = topLive
@@ -25,7 +25,7 @@ public struct StoryModel: Codable {
 public struct TopLiveModel: Codable {
     public var broadcastOwners: [UserShortModel]?
     public var rankedPosition: Int?
-    
+
     public init(broadcastOwners: [UserShortModel]?, rankedPosition: Int?) {
         self.broadcastOwners = broadcastOwners
         self.rankedPosition = rankedPosition
@@ -40,7 +40,7 @@ public struct StoryFeedModel: Codable, BaseStatusResponseProtocol {
     public var status: String?
     //var postLive
     //var broadcasts
-    
+
     public init(tray: [TrayModel]?, storyRankingToken: String?, faceFilterNuxVersion: Int?, hasNewNuxStory: Bool?, status: String?) {
         self.tray = tray
         self.storyRankingToken = storyRankingToken
@@ -54,7 +54,7 @@ public struct StoryReelFeedModel: Codable, BaseStatusResponseProtocol {
     //var broadcast
     public var reel: TrayModel?
     public var status: String?
-    
+
     public init(reel: TrayModel?, status: String?) {
         self.reel = reel
         self.status = status
@@ -67,27 +67,40 @@ public struct StoryReelsFeedModel: Codable, BaseStatusResponseProtocol {
 }
 
 public struct ConfigureStoryUploadModel: Codable {
-    public var _uuid: String
-    public var _uid: String
-    public var _csrftoken: String
-    public var source_type: String
+    enum CodingKeys: String, CodingKey {
+        case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
+        case sourceType, caption, uploadId, disableComments, configureMode, cameraPosition
+    }
+
+    public var uuid: String
+    public var uid: String
+    public var csrfToken: String
+    public var sourceType: String
     public var caption: String
-    public var upload_id: String
+    public var uploadId: String
     //var edits
-    public var disable_comments: Bool
-    public var configure_mode: Int
-    public var camera_position: String
-    
-    public init(_uuid: String, _uid: String, _csrftoken: String, source_type: String, caption: String, upload_id: String, disable_comments: Bool, configure_mode: Int, camera_position: String) {
-        self._uuid = _uuid
-        self._uid = _uid
-        self._csrftoken = _csrftoken
-        self.source_type = source_type
+    public var disableComments: Bool
+    public var configureMode: Int
+    public var cameraPosition: String
+
+    public init(uuid: String,
+                uid: String,
+                csrfToken: String,
+                sourceType: String,
+                caption: String,
+                uploadId: String,
+                disableComments: Bool,
+                configureMode: Int,
+                cameraPosition: String) {
+        self.uuid = uuid
+        self.uid = uid
+        self.csrfToken = csrfToken
+        self.sourceType = sourceType
         self.caption = caption
-        self.upload_id = upload_id
-        self.disable_comments = disable_comments
-        self.configure_mode = configure_mode
-        self.camera_position = camera_position
+        self.uploadId = uploadId
+        self.disableComments = disableComments
+        self.configureMode = configureMode
+        self.cameraPosition = cameraPosition
     }
 }
 
@@ -107,14 +120,19 @@ public struct StoryHighlights: Codable {
 }
 
 public struct SeenStory: Codable {
-    let _uuid: String
-    let _uid: String
-    let _csrftoken: String
-    let container_module: String
+    enum CodingKeys: String, CodingKey {
+        case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
+        case containerModule, reels, reelMediaSkipped, liveVods, liveVodsSkipped, nuxes, nuxesSkipped
+    }
+
+    let uuid: String
+    let uid: String
+    let csrfToken: String
+    let containerModule: String
     let reels: [String: [String]]
-    let reel_media_skipped: [String: String]
-    let live_vods: [String: String]
-    let live_vods_skipped: [String: String]
+    let reelMediaSkipped: [String: String]
+    let liveVods: [String: String]
+    let liveVodsSkipped: [String: String]
     let nuxes: [String: String]
-    let nuxes_skipped: [String: String]
+    let nuxesSkipped: [String: String]
 }

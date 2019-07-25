@@ -36,7 +36,7 @@ public struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
     public var facebookPlacesId: Int?
     public var city: String?
     public var biography: String?
-    
+
     public init() {
         isVerified = false
         isPrivate = false
@@ -46,8 +46,23 @@ public struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
         username = ""
         fullName = ""
     }
-    
-    public init(isVerified: Bool?, isPrivate: Bool?, pk: Int?, profilePicUrl: String?, profilePicId: String?, username: String?, fullName: String?, name: String?, address: String?, shortName: String?, lng: Double?, lat: Double?, externalSource: String?, facebookPlacesId: Int?, city: String?, biography: String?) {
+
+    public init(isVerified: Bool?,
+                isPrivate: Bool?,
+                pk: Int?,
+                profilePicUrl: String?,
+                profilePicId: String?,
+                username: String?,
+                fullName: String?,
+                name: String?,
+                address: String?,
+                shortName: String?,
+                lng: Double?,
+                lat: Double?,
+                externalSource: String?,
+                facebookPlacesId: Int?,
+                city: String?,
+                biography: String?) {
         self.isVerified = isVerified
         self.isPrivate = isPrivate
         self.pk = pk
@@ -65,11 +80,11 @@ public struct UserShortModel: Codable, UserShortProtocol, LocationProtocol {
         self.city = city
         self.biography = biography
     }
-    
+
     func eqauls(user: UserShortModel) -> Bool {
         return pk == user.pk
     }
-    
+
     func getHashCode() -> Int {
         return pk.hashValue
     }

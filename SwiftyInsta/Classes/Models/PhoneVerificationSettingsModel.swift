@@ -13,14 +13,14 @@ public struct PhoneVerificationSettingsModel: Codable {
     public var resendSmsDelaySec: Int
     public var robocallAfterMaxSms: Bool
     public var robocallCountDownTimeSec: Int
-    
+
     public init(maxSmsCount: Int, resendSmsDelaySec: Int, robocallAfterMaxSms: Bool, robocallCountDownTimeSec: Int) {
         self.maxSmsCount = maxSmsCount
         self.resendSmsDelaySec = resendSmsDelaySec
         self.robocallAfterMaxSms = robocallAfterMaxSms
         self.robocallCountDownTimeSec = robocallCountDownTimeSec
     }
-    
+
     static func empty() -> PhoneVerificationSettingsModel {
         return PhoneVerificationSettingsModel(
             maxSmsCount: 0,

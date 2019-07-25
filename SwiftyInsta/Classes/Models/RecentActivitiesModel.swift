@@ -9,8 +9,8 @@
 import Foundation
 
 public struct RecentActivitiesModel: Codable, BaseStatusResponseProtocol, NestedPaginationProtocol {
-    public typealias Id = String
-    public static let nextMaxIdPath: KeyPath<RecentActivitiesModel, Id?> = \RecentActivitiesModel.aymf?.nextMaxId
+    public typealias Identifier = String
+    public static let nextMaxIdPath: KeyPath<RecentActivitiesModel, Identifier?> = \RecentActivitiesModel.aymf?.nextMaxId
     public var aymf: AymfItemModel?
     public var counts: CountsModel?
     public var friendRequestStories: [RecentActivityStoryModel]?
@@ -18,8 +18,14 @@ public struct RecentActivitiesModel: Codable, BaseStatusResponseProtocol, Nested
     public var oldStories: [RecentActivityStoryModel]?
     public var continuationToken: Int?
     public var status: String?
-    
-    public init(aymf: AymfItemModel?, counts: CountsModel?, friendRequestStories: [RecentActivityStoryModel]?, newStories: [RecentActivityStoryModel]?, oldStories: [RecentActivityStoryModel]?, continuationToken: Int?, status: String?) {
+
+    public init(aymf: AymfItemModel?,
+                counts: CountsModel?,
+                friendRequestStories: [RecentActivityStoryModel]?,
+                newStories: [RecentActivityStoryModel]?,
+                oldStories: [RecentActivityStoryModel]?,
+                continuationToken: Int?,
+                status: String?) {
         self.aymf = aymf
         self.counts = counts
         self.friendRequestStories = friendRequestStories
@@ -35,7 +41,7 @@ public struct RecentFollowingsActivitiesModel: Codable, BaseStatusResponseProtoc
     public var nextMaxId: Int?
     public var status: String?
     public var stories: [RecentActivityStoryModel]?
-    
+
     public init(autoLoadMoreEnabled: Bool?, nextMaxId: Int?, status: String?, stories: [RecentActivityStoryModel]?) {
         self.autoLoadMoreEnabled = autoLoadMoreEnabled
         self.nextMaxId = nextMaxId
@@ -50,8 +56,12 @@ public struct AymfItemModel: Codable, PaginationProtocol {
     public var nextMaxId: String?
     public var numResults: Int?
     public var items: [SuggestionModel]?
-    
-    public init(autoLoadMoreEnabled: Bool?, moreAvailable: Bool?, nextMaxId: String?, numResults: Int?, items: [SuggestionModel]?) {
+
+    public init(autoLoadMoreEnabled: Bool?,
+                moreAvailable: Bool?,
+                nextMaxId: String?,
+                numResults: Int?,
+                items: [SuggestionModel]?) {
         self.autoLoadMoreEnabled = autoLoadMoreEnabled
         self.moreAvailable = moreAvailable
         self.nextMaxId = nextMaxId
@@ -69,8 +79,15 @@ public struct CountsModel: Codable {
     public var relationships: Int?
     public var photosOfYou: Int?
     public var requests: Int?
-    
-    public init(commentLikes: Int?, campaignNotification: Int?, likes: Int?, comments: Int?, usertags: Int?, relationships: Int?, photosOfYou: Int?, requests: Int?) {
+
+    public init(commentLikes: Int?,
+                campaignNotification: Int?,
+                likes: Int?,
+                comments: Int?,
+                usertags: Int?,
+                relationships: Int?,
+                photosOfYou: Int?,
+                requests: Int?) {
         self.commentLikes = commentLikes
         self.campaignNotification = campaignNotification
         self.likes = likes
@@ -94,8 +111,18 @@ public struct ArgsModel: Codable {
     public var tuuid: String?
     public var profileName: String?
     public var links: [ArgsLinksModel]?
-    
-    public init(text: String?, requestCount: Int?, clicked: Bool?, profileId: Int?, profileImage: String?, secondProfileId: Int?, secondProfileImage: String?, timestamp: Double?, tuuid: String?, profileName: String?, links: [ArgsLinksModel]?) {
+
+    public init(text: String?,
+                requestCount: Int?,
+                clicked: Bool?,
+                profileId: Int?,
+                profileImage: String?,
+                secondProfileId: Int?,
+                secondProfileImage: String?,
+                timestamp: Double?,
+                tuuid: String?,
+                profileName: String?,
+                links: [ArgsLinksModel]?) {
         self.text = text
         self.requestCount = requestCount
         self.clicked = clicked
@@ -115,14 +142,14 @@ public struct ArgsLinksModel: Codable {
     public var end: Int?
     public var type: String?
     public var id: String?
-    
+
     private enum CodingKeys: String, CodingKey {
         case start
         case end
         case type
         case id
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if let value = try? container.decodeIfPresent(Int.self, forKey: .id) {
@@ -130,7 +157,7 @@ public struct ArgsLinksModel: Codable {
         } else {
             id = try container.decode(String.self, forKey: .id)
         }
-        
+
         start = try container.decode(Int.self, forKey: .start)
         end = try container.decode(Int.self, forKey: .end)
         type = try container.decode(String.self, forKey: .type)
@@ -143,7 +170,7 @@ public struct RecentActivityStoryModel: Codable {
     public var args: ArgsModel?
     public var counts: CountsModel?
     public var pk: String?
-    
+
     public init(type: Int?, storyType: Int?, args: ArgsModel?, counts: CountsModel?, pk: String?) {
         self.type = type
         self.storyType = storyType

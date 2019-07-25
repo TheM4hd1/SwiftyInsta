@@ -21,7 +21,7 @@ public class APIHandler {
             public var working: DispatchQueue
             /// The queue used to deliver responses. Defaults to `DispatchQueue.main`.
             public var response: DispatchQueue
-            
+
             public init(request: DispatchQueue = .main,
                         working: DispatchQueue = .global(qos: .userInitiated),
                         response: DispatchQueue = .main) {
@@ -30,18 +30,18 @@ public class APIHandler {
                 self.response = response
             }
         }
-        
+
         /// The delay. Defaults to `1...2`. `nil` for no delay.
         public var delay: ClosedRange<Double>?
         /// The queue used to deliver responses. Defaults to `DispatchQueue.global(qos: .utility)`.
         public var queues: Queues
         /// The device. Defaults to a random device.
-        public var device: AndroidDeviceModel { didSet { headers[Headers.HeaderUserAgentKey] = device.userAgent.string }}
+        public var device: AndroidDeviceModel { didSet { headers[Headers.userAgentKey] = device.userAgent.string }}
         /// The url session. Defaults to `.shared`.
         public var session: URLSession
         /// The default headers. Defaults to `[:]`.
         var headers: [String: String] = [:]
-        
+
         public init(delay: ClosedRange<Double>? = 1...2,
                     queues: Queues = .init(),
                     device: AndroidDeviceModel? = nil,
@@ -52,20 +52,20 @@ public class APIHandler {
             self.session = session
         }
     }
-    
+
     /// The settings.
     public var settings: Settings
     /// The login response.
     public var response: Login.Response?
     /// The authenticated user.
     public var user: CurrentUser? { return response?.cache?.storage?.user }
-    
+
     // MARK: Init
     /// Create an instance of `APIHandler`.
     public init(with settings: Settings = .init()) {
         self.settings = settings
     }
-        
+
     // MARK: Authentication
     /// Authenticate with the selected login method.
     public func authenticate(with request: Login.Request,
@@ -80,7 +80,7 @@ public class APIHandler {
             }
         case .user(let credentials):
             authentication.authenticate(user: credentials, completionHandler: completionHandler)
-        #if os(iOS)
+            #if os(iOS)
         case .webView(let webView):
             webView.authenticate { [weak self] in
                 guard let handler = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
@@ -96,9 +96,11 @@ public class APIHandler {
                         }
                     }
                     // prepare cache.
-                    let dsUserId = filtered.first(where: { $0.name == "ds_user_id" })!.value
-                    let csrfToken = filtered.first(where: { $0.name == "csrftoken" })!.value
-                    let sessionId = filtered.first(where: { $0.name == "sessionid" })!.value
+                    guard let dsUserId = filtered.first(where: { $0.name == "ds_user_id" })?.value,
+                        let csrfToken = filtered.first(where: { $0.name == "csrftoken" })?.value,
+                        let sessionId = filtered.first(where: { $0.name == "sessionid" })?.value else {
+                            return completionHandler(.failure(CustomErrors.runTimeError("Invalid cookies.")))
+                    }
                     let rankToken = dsUserId+"_"+handler.settings.device.phoneGuid.uuidString
                     let cache = SessionCache(storage: SessionStorage(dsUserId: dsUserId,
                                                                      user: nil,
@@ -110,10 +112,10 @@ public class APIHandler {
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             }
-        #endif
+            #endif
         }
     }
-        
+
     /// Log out.
     public func invalidate(completionHandler: @escaping (Result<Bool, Error>) -> Void) throws {
         authentication.invalidate { [weak self] in
@@ -122,7 +124,7 @@ public class APIHandler {
             completionHandler($0)
         }
     }
-    
+
     // MARK: Helpers
     /// Accessory for `HttpHelper(handler: self)`.
     internal lazy var requests: HttpHelper = .init(handler: self)
@@ -161,7 +163,7 @@ public struct Credentials {
         case failure
         case unknown
     }
-    
+
     /// The username.
     public private(set) var username: String
     /// The password.
@@ -176,7 +178,7 @@ public struct Credentials {
             handler?.authentication.code(for: self)
         }
     }
-    
+
     /// The code handler.
     weak var handler: APIHandler?
     /// The _csrfToken_.
@@ -185,7 +187,7 @@ public struct Credentials {
     var response: Response = .unknown
     /// The completion handler.
     var completionHandler: ((Result<(Login.Response, APIHandler), Error>) -> Void)?
-    
+
     // MARK: Init
     public init(username: String,
                 password: String,
@@ -201,13 +203,13 @@ public struct Login {
     public enum Request {
         /// Log in with username and password.
         case user(Credentials)
-               
+
         #if os(iOS)
         @available(iOS 11, *)
         /// Log in through web view.
         case webView(LoginWebView)
-        #endif
-        
+        #endif        
+
         /// Log in using `SessionCache` (either a stored one, or through `Siwa`).
         case cache(SessionCache)
     }
@@ -216,19 +218,19 @@ public struct Login {
         public var model: LoginResultModel
         /// The session cache.
         public var cache: SessionCache?
-        
+
         init(model: LoginResultModel, cache: SessionCache?) {
             self.model = model
             self.cache = cache
         }
-        
+
         /// Store the response **if valid** in the user's keychain.
         /// You can save the returned value safely in your `UserDefaults`, or your database
         /// and then retrieve the `SessionCache` when needed.
         /// - Returns: The `key` used to store `SessionCache` in your keychahin (the logged user's `pk`). `nil` otherwise.
         public func persist() -> String? {
             let encoder = JSONEncoder()
-            
+
             guard model == .success,
                 let cache = cache,
                 let dsUserId = cache.storage?.dsUserId,
@@ -260,7 +262,7 @@ public extension SessionCache {
 public class Handler {
     weak var handler: APIHandler!
     init(handler: APIHandler) { self.handler = handler }
-    
+
     /// The requests helper.
     var requests: HttpHelper { return handler.requests }
     /// The pagination helper.

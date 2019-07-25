@@ -14,6 +14,6 @@ public struct UserTags: Codable {
 }
 
 public struct NewTag: Codable {
-    let user_id: Int
+    let userId: Int
     let position: [Double]
 }

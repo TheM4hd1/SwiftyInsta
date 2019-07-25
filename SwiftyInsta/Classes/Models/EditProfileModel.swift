@@ -11,7 +11,7 @@ import Foundation
 public struct EditProfileModel: Codable, BaseStatusResponseProtocol {
     public var user: UserModel?
     public var status: String?
-    
+
     public init(user: UserModel?, status: String?) {
         self.user = user
         self.status = status

@@ -37,8 +37,32 @@ public struct TrayItems: Codable, MediaModelProtocol {
     public var canReply: Bool?
     public var isReelMedia: Bool?
 
-
-    public init(takenAt: Int?, pk: Int?, id: String?, deviceTimestamp: Int?, mediaType: Int?, code: String?, clientCacheKey: String?, filterType: Int?, imageVersions2: CandidatesModel?, originalWidth: Int?, originalHeight: Int?, organicTrackingToken: String?, user: UserShortModel?, caption: CaptionModel?, captionIsEdited: Bool?, photoOfYou: Bool?, canViewerSave: Bool?, expiringAt: Int?, storyLocation: LocationModel?, supportsReelReactions: Bool?, viewers: [UserShortModel]?, viewerCount: Int?, totalViewerCount: Int?, canReshare: Bool?, canReply: Bool?, isReelMedia: Bool?) {
+    public init(takenAt: Int?,
+                pk: Int?,
+                id: String?,
+                deviceTimestamp: Int?,
+                mediaType: Int?,
+                code: String?,
+                clientCacheKey: String?,
+                filterType: Int?,
+                imageVersions2: CandidatesModel?,
+                originalWidth: Int?,
+                originalHeight: Int?,
+                organicTrackingToken: String?,
+                user: UserShortModel?,
+                caption: CaptionModel?,
+                captionIsEdited: Bool?,
+                photoOfYou: Bool?,
+                canViewerSave: Bool?,
+                expiringAt: Int?,
+                storyLocation: LocationModel?,
+                supportsReelReactions: Bool?,
+                viewers: [UserShortModel]?,
+                viewerCount: Int?,
+                totalViewerCount: Int?,
+                canReshare: Bool?,
+                canReply: Bool?,
+                isReelMedia: Bool?) {
         self.takenAt = takenAt
         self.pk = pk
         self.id = id

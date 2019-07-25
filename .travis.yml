@@ -15,4 +15,5 @@ env:
     - SCHEME='SwiftyInsta.watchOS'  SDK='watchsimulator'
 script:
   - set -o pipefail
+  - swiftlint
   - xcodebuild clean build -workspace SwiftyInsta.xcworkspace -scheme ${SCHEME} -sdk ${SDK} -configuration Debug | xcpretty -c

@@ -15,7 +15,7 @@ public class FeedHandler: Handler {
                         completionHandler: @escaping PaginationCompletionHandler<ExploreFeedModel>) {
         pages.fetch(ExploreFeedModel.self,
                     with: paginationParameters,
-                    at: { try URLs.getExploreFeedUrl(maxId: $0.nextMaxId ?? "") },
+                    at: { URLs.getExploreFeedUrl(maxId: $0.nextMaxId ?? "") },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -27,11 +27,11 @@ public class FeedHandler: Handler {
                     completionHandler: @escaping PaginationCompletionHandler<TagFeedModel>) {
         pages.fetch(TagFeedModel.self,
                     with: paginationParameters,
-                    at: { try URLs.getTagFeed(for: tag, maxId: $0.nextMaxId ?? "") },
+                    at: { URLs.getTagFeed(for: tag, maxId: $0.nextMaxId ?? "") },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
-        
+
     /// Fetch the timeline.
     public func timeline(with paginationParameters: PaginationParameters,
                          updateHandler: PaginationUpdateHandler<TimelineModel>?,
@@ -48,7 +48,7 @@ public class FeedHandler: Handler {
             "seen_posts": "",
             "phone_id": handler.settings.device.phoneGuid,
             "battery_level": 72,
-            "timezone_offset": Headers.HeaderTimeZoneOffsetValue,
+            "timezone_offset": Headers.timeZoneOffsetValue,
             "_csrftoken": storage.csrfToken,
             "client_session_id": storage.sessionId,
             "device_id": handler.settings.device.deviceId,
@@ -63,13 +63,13 @@ public class FeedHandler: Handler {
             "latest_story_pk": ""
         ]
         let headers = ["X-Ads-Opt-Out": "0",
-                       "X-Google-AD-ID": handler!.settings.device.googleAdId?.uuidString ?? UUID().uuidString,
-                       "X-DEVICE-ID": handler!.settings.device.deviceGuid.uuidString,
+                       "X-Google-AD-ID": handler.settings.device.googleAdId?.uuidString ?? UUID().uuidString,
+                       "X-DEVICE-ID": handler.settings.device.deviceGuid.uuidString,
                        "X-FB": "1"]
-        
+
         pages.fetch(TimelineModel.self,
                     with: paginationParameters,
-                    at: { _ in try URLs.getUserTimeLineUrl(maxId: "") },//$0.nextMaxId ?? "") },
+                    at: { _ in URLs.getUserTimeLineUrl(maxId: "") }, //$0.nextMaxId ?? "") },
                     body: {
                         switch $0.nextMaxId {
                         case .none:

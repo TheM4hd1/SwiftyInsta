@@ -11,17 +11,22 @@ import Foundation
 public struct DirectInboxModel: Codable, BaseStatusResponseProtocol {
     public var inbox: InboxModel
     public var seqId: Int?
-    public var pending_requests_total: Int?
-    public var most_recent_inviter: UserShortModel?
-    public var snapshot_at_ms: Int?
+    public var pendingRequestsTotal: Int?
+    public var mostRecentInviter: UserShortModel?
+    public var snapshotAtMs: Int?
     public var status: String?
-    
-    public init(inbox: InboxModel, seqId: Int?, pending_requests_total: Int?, most_recent_inviter: UserShortModel?, snapshot_at_ms: Int?, status: String?) {
+
+    public init(inbox: InboxModel,
+                seqId: Int?,
+                pendingRequestsTotal: Int?,
+                mostRecentInviter: UserShortModel?,
+                snapshotAtMs: Int?,
+                status: String?) {
         self.inbox = inbox
         self.seqId = seqId
-        self.pending_requests_total = pending_requests_total
-        self.most_recent_inviter = most_recent_inviter
-        self.snapshot_at_ms = snapshot_at_ms
+        self.pendingRequestsTotal = pendingRequestsTotal
+        self.mostRecentInviter = mostRecentInviter
+        self.snapshotAtMs = snapshotAtMs
         self.status = status
     }
 }
@@ -32,7 +37,7 @@ public struct InboxModel: Codable {
     public var unseenCount: Int?
     public var unseenCountTs: Int?
     public var blendedInboxEnabled: Bool?
-    
+
     public init(threads: [InboxThreadsModel]?, hasOlder: Bool?, unseenCount: Int?, unseenCountTs: Int?, blendedInboxEnabled: Bool?) {
         self.threads = threads
         self.hasOlder = hasOlder
@@ -72,8 +77,35 @@ public struct InboxThreadsModel: Codable {
     public var oldestCursor: String?
     public var isSpam: Bool?
     public var lastPermanentItem: ThreadItemModel?
-    
-    public init(threadId: String?, threadV2Id: String?, users: [UserModel]?, leftUsers: [UserModel]?, items: [ThreadItemModel]?, lastSeenActivityAt: Int?, muted: Bool?, isPin: Bool?, named: Bool?, valuedRequest: Bool?, canonical: Bool?, pending: Bool?, threadType: String?, viewerId: Int?, threadTitle: String?, pendingScore: Int?, vcMuted: Bool?, isGroup: Bool?, reshareSendCount: Int?, reshareReceiveSendCount: Int?, expiringMediaReceiveCount: Int?, inviter: UserShortModel?, hasOlder: Bool?, hasNewer: Bool?, newestCursor: String?, oldestCursor: String?, isSpam: Bool?, lastPermanentItem: ThreadItemModel?) {
+
+    public init(threadId: String?,
+                threadV2Id: String?,
+                users: [UserModel]?,
+                leftUsers: [UserModel]?,
+                items: [ThreadItemModel]?,
+                lastSeenActivityAt: Int?,
+                muted: Bool?,
+                isPin: Bool?,
+                named: Bool?,
+                valuedRequest: Bool?,
+                canonical: Bool?,
+                pending: Bool?,
+                threadType: String?,
+                viewerId: Int?,
+                threadTitle: String?,
+                pendingScore: Int?,
+                vcMuted: Bool?,
+                isGroup: Bool?,
+                reshareSendCount: Int?,
+                reshareReceiveSendCount: Int?,
+                expiringMediaReceiveCount: Int?,
+                inviter: UserShortModel?,
+                hasOlder: Bool?,
+                hasNewer: Bool?,
+                newestCursor: String?,
+                oldestCursor: String?,
+                isSpam: Bool?,
+                lastPermanentItem: ThreadItemModel?) {
         self.threadId = threadId
         self.threadV2Id = threadV2Id
         self.users = users
@@ -111,7 +143,7 @@ public struct ThreadItemModel: Codable {
     public var text: String?
     public var clientContext: String?
     public var itemType: String?
-    
+
     public init(itemId: String?, userId: Int?, timestamp: Int?, text: String?, clientContext: String?, itemType: String?) {
         self.itemId = itemId
         self.userId = userId
@@ -144,7 +176,7 @@ public struct DirectPayloadModel: Codable {
     public var itemId: String?
     public var timestamp: String?
     public var threadId: String?
-    
+
     public init(clientContext: String?, itemId: String?, timestamp: String?, threadId: String?) {
         self.clientContext = clientContext
         self.itemId = itemId
@@ -158,7 +190,7 @@ public struct DirectSendMessageResponseModel: Codable, BaseStatusResponseProtoco
     var statusCode: String?
     var action: String?
     var payload: DirectPayloadModel
-    
+
     public init(status: String?, statusCode: String?, action: String?, payload: DirectPayloadModel) {
         self.status = status
         self.statusCode = statusCode
@@ -170,7 +202,7 @@ public struct DirectSendMessageResponseModel: Codable, BaseStatusResponseProtoco
 public struct ThreadModel: Codable, BaseStatusResponseProtocol {
     var thread: InboxThreadsModel?
     var status: String?
-    
+
     public init(thread: InboxThreadsModel?, status: String?) {
         self.thread = thread
         self.status = status

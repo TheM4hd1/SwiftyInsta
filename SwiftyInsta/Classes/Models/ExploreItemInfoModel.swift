@@ -13,7 +13,7 @@ public struct ExploreItemInfoModel: Codable {
     public var totalNumColumns: Int?
     public var aspectRatio: Int?
     public var autopaly: Bool?
-    
+
     public init(numColumns: Int?, totalNumColumns: Int?, aspectRatio: Int?, autopaly: Bool?) {
         self.numColumns = numColumns
         self.totalNumColumns = totalNumColumns

@@ -27,6 +27,6 @@ public struct AndroidDeviceModel: Codable {
     var frimwareType: String
     var hardwareManufacturer: String
     var hardwareModel: String
-    
+
     public var userAgent: CustomUserAgent { return CustomUserAgent(device: self) }
 }

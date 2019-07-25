@@ -30,8 +30,16 @@ public struct LocationShortModel: Codable, LocationProtocol {
     public var lat: Double?
     public var externalSource: String?
     public var facebookPlacesId: Int?
-    
-    public init(pk: Int?, name: String?, address: String?, city: String?, shortName: String?, lng: Double?, lat: Double?, externalSource: String?, facebookPlacedId: Int?) {
+
+    public init(pk: Int?,
+                name: String?,
+                address: String?,
+                city: String?,
+                shortName: String?,
+                lng: Double?,
+                lat: Double?,
+                externalSource: String?,
+                facebookPlacedId: Int?) {
         self.pk = pk
         self.name = name
         self.address = address
@@ -54,8 +62,16 @@ public struct LocationModel: Codable {
     public var isPinned: Double?
     public var isHidden: Int?
     public var location: LocationShortModel?
-    
-    public init(x: Double?, y: Double?, z: Double?, width: Double?, height: Double?, rotation: Double?, isPinned: Double?, isHidden: Int?, location: LocationShortModel?) {
+
+    public init(x: Double?,
+                y: Double?,
+                z: Double?,
+                width: Double?,
+                height: Double?,
+                rotation: Double?,
+                isPinned: Double?,
+                isHidden: Int?,
+                location: LocationShortModel?) {
         self.x = x
         self.y = y
         self.z = z

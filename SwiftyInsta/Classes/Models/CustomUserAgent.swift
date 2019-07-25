@@ -21,13 +21,13 @@ public struct CustomUserAgent {
     public let modem: String
     public let locale: String
     public let fbCode: String
-    
+
     /// Compute and return the user agent.
     public var string: String {
         return String(format: "Instagram %@ %@ (%@/%@; %@dpi; %@; %@; %@; %@; %@; %@; %@)",
                       apiVersion, osName, osVersion, osRelease, dpi, resolution, company, model, model, modem, locale, fbCode)
     }
-    
+
     /// Manually create a user-agent.
     public init(apiVersion: String = "85.0.0.21.100",
                 osName: String = "Android",

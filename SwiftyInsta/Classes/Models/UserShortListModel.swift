@@ -14,7 +14,7 @@ public struct UserShortListModel: Codable, BaseStatusResponseProtocol, Paginatio
     public var bigList: Bool?
     public var pageSize: Int?
     public var users: [UserShortModel]?
-    
+
     public init(status: String?, nextMaxId: String? = "", bigList: Bool?, pageSize: Int?, users: [UserShortModel]?) {
         self.status = status
         self.nextMaxId = nextMaxId
@@ -31,7 +31,7 @@ public struct PendingFriendshipsModel: Codable, BaseStatusResponseProtocol {
     public var pageSize: Int?
     public var users: [UserShortModel]?
     //public var suggestedUsers: SuggestedUsers?
-    
+
     public init(status: String?, nextMaxId: String? = "", bigList: Bool?, pageSize: Int?, users: [UserShortModel]?) {
         self.status = status
         self.nextMaxId = nextMaxId

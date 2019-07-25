@@ -22,8 +22,13 @@ public struct RankedRecipientsModel: Codable, BaseStatusResponseProtocol, Recipi
     public var requestId: String?
     public var rankToken: String?
     public var status: String?
-    
-    public init(rankedRecipients: [RecipientItemModel]?, expires: Int?, filtered: Bool?, requestId: String?, rankToken: String?, status: String?) {
+
+    public init(rankedRecipients: [RecipientItemModel]?,
+                expires: Int?,
+                filtered: Bool?,
+                requestId: String?,
+                rankToken: String?,
+                status: String?) {
         self.rankedRecipients = rankedRecipients
         self.expires = expires
         self.filtered = filtered
@@ -40,8 +45,13 @@ public struct RecentRecipientsModel: Codable, BaseStatusResponseProtocol, Recipi
     public var requestId: String?
     public var rankToken: String?
     public var status: String?
-    
-    public init(recentRecipients: [RecipientItemModel]?, expires: Int?, filtered: Bool?, requestId: String?, rankToken: String?, status: String?) {
+
+    public init(recentRecipients: [RecipientItemModel]?,
+                expires: Int?,
+                filtered: Bool?,
+                requestId: String?,
+                rankToken: String?,
+                status: String?) {
         self.recentRecipients = recentRecipients
         self.expires = expires
         self.filtered = filtered
@@ -54,7 +64,7 @@ public struct RecentRecipientsModel: Codable, BaseStatusResponseProtocol, Recipi
 public struct RecipientItemModel: Codable {
     public var thread: InboxThreadsModel?
     public var user: UserShortModel?
-    
+
     public init(thread: InboxThreadsModel?, user: UserShortModel?) {
         self.thread = thread
         self.user = user

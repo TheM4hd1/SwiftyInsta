@@ -16,8 +16,14 @@ public struct TagFeedModel: Codable, PaginationProtocol, BaseStatusResponseProto
     public var status: String?
     public var rankedItems: [MediaModel]?
     public var items: [MediaModel]?
-    
-    public init(autoLoadMoreEnabled: Bool?, moreAvailable: Bool?, nextMaxId: String?, numResults: Int?, status: String?, rankedItems: [MediaModel]?, items: [MediaModel]?) {
+
+    public init(autoLoadMoreEnabled: Bool?,
+                moreAvailable: Bool?,
+                nextMaxId: String?,
+                numResults: Int?,
+                status: String?,
+                rankedItems: [MediaModel]?,
+                items: [MediaModel]?) {
         self.autoLoadMoreEnabled = autoLoadMoreEnabled
         self.moreAvailable = moreAvailable
         self.nextMaxId = nextMaxId

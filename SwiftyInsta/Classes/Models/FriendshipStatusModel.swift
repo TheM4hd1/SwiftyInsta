@@ -18,8 +18,16 @@ public struct FriendshipStatusModel: Codable {
     public var isBestie: Bool?
     public var muting: Bool?
     public var isMutingReel: Bool?
-    
-    public init(following: Bool?, followedBy: Bool?, blocking: Bool?, isPrivate: Bool?, incomingRequest: Bool?, outgoingRequest: Bool?, isBestie: Bool?, muting: Bool?, isMutingReel: Bool?) {
+
+    public init(following: Bool?,
+                followedBy: Bool?,
+                blocking: Bool?,
+                isPrivate: Bool?,
+                incomingRequest: Bool?,
+                outgoingRequest: Bool?,
+                isBestie: Bool?,
+                muting: Bool?,
+                isMutingReel: Bool?) {
         self.following = following
         self.followedBy = followedBy
         self.blocking = blocking
@@ -35,7 +43,7 @@ public struct FriendshipStatusModel: Codable {
 public struct FollowResponseModel: Codable, BaseStatusResponseProtocol {
     public var friendshipStatus: FriendshipStatusModel?
     public var status: String?
-    
+
     public init(friendshipStatus: FriendshipStatusModel?, status: String?) {
         self.friendshipStatus = friendshipStatus
         self.status = status

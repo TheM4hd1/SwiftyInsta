@@ -6,6 +6,20 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		E0287B8A22E9D50F007FA318 /* Lint Swift Code */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = E0287B8D22E9D50F007FA318 /* Build configuration list for PBXAggregateTarget "Lint Swift Code" */;
+			buildPhases = (
+				E0287B8E22E9D520007FA318 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Lint Swift Code";
+			productName = "Lint Swift Code";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		110454D5221DE7270080F986 /* AccountRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110454D4221DE7270080F986 /* AccountRecovery.swift */; };
 		1104CD092180621400F855BA /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
@@ -852,6 +866,9 @@
 					E006E3E522E87E42002DB4BB = {
 						CreatedOnToolsVersion = 11.0;
 					};
+					E0287B8A22E9D50F007FA318 = {
+						CreatedOnToolsVersion = 11.0;
+					};
 				};
 			};
 			buildConfigurationList = 115F1201217FDD8B00ED3530 /* Build configuration list for PBXProject "SwiftyInsta" */;
@@ -870,6 +887,7 @@
 				E006E3A022E87DFC002DB4BB /* SwiftyInsta.macOS */,
 				E006E3C922E87E2C002DB4BB /* SwiftyInsta.tvOS */,
 				E006E3E522E87E42002DB4BB /* SwiftyInsta.watchOS */,
+				E0287B8A22E9D50F007FA318 /* Lint Swift Code */,
 			);
 		};
 /* End PBXProject section */
@@ -993,6 +1011,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		E0287B8E22E9D520007FA318 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1672,6 +1707,22 @@
 			};
 			name = Release;
 		};
+		E0287B8B22E9D50F007FA318 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E0287B8C22E9D50F007FA318 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1716,6 +1767,15 @@
 			buildConfigurations = (
 				E006E3EC22E87E42002DB4BB /* Debug */,
 				E006E3ED22E87E42002DB4BB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E0287B8D22E9D50F007FA318 /* Build configuration list for PBXAggregateTarget "Lint Swift Code" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E0287B8B22E9D50F007FA318 /* Debug */,
+				E0287B8C22E9D50F007FA318 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

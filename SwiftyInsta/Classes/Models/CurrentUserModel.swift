@@ -27,8 +27,25 @@ public struct CurrentUser: Codable, UserShortProtocol {
     public var needsEmailConfirm: Bool?
     public var hdProfilePicVersions: [ProfilePicVersionsModel]?
     public var hdProfilePicUrlInfo: ProfilePicVersionsModel?
-    
-    public init(isVerified: Bool?, isPrivate: Bool?, pk: Int?, profilePicUrl: String?, profilePicId: String?, username: String?, fullName: String?, hasAnonymousProfilePicture: Bool?, biography: String?, externalUrl: String?, showConversionEditEntry: Bool?, birthday: String?, phoneNumber: String?, gender: Int?, email: String?, needsEmailConfirm: Bool?, hdProfilePicVersions: [ProfilePicVersionsModel]?, hdProfilePicUrlInfo: ProfilePicVersionsModel?) {
+
+    public init(isVerified: Bool?,
+                isPrivate: Bool?,
+                pk: Int?,
+                profilePicUrl: String?,
+                profilePicId: String?,
+                username: String?,
+                fullName: String?,
+                hasAnonymousProfilePicture: Bool?,
+                biography: String?,
+                externalUrl: String?,
+                showConversionEditEntry: Bool?,
+                birthday: String?,
+                phoneNumber: String?,
+                gender: Int?,
+                email: String?,
+                needsEmailConfirm: Bool?,
+                hdProfilePicVersions: [ProfilePicVersionsModel]?,
+                hdProfilePicUrlInfo: ProfilePicVersionsModel?) {
         self.isVerified = isVerified
         self.isPrivate = isPrivate
         self.pk  = pk
@@ -53,7 +70,7 @@ public struct CurrentUser: Codable, UserShortProtocol {
 public struct CurrentUserModel: Codable, BaseStatusResponseProtocol {
     public var user: CurrentUser?
     public var status: String?
-    
+
     public init(user: CurrentUser?, status: String?) {
         self.user = user
         self.status = status

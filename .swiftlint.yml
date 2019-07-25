@@ -1,0 +1,67 @@
+disabled_rules:
+    - operator_whitespace
+
+nesting:
+    type_level:
+        warning: 2
+
+included:
+    - SwiftyInsta
+
+excluded:
+    - Pods
+    - SwiftyInsta/*/*/APIHandler.swift  # skip a bug with #if(os(_)) @available()
+    - SwiftyInsta/*/CryptoHelper.swift
+    - SwiftyInsta/*/KeychainSwiftDistrib.swift
+
+analyzer_rules:
+    - explicit_self
+
+trailing_whitespace:
+    severity: error
+
+cyclomatic_complexity:
+    warning: 12
+    error: 15
+
+file_length:
+    warning: 1000
+    error: 1500
+
+type_body_length:
+    warning: 600
+    error: 1000
+
+function_body_length:
+    warning: 95
+    error: 100
+
+line_length:
+    warning: 150
+    error: 150
+
+identifier_name:
+    max_length:
+      warning: 45
+      error: 50
+    min_length:
+      warning: 3
+      error: 1
+    excluded:
+      - x
+      - y
+      - z
+      - ok  # it might be removed in the future.
+      - id  # prefer identifier.
+      - pk
+      - fr
+      - in
+      - me
+      - URL
+      - url
+
+function_parameter_count:
+    warning: 8
+    error: 15
+
+reporter: "xcode"

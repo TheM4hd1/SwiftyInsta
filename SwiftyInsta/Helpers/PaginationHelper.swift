@@ -9,10 +9,10 @@
 import Foundation
 
 protocol PaginationProtocol {
-    associatedtype Id: Hashable & LosslessStringConvertible
+    associatedtype Identifier: Hashable & LosslessStringConvertible
     var autoLoadMoreEnabled: Bool? { get }
     var moreAvailable: Bool? { get }
-    var nextMaxId: Id? { get }
+    var nextMaxId: Identifier? { get }
     var numResults: Int? { get }
 }
 extension PaginationProtocol {
@@ -22,10 +22,10 @@ extension PaginationProtocol {
 }
 
 protocol NestedPaginationProtocol: PaginationProtocol {
-    static var nextMaxIdPath: KeyPath<Self, Id?> { get }
+    static var nextMaxIdPath: KeyPath<Self, Identifier?> { get }
 }
 extension NestedPaginationProtocol {
-    var nextMaxId: Id? { return self[keyPath: Self.nextMaxIdPath] }
+    var nextMaxId: Identifier? { return self[keyPath: Self.nextMaxIdPath] }
 }
 
 public typealias PaginationUpdateHandler<R> = (_ update: R, _ nextParameters: PaginationParameters, _ runningResponse: [R]) -> Void

@@ -18,7 +18,7 @@ public struct ProfilePicVersionsModel: Codable, ProfilePicVersionsProtocol {
     public var height: Int?
     public var url: String?
     public var width: Int?
-    
+
     public init(height: Int?, url: String?, width: Int?) {
         self.height = height
         self.url = url

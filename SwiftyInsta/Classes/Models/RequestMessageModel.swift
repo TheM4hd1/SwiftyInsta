@@ -15,7 +15,7 @@ public struct RequestMessageModel: Codable {
     public var deviceId: String
     public var password: String
     public var loginAttemptCount: String = "0"
-    
+
     public init(phoneId: String, username: String, guid: UUID, deviceId: String, password: String, loginAttemptCount: String = "0") {
         self.phoneId = phoneId
         self.username = username
@@ -24,7 +24,7 @@ public struct RequestMessageModel: Codable {
         self.password = password
         self.loginAttemptCount = loginAttemptCount
     }
-    
+
     func getMessageString() -> String {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
@@ -36,28 +36,28 @@ public struct RequestMessageModel: Codable {
             fatalError("getMessageString() fatalError.")
         }
     }
-    
+
     func generateSignature(signatureKey: String) -> String {
-        var _signatureKey = signatureKey
+        var signatureKey = signatureKey
         if signatureKey.isEmpty {
-            _signatureKey = Headers.HeaderIGSignatureValue
+            signatureKey = Headers.igSignatureValue
         }
-        
+
         let message = getMessageString()
-        return message.hmac(algorithm: .SHA256, key: _signatureKey)
+        return message.hmac(algorithm: .SHA256, key: signatureKey)
     }
-    
+
     func isEmpty() -> Bool {
         if phoneId.isEmpty || deviceId.isEmpty {
             return true
         }
         return false
     }
-    
+
     static func generateDeviceId() -> String {
         return generateDeviceIdFromGuid(guid: UUID.init())
     }
-    
+
     func generateUploadId() -> String {
 //        var dateComponents = DateComponents()
 //        dateComponents.year = 1970
@@ -70,7 +70,7 @@ public struct RequestMessageModel: Codable {
 //        return String(totalSeconds)
         return String(Date().millisecondsSince1970 / 1000)
     }
-    
+
     func fromDevice(device: AndroidDeviceModel) -> RequestMessageModel {
         let model = RequestMessageModel(
             phoneId: device.phoneGuid.uuidString,
@@ -82,7 +82,7 @@ public struct RequestMessageModel: Codable {
         )
         return model
     }
-    
+
     static func generateDeviceIdFromGuid(guid: UUID) -> String {
         let hashedGuid = guid.uuidString.MD5
         return "android-\(hashedGuid.prefix(16))"
