@@ -18,5 +18,9 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/TheM4hd1/SwiftyInsta.git", :tag => "#{s.version}" }
   s.source_files  = "SwiftyInsta/**/*.{h,m,swift}"
 
+  s.ios.frameworks = 'UIKit', 'WebKit'
+  s.macos.frameworks = 'AppKit'
+  s.tvos.frameworks = 'UIKit'
+  s.watchos.framworks = 'UIKit'
   s.dependency "GzipSwift", "~> 5.0"
 end

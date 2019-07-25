@@ -14,4 +14,5 @@ env:
     - SCHEME='SwiftyInsta.tvOS'     SDK='appletvsimulator'
     - SCHEME='SwiftyInsta.watchOS'  SDK='watchsimulator'
 script:
+  - set -o pipefail
   - xcodebuild clean build -workspace SwiftyInsta.xcworkspace -scheme ${SCHEME} -sdk ${SDK} -configuration Debug | xcpretty -c

@@ -77,9 +77,8 @@
 		11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E2B134218F13D20095374A /* UserShortListModel.swift */; };
 		11F0CE6B2195CC2400C0F6A4 /* TimelineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */; };
 		11F57CC4229D2E78001A1C0A /* BlockedUsersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */; };
-		3482E63E7E21C50AE8604113 /* Pods_SwiftyInsta_macOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9469EE2FD709EDA6C859856B /* Pods_SwiftyInsta_macOS.framework */; };
-		448FCF9DDC016B0B968012A4 /* Pods_SwiftyInsta_tvOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8002989DD90DB204DA41DF08 /* Pods_SwiftyInsta_tvOS.framework */; };
-		84F5E2B1974A16B74FA26643 /* Pods_SwiftyInsta_watchOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7366EA563B0F742179492E2B /* Pods_SwiftyInsta_watchOS.framework */; };
+		9B44F7FB312ECBAB623E392A /* libPods-SwiftyInsta.macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 966BD41B01487F1FE1ECAB31 /* libPods-SwiftyInsta.macOS.a */; };
+		A99B6F4DDF65F6FB366CBF02 /* libPods-SwiftyInsta.watchOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BB77AF75FE636019B5564CE /* libPods-SwiftyInsta.watchOS.a */; };
 		DC80CD9A1CA848F6A20321A1 /* Pods_SwiftyInsta_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59A7614F783E0042FAE7A4F3 /* Pods_SwiftyInsta_iOS.framework */; };
 		E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1240217FE98000ED3530 /* APIHandler.swift */; };
 		E006E3F022E87EFE002DB4BB /* CommentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FC21A99CD400BD9EFB /* CommentHandler.swift */; };
@@ -328,6 +327,7 @@
 		E0F49BA522E505CF004C3E7F /* StoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A95BEE21AC0B9800839250 /* StoryHandler.swift */; };
 		E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FF21A99CD400BD9EFB /* ProfileHandler.swift */; };
 		E8314D5E2210652400D13BEA /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
+		FF0A2D449646E024FA835983 /* libPods-SwiftyInsta.tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 63E0566AFB960017B5A59059 /* libPods-SwiftyInsta.tvOS.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -414,11 +414,11 @@
 		362E6E34E10F9827FDD883E6 /* Pods-SwiftyInsta.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta/Pods-SwiftyInsta.release.xcconfig"; sourceTree = "<group>"; };
 		538C9EC0D4ADAC26011245D1 /* Pods-SwiftyInsta.watchOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.watchOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.watchOS/Pods-SwiftyInsta.watchOS.debug.xcconfig"; sourceTree = "<group>"; };
 		59A7614F783E0042FAE7A4F3 /* Pods_SwiftyInsta_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftyInsta_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		63E0566AFB960017B5A59059 /* libPods-SwiftyInsta.tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwiftyInsta.tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BB77AF75FE636019B5564CE /* libPods-SwiftyInsta.watchOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwiftyInsta.watchOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FE8178B8E7C80EAD4564FC6 /* Pods-SwiftyInsta.macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.macOS.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.macOS/Pods-SwiftyInsta.macOS.release.xcconfig"; sourceTree = "<group>"; };
-		7366EA563B0F742179492E2B /* Pods_SwiftyInsta_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftyInsta_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8002989DD90DB204DA41DF08 /* Pods_SwiftyInsta_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftyInsta_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8124B37DD4186069CED57CD5 /* Pods-SwiftyInsta.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta/Pods-SwiftyInsta.debug.xcconfig"; sourceTree = "<group>"; };
-		9469EE2FD709EDA6C859856B /* Pods_SwiftyInsta_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftyInsta_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		966BD41B01487F1FE1ECAB31 /* libPods-SwiftyInsta.macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwiftyInsta.macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		96D3E8D01E32834E21A17A24 /* Pods-SwiftyInsta.tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.tvOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.tvOS/Pods-SwiftyInsta.tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		A43E70C593FC407F912CFB78 /* Pods-SwiftyInsta.macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.macOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.macOS/Pods-SwiftyInsta.macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AC8920D665B7FA72F9F4823E /* Pods-SwiftyInsta.iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.debug.xcconfig"; sourceTree = "<group>"; };
@@ -445,7 +445,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3482E63E7E21C50AE8604113 /* Pods_SwiftyInsta_macOS.framework in Frameworks */,
+				9B44F7FB312ECBAB623E392A /* libPods-SwiftyInsta.macOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,7 +453,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				448FCF9DDC016B0B968012A4 /* Pods_SwiftyInsta_tvOS.framework in Frameworks */,
+				FF0A2D449646E024FA835983 /* libPods-SwiftyInsta.tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,7 +461,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84F5E2B1974A16B74FA26643 /* Pods_SwiftyInsta_watchOS.framework in Frameworks */,
+				A99B6F4DDF65F6FB366CBF02 /* libPods-SwiftyInsta.watchOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,9 +694,9 @@
 			isa = PBXGroup;
 			children = (
 				59A7614F783E0042FAE7A4F3 /* Pods_SwiftyInsta_iOS.framework */,
-				9469EE2FD709EDA6C859856B /* Pods_SwiftyInsta_macOS.framework */,
-				8002989DD90DB204DA41DF08 /* Pods_SwiftyInsta_tvOS.framework */,
-				7366EA563B0F742179492E2B /* Pods_SwiftyInsta_watchOS.framework */,
+				966BD41B01487F1FE1ECAB31 /* libPods-SwiftyInsta.macOS.a */,
+				63E0566AFB960017B5A59059 /* libPods-SwiftyInsta.tvOS.a */,
+				6BB77AF75FE636019B5564CE /* libPods-SwiftyInsta.watchOS.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
