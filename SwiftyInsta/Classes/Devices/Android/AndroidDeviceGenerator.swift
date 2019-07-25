@@ -9,22 +9,10 @@
 import Foundation
 
 struct AndroidDeviceGenerator {
-    static let deviceNames: Set<Devices> = [
-        Devices.LG_OPTIMUS_G,
-        Devices.NEXUS7_GEN2,
-        Devices.HTC10,
-        Devices.GALAXY6,
-        Devices.GALAXY5,
-        Devices.LG_OPTIMUS_F6,
-        Devices.GALAXY_TAB,
-        Devices.SAMSUNG_NOTE3,
-        Devices.NEXUS4_CHROMA,
-        Devices.SONY_Z3_COMPACT,
-        Devices.XPERIA_Z5
-    ]
-    
+    static let deviceNames: [Devices] = Devices.allCases
+
     static let deviceCollection: [Devices: AndroidDeviceModel] = [
-        Devices.LG_OPTIMUS_G: AndroidDeviceModel(
+        Devices.lgOptimusG: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "5b971484-ad0f-41fa-8886-313e9e91f5b9")!,
             deviceGuid: UUID.init(uuidString: "202d7022-3533-4450-91bd-0344112e0deb")!,
             googleAdId: UUID.init(),
@@ -43,7 +31,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "LGE",
             hardwareModel: "LG-LS970"
         ),
-        Devices.NEXUS7_GEN2: AndroidDeviceModel(
+        Devices.nexus7gen2: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "97dd4f8a-af3f-4cfe-8be3-c34c38110346")!,
             deviceGuid: UUID.init(uuidString: "82c2dbb7-35fc-4544-8b6f-4d8606ea1f7f")!,
             googleAdId: UUID.init(),
@@ -62,7 +50,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "asus",
             hardwareModel: "Nexus 7"
         ),
-        Devices.HTC10: AndroidDeviceModel(
+        Devices.htc10: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "3e90b5f5-23c3-4fd1-b9ba-8e090a1fa397")!,
             deviceGuid: UUID.init(uuidString: "a91cd29b-2070-4c4e-b4cb-35335b2a38dc")!,
             googleAdId: UUID.init(),
@@ -81,7 +69,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "HTC",
             hardwareModel: "HTC 10"
         ),
-        Devices.GALAXY6: AndroidDeviceModel(
+        Devices.galaxy6: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "9ade42fb-09de-4931-8526-8f7c1bd3ce2a")!,
             deviceGuid: UUID.init(uuidString: "505cbe9d-487c-49d4-8f2c-b1cc166d1094")!,
             googleAdId: UUID.init(),
@@ -100,7 +88,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "samsung",
             hardwareModel: "samsungexynos7420"
         ),
-        Devices.GALAXY5: AndroidDeviceModel(
+        Devices.galaxy5: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "141023a2-153b-4e92-ae64-893553eaa9db")!,
             deviceGuid: UUID.init(uuidString: "d13d1596-0983-4e59-825f-bd7cd559106b")!,
             googleAdId: UUID.init(),
@@ -119,7 +107,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "samsung",
             hardwareModel: "SM-G900F"
         ),
-        Devices.LG_OPTIMUS_F6: AndroidDeviceModel(
+        Devices.lgOptimusF6: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "17c27d7a-788d-4430-bcb0-6ae605ef0b01")!,
             deviceGuid: UUID.init(uuidString: "5ccdd80f-389e-4156-b070-fddab5fb7ed9")!,
             googleAdId: UUID.init(),
@@ -138,7 +126,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "LGE",
             hardwareModel: "LG-D500"
         ),
-        Devices.GALAXY_TAB: AndroidDeviceModel(
+        Devices.galaxyTab: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "849a7ae1-cf94-4dd5-a977-a2f3e8363e66")!,
             deviceGuid: UUID.init(uuidString: "c319490f-6f09-467b-b2a5-6f1db13348e9")!,
             googleAdId: UUID.init(),
@@ -157,7 +145,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "samsung",
             hardwareModel: "SM-T705"
         ),
-        Devices.SAMSUNG_NOTE3: AndroidDeviceModel(
+        Devices.samsungNote3: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "28484284-e646-4a29-88fc-76c2666d5ab3")!,
             deviceGuid: UUID.init(uuidString: "7f585e77-becf-4137-bf1f-84ab72e35eb4")!,
             googleAdId: UUID.init(),
@@ -176,7 +164,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "samsung",
             hardwareModel: "SM-N900P"
         ),
-        Devices.NEXUS4_CHROMA: AndroidDeviceModel(
+        Devices.nexus4Chroma: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "7fb2eb38-04ab-4c51-bd0c-694c7da2187e")!,
             deviceGuid: UUID.init(uuidString: "2c4ae214-c037-486c-a335-76a1f6973445")!,
             googleAdId: UUID.init(),
@@ -195,7 +183,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "LGE",
             hardwareModel: "Nexus 4"
         ),
-        Devices.SONY_Z3_COMPACT: AndroidDeviceModel(
+        Devices.sonyZ3Compact: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "8afad275-4fca-49e6-a5e0-3b2bbfe6e9f2")!,
             deviceGuid: UUID.init(uuidString: "bccfcc1c-8188-42fa-a14e-e238c847c358")!,
             googleAdId: UUID.init(),
@@ -214,7 +202,7 @@ struct AndroidDeviceGenerator {
             hardwareManufacturer: "Sony",
             hardwareModel: "SO-02G"
         ),
-        Devices.XPERIA_Z5: AndroidDeviceModel(
+        Devices.xperiaZ5: AndroidDeviceModel(
             phoneGuid: UUID.init(uuidString: "aaeb4dfb-a93d-4bd6-9147-1a3aaee60510")!,
             deviceGuid: UUID.init(uuidString: "78178fef-aa0c-4691-9c00-16482c25ce24")!,
             googleAdId: UUID.init(),
@@ -234,16 +222,16 @@ struct AndroidDeviceGenerator {
             hardwareModel: "E6653"
         )
     ]
-    
+
     static func getRandomAndroidDevice() -> AndroidDeviceModel {
         let randomDeviceName = deviceNames.randomElement() // We can safely unwrap it. Collection isn't empty.
         return deviceCollection[randomDeviceName!]!
     }
-    
+
     static func getByName(deviceName: Devices) -> AndroidDeviceModel {
         return deviceCollection[deviceName]!
     }
-    
+
     static func getById(deviceId: String) throws -> AndroidDeviceModel {
         let devices = deviceCollection.filter {$0.value.deviceId == deviceId}
         if let firstDevice = devices.first {

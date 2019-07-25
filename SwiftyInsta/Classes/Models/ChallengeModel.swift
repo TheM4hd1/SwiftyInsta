@@ -10,10 +10,10 @@ import Foundation
 
 struct ChallengeForm: Codable {
     var entryData: EntryData?
-    
+
     /// Compute and return the suggestion.
     var suggestion: [String]? {
-        guard let values = entryData?.Challenge?.first?.extraData?.content?.last?.fields?.first?.values,
+        guard let values = entryData?.challenge?.first?.extraData?.content?.last?.fields?.first?.values,
             values.count == 2 else { return nil }
         let first = values[0]
         let last = values[1]
@@ -23,7 +23,10 @@ struct ChallengeForm: Codable {
 }
 extension ChallengeForm {
     struct EntryData: Codable {
-        var Challenge: [EntryDataChallengeItem]?
+        enum CodingKeys: String, CodingKey {
+            case challenge = "Callenge"
+        }
+        var challenge: [EntryDataChallengeItem]?
     }
 }
 extension ChallengeForm.EntryData {
@@ -61,7 +64,7 @@ struct ChallengeModel: Codable {
     var lock: Bool
     var logout: Bool
     var nativeFlow: Bool
-    
+
     init(url: String, apiPath: String, hideWebviewHeader: Bool, lock: Bool, logout: Bool, nativeFlow: Bool) {
         self.url = url
         self.apiPath = apiPath

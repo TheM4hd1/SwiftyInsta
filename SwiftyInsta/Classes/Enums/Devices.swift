@@ -8,16 +8,16 @@
 
 import Foundation
 
-enum Devices: String {
-    case LG_OPTIMUS_G = "lg-optimus-g"
-    case NEXUS7_GEN2 = "nexus7gen2"
-    case HTC10 = "htc10"
-    case GALAXY6 = "galaxy6"
-    case GALAXY5 = "galaxy-s5-gold"
-    case LG_OPTIMUS_F6 = "lg-optimus-f6"
-    case GALAXY_TAB = "galaxy-tab-s84"
-    case SAMSUNG_NOTE3 = "note3"
-    case NEXUS4_CHROMA = "nexus4-chroma"
-    case SONY_Z3_COMPACT = "sony-z3-compact"
-    case XPERIA_Z5 = "xperia-z5"
+enum Devices: String, CaseIterable {
+    case lgOptimusG = "lg-optimus-g"
+    case nexus7gen2 = "nexus7gen2"
+    case htc10 = "htc10"
+    case galaxy6 = "galaxy6"
+    case galaxy5 = "galaxy-s5-gold"
+    case lgOptimusF6 = "lg-optimus-f6"
+    case galaxyTab = "galaxy-tab-s84"
+    case samsungNote3 = "note3"
+    case nexus4Chroma = "nexus4-chroma"
+    case sonyZ3Compact = "sony-z3-compact"
+    case xperiaZ5 = "xperia-z5"
 }

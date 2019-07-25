@@ -19,8 +19,17 @@ public struct CommentModel: Codable {
     public var shareEnabled: Bool?
     public var hasLikedComment: Bool?
     public var commentLikeCount: Int?
-    
-    public init(pk: Int?, userId: Int?, text: String?, contentType: String?, status: String?, user: UserShortModel?, didReportAsSpam: Bool?, shareEnabled: Bool?, hasLikedComment: Bool?, commentLikeCount: Int?) {
+
+    public init(pk: Int?,
+                userId: Int?,
+                text: String?,
+                contentType: String?,
+                status: String?,
+                user: UserShortModel?,
+                didReportAsSpam: Bool?,
+                shareEnabled: Bool?,
+                hasLikedComment: Bool?,
+                commentLikeCount: Int?) {
         self.pk = pk
         self.userId = userId
         self.contentType = contentType
@@ -43,8 +52,16 @@ public struct MediaCommentsResponseModel: Codable, PaginationProtocol, BaseStatu
     public var previewComments: [CommentModel]?
     public var nextMaxId: String?
     public var status: String?
-    
-    public init(commentLikesEnabled: Bool?, comments: [CommentModel]?, commentCount: Int?, caption: CaptionModel?, captionIsEdited: Bool?, hasMoreComments: Bool?, previewComments: [CommentModel]?, nextMaxId: String?, status: String?) {
+
+    public init(commentLikesEnabled: Bool?,
+                comments: [CommentModel]?,
+                commentCount: Int?,
+                caption: CaptionModel?,
+                captionIsEdited: Bool?,
+                hasMoreComments: Bool?,
+                previewComments: [CommentModel]?,
+                nextMaxId: String?,
+                status: String?) {
         self.commentLikesEnabled = commentLikesEnabled
         self.comments = comments
         self.commentCount = commentCount
@@ -60,7 +77,7 @@ public struct MediaCommentsResponseModel: Codable, PaginationProtocol, BaseStatu
 public struct CommentResponse: Codable, BaseStatusResponseProtocol {
     public var comment: CommentModel?
     public var status: String?
-    
+
     public init(comment: CommentModel?, status: String?) {
         self.comment = comment
         self.status = status

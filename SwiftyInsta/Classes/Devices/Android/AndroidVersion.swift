@@ -12,7 +12,7 @@ struct AndroidVersion: Equatable {
     let codeName: String
     let versionNumber: String
     let apiLevel: String
-    
+
     private static let androidList: [AndroidVersion] = [
         AndroidVersion(codeName: "Ice Cream Sandwich", versionNumber: "4.0", apiLevel: "14"),
         AndroidVersion(codeName: "Ice Cream Sandwich", versionNumber: "4.0.3", apiLevel: "15"),
@@ -37,7 +37,7 @@ struct AndroidVersion: Equatable {
         }
         return nil
     }
-    
+
     static func ==(lhs: AndroidVersion, rhs: AndroidVersion) -> Bool {
         return (
             lhs.codeName == rhs.codeName &&

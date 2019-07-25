@@ -36,4 +36,3 @@ struct PhoneVerificationSettings: Codable {
     var robocallAfterMaxSms: Bool?
     var robocallCountDownTimeSec: Int?
 }
-

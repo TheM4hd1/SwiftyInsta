@@ -28,7 +28,7 @@ public struct ExploreInfoModel: Codable {
     public var explanation: String?
     public var actorId: Int?
     public var sourceToken: String?
-    
+
     public init(explanation: String?, actorId: Int?, sourceToken: String?) {
         self.explanation = explanation
         self.actorId = actorId
@@ -38,7 +38,7 @@ public struct ExploreInfoModel: Codable {
 
 public struct UserTagsModel: Codable {
     public var `in`: [UserTagItemModel]?
-    
+
     public init(tags: [UserTagItemModel]?) {
         self.in = tags
     }
@@ -46,7 +46,7 @@ public struct UserTagsModel: Codable {
 
 public struct UserTagItemModel: Codable {
     public var user: UserShortModel?
-    
+
     public init(user: UserShortModel?) {
         self.user = user
     }
@@ -60,8 +60,14 @@ public struct CarouselMedia: Codable {
     public var originalHeight: Int?
     public var pk: Int?
     public var carouselParentId: String?
-    
-    public init(id: String?, mediaType: Int?, imageVersions2: CandidatesModel?, originalWidth: Int?, originalHeight: Int?, pk: Int?, carouselParentId: String?) {
+
+    public init(id: String?,
+                mediaType: Int?,
+                imageVersions2: CandidatesModel?,
+                originalWidth: Int?,
+                originalHeight: Int?,
+                pk: Int?,
+                carouselParentId: String?) {
         self.id = id
         self.imageVersions2 = imageVersions2
         self.mediaType = mediaType
@@ -114,8 +120,47 @@ public struct MediaModel: Codable, MediaModelProtocol {
     public var hasLiked: Bool?
     public var usertags: UserTagsModel?
     //var topLikers: [UserShortModel]?
-    
-    public init(takenAt: Int?, pk: Int?, id: String?, deviceTimestamp: Int?, mediaType: Int?, code: String?, clientCacheKey: String?, filterType: Int?, carouselMedia: [CarouselMedia]?, imageVersions2: CandidatesModel?, originalWidth: Int?, originalHeight: Int?, organicTrackingToken: String?, user: UserModel?, previewComments: [CommentModel]?, canViewMorePreviewComments: Bool?, commentCount: Int?, videoDashManifest: String?, videoCodec: String?, numberOfQualities: Int?, videoVersions: [VideoVersionModel]?, hasAudio: Bool?, videoDuration: Double?, viewCount: Double?, canViewerReshare: Bool?, caption: CaptionModel?, exploreHideComments: Bool?, algorithm: String?, exploreContext: String?, exploreSourceToken: String?, connectionId: String?, mezqlToken: String?, impressionToken: String?, explore: ExploreInfoModel?, location: LocationShortModel?, preview: String?, inventorySource: String?, likeCount: Int?, hasLiked: Bool?, usertags: UserTagsModel?) {
+
+    public init(takenAt: Int?,
+                pk: Int?,
+                id: String?,
+                deviceTimestamp: Int?,
+                mediaType: Int?,
+                code: String?,
+                clientCacheKey: String?,
+                filterType: Int?,
+                carouselMedia: [CarouselMedia]?,
+                imageVersions2: CandidatesModel?,
+                originalWidth: Int?,
+                originalHeight: Int?,
+                organicTrackingToken: String?,
+                user: UserModel?,
+                previewComments: [CommentModel]?,
+                canViewMorePreviewComments: Bool?,
+                commentCount: Int?,
+                videoDashManifest: String?,
+                videoCodec: String?,
+                numberOfQualities: Int?,
+                videoVersions: [VideoVersionModel]?,
+                hasAudio: Bool?,
+                videoDuration: Double?,
+                viewCount: Double?,
+                canViewerReshare: Bool?,
+                caption: CaptionModel?,
+                exploreHideComments: Bool?,
+                algorithm: String?,
+                exploreContext: String?,
+                exploreSourceToken: String?,
+                connectionId: String?,
+                mezqlToken: String?,
+                impressionToken: String?,
+                explore: ExploreInfoModel?,
+                location: LocationShortModel?,
+                preview: String?,
+                inventorySource: String?,
+                likeCount: Int?,
+                hasLiked: Bool?,
+                usertags: UserTagsModel?) {
         self.takenAt = takenAt
         self.pk = pk
         self.id = id
@@ -162,7 +207,7 @@ public struct MediaModel: Codable, MediaModelProtocol {
 public struct DeleteMediaResponse: Codable, BaseStatusResponseProtocol {
     public var didDelete: Bool?
     public var status: String?
-    
+
     public init(didDelete: Bool?, status: String?) {
         self.didDelete = didDelete
         self.status = status

@@ -16,8 +16,14 @@ public struct TwoFactorLoginInfoModel: Codable {
     public var twoFactorIdentifier: String
     public var username: String
     public var phoneVerificationSettings: PhoneVerificationSettingsModel
-    
-    public init(obfuscatedPhoneNumber: String, showMessengerCodeOption: Bool, totpTwoFactorOn: Bool, smsTwoFactorOn: Bool, twoFactorIdentifier: String, username: String, phoneVerificationSettings: PhoneVerificationSettingsModel) {
+
+    public init(obfuscatedPhoneNumber: String,
+                showMessengerCodeOption: Bool,
+                totpTwoFactorOn: Bool,
+                smsTwoFactorOn: Bool,
+                twoFactorIdentifier: String,
+                username: String,
+                phoneVerificationSettings: PhoneVerificationSettingsModel) {
         self.obfuscatedPhoneNumber = obfuscatedPhoneNumber
         self.showMessengerCodeOption = showMessengerCodeOption
         self.totpTwoFactorOn = totpTwoFactorOn
@@ -26,7 +32,7 @@ public struct TwoFactorLoginInfoModel: Codable {
         self.username = username
         self.phoneVerificationSettings = phoneVerificationSettings
     }
-    
+
     static func empty() -> TwoFactorLoginInfoModel {
         return TwoFactorLoginInfoModel(
             obfuscatedPhoneNumber: "0",

@@ -13,7 +13,7 @@ public struct CreateAccountModel {
     public let password: String
     public let email: String
     public let firstName: String
-    
+
     public init(username: String, password: String, email: String, firstName: String) {
         self.username = username
         self.password = password

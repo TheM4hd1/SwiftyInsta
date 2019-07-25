@@ -19,7 +19,7 @@ public class MessageHandler: Handler {
     public func inbox(completionHandler: @escaping (Result<DirectInboxModel, Error>) -> Void) {
         requests.decodeAsync(DirectInboxModel.self,
                              method: .get,
-                             url: try! URLs.getDirectSendTextMessage(),
+                             url: URLs.getDirectSendTextMessage(),
                              completionHandler: completionHandler)
     }
 
@@ -33,19 +33,19 @@ public class MessageHandler: Handler {
         case .users(let users): body["receipient_users"] = "[[\(users.map(String.init).joined(separator: ","))]]"
         case .thread(let thread): body["thread_ids"] = "[\(thread)]"
         }
-        
+
         requests.decodeAsync(DirectSendMessageResponseModel.self,
                              method: .get,
-                             url: try! URLs.getDirectSendTextMessage(),
+                             url: URLs.getDirectSendTextMessage(),
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
-    
+
     /// Get thread by id.
     public func `in`(thread: String, completionHandler: @escaping (Result<ThreadModel, Error>) -> Void) {
         requests.decodeAsync(ThreadModel.self,
                              method: .get,
-                             url: try! URLs.getDirectThread(id: thread),
+                             url: URLs.getDirectThread(id: thread),
                              completionHandler: completionHandler)
     }
 
@@ -53,7 +53,7 @@ public class MessageHandler: Handler {
     public func recent(completionHandler: @escaping (Result<RecentRecipientsModel, Error>) -> Void) {
         requests.decodeAsync(RecentRecipientsModel.self,
                              method: .get,
-                             url: try! URLs.getRecentDirectRecipients(),
+                             url: URLs.getRecentDirectRecipients(),
                              completionHandler: completionHandler)
     }
 
@@ -61,7 +61,7 @@ public class MessageHandler: Handler {
     public func ranked(completionHandler: @escaping (Result<RankedRecipientsModel, Error>) -> Void) {
         requests.decodeAsync(RankedRecipientsModel.self,
                              method: .get,
-                             url: try! URLs.getRankedDirectRecipients(),
+                             url: URLs.getRankedDirectRecipients(),
                              completionHandler: completionHandler)
     }
 }

@@ -14,17 +14,17 @@ class HttpHelper {
     typealias CompletionResult = Result<(Data?, HTTPURLResponse?), Error>
     typealias CompletionHandler = (CompletionResult) -> Void
     weak var handler: APIHandler!
-    
+
     enum Body {
         case parameters([String: Any])
         case data(Data)
         case gzip([String: Any])
     }
-    
+
     init(handler: APIHandler) {
         self.handler = handler
     }
-    
+
     func decodeAsync<D>(_ type: D.Type,
                         method: HTTPMethods,
                         url: URL,
@@ -48,8 +48,7 @@ class HttpHelper {
                     return .success(decoded)
                 } catch { return .failure(error) }
             }
-            if deliverOnResponseQueue { handler.settings.queues.response.async { completionHandler(result) }}
-            else { completionHandler(result) }
+            if deliverOnResponseQueue { handler.settings.queues.response.async { completionHandler(result) }} else { completionHandler(result) }
         }
     }
 
@@ -88,7 +87,7 @@ class HttpHelper {
             }.resume()
         }
     }
-    
+
     func sendSync(method: HTTPMethods,
                   url: URL,
                   body: Body? = nil,
@@ -97,9 +96,9 @@ class HttpHelper {
         var request = getDefaultRequest(for: url, method: body == nil ? method : .post)
         addHeaders(to: &request, header: headers)
         switch body {
-            case .parameters(let parameters)?: addBody(to: &request, body: parameters)
-            case .data(let data)?: request.httpBody = data
-            default: break
+        case .parameters(let parameters)?: addBody(to: &request, body: parameters)
+        case .data(let data)?: request.httpBody = data
+        default: break
         }
         // wait for task to complete.
         let semaphore = DispatchSemaphore(value: 0)
@@ -114,24 +113,24 @@ class HttpHelper {
         semaphore.wait()
         return result
     }
-    
+
     func getDefaultRequest(for url: URL, method: HTTPMethods) -> URLRequest {
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
         request.httpMethod = method.rawValue
-        request.addValue(Headers.HeaderAcceptLanguageValue, forHTTPHeaderField: Headers.HeaderAcceptLanguageKey)
-        request.addValue(Headers.HeaderIGCapablitiesValue, forHTTPHeaderField: Headers.HeaderIGCapablitiesKey)
-        request.addValue(Headers.HeaderIGConnectionTypeValue, forHTTPHeaderField: Headers.HeaderIGConnectionTypeKey)
-        request.addValue(Headers.HeaderContentTypeApplicationFormValue, forHTTPHeaderField: Headers.HeaderContentTypeKey)
-        request.addValue(Headers.HeaderUserAgentValue, forHTTPHeaderField: Headers.HeaderUserAgentKey)
+        request.addValue(Headers.acceptLanguageValue, forHTTPHeaderField: Headers.acceptLanguageKey)
+        request.addValue(Headers.igCapabilitiesValue, forHTTPHeaderField: Headers.igCapabilitiesKey)
+        request.addValue(Headers.igConnectionTypeValue, forHTTPHeaderField: Headers.igConnectionTypeKey)
+        request.addValue(Headers.contentTypeApplicationFormValue, forHTTPHeaderField: Headers.contentTypeKey)
+        request.addValue(Headers.userAgentValue, forHTTPHeaderField: Headers.userAgentKey)
         // remove old values and updates with new one.
         handler.settings.headers.forEach { key, value in request.setValue(value, forHTTPHeaderField: key) }
         return request
     }
-    
+
     fileprivate func addHeaders(to request: inout URLRequest, header: [String: String]) {
         header.forEach { request.allHTTPHeaderFields?.updateValue($0.value, forKey: $0.key) }
     }
-    
+
     fileprivate func addBody(to request: inout URLRequest, body: [String: Any]) {
         if !body.isEmpty {
             var queries: [String] = []
@@ -139,12 +138,12 @@ class HttpHelper {
                 let query = "\(parameterName)=\(parameterValue)"
                 queries.append(query)
             }
-            
+
             let data = queries.joined(separator: "&")
             request.httpBody = data.data(using: String.Encoding.utf8)
         }
     }
-    
+
     func setCookies(_ cookiesData: [Data]) {
         var cookies = [HTTPCookie]()
         for data in cookiesData {
@@ -153,6 +152,6 @@ class HttpHelper {
             }
         }
 
-        try? HTTPCookieStorage.shared.setCookies(cookies, for: URLs.getInstagramCookieUrl(), mainDocumentURL: nil)
+        HTTPCookieStorage.shared.setCookies(cookies, for: URLs.getInstagramCookieUrl(), mainDocumentURL: nil)
     }
 }

@@ -14,7 +14,7 @@ public struct VideoVersionModel: Codable, ProfilePicVersionsProtocol {
     public var width: Int?
     public var id: String?
     public var type: Int?
-    
+
     public init(height: Int?, url: String?, width: Int?, id: String?, type: Int?) {
         self.height = height
         self.url = url

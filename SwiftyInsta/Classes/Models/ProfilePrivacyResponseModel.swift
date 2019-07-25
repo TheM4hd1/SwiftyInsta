@@ -11,7 +11,7 @@ import Foundation
 public struct ProfilePrivacyResponseModel: Codable, BaseStatusResponseProtocol {
     public var user: UserShortModel?
     public var status: String?
-    
+
     public init(user: UserShortModel?, status: String?) {
         self.user = user
         self.status = status

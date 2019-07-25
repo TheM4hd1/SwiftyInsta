@@ -12,7 +12,7 @@ public struct SearchUserModel: Codable {
     public var hasMore: Bool?
     public var numResults: Int?
     public var users: [UserModel]?
-    
+
     public init(hasMore: Bool?, numResults: Int?, users: [UserModel]?) {
         self.hasMore = hasMore
         self.numResults = numResults

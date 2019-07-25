@@ -17,8 +17,15 @@ public struct ExploreFeedModel: Codable, PaginationProtocol, BaseStatusResponseP
     public var items: [ExploreFeedItemModel]?
     public var numResults: Int?
     public var status: String?
-    
-    public init(rankToken: String?, autoLoadMoreEnabled: Bool?, moreAvailable: Bool?, nextMaxId: String?, maxId: String?, items: [ExploreFeedItemModel]?, numResults: Int?, status: String) {
+
+    public init(rankToken: String?,
+                autoLoadMoreEnabled: Bool?,
+                moreAvailable: Bool?,
+                nextMaxId: String?,
+                maxId: String?,
+                items: [ExploreFeedItemModel]?,
+                numResults: Int?,
+                status: String) {
         self.rankToken = rankToken
         self.autoLoadMoreEnabled = autoLoadMoreEnabled
         self.moreAvailable = moreAvailable

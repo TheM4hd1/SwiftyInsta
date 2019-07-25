@@ -18,20 +18,20 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     public var didReachEndOfLoginFlow: (() -> Void)?
     /// Called once the flow is completed.
     var completionHandler: ((Result<[HTTPCookie], Error>) -> Void)!
-    
+
     // MARK: Init
     public init(frame: CGRect,
                 configuration: WKWebViewConfiguration = .init(),
                 didReachEndOfLoginFlow: (() -> Void)? = nil) {
         // update the process pool.
-        let copy = configuration.copy() as! WKWebViewConfiguration
+        let copy = configuration.copy() as? WKWebViewConfiguration ?? WKWebViewConfiguration()
         copy.processPool = WKProcessPool()
         // init login.
         self.didReachEndOfLoginFlow = didReachEndOfLoginFlow
         super.init(frame: frame, configuration: copy)
         self.navigationDelegate = self
     }
-        
+
     @available(*, unavailable, message: "use `init(frame:configuration:didReachEndOfLoginFlow:didSuccessfullyLogIn:completionHandler:)` instead.")
     private override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         fatalError("init(frame:, configuration:) has been removed")
@@ -47,11 +47,15 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         // wipe all cookies and wait to load.
         deleteAllCookies { [weak self] in
             guard let me = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
-            let url = URL(string: "https://www.instagram.com/accounts/login/")!
+            guard let url = URL(string: "https://www.instagram.com/accounts/login/") else {
+                return completionHandler(.failure(CustomErrors.runTimeError("Invalid URL.")))
+            }
             // in some iOS versions, use-agent needs to be different.
             // this use-agent works on iOS 11.4 and iOS 12.0+
             // but it won't work on lower versions.
-            me.customUserAgent = "(Linux; Android 5.0; iPhone Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Mobile Safari/537.36"
+            me.customUserAgent = ["(Linux; Android 5.0; iPhone Build/LRX21T)",
+                                  "AppleWebKit/537.36 (KHTML, like Gecko)",
+                                  "Chrome/70.0.3538.102 Mobile Safari/537.36"].joined(separator: " ")
             // load request.
             me.load(URLRequest(url: url))
         }
@@ -63,14 +67,14 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             self?.completionHandler?(.success($0))
         }
     }
-    
+
     private func deleteAllCookies(completionHandler: @escaping () -> Void) {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
                                                 modifiedSince: .distantPast,
                                                 completionHandler: completionHandler)
     }
-    
+
     // MARK: Navigation delegate
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         guard webView.url?.absoluteString == "https://www.instagram.com/" else { return }

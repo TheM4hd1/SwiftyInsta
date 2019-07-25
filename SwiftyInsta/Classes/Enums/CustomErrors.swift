@@ -10,7 +10,8 @@
 import Foundation
 
 public extension Error {
-    /// Returns `true` if `self` is `AuthenticationError.checkpoint` or `AuthenticationError.twoFactor`, `false` otherwise.
+    /// Returns `true` if `self` is `AuthenticationError.checkpoint` or
+    /// `AuthenticationError.twoFactor`, `false` otherwise.
     var requiresInstagramCode: Bool {
         guard let error = self as? AuthenticationError else { return false }
         switch error {
@@ -26,12 +27,22 @@ public enum AuthenticationError: Error, LocalizedError {
     case invalidPassword
     case invalidUsername
     case twoFactor
-    
+
     public var localizedDescription: String {
         switch self {
-        case .checkpoint: return "Checkpoint required.\nThe user will receive a code shortly through their preferred verification method.\nPass it back to  `Credentials.code` and wait for the response in this same `completionHandler`."
+        case .checkpoint:
+            return """
+                Checkpoint required.
+                The user will receive a code shortly through their preferred verification method.
+                Pass it back to  `Credentials.code` and wait for the response in this same `completionHandler`.
+            """
         case .checkpointLoop: return "Checkpoint loop.\nLog in from the Instagram app and then try again."
-        case .twoFactor: return "Two factor required.\nThe user will receive a code shortly through their preferred verification method.\nPass it back to  `Credentials.code` and wait for the response in this same `completionHandler`."
+        case .twoFactor:
+            return """
+                Two factor authentication required.
+                The user will receive a code shortly through their preferred verification method.
+                Pass it back to  `Credentials.code` and wait for the response in this same `completionHandler`.
+            """
         case .invalidUsername: return "Invalid username."
         case .invalidPassword: return "Invalid password."
         }

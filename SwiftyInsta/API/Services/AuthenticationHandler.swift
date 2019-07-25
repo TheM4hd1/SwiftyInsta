@@ -26,7 +26,7 @@ class AuthenticationHandler: Handler {
             }
         }
     }
-    
+
     func authenticate(user: Credentials, completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
         // update user.
         var user = user
@@ -93,7 +93,8 @@ class AuthenticationHandler: Handler {
                                                 if authentication, let dsUserId = response.userId {
                                                     user.response = .success
                                                     // create session cache.
-                                                    let cookies = HTTPCookieStorage.shared.cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
+                                                    let cookies = HTTPCookieStorage.shared
+                                                        .cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
                                                     let storage = SessionStorage(dsUserId: dsUserId,
                                                                                  user: nil,
                                                                                  csrfToken: csrfToken,
@@ -131,7 +132,7 @@ class AuthenticationHandler: Handler {
             }
         }
     }
-    
+
     func challenge(csrfToken: String,
                    url: URL,
                    verification: Credentials.Verification,
@@ -142,7 +143,7 @@ class AuthenticationHandler: Handler {
                        "X-Requested-With": "XMLHttpRequest",
                        "Referer": url.absoluteString,
                        "X-Instagram-AJAX": "1"]
-        
+
         requests.sendAsync(method: .post,
                            url: url,
                            body: .parameters(body),
@@ -176,7 +177,7 @@ class AuthenticationHandler: Handler {
                             }
         }
     }
-    
+
     func challengeInfo(for user: Credentials, completionHandler: @escaping (ChallengeForm?) -> Void) {
         guard case .challenge(let url) = user.response else { return completionHandler(nil) }
         requests.sendAsync(method: .get, url: url) { [weak self] in
@@ -200,7 +201,7 @@ class AuthenticationHandler: Handler {
             }
         }
     }
-    
+
     func code(for credentials: Credentials) {
         guard let code = credentials.code,
             credentials.csrfToken != nil,
@@ -219,7 +220,7 @@ class AuthenticationHandler: Handler {
             send(twoFactorCode: code, with: identifier, for: credentials, completionHandler: completionHandler)
         }
     }
-    
+
     func send(challengeCode code: String,
               at url: URL,
               for user: Credentials,
@@ -230,7 +231,7 @@ class AuthenticationHandler: Handler {
                        "X-Requested-With": "XMLHttpRequest",
                        "Referer": url.absoluteString,
                        "X-Instagram-AJAX": "1"]
-        
+
         requests.sendAsync(method: .post, url: url, body: .parameters(body), headers: headers, delay: 0...0) { [weak self] in
             guard let me = self, let handler = me.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
             // check for response.
@@ -273,7 +274,7 @@ class AuthenticationHandler: Handler {
             }
         }
     }
-    
+
     func send(twoFactorCode code: String,
               with identifier: String,
               for user: Credentials,
@@ -332,7 +333,7 @@ class AuthenticationHandler: Handler {
             }
         }
     }
-    
+
     func afterCheckpointAuthenticate(user: Credentials, completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
         var user = user
         let body = ["username": user.username,
@@ -341,7 +342,7 @@ class AuthenticationHandler: Handler {
                        "X-CSRFToken": user.csrfToken!,
                        "X-Requested-With": "XMLHttpRequest",
                        "Referer": "https://instagram.com/"]
-        
+
         requests.sendAsync(method: .post, url: URLs.login(), body: .parameters(body), headers: headers) { [weak self] in
             guard let me = self, let handler = me.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
             // check for response.
@@ -356,7 +357,9 @@ class AuthenticationHandler: Handler {
                 if string.contains("two_factor_required") {
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let decoded = try! decoder.decode(CredentialsAuthenticationResponse.self, from: data)
+                    guard let decoded = try? decoder.decode(CredentialsAuthenticationResponse.self, from: data) else {
+                        return completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                    }
                     user.code = nil
                     user.response = .twoFactor(decoded.twoFactorInfo!.twoFactorIdentifier!)
                     // ask for code.
@@ -399,7 +402,7 @@ class AuthenticationHandler: Handler {
                 completionHandler(.failure(CustomErrors.runTimeError("User is not logged in.")))
             }
         }
-        handler.requests.sendAsync(method: .post, url: try! URLs.getLogoutUrl()) { [weak self] in
+        handler.requests.sendAsync(method: .post, url: URLs.getLogoutUrl()) { [weak self] in
             guard let handler = self?.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
             let result = $0.flatMap { data, response -> Result<Bool, Error> in
                 do {

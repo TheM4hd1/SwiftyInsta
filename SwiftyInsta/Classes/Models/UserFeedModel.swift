@@ -15,7 +15,7 @@ public struct UserFeedModel: Codable, PaginationProtocol {
     public var numResults: Int?
     public var totalCount: Int?
     public var items: [MediaModel]?
-    
+
     private enum CodingKeys: String, CodingKey {
         case nextMaxId
         case items
@@ -24,7 +24,7 @@ public struct UserFeedModel: Codable, PaginationProtocol {
         case autoLoadMoreEnabled
         case totalCount
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         do {
