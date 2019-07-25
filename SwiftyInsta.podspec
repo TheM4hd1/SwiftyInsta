@@ -21,6 +21,6 @@ Pod::Spec.new do |s|
   s.ios.frameworks = 'UIKit', 'WebKit'
   s.macos.frameworks = 'AppKit'
   s.tvos.frameworks = 'UIKit'
-  s.watchos.framworks = 'UIKit'
+  s.watchos.frameworks = 'UIKit'
   s.dependency "GzipSwift", "~> 5.0"
 end
