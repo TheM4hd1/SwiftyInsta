@@ -92,6 +92,7 @@ struct URLs {
     private static let reportComment = "/media/%@/comment/%@/flag/"
     private static let reportUser = "/users/%ld/flag_user/"
     private static let reelsMediaFeed = "/feed/reels_media/"
+    private static let permalink = "/media/%@/permalink/"
     
     // MARK: - Methods
     static func home() -> URL {
@@ -687,5 +688,13 @@ struct URLs {
         }
         
         throw CustomErrors.urlCreationFaild("Cant create URL for reels media feed.")
+    }
+    
+    static func getPermalink(mediaId: String) throws -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: permalink, mediaId))) {
+            return url
+        }
+        
+        throw CustomErrors.urlCreationFaild("Cant create URL for media permalink")
     }
 }
