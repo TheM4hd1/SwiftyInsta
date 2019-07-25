@@ -17,9 +17,6 @@ excluded:
 analyzer_rules:
     - explicit_self
 
-trailing_whitespace:
-    severity: error
-
 cyclomatic_complexity:
     warning: 12
     error: 15
