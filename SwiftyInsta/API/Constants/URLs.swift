@@ -93,6 +93,7 @@ struct URLs {
     private static let reportUser = "/users/%ld/flag_user/"
     private static let reelsMediaFeed = "/feed/reels_media/"
     private static let permalink = "/media/%@/permalink/"
+    private static let storyArchive = "/archive/reel/day_shells/"
 
     // MARK: - Methods
     static func home() -> URL {
@@ -695,6 +696,13 @@ struct URLs {
             return url
         }
 
+        fatalError("Invalid url.")
+    }
+
+    static func getStoryArchiveUrl() -> URL {
+        if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, storyArchive)) {
+            return url
+        }
         fatalError("Invalid url.")
     }
 }

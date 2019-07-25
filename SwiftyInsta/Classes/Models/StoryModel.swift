@@ -66,6 +66,29 @@ public struct StoryReelsFeedModel: Codable, BaseStatusResponseProtocol {
     public var status: String?
 }
 
+public struct StoryArchiveFeedModel: Codable, BaseStatusResponseProtocol {
+    public var moreAvailable: Bool?
+    public var numResults: Int?
+    public var items: [StoryArchiveModel]?
+    public var status: String?
+
+    public init(moreAvailable: Bool?, numResults: Int?, items: [StoryArchiveModel]?) {
+        self.moreAvailable = moreAvailable
+        self.numResults = numResults
+        self.items = items
+    }
+}
+
+public struct StoryArchiveModel: Codable {
+    public var id: String?
+    public var mediaCount: Int?
+
+    public init(id: String?, mediaCount: Int?) {
+        self.id = id
+        self.mediaCount = mediaCount
+    }
+}
+
 public struct ConfigureStoryUploadModel: Codable {
     enum CodingKeys: String, CodingKey {
         case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"

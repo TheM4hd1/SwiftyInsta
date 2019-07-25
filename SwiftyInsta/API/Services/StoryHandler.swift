@@ -301,4 +301,11 @@ public class StoryHandler: Handler {
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
+
+    func archive(completionHandler: @escaping (Result<StoryArchiveFeedModel, Error>) -> Void) {
+        requests.decodeAsync(StoryArchiveFeedModel.self,
+                             method: .get,
+                             url: URLs.getStoryArchiveUrl(),
+                             completionHandler: completionHandler)
+    }
 }
