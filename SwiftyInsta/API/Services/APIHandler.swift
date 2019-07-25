@@ -208,7 +208,7 @@ public struct Login {
         @available(iOS 11, *)
         /// Log in through web view.
         case webView(LoginWebView)
-        #endif        
+        #endif
 
         /// Log in using `SessionCache` (either a stored one, or through `Siwa`).
         case cache(SessionCache)

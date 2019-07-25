@@ -121,6 +121,7 @@ public struct TrayModel: Codable {
     public var seenRankedPosition: Int?
     public var sourceToken: String?
     public var muted: Bool?
+    public var hasBestiesMedia: Bool?
 
     private enum CodingKeys: String, CodingKey {
         case id
@@ -139,6 +140,7 @@ public struct TrayModel: Codable {
         case seenRankedPosition
         case sourceToken
         case muted
+        case hasBestiesMedia
     }
 
     public init(from decoder: Decoder) throws {
@@ -164,6 +166,7 @@ public struct TrayModel: Codable {
         seenRankedPosition = try container.decodeIfPresent(Int.self, forKey: .seenRankedPosition)
         sourceToken = try container.decodeIfPresent(String.self, forKey: .sourceToken)
         muted = try container.decodeIfPresent(Bool.self, forKey: .muted)
+        hasBestiesMedia = try container.decodeIfPresent(Bool.self, forKey: .hasBestiesMedia)
     }
 }
 
