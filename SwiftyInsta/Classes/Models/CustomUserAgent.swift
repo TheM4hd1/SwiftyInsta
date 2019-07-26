@@ -25,7 +25,18 @@ public struct CustomUserAgent {
     /// Compute and return the user agent.
     public var string: String {
         return String(format: "Instagram %@ %@ (%@/%@; %@dpi; %@; %@; %@; %@; %@; %@; %@)",
-                      apiVersion, osName, osVersion, osRelease, dpi, resolution, company, model, model, modem, locale, fbCode)
+                      apiVersion,
+                      osName,
+                      osVersion,
+                      osRelease,
+                      dpi,
+                      resolution,
+                      company,
+                      model,
+                      model,
+                      modem,
+                      locale,
+                      fbCode)
     }
 
     /// Manually create a user-agent.

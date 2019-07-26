@@ -36,6 +36,7 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     private override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         fatalError("init(frame:, configuration:) has been removed")
     }
+    @available(*, unavailable)
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

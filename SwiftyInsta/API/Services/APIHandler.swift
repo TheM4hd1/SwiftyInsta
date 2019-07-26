@@ -80,7 +80,7 @@ public class APIHandler {
             }
         case .user(let credentials):
             authentication.authenticate(user: credentials, completionHandler: completionHandler)
-            #if os(iOS)
+        #if os(iOS)
         case .webView(let webView):
             webView.authenticate { [weak self] in
                 guard let handler = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
@@ -112,16 +112,23 @@ public class APIHandler {
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             }
-            #endif
+        #endif
         }
     }
 
     /// Log out.
     public func invalidate(completionHandler: @escaping (Result<Bool, Error>) -> Void) throws {
+        let key = response?.cache?.storage?.dsUserId
         authentication.invalidate { [weak self] in
-            // empty response if needed.
-            if (try? $0.get()) == true { self?.response = nil }
-            completionHandler($0)
+            switch $0 {
+            case .failure(let error): completionHandler(.failure(error))
+            case .success(let success) where success:
+                self?.response = nil
+                // remove cache.
+                if let key = key { KeychainSwift().delete(key) }
+                completionHandler(.success(success))
+            default: completionHandler(.success(false))
+            }
         }
     }
 
@@ -200,19 +207,26 @@ public struct Credentials {
 
 /// An abstract `struct` holding login references .
 public struct Login {
+    #if os(iOS)
     public enum Request {
         /// Log in with username and password.
         case user(Credentials)
 
-        #if os(iOS)
         @available(iOS 11, *)
         /// Log in through web view.
         case webView(LoginWebView)
-        #endif
 
         /// Log in using `SessionCache` (either a stored one, or through `Siwa`).
         case cache(SessionCache)
     }
+    #else
+    public enum Request {
+        /// Log in with username and password.
+        case user(Credentials)
+        /// Log in using `SessionCache` (either a stored one, or through `Siwa`).
+        case cache(SessionCache)
+    }
+    #endif
     public struct Response {
         /// The login model.
         public var model: LoginResultModel
