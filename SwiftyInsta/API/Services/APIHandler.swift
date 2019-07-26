@@ -632,14 +632,18 @@ public class APIHandler: APIHandlerProtocol {
         })
     }
     
-    public func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws {
+    public func getStoryViewers(storyPk: String,
+                                 paginationParameters: PaginationParameters,
+                                 updateHandler: PaginationResponse<StoryViewers>?,
+                                 completionHandler: @escaping PaginationResponse<Result<[StoryViewers]>>) throws {
         // validate before request.
         try validateUser()
         try validateLoggedIn()
         
-        try StoryHandler.shared.getStoryViewers(storyPk: storyPk, completion: { (result) in
-            completion(result)
-        })
+        try StoryHandler.shared.getStoryViewers(storyPk: storyPk,
+                                                paginationParameters: paginationParameters,
+                                                updateHandler: updateHandler,
+                                                completionHandler: completionHandler)
     }
     
     public func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws {

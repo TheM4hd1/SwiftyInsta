@@ -114,9 +114,9 @@ public struct ConfigureStoryUploadModel: Codable {
     }
 }
 
-public struct StoryViewers: Codable, BaseStatusResponseProtocol {
+public struct StoryViewers: Codable, BaseStatusResponseProtocol, PaginationProtocol {
     public var users: [UserModel]?
-    //public var nextMaxId: String?
+    public var nextMaxId: String?
     //public var updatedMedia: MediaModel?
     public var userCount: Int?
     public var totalViewerCount: Int?
