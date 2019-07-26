@@ -170,8 +170,8 @@ public class UserHandler: Handler {
             pages.fetch(UserFeedModel.self,
                         with: paginationParameters,
                         at: { URLs.getUserTagsUrl(userPk: pk,
-                                                      rankToken: storage.rankToken,
-                                                      maxId: $0.nextMaxId ?? "") },
+                                                  rankToken: storage.rankToken,
+                                                  maxId: $0.nextMaxId ?? "") },
                         updateHandler: updateHandler,
                         completionHandler: completionHandler)
         }
@@ -210,9 +210,9 @@ public class UserHandler: Handler {
             pages.fetch(UserShortListModel.self,
                         with: paginationParameters,
                         at: { URLs.getUserFollowers(userPk: pk,
-                                                        rankToken: storage.rankToken,
-                                                        searchQuery: query ?? "",
-                                                        maxId: $0.nextMaxId ?? "") },
+                                                    rankToken: storage.rankToken,
+                                                    searchQuery: query ?? "",
+                                                    maxId: $0.nextMaxId ?? "") },
                         updateHandler: updateHandler,
                         completionHandler: completionHandler)
         }
@@ -251,9 +251,9 @@ public class UserHandler: Handler {
             pages.fetch(UserShortListModel.self,
                         with: paginationParameters,
                         at: { URLs.getUserFollowing(userPk: pk,
-                                                        rankToken: storage.rankToken,
-                                                        searchQuery: query ?? "",
-                                                        maxId: $0.nextMaxId ?? "") },
+                                                    rankToken: storage.rankToken,
+                                                    searchQuery: query ?? "",
+                                                    maxId: $0.nextMaxId ?? "") },
                         updateHandler: updateHandler,
                         completionHandler: completionHandler)
         }

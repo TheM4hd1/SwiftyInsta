@@ -113,7 +113,7 @@ public class MediaHandler: Handler {
         content.append(string: "Content-Type: application/octet-stream\n")
         content.append(string: ["Content-Disposition: form-data; name=photo;",
                                 "filename=pending_media_\(uploadId).jpg;",
-            "filename*=utf-8''pending_media_\(uploadId).jpg\n\n"].joined(separator: " "))
+                                "filename*=utf-8''pending_media_\(uploadId).jpg\n\n"].joined(separator: " "))
 
         #if os(macOS)
         let optionalImageData = photo.image.tiffRepresentation
@@ -523,7 +523,8 @@ public class MediaHandler: Handler {
         formatter.dateFormat = "yyyy-dd-MM'T'H:mm:ss-0SSS"
         let clips = ClipsModel.init(length: 10,
                                     creationDate: formatter.string(from: Date()),
-                                    sourceType: "3", cameraPosition: "back")
+                                    sourceType: "3",
+                                    cameraPosition: "back")
         let content = ConfigureVideoModel(caption: caption,
                                           uploadId: uploadId,
                                           sourceType: "3",
