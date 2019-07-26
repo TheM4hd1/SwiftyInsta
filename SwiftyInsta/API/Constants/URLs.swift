@@ -624,9 +624,17 @@ struct URLs {
         throw CustomErrors.urlCreationFaild("Cant create URL for recovery by email.")
     }
     
-    static func getStoryViewersUrl(pk: String) throws -> URL {
+    static func getStoryViewersUrl(pk: String, maxId: String) throws -> URL {
         if let url = URL(string: baseInstagramApiUrl + String(format: storyViewers, pk)) {
-            return url
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            
+            var queries = [URLQueryItem]()
+            if !maxId.isEmpty {
+                queries = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+
+            urlComponent?.queryItems = queries
+            return (urlComponent?.url)!
         }
         throw CustomErrors.urlCreationFaild("Cant create URL for story viewers.")
     }

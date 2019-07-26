@@ -13,7 +13,10 @@ public protocol StoryHandlerProtocol {
     func getUserStory(userId: Int, completion: @escaping (Result<TrayModel>) -> ()) throws
     func getUserStoryReelFeed(userId: Int, completion: @escaping (Result<StoryReelFeedModel>) -> ()) throws
     func uploadStoryPhoto(photo: InstaPhoto, completion: @escaping (Result<UploadPhotoResponse>) -> ()) throws
-    func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws
+    func getStoryViewers(storyPk: String,
+                         paginationParameters: PaginationParameters,
+                         updateHandler: PaginationResponse<StoryViewers>?,
+                         completionHandler: @escaping PaginationResponse<Result<[StoryViewers]>>) throws
     func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws
     func markStoriesAsSeen(items: [TrayItems], sourceId: String?, completion: @escaping (Result<Bool>) -> ()) throws
     /**
@@ -192,30 +195,15 @@ class StoryHandler: StoryHandlerProtocol {
         }
     }
     
-    func getStoryViewers(storyPk: String?, completion: @escaping (Result<StoryViewers>) -> ()) throws {
-        guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-        httpHelper.sendAsync(method: .get, url: try URLs.getStoryViewersUrl(pk: storyPk!), body: [:], header: [:]) { (data, response, err) in
-            if let err = err {
-                print(err.localizedDescription)
-                completion(Return.fail(error: err, response: .fail, value: nil))
-            } else {
-                if let data = data {
-                    if response?.statusCode == 200 {
-                        let decoder = JSONDecoder()
-                        decoder.keyDecodingStrategy = .convertFromSnakeCase
-                        do {
-                            let value = try decoder.decode(StoryViewers.self, from: data)
-                            completion(Return.success(value: value))
-                        } catch {
-                            completion(Return.fail(error: error, response: .fail, value: nil))
-                        }
-                    } else {
-                        let err = CustomErrors.unExpected("status code: \(response?.statusCode ?? -1)")
-                        completion(Return.fail(error: err, response: .fail, value: nil))
-                    }
-                }
-            }
-        }
+    func getStoryViewers(storyPk: String,
+                         paginationParameters: PaginationParameters,
+                         updateHandler: PaginationResponse<StoryViewers>?,
+                         completionHandler: @escaping PaginationResponse<Result<[StoryViewers]>>) throws {
+        PaginationHandler.getPages(StoryViewers.self,
+                                   for: paginationParameters,
+                                   at: { try URLs.getStoryViewersUrl(pk: storyPk, maxId: $0.nextMaxId ?? "") },
+                                   updateHandler: updateHandler,
+                                   completionHandler: completionHandler)
     }
     
     func getStoryHighlights(userPk: Int, completion: @escaping (Result<StoryHighlights>) -> ()) throws {

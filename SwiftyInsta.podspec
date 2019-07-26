@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "SwiftyInsta"
-  s.version      = "1.7.2"
+  s.version      = "1.7.3"
   s.summary      = "Private and Tokenless Instagram RESTful API."
 
   # This description is used to generate tags and improve search results.
