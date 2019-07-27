@@ -649,9 +649,17 @@ struct URLs {
         fatalError("Invalid url.")
     }
 
-    static func getStoryViewersUrl(pk: String) -> URL {
+    static func getStoryViewersUrl(pk: String, maxId: String) -> URL {
         if let url = URL(string: baseInstagramApiUrl + String(format: storyViewers, pk)) {
-            return url
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+
+            var queries = [URLQueryItem]()
+            if !maxId.isEmpty {
+                queries = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+
+            urlComponent?.queryItems = queries
+            return (urlComponent?.url)!
         }
         fatalError("Invalid url.")
     }

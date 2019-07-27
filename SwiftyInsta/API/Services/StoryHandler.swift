@@ -176,36 +176,15 @@ public class StoryHandler: Handler {
     }
 
     /// Get story viewers.
-    public func viewers(forStory storyId: String, completionHandler: @escaping (Result<StoryViewers, Error>) -> Void) {
-        requests.decodeAsync(StoryViewers.self,
-                             method: .get,
-                             url: URLs.getStoryViewersUrl(pk: storyId),
-                             completionHandler: completionHandler)
-    }
-
-    /// Get highlights.
-    public func highlightsBy(user: UserReference, completionHandler: @escaping (Result<StoryHighlights, Error>) -> Void) {
-        switch user {
-        case .username:
-            // fetch username.
-            self.handler.users.user(user) { [weak self] in
-                guard let handler = self else {
-                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
-                }
-                switch $0 {
-                case .success(let user) where user?.pk != nil:
-                    handler.highlightsBy(user: .pk(user!.pk!), completionHandler: completionHandler)
-                case .failure(let error): completionHandler(.failure(error))
-                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
-                }
-            }
-        case .pk(let pk):
-            // load stories directly.
-            requests.decodeAsync(StoryHighlights.self,
-                                 method: .get,
-                                 url: URLs.getStoryHighlightsUrl(userPk: pk),
-                                 completionHandler: completionHandler)
-        }
+    public func viewers(forStory storyId: String,
+                        with paginationParameters: PaginationParameters,
+                        updateHandler: PaginationUpdateHandler<StoryViewers>?,
+                        completionHandler: @escaping PaginationCompletionHandler<StoryViewers>) {
+        pages.fetch(StoryViewers.self,
+                    with: paginationParameters,
+                    at: { URLs.getStoryViewersUrl(pk: storyId, maxId: $0.nextMaxId ?? "") },
+                    updateHandler: updateHandler,
+                    completionHandler: completionHandler)
     }
 
     /// Mark stories as seen.
