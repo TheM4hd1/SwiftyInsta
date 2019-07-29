@@ -43,8 +43,8 @@ public class MediaHandler: Handler {
     }
 
     /// Get media info.
-    public func info(for mediaId: String, completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
-        requests.decodeAsync(MediaModel.self,
+    public func info(for mediaId: String, completionHandler: @escaping (Result<UserFeedModel, Error>) -> Void) {
+        requests.decodeAsync(UserFeedModel.self,
                              method: .get,
                              url: URLs.getMediaUrl(mediaId: mediaId),
                              completionHandler: completionHandler)
