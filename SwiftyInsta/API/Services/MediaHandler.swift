@@ -7,6 +7,7 @@
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
+import CryptoSwift
 import Foundation
 
 public class MediaHandler: Handler {
@@ -44,10 +45,10 @@ public class MediaHandler: Handler {
 
     /// Get media info.
     public func info(for mediaId: String, completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
-        requests.decodeAsync(MediaModel.self,
-                             method: .get,
-                             url: Result { try URLs.getMediaUrl(mediaId: mediaId) },
-                             completionHandler: completionHandler)
+        requests.decode(MediaModel.self,
+                        method: .get,
+                        url: Result { try URLs.getMediaUrl(mediaId: mediaId) },
+                        completionHandler: completionHandler)
     }
 
     /// Like media.
@@ -60,11 +61,11 @@ public class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decodeAsync(BaseStatusResponseModel.self,
-                             method: .post,
-                             url: Result { try URLs.getLikeMediaUrl(mediaId: mediaId) },
-                             body: .parameters(body),
-                             completionHandler: { completionHandler($0.map { $0.isOk() }) })
+        requests.decode(BaseStatusResponseModel.self,
+                        method: .post,
+                        url: Result { try URLs.getLikeMediaUrl(mediaId: mediaId) },
+                        body: .parameters(body),
+                        completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
 
     /// Unlike media.
@@ -77,11 +78,11 @@ public class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decodeAsync(BaseStatusResponseModel.self,
-                             method: .post,
-                             url: Result { try URLs.getUnLikeMediaUrl(mediaId: mediaId) },
-                             body: .parameters(body),
-                             completionHandler: { completionHandler($0.map { $0.isOk() }) })
+        requests.decode(BaseStatusResponseModel.self,
+                        method: .post,
+                        url: Result { try URLs.getUnLikeMediaUrl(mediaId: mediaId) },
+                        body: .parameters(body),
+                        completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
 
     /// Upload photo.
@@ -127,31 +128,31 @@ public class MediaHandler: Handler {
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decodeAsync(UploadPhotoResponse.self,
-                             method: .post,
-                             url: Result { try URLs.getUploadPhotoUrl() },
-                             body: .data(content),
-                             headers: headers,
-                             deliverOnResponseQueue: false) { [weak self] in
-                                guard let me = self, let handler = me.handler else {
-                                    return completionHandler(.failure(GenericError.weakObjectReleased))
+        requests.decode(UploadPhotoResponse.self,
+                        method: .post,
+                        url: Result { try URLs.getUploadPhotoUrl() },
+                        body: .data(content),
+                        headers: headers,
+                        deliverOnResponseQueue: false) { [weak self] in
+                            guard let me = self, let handler = me.handler else {
+                                return completionHandler(.failure(GenericError.weakObjectReleased))
+                            }
+                            switch $0 {
+                            case .failure(let error):
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(error))
                                 }
-                                switch $0 {
-                                case .failure(let error):
-                                    handler.settings.queues.response.async {
-                                        completionHandler(.failure(error))
+                            case .success(let decoded):
+                                guard decoded.status == "ok" else {
+                                    return handler.settings.queues.response.async {
+                                        completionHandler(.failure(GenericError.unknown))
                                     }
-                                case .success(let decoded):
-                                    guard decoded.status == "ok" else {
-                                        return handler.settings.queues.response.async {
-                                            completionHandler(.failure(GenericError.unknown))
-                                        }
-                                    }
-                                    me.configure(photo: photo,
-                                                 with: uploadId,
-                                                 caption: photo.caption,
-                                                 completionHandler: completionHandler)
                                 }
+                                me.configure(photo: photo,
+                                             with: uploadId,
+                                             caption: photo.caption,
+                                             completionHandler: completionHandler)
+                            }
         }
     }
 
@@ -193,19 +194,21 @@ public class MediaHandler: Handler {
         guard let payload = try? String(data: encoder.encode(configure), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
+        do {
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
 
-        let signature = "\(hash).\(payload)"
-        let body: [String: Any] = [
-            Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-            Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
-        ]
+            let signature = "\(hash).\(payload)"
+            let body: [String: Any] = [
+                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+            ]
 
-        requests.decodeAsync(UploadPhotoResponse.self,
-                             method: .post,
-                             url: url,
-                             body: .parameters(body),
-                             completionHandler: completionHandler)
+            requests.decode(UploadPhotoResponse.self,
+                            method: .post,
+                            url: url,
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
+        } catch { completionHandler(.failure(error)) }
     }
 
     // swiftlint:disable line_length
@@ -217,11 +220,11 @@ public class MediaHandler: Handler {
      var _uploadIds = uploadIds
      var _photos = photos
      let _currentPhoto = _photos.removeFirst()
-
+     
      let _device = HandlerSettings.shared.device!
      let _user = HandlerSettings.shared.user!
      let _request = HandlerSettings.shared.request!
-
+     
      let uploadId = _request.generateUploadId()
      var content = Data()
      content.append(string: "--\(uploadId)\n")
@@ -248,12 +251,12 @@ public class MediaHandler: Handler {
      content.append(string: "Content-Transfer-Encoding: binary\n")
      content.append(string: "Content-Type: application/octet-stream\n")
      content.append(string: "Content-Disposition: form-data; name=photo; filename=pending_media_\(uploadId).jpg; filename*=utf-8''pending_media_\(uploadId).jpg\n\n")
-
+     
      let imageData = _currentPhoto.image.jpegData(compressionQuality: 1)
-
+     
      content.append(imageData!)
      content.append(string: "\n--\(uploadId)--\n\n")
-
+     
      let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
      guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
      httpHelper.sendAsync(method: .post, url: try URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
@@ -281,26 +284,26 @@ public class MediaHandler: Handler {
      }
      }
      }
-
+     
      }
      }
-
+     
      fileprivate func configureMediaAlbum(uploadIds: [String], caption: String, completion: @escaping (UploadPhotoAlbumResponse?, Error?) -> ()) {
      let url = try URLs.getConfigureMediaAlbumUrl()
      let _device = HandlerSettings.shared.device!
      let _user = HandlerSettings.shared.user!
      let _request = HandlerSettings.shared.request!
-
-
+     
+     
      let clientSidecarId = _request.generateUploadId()
-
+     
      var childrens: [ConfigureChildren] = []
      for id in uploadIds {
      childrens.append(ConfigureChildren.init(scene_capture_type: "standard", mas_opt_in: "NOT_PROMPTED", camera_position: "unknown", allow_multi_configures: false, geotag_enabled: false, disable_comments: false, source_type: 0, upload_id: id))
      }
-
+     
      let content = ConfigurePhotoAlbumModel.init(_uuid: _device.deviceGuid.uuidString, _uid: _user.loggedInUser.pk!, _csrftoken: _user.csrfToken, caption: caption, client_sidecar_id: clientSidecarId, geotag_enabled: false, disable_comments: false, children_metadata: childrens)
-
+     
      let encoder = JSONEncoder()
      let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
      let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
@@ -367,89 +370,89 @@ public class MediaHandler: Handler {
 
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decodeAsync(UploadVideoResponse.self,
-                             method: .post,
-                             url: Result { try URLs.getUploadVideoUrl() },
-                             body: .data(content),
-                             headers: headers,
-                             deliverOnResponseQueue: false) { [weak self] in
-                                guard let me = self, let handler = me.handler else {
-                                    return completionHandler(.failure(GenericError.weakObjectReleased))
+        requests.decode(UploadVideoResponse.self,
+                        method: .post,
+                        url: Result { try URLs.getUploadVideoUrl() },
+                        body: .data(content),
+                        headers: headers,
+                        deliverOnResponseQueue: false) { [weak self] in
+                            guard let me = self, let handler = me.handler else {
+                                return completionHandler(.failure(GenericError.weakObjectReleased))
+                            }
+                            switch $0 {
+                            case .failure(let error):
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(error))
                                 }
-                                switch $0 {
-                                case .failure(let error):
-                                    handler.settings.queues.response.async {
-                                        completionHandler(.failure(error))
-                                    }
-                                case .success(let decoded):
-                                    guard decoded.status == "ok",
-                                        let url = decoded.videoUploadUrls?.first,
-                                        let job = url.job,
-                                        let path = url.url?.removingPercentEncoding,
-                                        let uploadUrl = URL(string: path) else {
-                                            return handler.settings.queues.response.async {
-                                                completionHandler(.failure(GenericError.unknown))
-                                            }
-                                    }
+                            case .success(let decoded):
+                                guard decoded.status == "ok",
+                                    let url = decoded.videoUploadUrls?.first,
+                                    let job = url.job,
+                                    let path = url.url?.removingPercentEncoding,
+                                    let uploadUrl = URL(string: path) else {
+                                        return handler.settings.queues.response.async {
+                                            completionHandler(.failure(GenericError.unknown))
+                                        }
+                                }
 
-                                    let headers = ["Host": "upload.instagram.com",
-                                                   "Cookie2": "$Version=1",
-                                                   "Session-ID": uploadId,
-                                                   "job": job,
-                                                   "Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-                                    var videoContent = Data()
-                                    videoContent.append(string: "--\(uploadId)\r\n")
-                                    videoContent.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-                                    videoContent.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\r\n\r\n")
-                                    videoContent.append(string: "\(storage.csrfToken)\n")
-                                    videoContent.append(string: "--\(uploadId)\r\n")
-                                    videoContent.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-                                    videoContent.append(string: "Content-Disposition: form-data; name=\"image_compression\"\r\n\r\n")
-                                    videoContent.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\r\n")
-                                    videoContent.append(string: "--\(uploadId)\r\n")
-                                    videoContent.append(string: "Content-Transfer-Encoding: binary\r\n")
-                                    videoContent.append(string: "Content-Type: application/octet-stream\r\n")
-                                    videoContent.append(string: "Content-Disposition: attachment; filename=\"\(video.fileName)\"\r\n\r\n")
-                                    videoContent.append(video.data)
-                                    videoContent.append(string: "\r\n--\(uploadId)--\r\n\r\n")
+                                let headers = ["Host": "upload.instagram.com",
+                                               "Cookie2": "$Version=1",
+                                               "Session-ID": uploadId,
+                                               "job": job,
+                                               "Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
+                                var videoContent = Data()
+                                videoContent.append(string: "--\(uploadId)\r\n")
+                                videoContent.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+                                videoContent.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\r\n\r\n")
+                                videoContent.append(string: "\(storage.csrfToken)\n")
+                                videoContent.append(string: "--\(uploadId)\r\n")
+                                videoContent.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
+                                videoContent.append(string: "Content-Disposition: form-data; name=\"image_compression\"\r\n\r\n")
+                                videoContent.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\r\n")
+                                videoContent.append(string: "--\(uploadId)\r\n")
+                                videoContent.append(string: "Content-Transfer-Encoding: binary\r\n")
+                                videoContent.append(string: "Content-Type: application/octet-stream\r\n")
+                                videoContent.append(string: "Content-Disposition: attachment; filename=\"\(video.fileName)\"\r\n\r\n")
+                                videoContent.append(video.data)
+                                videoContent.append(string: "\r\n--\(uploadId)--\r\n\r\n")
 
-                                    me.requests.sendAsync(method: .post,
-                                                          url: uploadUrl,
-                                                          body: .data(videoContent),
-                                                          headers: headers) {
+                                me.requests.fetch(method: .post,
+                                                  url: uploadUrl,
+                                                  body: .data(videoContent),
+                                                  headers: headers) {
+                                                    switch $0 {
+                                                    case .failure(let error):
+                                                        handler.settings.queues.response.async {
+                                                            completionHandler(.failure(error))
+                                                        }
+                                                    case .success(let data, let response):
+                                                        guard data != nil, response?.statusCode == 200 else {
+                                                            return handler.settings.queues.response.async {
+                                                                completionHandler(.failure(GenericError.unknown))
+                                                            }
+                                                        }
+                                                        me.upload(thumbnail: thumbnail, with: uploadId) {
                                                             switch $0 {
                                                             case .failure(let error):
                                                                 handler.settings.queues.response.async {
                                                                     completionHandler(.failure(error))
                                                                 }
-                                                            case .success(let data, let response):
-                                                                guard data != nil, response?.statusCode == 200 else {
+                                                            case .success(let hasBeenUploaded):
+                                                                guard hasBeenUploaded else {
                                                                     return handler.settings.queues.response.async {
                                                                         completionHandler(.failure(GenericError.unknown))
                                                                     }
                                                                 }
-                                                                me.upload(thumbnail: thumbnail, with: uploadId) {
-                                                                    switch $0 {
-                                                                    case .failure(let error):
-                                                                        handler.settings.queues.response.async {
-                                                                            completionHandler(.failure(error))
-                                                                        }
-                                                                    case .success(let hasBeenUploaded):
-                                                                        guard hasBeenUploaded else {
-                                                                            return handler.settings.queues.response.async {
-                                                                                completionHandler(.failure(GenericError.unknown))
-                                                                            }
-                                                                        }
-                                                                        // configure video.
-                                                                        me.configure(video: video,
-                                                                                     with: uploadId,
-                                                                                     caption: caption,
-                                                                                     completionHandler: completionHandler)
-                                                                    }
-                                                                }
+                                                                // configure video.
+                                                                me.configure(video: video,
+                                                                             with: uploadId,
+                                                                             caption: caption,
+                                                                             completionHandler: completionHandler)
                                                             }
-                                    }
+                                                        }
+                                                    }
                                 }
+                            }
         }
     }
 
@@ -495,17 +498,17 @@ public class MediaHandler: Handler {
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.sendAsync(method: .post,
-                           url: url,
-                           body: .data(content),
-                           headers: headers) {
-                            switch $0 {
-                            case .failure(let error): completionHandler(.failure(error))
-                            case .success(let data, let response) where data != nil && response?.statusCode == 200:
-                                completionHandler(.success(true))
-                            default:
-                                completionHandler(.success(false))
-                            }
+        requests.fetch(method: .post,
+                       url: url,
+                       body: .data(content),
+                       headers: headers) {
+                        switch $0 {
+                        case .failure(let error): completionHandler(.failure(error))
+                        case .success(let data, let response) where data != nil && response?.statusCode == 200:
+                            completionHandler(.success(true))
+                        default:
+                            completionHandler(.success(false))
+                        }
         }
     }
 
@@ -548,20 +551,22 @@ public class MediaHandler: Handler {
         guard let payload = try? String(data: encoder.encode(content), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
+        do {
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
 
-        let signature = "\(hash).\(payload)"
-        let body: [String: Any] = [
-            Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-            Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
-        ]
+            let signature = "\(hash).\(payload)"
+            let body: [String: Any] = [
+                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+            ]
 
-        requests.decodeAsync(MediaModel.self,
-                             method: .post,
-                             url: url,
-                             body: .parameters(body),
-                             headers: headers,
-                             completionHandler: completionHandler)
+            requests.decode(MediaModel.self,
+                            method: .post,
+                            url: url,
+                            body: .parameters(body),
+                            headers: headers,
+                            completionHandler: completionHandler)
+        } catch { completionHandler(.failure(error)) }
     }
 
     /// Delete media.
@@ -576,11 +581,11 @@ public class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decodeAsync(DeleteMediaResponse.self,
-                             method: .post,
-                             url: Result { try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: type.rawValue) },
-                             body: .parameters(body),
-                             completionHandler: completionHandler)
+        requests.decode(DeleteMediaResponse.self,
+                        method: .post,
+                        url: Result { try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: type.rawValue) },
+                        body: .parameters(body),
+                        completionHandler: completionHandler)
     }
 
     /// Edit media.
@@ -605,34 +610,36 @@ public class MediaHandler: Handler {
         guard let payload = try? String(data: encoder.encode(content), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
+        do {
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
 
-        let signature = "\(hash).\(payload)"
-        let body: [String: Any] = [
-            Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-            Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
-        ]
+            let signature = "\(hash).\(payload)"
+            let body: [String: Any] = [
+                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+            ]
 
-        requests.decodeAsync(MediaModel.self,
-                             method: .post,
-                             url: Result { try URLs.getEditMediaUrl(mediaId: mediaId) },
-                             body: .parameters(body),
-                             completionHandler: completionHandler)
+            requests.decode(MediaModel.self,
+                            method: .post,
+                            url: Result { try URLs.getEditMediaUrl(mediaId: mediaId) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
+        } catch { completionHandler(.failure(error)) }
     }
 
     /// Get media likers.
     public func likers(ofMedia mediaId: String, completionHandler: @escaping (Result<MediaLikersModel, Error>) -> Void) {
-        requests.decodeAsync(MediaLikersModel.self,
-                             method: .get,
-                             url: Result { try URLs.getMediaLikersUrl(mediaId: mediaId) },
-                             completionHandler: completionHandler)
+        requests.decode(MediaLikersModel.self,
+                        method: .get,
+                        url: Result { try URLs.getMediaLikersUrl(mediaId: mediaId) },
+                        completionHandler: completionHandler)
     }
 
     /// Get media permalink.
     public func permalink(ofMedia mediaId: String, completionHandler: @escaping (Result<PermalinkModel, Error>) -> Void) {
-        requests.decodeAsync(PermalinkModel.self,
-                             method: .get,
-                             url: Result { try URLs.getPermalink(mediaId: mediaId) },
-                             completionHandler: completionHandler)
+        requests.decode(PermalinkModel.self,
+                        method: .get,
+                        url: Result { try URLs.getPermalink(mediaId: mediaId) },
+                        completionHandler: completionHandler)
     }
 }

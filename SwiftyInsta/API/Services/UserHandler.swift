@@ -27,12 +27,12 @@ public class UserHandler: Handler {
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
 
-        requests.decodeAsync(CurrentUserModel.self,
-                             method: .get,
-                             url: Result { try URLs.getCurrentUser() },
-                             body: .parameters(body),
-                             delay: delay,
-                             completionHandler: completionHandler)
+        requests.decode(CurrentUserModel.self,
+                        method: .get,
+                        url: Result { try URLs.getCurrentUser() },
+                        body: .parameters(body),
+                        delay: delay,
+                        completionHandler: completionHandler)
     }
 
     // Its not working yet.
@@ -110,12 +110,12 @@ public class UserHandler: Handler {
                        Headers.countKey: Headers.countValue,
                        Headers.rankTokenKey: storage.rankToken]
 
-        requests.decodeAsync(SearchUserModel.self,
-                             method: .get,
-                             url: Result { try URLs.getUserUrl(username: query) },
-                             headers: headers,
-                             deliverOnResponseQueue: true) {
-                                completionHandler($0.map { $0.users ?? [] })
+        requests.decode(SearchUserModel.self,
+                        method: .get,
+                        url: Result { try URLs.getUserUrl(username: query) },
+                        headers: headers,
+                        deliverOnResponseQueue: true) {
+                            completionHandler($0.map { $0.users ?? [] })
         }
     }
 
@@ -129,10 +129,10 @@ public class UserHandler: Handler {
             }
         case .pk(let pk):
             // load user info directly.
-            requests.decodeAsync(UserInfoModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.getUserInfo(id: pk) }) {
-                                    completionHandler($0.map { $0.user })
+            requests.decode(UserInfoModel.self,
+                            method: .get,
+                            url: Result { try URLs.getUserInfo(id: pk) }) {
+                                completionHandler($0.map { $0.user })
             }
         }
     }
@@ -306,11 +306,11 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decodeAsync(FollowResponseModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.removeFollowerUrl(for: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: completionHandler)
+            requests.decode(FollowResponseModel.self,
+                            method: .get,
+                            url: Result { try URLs.removeFollowerUrl(for: pk) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
         }
     }
 
@@ -341,11 +341,11 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decodeAsync(FollowResponseModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.approveFriendshipUrl(for: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: completionHandler)
+            requests.decode(FollowResponseModel.self,
+                            method: .get,
+                            url: Result { try URLs.approveFriendshipUrl(for: pk) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
         }
     }
 
@@ -376,20 +376,20 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decodeAsync(FollowResponseModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.rejectFriendshipUrl(for: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: completionHandler)
+            requests.decode(FollowResponseModel.self,
+                            method: .get,
+                            url: Result { try URLs.rejectFriendshipUrl(for: pk) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
         }
     }
 
     /// Get all pending friendship requests.
     public func pendingRequests(completionHandler: @escaping (Result<PendingFriendshipsModel, Error>) -> Void) {
-        requests.decodeAsync(PendingFriendshipsModel.self,
-                             method: .get,
-                             url: Result { try URLs.pendingFriendshipsUrl() },
-                             completionHandler: completionHandler)
+        requests.decode(PendingFriendshipsModel.self,
+                        method: .get,
+                        url: Result { try URLs.pendingFriendshipsUrl() },
+                        completionHandler: completionHandler)
     }
 
     /// Follow user.
@@ -419,11 +419,11 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decodeAsync(FollowResponseModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.getFollowUrl(for: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: completionHandler)
+            requests.decode(FollowResponseModel.self,
+                            method: .get,
+                            url: Result { try URLs.getFollowUrl(for: pk) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
         }
     }
 
@@ -454,11 +454,11 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decodeAsync(FollowResponseModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.getUnFollowUrl(for: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: completionHandler)
+            requests.decode(FollowResponseModel.self,
+                            method: .get,
+                            url: Result { try URLs.getUnFollowUrl(for: pk) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
         }
     }
 
@@ -489,11 +489,11 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decodeAsync(FriendshipStatusModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.getFriendshipStatusUrl(for: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: completionHandler)
+            requests.decode(FriendshipStatusModel.self,
+                            method: .get,
+                            url: Result { try URLs.getFriendshipStatusUrl(for: pk) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
         }
     }
 
@@ -528,10 +528,10 @@ public class UserHandler: Handler {
 
     /// Get blocked users.
     public func blocked(completionHandler: @escaping (Result<BlockedUsersModel, Error>) -> Void) {
-        requests.decodeAsync(BlockedUsersModel.self,
-                             method: .get,
-                             url: Result { try URLs.getBlockedList() },
-                             completionHandler: completionHandler)
+        requests.decode(BlockedUsersModel.self,
+                        method: .get,
+                        url: Result { try URLs.getBlockedList() },
+                        completionHandler: completionHandler)
     }
 
     /// Block user.
@@ -561,11 +561,11 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decodeAsync(FollowResponseModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.getBlockUrl(for: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: completionHandler)
+            requests.decode(FollowResponseModel.self,
+                            method: .get,
+                            url: Result { try URLs.getBlockUrl(for: pk) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
         }
     }
 
@@ -596,11 +596,11 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decodeAsync(FollowResponseModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.getUnBlockUrl(for: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: completionHandler)
+            requests.decode(FollowResponseModel.self,
+                            method: .get,
+                            url: Result { try URLs.getUnBlockUrl(for: pk) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
         }
     }
 
@@ -690,11 +690,11 @@ public class UserHandler: Handler {
                         "is_spam": "true",
                         "reason_id": "1"]
 
-            requests.decodeAsync(BaseStatusResponseModel.self,
-                                 method: .post,
-                                 url: Result { try URLs.reportUserUrl(userPk: pk) },
-                                 body: .parameters(body),
-                                 completionHandler: { completionHandler($0.map { $0.isOk() }) })
+            requests.decode(BaseStatusResponseModel.self,
+                            method: .post,
+                            url: Result { try URLs.reportUserUrl(userPk: pk) },
+                            body: .parameters(body),
+                            completionHandler: { completionHandler($0.map { $0.isOk() }) })
         }
     }
 }

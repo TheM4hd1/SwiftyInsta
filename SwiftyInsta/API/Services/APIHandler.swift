@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import KeychainSwift
 
 /// The `Instagram Private API` client.
 public class APIHandler {
@@ -134,7 +135,7 @@ public class APIHandler {
 
     // MARK: Helpers
     /// Accessory for `HttpHelper(handler: self)`.
-    internal lazy var requests: HttpHelper = .init(handler: self)
+    internal lazy var requests: HTTPHelper = .init(handler: self)
     /// Accessory for `PaginationHelper(handler: self)`.
     internal lazy var pages: PaginationHelper = .init(handler: self)
 
@@ -278,7 +279,7 @@ public class Handler {
     init(handler: APIHandler) { self.handler = handler }
 
     /// The requests helper.
-    var requests: HttpHelper { return handler.requests }
+    var requests: HTTPHelper { return handler.requests }
     /// The pagination helper.
     var pages: PaginationHelper { return handler.pages }
 }

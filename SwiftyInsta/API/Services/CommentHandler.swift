@@ -7,6 +7,7 @@
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
+import CryptoSwift
 import Foundation
 
 public class CommentHandler: Handler {
@@ -40,21 +41,23 @@ public class CommentHandler: Handler {
         guard let payload = try? String(data: encoder.encode(content), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
-        let signature = "\(hash).\(payload)"
-        guard let escapedSignature = signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            return completionHandler(.failure(GenericError.custom("Invalid request.")))
-        }
-        let body: [String: Any] = [
-            Headers.igSignatureKey: escapedSignature,
-            Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
-        ]
+        do {
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
+            let signature = "\(hash).\(payload)"
+            guard let escapedSignature = signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+                return completionHandler(.failure(GenericError.custom("Invalid request.")))
+            }
+            let body: [String: Any] = [
+                Headers.igSignatureKey: escapedSignature,
+                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+            ]
 
-        requests.decodeAsync(CommentResponse.self,
-                             method: .post,
-                             url: Result { try URLs.getPostCommentUrl(mediaId: mediaId) },
-                             body: .parameters(body),
-                             completionHandler: completionHandler)
+            requests.decode(CommentResponse.self,
+                            method: .post,
+                            url: Result { try URLs.getPostCommentUrl(mediaId: mediaId) },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
+        } catch { completionHandler(.failure(error)) }
     }
 
     /// Delete a comment.
@@ -65,11 +68,11 @@ public class CommentHandler: Handler {
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
-        requests.decodeAsync(BaseStatusResponseModel.self,
-                             method: .post,
-                             url: Result { try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentId) },
-                             body: .parameters(body),
-                             completionHandler: { completionHandler($0.map { $0.isOk() }) })
+        requests.decode(BaseStatusResponseModel.self,
+                        method: .post,
+                        url: Result { try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentId) },
+                        body: .parameters(body),
+                        completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
 
     /// Report a comment.
@@ -83,10 +86,10 @@ public class CommentHandler: Handler {
                     "reason": "1",
                     "comment_id": commentId,
                     "media_id": mediaId]
-        requests.decodeAsync(BaseStatusResponseModel.self,
-                             method: .post,
-                             url: Result { try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId) },
-                             body: .parameters(body),
-                             completionHandler: { completionHandler($0.map { $0.isOk() }) })
+        requests.decode(BaseStatusResponseModel.self,
+                        method: .post,
+                        url: Result { try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId) },
+                        body: .parameters(body),
+                        completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
 }

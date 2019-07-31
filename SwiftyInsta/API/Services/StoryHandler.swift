@@ -7,15 +7,16 @@
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
+import CryptoSwift
 import Foundation
 
 public class StoryHandler: Handler {
     /// Get the story feed.
     public func tray(completionHandler: @escaping (Result<StoryFeedModel, Error>) -> Void) {
-        requests.decodeAsync(StoryFeedModel.self,
-                             method: .get,
-                             url: Result { try URLs.getStoryFeedUrl() },
-                             completionHandler: completionHandler)
+        requests.decode(StoryFeedModel.self,
+                        method: .get,
+                        url: Result { try URLs.getStoryFeedUrl() },
+                        completionHandler: completionHandler)
     }
 
     /// Get user's stories.
@@ -36,10 +37,10 @@ public class StoryHandler: Handler {
             }
         case .pk(let pk):
             // load stories directly.
-            requests.decodeAsync(TrayModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.getUserStoryUrl(userId: pk) },
-                                 completionHandler: completionHandler)
+            requests.decode(TrayModel.self,
+                            method: .get,
+                            url: Result { try URLs.getUserStoryUrl(userId: pk) },
+                            completionHandler: completionHandler)
         }
     }
 
@@ -61,10 +62,10 @@ public class StoryHandler: Handler {
             }
         case .pk(let pk):
             // load stories directly.
-            requests.decodeAsync(StoryReelFeedModel.self,
-                                 method: .get,
-                                 url: Result { try URLs.getUserStoryFeed(userId: pk) },
-                                 completionHandler: completionHandler)
+            requests.decode(StoryReelFeedModel.self,
+                            method: .get,
+                            url: Result { try URLs.getUserStoryFeed(userId: pk) },
+                            completionHandler: completionHandler)
         }
     }
 
@@ -100,39 +101,39 @@ public class StoryHandler: Handler {
                                 "filename*=utf-8''pending_media_\(uploadId).jpg\n\n"].joined(separator: " "))
 
         #if os(macOS)
-            let imageData = photo.image.tiffRepresentation
+        let imageData = photo.image.tiffRepresentation
         #else
-            let imageData = photo.image.jpegData(compressionQuality: 1)
+        let imageData = photo.image.jpegData(compressionQuality: 1)
         #endif
         content.append(imageData!)
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decodeAsync(UploadPhotoResponse.self,
-                             method: .post,
-                             url: Result { try URLs.getUploadPhotoUrl() },
-                             body: .data(content),
-                             headers: headers,
-                             deliverOnResponseQueue: false) { [weak self] in
-                                guard let me = self, let handler = me.handler else {
-                                    return completionHandler(.failure(GenericError.weakObjectReleased))
+        requests.decode(UploadPhotoResponse.self,
+                        method: .post,
+                        url: Result { try URLs.getUploadPhotoUrl() },
+                        body: .data(content),
+                        headers: headers,
+                        deliverOnResponseQueue: false) { [weak self] in
+                            guard let me = self, let handler = me.handler else {
+                                return completionHandler(.failure(GenericError.weakObjectReleased))
+                            }
+                            switch $0 {
+                            case .failure(let error):
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(error))
                                 }
-                                switch $0 {
-                                case .failure(let error):
-                                    handler.settings.queues.response.async {
-                                        completionHandler(.failure(error))
+                            case .success(let decoded):
+                                guard decoded.status == "ok" else {
+                                    return handler.settings.queues.response.async {
+                                        completionHandler(.failure(GenericError.unknown))
                                     }
-                                case .success(let decoded):
-                                    guard decoded.status == "ok" else {
-                                        return handler.settings.queues.response.async {
-                                            completionHandler(.failure(GenericError.unknown))
-                                        }
-                                    }
-                                    me.configure(photo: photo,
-                                                 with: uploadId,
-                                                 caption: photo.caption,
-                                                 completionHandler: completionHandler)
                                 }
+                                me.configure(photo: photo,
+                                             with: uploadId,
+                                             caption: photo.caption,
+                                             completionHandler: completionHandler)
+                            }
         }
     }
 
@@ -160,19 +161,21 @@ public class StoryHandler: Handler {
         guard let payload = try? String(data: encoder.encode(data), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
+        do {
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
 
-        let signature = "\(hash).\(payload)"
-        let body: [String: Any] = [
-            Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-            Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
-        ]
+            let signature = "\(hash).\(payload)"
+            let body: [String: Any] = [
+                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+            ]
 
-        requests.decodeAsync(UploadPhotoResponse.self,
-                             method: .post,
-                             url: Result { try URLs.getConfigureStoryUrl() },
-                             body: .parameters(body),
-                             completionHandler: completionHandler)
+            requests.decode(UploadPhotoResponse.self,
+                            method: .post,
+                            url: Result { try URLs.getConfigureStoryUrl() },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
+        } catch { completionHandler(.failure(error)) }
     }
 
     /// Get story viewers.
@@ -234,19 +237,21 @@ public class StoryHandler: Handler {
         guard let payload = try? String(data: encoder.encode(data), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
+        do {
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
 
-        let signature = "\(hash).\(payload)"
-        let body: [String: Any] = [
-            Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-            Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
-        ]
+            let signature = "\(hash).\(payload)"
+            let body: [String: Any] = [
+                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+            ]
 
-        requests.decodeAsync(BaseStatusResponseModel.self,
-                             method: .post,
-                             url: Result { try URLs.markStoriesAsSeenUrl() },
-                             body: .parameters(body),
-                             completionHandler: completionHandler)
+            requests.decode(BaseStatusResponseModel.self,
+                            method: .post,
+                            url: Result { try URLs.markStoriesAsSeenUrl() },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
+        } catch { completionHandler(.failure(error)) }
     }
 
     /// Get reels media feed.
@@ -266,25 +271,27 @@ public class StoryHandler: Handler {
         guard let payload = try? String(data: encoder.encode(data), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
+        do {
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
 
-        let signature = "\(hash).\(payload)"
-        let body: [String: Any] = [
-            Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-            Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
-        ]
+            let signature = "\(hash).\(payload)"
+            let body: [String: Any] = [
+                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+            ]
 
-        requests.decodeAsync(StoryReelsFeedModel.self,
-                             method: .post,
-                             url: Result { try URLs.getReelsMediaFeed() },
-                             body: .parameters(body),
-                             completionHandler: completionHandler)
+            requests.decode(StoryReelsFeedModel.self,
+                            method: .post,
+                            url: Result { try URLs.getReelsMediaFeed() },
+                            body: .parameters(body),
+                            completionHandler: completionHandler)
+        } catch { completionHandler(.failure(error)) }
     }
 
     func archive(completionHandler: @escaping (Result<StoryArchiveFeedModel, Error>) -> Void) {
-        requests.decodeAsync(StoryArchiveFeedModel.self,
-                             method: .get,
-                             url: Result { try URLs.getStoryArchiveUrl() },
-                             completionHandler: completionHandler)
+        requests.decode(StoryArchiveFeedModel.self,
+                        method: .get,
+                        url: Result { try URLs.getStoryArchiveUrl() },
+                        completionHandler: completionHandler)
     }
 }
