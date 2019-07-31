@@ -3,6 +3,7 @@
 //  SwiftyInsta
 //
 //  Created by Stefano Bertagno on 31/07/2019.
+//  V. 2.0 by Stefano Bertagno on 7/31/19.
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 

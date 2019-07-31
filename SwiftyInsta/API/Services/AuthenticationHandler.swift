@@ -14,16 +14,20 @@ class AuthenticationHandler: Handler {
         // update handler.
         handler.settings.device = cache.device
         handler.response = .init(model: .pending, cache: cache)
-        requests.setCookies(cache.cookies)
-        // fetch the user.
-        handler.users.current(delay: 0...0) { [weak self] in
-            switch $0 {
-            case .success(let model):
-                // update user info alone.
-                if let user = model.user { self?.handler.response?.cache?.storage?.user = user }
-                completionHandler(.success(.init(model: .success, cache: cache)))
-            case .failure(let error): completionHandler(.failure(error))
+        do {
+            try requests.setCookies(cache.cookies)
+            // fetch the user.
+            handler.users.current(delay: 0...0) { [weak self] in
+                switch $0 {
+                case .success(let model):
+                    // update user info alone.
+                    if let user = model.user { self?.handler.response?.cache?.storage?.user = user }
+                    completionHandler(.success(.init(model: .success, cache: cache)))
+                case .failure(let error): completionHandler(.failure(error))
+                }
             }
+        } catch {
+            completionHandler(.failure(AuthenticationError.invalidCache))
         }
     }
 
@@ -34,8 +38,8 @@ class AuthenticationHandler: Handler {
         // remove cookies.
         HTTPCookieStorage.shared.removeCookies(since: .distantPast)
         // ask for login.
-        requests.sendAsync(method: .get, url: URLs.home()) { [weak self] in
-            guard let me = self, let handler = me.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+        requests.sendAsync(method: .get, url: Result { try URLs.home() }) { [weak self] in
+            guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             // analyze response.
             switch $0 {
             case .failure(let error): handler.settings.queues.response.async { completionHandler(.failure(error)) }
@@ -46,7 +50,7 @@ class AuthenticationHandler: Handler {
                                                  for: response.url!)
                 guard let csrfToken = cookies.first(where: { $0.name == "csrftoken" })?.value else {
                     return handler.settings.queues.response.async {
-                        completionHandler(.failure(CustomErrors.runTimeError("Invalid cookies.")))
+                        completionHandler(.failure(GenericError.custom("Invalid cookies.")))
                     }
                 }
                 user.csrfToken = csrfToken
@@ -58,7 +62,7 @@ class AuthenticationHandler: Handler {
                                "Referer": "https://instagram.com/"]
                 me.requests.decodeAsync(CredentialsAuthenticationResponse.self,
                                         method: .post,
-                                        url: URLs.login(),
+                                        url: Result { try URLs.login() },
                                         body: .parameters(body),
                                         headers: headers,
                                         checkingValidStatusCode: false,
@@ -70,7 +74,7 @@ class AuthenticationHandler: Handler {
                                             }
                                         case .success(let response):
                                             // check for status.
-                                            if let url = response.checkpointUrl.flatMap(URLs.checkpoint) {
+                                            if let url = try? response.checkpointUrl.flatMap(URLs.checkpoint) {
                                                 user.completionHandler = completionHandler
                                                 user.response = .challenge(url)
                                                 me.challengeInfo(for: user) { form in
@@ -102,7 +106,7 @@ class AuthenticationHandler: Handler {
                                                                                  rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString)
                                                     let cache = SessionCache(storage: storage,
                                                                              device: handler.settings.device,
-                                                                             cookies: cookies.toCookieData())
+                                                                             cookies: cookies.cookieData)
                                                     // actually authenticate.
                                                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                                                 } else if response.user ?? false {
@@ -119,7 +123,7 @@ class AuthenticationHandler: Handler {
                                             } else {
                                                 user.response = .failure
                                                 handler.settings.queues.response.async {
-                                                    completionHandler(.failure(CustomErrors.runTimeError("Unknown error.")))
+                                                    completionHandler(.failure(GenericError.custom("Unknown error.")))
                                                 }
                                             }
                                         }
@@ -127,7 +131,7 @@ class AuthenticationHandler: Handler {
             default:
                 user.response = .failure
                 handler.settings.queues.response.async {
-                    completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                    completionHandler(.failure(GenericError.custom("Invalid response.")))
                 }
             }
         }
@@ -149,7 +153,7 @@ class AuthenticationHandler: Handler {
                            body: .parameters(body),
                            headers: headers,
                            delay: 0...0) { [weak self] in
-                            guard let me = self, let handler = me.handler else { return completionHandler(CustomErrors.weakReferenceReleased) }
+                            guard let me = self, let handler = me.handler else { return completionHandler(GenericError.weakObjectReleased) }
                             switch $0 {
                             case .failure(let error):
                                 handler.settings.queues.response.async {
@@ -168,11 +172,11 @@ class AuthenticationHandler: Handler {
                                 }
                                 // notify errors.
                                 handler.settings.queues.response.async {
-                                    completionHandler(CustomErrors.runTimeError("Invalid response."))
+                                    completionHandler(GenericError.custom("Invalid response."))
                                 }
                             default:
                                 handler.settings.queues.response.async {
-                                    completionHandler(CustomErrors.runTimeError("Invalid response."))
+                                    completionHandler(GenericError.custom("Invalid response."))
                                 }
                             }
         }
@@ -212,7 +216,7 @@ class AuthenticationHandler: Handler {
         switch credentials.response {
         case .success, .failure, .unknown:
             handler.settings.queues.response.async {
-                completionHandler(.failure(CustomErrors.runTimeError("No code required.")))
+                completionHandler(.failure(GenericError.custom("No code required.")))
             }
         case .challenge(let url):
             send(challengeCode: code, at: url, for: credentials, completionHandler: completionHandler)
@@ -233,7 +237,7 @@ class AuthenticationHandler: Handler {
                        "X-Instagram-AJAX": "1"]
 
         requests.sendAsync(method: .post, url: url, body: .parameters(body), headers: headers, delay: 0...0) { [weak self] in
-            guard let me = self, let handler = me.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+            guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             // check for response.
             switch $0 {
             case .failure(let error):
@@ -259,17 +263,17 @@ class AuthenticationHandler: Handler {
                                                      rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString)
                         let cache = SessionCache(storage: storage,
                                                  device: handler.settings.device,
-                                                 cookies: cookies.toCookieData())
+                                                 cookies: cookies.cookieData)
                         handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                     }
                 } else {
                     handler.settings.queues.response.async {
-                        completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                        completionHandler(.failure(GenericError.custom("Invalid response.")))
                     }
                 }
             default:
                 handler.settings.queues.response.async {
-                    completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                    completionHandler(.failure(GenericError.custom("Invalid response.")))
                 }
             }
         }
@@ -279,17 +283,23 @@ class AuthenticationHandler: Handler {
               with identifier: String,
               for user: Credentials,
               completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
+        // guard for url.
+        guard let url = try? URLs.twoFactor().absoluteString else { return completionHandler(.failure(GenericError.invalidUrl)) }
         var user = user
         let body = ["username": user.username,
                     "verificationCode": code,
                     "identifier": identifier]
         let headers = ["X-CSRFToken": user.csrfToken!,
                        "X-Requested-With": "XMLHttpRequest",
-                       "Referer": URLs.twoFactor().absoluteString,
+                       "Referer": url,
                        "X-Instagram-AJAX": "1"]
 
-        requests.sendAsync(method: .post, url: URLs.twoFactor(), body: .parameters(body), headers: headers, delay: 0...0) { [weak self] in
-            guard let me = self, let handler = me.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+        requests.sendAsync(method: .post,
+                           url: Result { try URLs.twoFactor() },
+                           body: .parameters(body),
+                           headers: headers,
+                           delay: 0...0) { [weak self] in
+            guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             // check for response.
             switch $0 {
             case .failure(let error):
@@ -312,23 +322,23 @@ class AuthenticationHandler: Handler {
                                                  rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString)
                     let cache = SessionCache(storage: storage,
                                              device: handler.settings.device,
-                                             cookies: cookies.toCookieData())
+                                             cookies: cookies.cookieData)
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 case 400:
                     user.response = .failure
                     handler.settings.queues.response.async {
-                        completionHandler(.failure(CustomErrors.runTimeError("Invalid code.")))
+                        completionHandler(.failure(GenericError.custom("Invalid code.")))
                     }
                 default:
                     user.response = .failure
                     handler.settings.queues.response.async {
-                        completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                        completionHandler(.failure(GenericError.custom("Invalid response.")))
                     }
                 }
             default:
                 user.response = .failure
                 handler.settings.queues.response.async {
-                    completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                    completionHandler(.failure(GenericError.custom("Invalid response.")))
                 }
             }
         }
@@ -343,8 +353,8 @@ class AuthenticationHandler: Handler {
                        "X-Requested-With": "XMLHttpRequest",
                        "Referer": "https://instagram.com/"]
 
-        requests.sendAsync(method: .post, url: URLs.login(), body: .parameters(body), headers: headers) { [weak self] in
-            guard let me = self, let handler = me.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+        requests.sendAsync(method: .post, url: Result { try URLs.login() }, body: .parameters(body), headers: headers) { [weak self] in
+            guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             // check for response.
             switch $0 {
             case .failure(let error):
@@ -358,7 +368,7 @@ class AuthenticationHandler: Handler {
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
                     guard let decoded = try? decoder.decode(CredentialsAuthenticationResponse.self, from: data) else {
-                        return completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                        return completionHandler(.failure(GenericError.custom("Invalid response.")))
                     }
                     user.code = nil
                     user.response = .twoFactor(decoded.twoFactorInfo!.twoFactorIdentifier!)
@@ -384,12 +394,12 @@ class AuthenticationHandler: Handler {
                                                  rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString)
                     let cache = SessionCache(storage: storage,
                                              device: handler.settings.device,
-                                             cookies: cookies.toCookieData())
+                                             cookies: cookies.cookieData)
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             default:
                 handler.settings.queues.response.async {
-                    completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                    completionHandler(.failure(GenericError.custom("Invalid response.")))
                 }
             }
         }
@@ -399,14 +409,14 @@ class AuthenticationHandler: Handler {
     func invalidate(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard handler.user != nil else {
             return handler.settings.queues.response.async {
-                completionHandler(.failure(CustomErrors.runTimeError("User is not logged in.")))
+                completionHandler(.failure(GenericError.custom("User is not logged in.")))
             }
         }
-        handler.requests.sendAsync(method: .post, url: URLs.getLogoutUrl()) { [weak self] in
-            guard let handler = self?.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+        handler.requests.sendAsync(method: .post, url: Result { try URLs.getLogoutUrl() }) { [weak self] in
+            guard let handler = self?.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             let result = $0.flatMap { data, response -> Result<Bool, Error> in
                 do {
-                    guard let data = data, response?.statusCode == 200 else { throw CustomErrors.runTimeError("Invalid response.") }
+                    guard let data = data, response?.statusCode == 200 else { throw GenericError.custom("Invalid response.") }
                     // decode data.
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase

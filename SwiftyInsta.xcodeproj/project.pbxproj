@@ -22,8 +22,8 @@
 
 /* Begin PBXBuildFile section */
 		110454D5221DE7270080F986 /* AccountRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110454D4221DE7270080F986 /* AccountRecovery.swift */; };
-		1104CD092180621400F855BA /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
-		1104CD0B2180627400F855BA /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
+		1104CD092180621400F855BA /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethod.swift */; };
+		1104CD0B2180627400F855BA /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* Error.swift */; };
 		1104CD112180644100F855BA /* HttpHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD102180644100F855BA /* HttpHelper.swift */; };
 		110B3F9B21A2CE4D0019523A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110B3F9A21A2CE4D0019523A /* Extensions.swift */; };
 		110C9D9821989F5800805C68 /* RecentActivitiesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110C9D9721989F5800805C68 /* RecentActivitiesModel.swift */; };
@@ -102,8 +102,8 @@
 		E006E3F722E87EFE002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
 		E006E3F822E87EFE002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E3F922E87EFE002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
-		E006E3FB22E87EFE002DB4BB /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
-		E006E3FC22E87EFE002DB4BB /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
+		E006E3FB22E87EFE002DB4BB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* Error.swift */; };
+		E006E3FC22E87EFE002DB4BB /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethod.swift */; };
 		E006E3FD22E87EFE002DB4BB /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
 		E006E3FE22E87EFE002DB4BB /* MediaTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116C3F3A21A6EBE5003084DD /* MediaTypes.swift */; };
 		E006E3FF22E87EFE002DB4BB /* GenderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DC21AFFB2700769B00 /* GenderTypes.swift */; };
@@ -174,8 +174,8 @@
 		E006E44422E87EFF002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
 		E006E44522E87EFF002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E44622E87EFF002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
-		E006E44822E87EFF002DB4BB /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
-		E006E44922E87EFF002DB4BB /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
+		E006E44822E87EFF002DB4BB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* Error.swift */; };
+		E006E44922E87EFF002DB4BB /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethod.swift */; };
 		E006E44A22E87EFF002DB4BB /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
 		E006E44B22E87EFF002DB4BB /* MediaTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116C3F3A21A6EBE5003084DD /* MediaTypes.swift */; };
 		E006E44C22E87EFF002DB4BB /* GenderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DC21AFFB2700769B00 /* GenderTypes.swift */; };
@@ -246,8 +246,8 @@
 		E006E49122E87F00002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
 		E006E49222E87F00002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E49322E87F00002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
-		E006E49522E87F00002DB4BB /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
-		E006E49622E87F00002DB4BB /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
+		E006E49522E87F00002DB4BB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* Error.swift */; };
+		E006E49622E87F00002DB4BB /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethod.swift */; };
 		E006E49722E87F00002DB4BB /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
 		E006E49822E87F00002DB4BB /* MediaTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116C3F3A21A6EBE5003084DD /* MediaTypes.swift */; };
 		E006E49922E87F00002DB4BB /* GenderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DC21AFFB2700769B00 /* GenderTypes.swift */; };
@@ -346,8 +346,8 @@
 
 /* Begin PBXFileReference section */
 		110454D4221DE7270080F986 /* AccountRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRecovery.swift; sourceTree = "<group>"; };
-		1104CD082180621400F855BA /* HTTPMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethods.swift; sourceTree = "<group>"; };
-		1104CD0A2180627400F855BA /* CustomErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomErrors.swift; sourceTree = "<group>"; };
+		1104CD082180621400F855BA /* HTTPMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
+		1104CD0A2180627400F855BA /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		1104CD102180644100F855BA /* HttpHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpHelper.swift; sourceTree = "<group>"; };
 		110B3F9A21A2CE4D0019523A /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		110C9D9721989F5800805C68 /* RecentActivitiesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentActivitiesModel.swift; sourceTree = "<group>"; };
@@ -437,10 +437,10 @@
 		E006E3CA22E87E2C002DB4BB /* SwiftyInsta_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E006E3E622E87E42002DB4BB /* SwiftyInsta_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E063077122E253060015AA92 /* PaginationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationHelper.swift; sourceTree = "<group>"; };
-		E076015822F1988500F8961F /* DeviceCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DeviceCollection.swift; path = DeviceCollection.swift; sourceTree = "<group>"; };
-		E076015D22F198B900F8961F /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Brand.swift; path = Brand.swift; sourceTree = "<group>"; };
+		E076015822F1988500F8961F /* DeviceCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCollection.swift; sourceTree = "<group>"; };
+		E076015D22F198B900F8961F /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
 		E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationHandler.swift; sourceTree = "<group>"; };
-		E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ParsedResponse.swift; path = ParsedResponse.swift; sourceTree = "<group>"; };
+		E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedResponse.swift; sourceTree = "<group>"; };
 		E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSwiftDistrib.swift; sourceTree = "<group>"; };
 		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
 		E9497D8DD2D1B4C4F52B1DC5 /* Pods-SwiftyInsta.iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -631,8 +631,8 @@
 		115F1247217FEA9D00ED3530 /* Enums */ = {
 			isa = PBXGroup;
 			children = (
-				1104CD0A2180627400F855BA /* CustomErrors.swift */,
-				1104CD082180621400F855BA /* HTTPMethods.swift */,
+				1104CD0A2180627400F855BA /* Error.swift */,
+				1104CD082180621400F855BA /* HTTPMethod.swift */,
 				1143E0C721809E7700D9FF31 /* ResponseTypes.swift */,
 				116C3F3A21A6EBE5003084DD /* MediaTypes.swift */,
 				115CA6DC21AFFB2700769B00 /* GenderTypes.swift */,
@@ -1043,7 +1043,7 @@
 				114B848021871D1300F84161 /* LoginBaseResponseModel.swift in Sources */,
 				1135EA60219B5C2D00DCB739 /* CommentModel.swift in Sources */,
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
-				1104CD0B2180627400F855BA /* CustomErrors.swift in Sources */,
+				1104CD0B2180627400F855BA /* Error.swift in Sources */,
 				110C9D9821989F5800805C68 /* RecentActivitiesModel.swift in Sources */,
 				116B149F21DEB64B00953A71 /* SessionCache.swift in Sources */,
 				11F0CE6B2195CC2400C0F6A4 /* TimelineModel.swift in Sources */,
@@ -1094,7 +1094,7 @@
 				11B9568421945C67006661A6 /* LocationModel.swift in Sources */,
 				115F1253217FEFF200ED3530 /* SessionStorage.swift in Sources */,
 				E063077222E253060015AA92 /* PaginationHelper.swift in Sources */,
-				1104CD092180621400F855BA /* HTTPMethods.swift in Sources */,
+				1104CD092180621400F855BA /* HTTPMethod.swift in Sources */,
 				11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */,
 				E076015E22F198B900F8961F /* Brand.swift in Sources */,
 				11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */,
@@ -1139,7 +1139,7 @@
 				E006E3F122E87EFE002DB4BB /* FeedHandler.swift in Sources */,
 				E006E41022E87EFE002DB4BB /* LoginResultModel.swift in Sources */,
 				E006E41722E87EFE002DB4BB /* ResultInfo.swift in Sources */,
-				E006E3FC22E87EFE002DB4BB /* HTTPMethods.swift in Sources */,
+				E006E3FC22E87EFE002DB4BB /* HTTPMethod.swift in Sources */,
 				E006E41E22E87EFE002DB4BB /* UserShortListModel.swift in Sources */,
 				E006E41C22E87EFE002DB4BB /* TwoFactorLoginInfoModel.swift in Sources */,
 				E006E43A22E87EFE002DB4BB /* KeychainSwiftDistrib.swift in Sources */,
@@ -1148,7 +1148,7 @@
 				E006E40522E87EFE002DB4BB /* CaptionModel.swift in Sources */,
 				E006E3F222E87EFE002DB4BB /* MediaHandler.swift in Sources */,
 				E006E41B22E87EFE002DB4BB /* TrayModel.swift in Sources */,
-				E006E3FB22E87EFE002DB4BB /* CustomErrors.swift in Sources */,
+				E006E3FB22E87EFE002DB4BB /* Error.swift in Sources */,
 				E006E40922E87EFE002DB4BB /* ExploreFeedItemModel.swift in Sources */,
 				E006E41122E87EFE002DB4BB /* MediaModel.swift in Sources */,
 				E006E40022E87EFE002DB4BB /* VerifyTypes.swift in Sources */,
@@ -1222,7 +1222,7 @@
 				E006E43E22E87EFF002DB4BB /* FeedHandler.swift in Sources */,
 				E006E45D22E87EFF002DB4BB /* LoginResultModel.swift in Sources */,
 				E006E46422E87EFF002DB4BB /* ResultInfo.swift in Sources */,
-				E006E44922E87EFF002DB4BB /* HTTPMethods.swift in Sources */,
+				E006E44922E87EFF002DB4BB /* HTTPMethod.swift in Sources */,
 				E006E46B22E87EFF002DB4BB /* UserShortListModel.swift in Sources */,
 				E006E46922E87EFF002DB4BB /* TwoFactorLoginInfoModel.swift in Sources */,
 				E006E48722E87EFF002DB4BB /* KeychainSwiftDistrib.swift in Sources */,
@@ -1231,7 +1231,7 @@
 				E006E45222E87EFF002DB4BB /* CaptionModel.swift in Sources */,
 				E006E43F22E87EFF002DB4BB /* MediaHandler.swift in Sources */,
 				E006E46822E87EFF002DB4BB /* TrayModel.swift in Sources */,
-				E006E44822E87EFF002DB4BB /* CustomErrors.swift in Sources */,
+				E006E44822E87EFF002DB4BB /* Error.swift in Sources */,
 				E006E45622E87EFF002DB4BB /* ExploreFeedItemModel.swift in Sources */,
 				E006E45E22E87EFF002DB4BB /* MediaModel.swift in Sources */,
 				E006E44D22E87EFF002DB4BB /* VerifyTypes.swift in Sources */,
@@ -1305,7 +1305,7 @@
 				E006E48B22E87F00002DB4BB /* FeedHandler.swift in Sources */,
 				E006E4AA22E87F00002DB4BB /* LoginResultModel.swift in Sources */,
 				E006E4B122E87F00002DB4BB /* ResultInfo.swift in Sources */,
-				E006E49622E87F00002DB4BB /* HTTPMethods.swift in Sources */,
+				E006E49622E87F00002DB4BB /* HTTPMethod.swift in Sources */,
 				E006E4B822E87F00002DB4BB /* UserShortListModel.swift in Sources */,
 				E006E4B622E87F00002DB4BB /* TwoFactorLoginInfoModel.swift in Sources */,
 				E006E4D422E87F00002DB4BB /* KeychainSwiftDistrib.swift in Sources */,
@@ -1314,7 +1314,7 @@
 				E006E49F22E87F00002DB4BB /* CaptionModel.swift in Sources */,
 				E006E48C22E87F00002DB4BB /* MediaHandler.swift in Sources */,
 				E006E4B522E87F00002DB4BB /* TrayModel.swift in Sources */,
-				E006E49522E87F00002DB4BB /* CustomErrors.swift in Sources */,
+				E006E49522E87F00002DB4BB /* Error.swift in Sources */,
 				E006E4A322E87F00002DB4BB /* ExploreFeedItemModel.swift in Sources */,
 				E006E4AB22E87F00002DB4BB /* MediaModel.swift in Sources */,
 				E006E49A22E87F00002DB4BB /* VerifyTypes.swift in Sources */,

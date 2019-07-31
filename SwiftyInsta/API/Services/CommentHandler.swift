@@ -17,7 +17,7 @@ public class CommentHandler: Handler {
                     completionHandler: @escaping PaginationCompletionHandler<MediaCommentsResponseModel>) {
         pages.fetch(MediaCommentsResponseModel.self,
                     with: paginationParameters,
-                    at: { URLs.getComments(for: mediaId, maxId: $0.nextMaxId ?? "") },
+                    at: { try URLs.getComments(for: mediaId, maxId: $0.nextMaxId ?? "") },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -25,7 +25,7 @@ public class CommentHandler: Handler {
     /// Add comment to media.
     public func add(_ comment: String, to mediaId: String, completionHandler: @escaping (Result<CommentResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let content = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                        "_uid": storage.dsUserId,
@@ -38,12 +38,12 @@ public class CommentHandler: Handler {
 
         let encoder = JSONEncoder()
         guard let payload = try? String(data: encoder.encode(content), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
         let signature = "\(hash).\(payload)"
         guard let escapedSignature = signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let body: [String: Any] = [
             Headers.igSignatureKey: escapedSignature,
@@ -52,7 +52,7 @@ public class CommentHandler: Handler {
 
         requests.decodeAsync(CommentResponse.self,
                              method: .post,
-                             url: URLs.getPostCommentUrl(mediaId: mediaId),
+                             url: Result { try URLs.getPostCommentUrl(mediaId: mediaId) },
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
@@ -60,14 +60,14 @@ public class CommentHandler: Handler {
     /// Delete a comment.
     public func delete(comment commentId: String, in mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentId),
+                             url: Result { try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentId) },
                              body: .parameters(body),
                              completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
@@ -75,7 +75,7 @@ public class CommentHandler: Handler {
     /// Report a comment.
     public func report(comment commentId: String, in mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -85,7 +85,7 @@ public class CommentHandler: Handler {
                     "media_id": mediaId]
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId),
+                             url: Result { try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId) },
                              body: .parameters(body),
                              completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }

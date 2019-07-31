@@ -15,7 +15,7 @@ public class FeedHandler: Handler {
                         completionHandler: @escaping PaginationCompletionHandler<ExploreFeedModel>) {
         pages.fetch(ExploreFeedModel.self,
                     with: paginationParameters,
-                    at: { URLs.getExploreFeedUrl(maxId: $0.nextMaxId ?? "") },
+                    at: { try URLs.getExploreFeedUrl(maxId: $0.nextMaxId ?? "") },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -27,7 +27,7 @@ public class FeedHandler: Handler {
                     completionHandler: @escaping PaginationCompletionHandler<TagFeedModel>) {
         pages.fetch(TagFeedModel.self,
                     with: paginationParameters,
-                    at: { URLs.getTagFeed(for: tag, maxId: $0.nextMaxId ?? "") },
+                    at: { try URLs.getTagFeed(for: tag, maxId: $0.nextMaxId ?? "") },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -37,7 +37,7 @@ public class FeedHandler: Handler {
                          updateHandler: PaginationUpdateHandler<TimelineModel>?,
                          completionHandler: @escaping PaginationCompletionHandler<TimelineModel>) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
                                      paginationParameters)
         }
         // prepare body.
@@ -69,7 +69,7 @@ public class FeedHandler: Handler {
 
         pages.fetch(TimelineModel.self,
                     with: paginationParameters,
-                    at: { _ in URLs.getUserTimeLineUrl(maxId: "") }, //$0.nextMaxId ?? "") },
+                    at: { _ in try URLs.getUserTimeLineUrl(maxId: "") }, //$0.nextMaxId ?? "") },
                     body: {
                         switch $0.nextMaxId {
                         case .none:

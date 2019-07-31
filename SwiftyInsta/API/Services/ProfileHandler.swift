@@ -13,7 +13,7 @@ public class ProfileHandler: Handler {
     /// Set the account to public.
     public func markAsPublic(completionHandler: @escaping (Result<ProfilePrivacyResponseModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         var content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
@@ -21,7 +21,7 @@ public class ProfileHandler: Handler {
                        "_csrftoken": storage.csrfToken]
         let encoder = JSONEncoder()
         guard let encodedContent = try? String(data: encoder.encode(content), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = encodedContent.hmac(algorithm: .SHA256, key: Headers.igSignatureKey)
         let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
@@ -30,7 +30,7 @@ public class ProfileHandler: Handler {
 
         requests.decodeAsync(ProfilePrivacyResponseModel.self,
                              method: .post,
-                             url: URLs.setPublicProfile(),
+                             url: Result { try URLs.setPublicProfile() },
                              body: .parameters(content),
                              completionHandler: completionHandler)
     }
@@ -38,7 +38,7 @@ public class ProfileHandler: Handler {
     /// Set the account to private.
     public func markAsPrivate(completionHandler: @escaping (Result<ProfilePrivacyResponseModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         var content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
@@ -46,7 +46,7 @@ public class ProfileHandler: Handler {
                        "_csrftoken": storage.csrfToken]
         let encoder = JSONEncoder()
         guard let encodedContent = try? String(data: encoder.encode(content), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = encodedContent.hmac(algorithm: .SHA256, key: Headers.igSignatureKey)
         let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
@@ -55,7 +55,7 @@ public class ProfileHandler: Handler {
 
         requests.decodeAsync(ProfilePrivacyResponseModel.self,
                              method: .post,
-                             url: URLs.setPrivateProfile(),
+                             url: Result { try URLs.setPrivateProfile() },
                              body: .parameters(content),
                              completionHandler: completionHandler)
     }
@@ -65,7 +65,7 @@ public class ProfileHandler: Handler {
                        oldPassword: String,
                        completionHandler: @escaping (Result<BaseStatusResponseModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         let content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
@@ -76,7 +76,7 @@ public class ProfileHandler: Handler {
                        "new_password2": password]
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: URLs.getChangePasswordUrl(),
+                             url: Result { try URLs.getChangePasswordUrl() },
                              body: .parameters(content),
                              completionHandler: completionHandler)
     }
@@ -91,14 +91,14 @@ public class ProfileHandler: Handler {
                      gender: GenderTypes,
                      completionHandler: @escaping (Result<EditProfileModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         requests.decodeAsync(EditProfileModel.self,
                              method: .get,
-                             url: URLs.getEditProfileUrl(),
+                             url: Result { try URLs.getEditProfileUrl() },
                              deliverOnResponseQueue: false) { [weak self] in
                                 guard let me = self, let handler = me.handler else {
-                                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                                    return completionHandler(.failure(GenericError.weakObjectReleased))
                                 }
                                 switch $0 {
                                 case .failure(let error):
@@ -108,12 +108,12 @@ public class ProfileHandler: Handler {
                                 case .success(let decoded):
                                     guard decoded.status == "ok" else {
                                         return handler.settings.queues.response.async {
-                                            completionHandler(.failure(CustomErrors.noError))
+                                            completionHandler(.failure(GenericError.unknown))
                                         }
                                     }
                                     guard let user = decoded.user else {
                                         return handler.settings.queues.response.async {
-                                            completionHandler(.failure(CustomErrors.runTimeError("Invalid response.")))
+                                            completionHandler(.failure(GenericError.custom("Invalid response.")))
                                         }
                                     }
                                     let name = name ?? user.fullName ?? ""
@@ -137,7 +137,7 @@ public class ProfileHandler: Handler {
 
                                     handler.requests.decodeAsync(EditProfileModel.self,
                                                                  method: .post,
-                                                                 url: URLs.getSaveEditProfileUrl(),
+                                                                 url: Result { try URLs.getSaveEditProfileUrl() },
                                                                  body: .parameters(content),
                                                                  headers: headers,
                                                                  completionHandler: completionHandler)
@@ -148,7 +148,7 @@ public class ProfileHandler: Handler {
     /// Edit biography.
     public func edit(biography: String, completionHandler: @escaping (Result<BaseStatusResponseModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let content = ["_csrftoken": storage.csrfToken,
                        "_uid": storage.dsUserId,
@@ -157,7 +157,7 @@ public class ProfileHandler: Handler {
 
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: URLs.getEditBiographyUrl(),
+                             url: Result { try URLs.getEditBiographyUrl() },
                              body: .parameters(content),
                              completionHandler: completionHandler)
     }
@@ -165,7 +165,7 @@ public class ProfileHandler: Handler {
     /// Remove profile picture.
     public func deleteProfilePicture(completionHandler: @escaping (Result<EditProfileModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let content = ["_csrftoken": storage.csrfToken,
                        "_uid": storage.dsUserId,
@@ -174,7 +174,7 @@ public class ProfileHandler: Handler {
 
         requests.decodeAsync(EditProfileModel.self,
                              method: .post,
-                             url: URLs.getRemoveProfilePictureUrl(),
+                             url: Result { try URLs.getRemoveProfilePictureUrl() },
                              body: .parameters(content),
                              headers: headers,
                              completionHandler: completionHandler)
@@ -183,7 +183,7 @@ public class ProfileHandler: Handler {
     /// Upload profile picture.
     public func upload(profilePicture photo: InstaPhoto, completionHandler: @escaping (Result<EditProfileModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
         // prepare body.
@@ -219,7 +219,7 @@ public class ProfileHandler: Handler {
 
         requests.decodeAsync(EditProfileModel.self,
                              method: .post,
-                             url: URLs.getChangePasswordUrl(),
+                             url: Result { try URLs.getChangePasswordUrl() },
                              body: .data(content),
                              headers: headers,
                              completionHandler: completionHandler)

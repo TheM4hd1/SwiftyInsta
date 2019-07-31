@@ -14,7 +14,7 @@ public class StoryHandler: Handler {
     public func tray(completionHandler: @escaping (Result<StoryFeedModel, Error>) -> Void) {
         requests.decodeAsync(StoryFeedModel.self,
                              method: .get,
-                             url: URLs.getStoryFeedUrl(),
+                             url: Result { try URLs.getStoryFeedUrl() },
                              completionHandler: completionHandler)
     }
 
@@ -25,20 +25,20 @@ public class StoryHandler: Handler {
             // fetch username.
             self.handler.users.user(user) { [weak self] in
                 guard let handler = self else {
-                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                    return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
                 case .success(let user) where user?.pk != nil:
                     handler.by(user: .pk(user!.pk!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
-                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
+                default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
             }
         case .pk(let pk):
             // load stories directly.
             requests.decodeAsync(TrayModel.self,
                                  method: .get,
-                                 url: URLs.getUserStoryUrl(userId: pk),
+                                 url: Result { try URLs.getUserStoryUrl(userId: pk) },
                                  completionHandler: completionHandler)
         }
     }
@@ -50,20 +50,20 @@ public class StoryHandler: Handler {
             // fetch username.
             self.handler.users.user(user) { [weak self] in
                 guard let handler = self else {
-                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                    return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
                 case .success(let user) where user?.pk != nil:
                     handler.reelBy(user: .pk(user!.pk!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
-                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")))
+                default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
             }
         case .pk(let pk):
             // load stories directly.
             requests.decodeAsync(StoryReelFeedModel.self,
                                  method: .get,
-                                 url: URLs.getUserStoryFeed(userId: pk),
+                                 url: Result { try URLs.getUserStoryFeed(userId: pk) },
                                  completionHandler: completionHandler)
         }
     }
@@ -71,7 +71,7 @@ public class StoryHandler: Handler {
     /// Upload photo.
     public func upload(photo: InstaPhoto, completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
         // prepare content.
@@ -110,12 +110,12 @@ public class StoryHandler: Handler {
 
         requests.decodeAsync(UploadPhotoResponse.self,
                              method: .post,
-                             url: URLs.getUploadPhotoUrl(),
+                             url: Result { try URLs.getUploadPhotoUrl() },
                              body: .data(content),
                              headers: headers,
                              deliverOnResponseQueue: false) { [weak self] in
                                 guard let me = self, let handler = me.handler else {
-                                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                                    return completionHandler(.failure(GenericError.weakObjectReleased))
                                 }
                                 switch $0 {
                                 case .failure(let error):
@@ -125,7 +125,7 @@ public class StoryHandler: Handler {
                                 case .success(let decoded):
                                     guard decoded.status == "ok" else {
                                         return handler.settings.queues.response.async {
-                                            completionHandler(.failure(CustomErrors.noError))
+                                            completionHandler(.failure(GenericError.unknown))
                                         }
                                     }
                                     me.configure(photo: photo,
@@ -142,7 +142,7 @@ public class StoryHandler: Handler {
                    caption: String,
                    completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         let data = ConfigureStoryUploadModel.init(uuid: handler!.settings.device.deviceGuid.uuidString,
@@ -158,7 +158,7 @@ public class StoryHandler: Handler {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         guard let payload = try? String(data: encoder.encode(data), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
 
@@ -170,7 +170,7 @@ public class StoryHandler: Handler {
 
         requests.decodeAsync(UploadPhotoResponse.self,
                              method: .post,
-                             url: URLs.getConfigureStoryUrl(),
+                             url: Result { try URLs.getConfigureStoryUrl() },
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
@@ -182,7 +182,7 @@ public class StoryHandler: Handler {
                         completionHandler: @escaping PaginationCompletionHandler<StoryViewers>) {
         pages.fetch(StoryViewers.self,
                     with: paginationParameters,
-                    at: { URLs.getStoryViewersUrl(pk: storyId, maxId: $0.nextMaxId ?? "") },
+                    at: { try URLs.getStoryViewersUrl(pk: storyId, maxId: $0.nextMaxId ?? "") },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -193,11 +193,11 @@ public class StoryHandler: Handler {
                      asSeen seen: Bool,
                      completionHandler: @escaping (Result<BaseStatusResponseModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         guard seen else {
             return handler!.settings.queues.response.async {
-                completionHandler(.failure(CustomErrors.runTimeError("You cannot \"unsee\" stories.")))
+                completionHandler(.failure(GenericError.custom("You cannot \"unsee\" stories.")))
             }
         }
 
@@ -232,7 +232,7 @@ public class StoryHandler: Handler {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         guard let payload = try? String(data: encoder.encode(data), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
 
@@ -244,7 +244,7 @@ public class StoryHandler: Handler {
 
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: URLs.markStoriesAsSeenUrl(),
+                             url: Result { try URLs.markStoriesAsSeenUrl() },
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
@@ -252,7 +252,7 @@ public class StoryHandler: Handler {
     /// Get reels media feed.
     public func reelsMedia(_ feeds: [String], completionHandler: @escaping (Result<StoryReelsFeedModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let data = RequestReelsMediaFeed(supportedCapabilitiesNew: SupportedCapability.generate(),
                                          uuid: handler!.settings.device.deviceGuid.uuidString,
@@ -264,7 +264,7 @@ public class StoryHandler: Handler {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         guard let payload = try? String(data: encoder.encode(data), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
 
@@ -276,7 +276,7 @@ public class StoryHandler: Handler {
 
         requests.decodeAsync(StoryReelsFeedModel.self,
                              method: .post,
-                             url: URLs.getReelsMediaFeed(),
+                             url: Result { try URLs.getReelsMediaFeed() },
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
@@ -284,7 +284,7 @@ public class StoryHandler: Handler {
     func archive(completionHandler: @escaping (Result<StoryArchiveFeedModel, Error>) -> Void) {
         requests.decodeAsync(StoryArchiveFeedModel.self,
                              method: .get,
-                             url: URLs.getStoryArchiveUrl(),
+                             url: Result { try URLs.getStoryArchiveUrl() },
                              completionHandler: completionHandler)
     }
 }

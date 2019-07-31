@@ -1,8 +1,9 @@
 //
-//  AndroidDeviceGenerator.swift
+//  Device.swift
 //  SwiftyInsta
 //
 //  Created by Mahdi on 10/24/18.
+//  V. 2.0 by Stefano Bertagno on 7/31/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 

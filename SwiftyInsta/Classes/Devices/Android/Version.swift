@@ -3,6 +3,7 @@
 //  SwiftyInsta
 //
 //  Created by Mahdi on 11/18/18.
+//  V. 2.0 by Stefano Bertagno on 7/31/19.
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
@@ -46,7 +47,7 @@ struct Version: Equatable {
                     && string.compare(Version.all[$0.offset+1].number) == .orderedDescending)
         }?.element
         // check for optional.
-        guard let element = optionalElement else { throw CustomErrors.runTimeError("Wrong Android version.") }
+        guard let element = optionalElement else { throw GenericError.custom("Wrong Android version.") }
         self.name = element.name
         self.number = element.number
         self.apiLevel = element.apiLevel

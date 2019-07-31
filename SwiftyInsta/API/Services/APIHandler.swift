@@ -73,7 +73,7 @@ public class APIHandler {
         switch request {
         case .cache(let cache):
             authentication.authenticate(cache: cache) { [weak self] response in
-                guard let handler = self else { return completionHandler(.failure(CustomErrors.runTimeError("`weak` reference was released."))) }
+                guard let handler = self else { return completionHandler(.failure(GenericError.custom("`weak` reference was released."))) }
                 handler.settings.queues.response.async {
                     completionHandler(response.map { ($0, handler) })
                 }
@@ -83,7 +83,7 @@ public class APIHandler {
         #if os(iOS)
         case .webView(let webView):
             webView.authenticate { [weak self] in
-                guard let handler = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+                guard let handler = self else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
                 // check for cookies.
                 switch $0 {
                 case .failure(let error): completionHandler(.failure(error))
@@ -92,14 +92,14 @@ public class APIHandler {
                     let filtered = cookies.filter { $0.name == "ds_user_id" || $0.name == "csrftoken" || $0.name == "sessionid" }
                     guard filtered.count >= 3 else {
                         return handler.settings.queues.response.async {
-                            completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` response.")))
+                            completionHandler(.failure(GenericError.custom("Invalid `SessionCache` response.")))
                         }
                     }
                     // prepare cache.
                     guard let dsUserId = filtered.first(where: { $0.name == "ds_user_id" })?.value,
                         let csrfToken = filtered.first(where: { $0.name == "csrftoken" })?.value,
                         let sessionId = filtered.first(where: { $0.name == "sessionid" })?.value else {
-                            return completionHandler(.failure(CustomErrors.runTimeError("Invalid cookies.")))
+                            return completionHandler(.failure(GenericError.custom("Invalid cookies.")))
                     }
                     let rankToken = dsUserId+"_"+handler.settings.device.phoneGuid.uuidString
                     let cache = SessionCache(storage: SessionStorage(dsUserId: dsUserId,
