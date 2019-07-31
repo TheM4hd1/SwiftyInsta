@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct TimelineModel: Codable, PaginationProtocol, BaseStatusResponseProtocol {
+public struct TimelineModel: Codable, PaginationProtocol, StatusEnforceable {
     public var autoLoadMoreEnabled: Bool?
     public var moreAvailable: Bool?
     public var nextMaxId: String?

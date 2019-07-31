@@ -204,7 +204,7 @@ public struct MediaModel: Codable, MediaModelProtocol {
     }
 }
 
-public struct DeleteMediaResponse: Codable, BaseStatusResponseProtocol {
+public struct DeleteMediaResponse: Codable, StatusEnforceable {
     public var didDelete: Bool?
     public var status: String?
 

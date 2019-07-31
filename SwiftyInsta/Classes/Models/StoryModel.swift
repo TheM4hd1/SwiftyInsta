@@ -32,7 +32,7 @@ public struct TopLiveModel: Codable {
     }
 }
 
-public struct StoryFeedModel: Codable, BaseStatusResponseProtocol {
+public struct StoryFeedModel: Codable, StatusEnforceable {
     public var tray: [TrayModel]?
     public var storyRankingToken: String?
     public var faceFilterNuxVersion: Int?
@@ -50,7 +50,7 @@ public struct StoryFeedModel: Codable, BaseStatusResponseProtocol {
     }
 }
 
-public struct StoryReelFeedModel: Codable, BaseStatusResponseProtocol {
+public struct StoryReelFeedModel: Codable, StatusEnforceable {
     //var broadcast
     public var reel: TrayModel?
     public var status: String?
@@ -61,12 +61,12 @@ public struct StoryReelFeedModel: Codable, BaseStatusResponseProtocol {
     }
 }
 
-public struct StoryReelsFeedModel: Codable, BaseStatusResponseProtocol {
+public struct StoryReelsFeedModel: Codable, StatusEnforceable {
     public var reels: [String: TrayModel]?
     public var status: String?
 }
 
-public struct StoryArchiveFeedModel: Codable, BaseStatusResponseProtocol {
+public struct StoryArchiveFeedModel: Codable, StatusEnforceable {
     public var moreAvailable: Bool?
     public var numResults: Int?
     public var items: [StoryArchiveModel]?
@@ -127,7 +127,7 @@ public struct ConfigureStoryUploadModel: Codable {
     }
 }
 
-public struct StoryViewers: Codable, BaseStatusResponseProtocol, PaginationProtocol {
+public struct StoryViewers: Codable, StatusEnforceable, PaginationProtocol {
     public var users: [UserModel]?
     public var nextMaxId: String?
     //public var updatedMedia: MediaModel?

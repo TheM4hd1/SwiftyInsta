@@ -420,8 +420,8 @@ class AuthenticationHandler: Handler {
                     // decode data.
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let decoded = try decoder.decode(BaseStatusResponseModel.self, from: data)
-                    return .success(decoded.isOk())
+                    let decoded = try decoder.decode(StatusResponse.self, from: data)
+                    return .success(decoded.state == .ok)
                 } catch { return .failure(error) }
             }
             handler.settings.queues.response.async { completionHandler(result) }

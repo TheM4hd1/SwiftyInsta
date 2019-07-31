@@ -68,11 +68,11 @@ public class CommentHandler: Handler {
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
-        requests.decode(BaseStatusResponseModel.self,
+        requests.decode(StatusResponse.self,
                         method: .post,
                         url: Result { try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentId) },
                         body: .parameters(body),
-                        completionHandler: { completionHandler($0.map { $0.isOk() }) })
+                        completionHandler: { completionHandler($0.map { $0.state == .ok }) })
     }
 
     /// Report a comment.
@@ -86,10 +86,10 @@ public class CommentHandler: Handler {
                     "reason": "1",
                     "comment_id": commentId,
                     "media_id": mediaId]
-        requests.decode(BaseStatusResponseModel.self,
+        requests.decode(StatusResponse.self,
                         method: .post,
                         url: Result { try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId) },
                         body: .parameters(body),
-                        completionHandler: { completionHandler($0.map { $0.isOk() }) })
+                        completionHandler: { completionHandler($0.map { $0.state == .ok }) })
     }
 }

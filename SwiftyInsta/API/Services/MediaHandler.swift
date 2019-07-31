@@ -10,6 +10,16 @@
 import CryptoSwift
 import Foundation
 
+/// **Instagram** accepted `Media`s.
+public enum Media: String {
+    /// Image.
+    case image = "1"
+    /// Video.
+    case video = "2"
+    /// Carousel (a.k.a. **album**).
+    case carousel = "8"
+}
+
 public class MediaHandler: Handler {
     /// Get user media.
     public func by(user: UserReference,
@@ -61,11 +71,11 @@ public class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decode(BaseStatusResponseModel.self,
+        requests.decode(StatusResponse.self,
                         method: .post,
                         url: Result { try URLs.getLikeMediaUrl(mediaId: mediaId) },
                         body: .parameters(body),
-                        completionHandler: { completionHandler($0.map { $0.isOk() }) })
+                        completionHandler: { completionHandler($0.map { $0.state == .ok }) })
     }
 
     /// Unlike media.
@@ -78,11 +88,11 @@ public class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decode(BaseStatusResponseModel.self,
+        requests.decode(StatusResponse.self,
                         method: .post,
                         url: Result { try URLs.getUnLikeMediaUrl(mediaId: mediaId) },
                         body: .parameters(body),
-                        completionHandler: { completionHandler($0.map { $0.isOk() }) })
+                        completionHandler: { completionHandler($0.map { $0.state == .ok }) })
     }
 
     /// Upload photo.
@@ -571,7 +581,7 @@ public class MediaHandler: Handler {
 
     /// Delete media.
     public func delete(media mediaId: String,
-                       with type: MediaTypes,
+                       with type: Media,
                        completionHandler: @escaping (Result<DeleteMediaResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))

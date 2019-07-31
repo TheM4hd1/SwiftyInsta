@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct AccountRecovery: Codable, BaseStatusResponseProtocol {
+public struct AccountRecovery: Codable, StatusEnforceable {
     public var title: String?
     public var body: String?
     public var status: String?

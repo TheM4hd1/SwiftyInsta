@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct RecentActivitiesModel: Codable, BaseStatusResponseProtocol, NestedPaginationProtocol {
+public struct RecentActivitiesModel: Codable, StatusEnforceable, NestedPaginationProtocol {
     public typealias Identifier = String
     public static let nextMaxIdPath: KeyPath<RecentActivitiesModel, Identifier?> = \RecentActivitiesModel.aymf?.nextMaxId
     public var aymf: AymfItemModel?
@@ -36,7 +36,7 @@ public struct RecentActivitiesModel: Codable, BaseStatusResponseProtocol, Nested
     }
 }
 
-public struct RecentFollowingsActivitiesModel: Codable, BaseStatusResponseProtocol, PaginationProtocol {
+public struct RecentFollowingsActivitiesModel: Codable, StatusEnforceable, PaginationProtocol {
     public var autoLoadMoreEnabled: Bool?
     public var nextMaxId: Int?
     public var status: String?
