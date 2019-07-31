@@ -10,23 +10,30 @@
 import Foundation
 import Gzip
 
+/// An _abstract_ `class` providing reference for all `*Handler`s.
 class HttpHelper {
+    /// The completion response.
     typealias CompletionResult = Result<(Data?, HTTPURLResponse?), Error>
+    /// The completion handller.
     typealias CompletionHandler = (CompletionResult) -> Void
+    /// The referenced handler.
     weak var handler: APIHandler!
 
+    /// A body for the `URLRequest`.
     enum Body {
         case parameters([String: Any])
         case data(Data)
         case gzip([String: Any])
     }
 
+    /// Init with `handler`.
     init(handler: APIHandler) {
         self.handler = handler
     }
 
+    /// Decoding accessory.
     func decodeAsync<D>(_ type: D.Type,
-                        method: HTTPMethods,
+                        method: HTTPMethod,
                         url: URL,
                         body: Body? = nil,
                         headers: [String: String] = [:],
@@ -34,12 +41,32 @@ class HttpHelper {
                         deliverOnResponseQueue: Bool = true,
                         delay: ClosedRange<Double>? = nil,
                         completionHandler: @escaping (Result<D, Error>) -> Void) where D: Decodable {
+        decodeAsync(type,
+                    method: method,
+                    url: Result { url },
+                    body: body,
+                    headers: headers,
+                    checkingValidStatusCode: checkingValidStatusCode,
+                    deliverOnResponseQueue: deliverOnResponseQueue,
+                    delay: delay,
+                    completionHandler: completionHandler)
+    }
+    /// Decode endpoint response.
+    func decodeAsync<D>(_ type: D.Type,
+                        method: HTTPMethod,
+                        url: Result<URL, Error>,
+                        body: Body? = nil,
+                        headers: [String: String] = [:],
+                        checkingValidStatusCode: Bool = true,
+                        deliverOnResponseQueue: Bool = true,
+                        delay: ClosedRange<Double>? = nil,
+                        completionHandler: @escaping (Result<D, Error>) -> Void) where D: Decodable {
         sendAsync(method: method, url: url, body: body, headers: headers, delay: delay) { [weak self] in
-            guard let handler = self?.handler else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+            guard let handler = self?.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             let result = $0.flatMap { data, response -> Result<D, Error> in
                 do {
                     guard let data = data, !checkingValidStatusCode || response?.statusCode == 200 else {
-                        throw CustomErrors.runTimeError("Invalid response.")
+                        throw GenericError.custom("Invalid response.")
                     }
                     // decode data.
                     let decoder = JSONDecoder()
@@ -52,20 +79,31 @@ class HttpHelper {
         }
     }
 
-    func sendAsync(method: HTTPMethods,
+    /// Accessory fetch async resource.
+    func sendAsync(method: HTTPMethod,
                    url: URL,
                    body: Body? = nil,
                    headers: [String: String] = [:],
                    delay: ClosedRange<Double>? = nil,
                    completionHandler: @escaping CompletionHandler) {
+        sendAsync(method: method, url: Result { url }, body: body, headers: headers, delay: delay, completionHandler: completionHandler)
+    }
+    /// Fetch async resource.
+    func sendAsync(method: HTTPMethod,
+                   url: Result<URL, Error>,
+                   body: Body? = nil,
+                   headers: [String: String] = [:],
+                   delay: ClosedRange<Double>? = nil,
+                   completionHandler: @escaping CompletionHandler) {
+        guard let content = try? url.get() else { return completionHandler(.failure(GenericError.invalidUrl)) }
         // prepare for requesting `url`.
         let delay = (delay ?? handler.settings.delay).flatMap { Double.random(in: $0) } ?? 0
         handler.settings.queues.request.asyncAfter(deadline: .now()+delay) { [weak self] in
             guard let me = self, let handler = me.handler else {
-                return completionHandler(.failure(CustomErrors.runTimeError("`weak` reference was released.")))
+                return completionHandler(.failure(GenericError.custom("`weak` reference was released.")))
             }
             // obtain the request.
-            var request = me.getDefaultRequest(for: url, method: body == nil ? method : .post)
+            var request = me.getDefaultRequest(for: content, method: body == nil ? method : .post)
             self?.addHeaders(to: &request, header: headers)
             switch body {
             case .parameters(let parameters)?: me.addBody(to: &request, body: parameters)
@@ -88,12 +126,13 @@ class HttpHelper {
         }
     }
 
-    func sendSync(method: HTTPMethods,
-                  url: URL,
+    func sendSync(method: HTTPMethod,
+                  url: Result<URL, Error>,
                   body: Body? = nil,
                   headers: [String: String] = [:]) -> CompletionResult {
+        guard let content = try? url.get() else { return .failure(GenericError.invalidUrl) }
         // obtain the request.
-        var request = getDefaultRequest(for: url, method: body == nil ? method : .post)
+        var request = getDefaultRequest(for: content, method: body == nil ? method : .post)
         addHeaders(to: &request, header: headers)
         switch body {
         case .parameters(let parameters)?: addBody(to: &request, body: parameters)
@@ -114,7 +153,7 @@ class HttpHelper {
         return result
     }
 
-    func getDefaultRequest(for url: URL, method: HTTPMethods) -> URLRequest {
+    func getDefaultRequest(for url: URL, method: HTTPMethod) -> URLRequest {
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
         request.httpMethod = method.rawValue
         request.addValue(Headers.acceptLanguageValue, forHTTPHeaderField: Headers.acceptLanguageKey)
@@ -144,14 +183,15 @@ class HttpHelper {
         }
     }
 
-    func setCookies(_ cookiesData: [Data]) {
+    func setCookies(_ cookiesData: [Data]) throws {
         var cookies = [HTTPCookie]()
         for data in cookiesData {
-            if let cookieFromData = HTTPCookie.loadCookie(using: data) {
+            if let cookieFromData = HTTPCookie.load(from: data) {
                 cookies.append(cookieFromData)
             }
         }
-
-        HTTPCookieStorage.shared.setCookies(cookies, for: URLs.getInstagramCookieUrl(), mainDocumentURL: nil)
+        HTTPCookieStorage.shared.setCookies(cookies,
+                                            for: try URLs.getInstagramCookieUrl(),
+                                            mainDocumentURL: nil)
     }
 }

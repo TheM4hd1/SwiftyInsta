@@ -20,7 +20,7 @@ public class MediaHandler: Handler {
             // fetch username.
             self.handler.users.user(user) { [weak self] in
                 guard let handler = self else {
-                    return completionHandler(.failure(CustomErrors.weakReferenceReleased), paginationParameters)
+                    return completionHandler(.failure(GenericError.weakObjectReleased), paginationParameters)
                 }
                 switch $0 {
                 case .success(let user) where user?.pk != nil:
@@ -29,14 +29,14 @@ public class MediaHandler: Handler {
                                updateHandler: updateHandler,
                                completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error), paginationParameters)
-                default: completionHandler(.failure(CustomErrors.runTimeError("No user matching `username`.")), paginationParameters)
+                default: completionHandler(.failure(GenericError.custom("No user matching `username`.")), paginationParameters)
                 }
             }
         case .pk(let pk):
             // load media directly.
             pages.fetch(UserFeedModel.self,
                         with: paginationParameters,
-                        at: { URLs.getUserFeedUrl(userPk: pk, maxId: $0.nextMaxId ?? "") },
+                        at: { try URLs.getUserFeedUrl(userPk: pk, maxId: $0.nextMaxId ?? "") },
                         updateHandler: updateHandler,
                         completionHandler: completionHandler)
         }
@@ -46,14 +46,14 @@ public class MediaHandler: Handler {
     public func info(for mediaId: String, completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
         requests.decodeAsync(MediaModel.self,
                              method: .get,
-                             url: URLs.getMediaUrl(mediaId: mediaId),
+                             url: Result { try URLs.getMediaUrl(mediaId: mediaId) },
                              completionHandler: completionHandler)
     }
 
     /// Like media.
     public func like(media mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -62,7 +62,7 @@ public class MediaHandler: Handler {
 
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: URLs.getLikeMediaUrl(mediaId: mediaId),
+                             url: Result { try URLs.getLikeMediaUrl(mediaId: mediaId) },
                              body: .parameters(body),
                              completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
@@ -70,7 +70,7 @@ public class MediaHandler: Handler {
     /// Unlike media.
     public func unlike(media mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -79,7 +79,7 @@ public class MediaHandler: Handler {
 
         requests.decodeAsync(BaseStatusResponseModel.self,
                              method: .post,
-                             url: URLs.getUnLikeMediaUrl(mediaId: mediaId),
+                             url: Result { try URLs.getUnLikeMediaUrl(mediaId: mediaId) },
                              body: .parameters(body),
                              completionHandler: { completionHandler($0.map { $0.isOk() }) })
     }
@@ -87,7 +87,7 @@ public class MediaHandler: Handler {
     /// Upload photo.
     public func upload(photo: InstaPhoto, completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
         // prepare content.
@@ -121,7 +121,7 @@ public class MediaHandler: Handler {
         let optionalImageData = photo.image.jpegData(compressionQuality: 1)
         #endif
         guard let imageData = optionalImageData else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         content.append(imageData)
         content.append(string: "\n--\(uploadId)--\n\n")
@@ -129,12 +129,12 @@ public class MediaHandler: Handler {
 
         requests.decodeAsync(UploadPhotoResponse.self,
                              method: .post,
-                             url: URLs.getUploadPhotoUrl(),
+                             url: Result { try URLs.getUploadPhotoUrl() },
                              body: .data(content),
                              headers: headers,
                              deliverOnResponseQueue: false) { [weak self] in
                                 guard let me = self, let handler = me.handler else {
-                                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                                    return completionHandler(.failure(GenericError.weakObjectReleased))
                                 }
                                 switch $0 {
                                 case .failure(let error):
@@ -144,7 +144,7 @@ public class MediaHandler: Handler {
                                 case .success(let decoded):
                                     guard decoded.status == "ok" else {
                                         return handler.settings.queues.response.async {
-                                            completionHandler(.failure(CustomErrors.noError))
+                                            completionHandler(.failure(GenericError.unknown))
                                         }
                                     }
                                     me.configure(photo: photo,
@@ -161,15 +161,15 @@ public class MediaHandler: Handler {
                    caption: String,
                    completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
-        let url = URLs.getConfigureMediaUrl()
+        guard let url = try? URLs.getConfigureMediaUrl() else { return completionHandler(.failure(GenericError.invalidUrl)) }
         let device = handler.settings.device
         let version = device.firmwareFingerprint.split(separator: "/")[2].split(separator: ":")[1]
         guard let user = storage.user,
             let androidVersion = try? Version(from: String(version)) else {
-                return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+                return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let configureDevice = ConfigureDevice.init(manufacturer: device.hardwareManufacturer,
                                                    model: device.hardwareModel,
@@ -191,7 +191,7 @@ public class MediaHandler: Handler {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         guard let payload = try? String(data: encoder.encode(configure), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
 
@@ -256,7 +256,7 @@ public class MediaHandler: Handler {
 
      let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
      guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-     httpHelper.sendAsync(method: .post, url: URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
+     httpHelper.sendAsync(method: .post, url: try URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
      if error != nil {
      completion(_uploadIds)
      } else {
@@ -286,7 +286,7 @@ public class MediaHandler: Handler {
      }
 
      fileprivate func configureMediaAlbum(uploadIds: [String], caption: String, completion: @escaping (UploadPhotoAlbumResponse?, Error?) -> ()) {
-     let url = URLs.getConfigureMediaAlbumUrl()
+     let url = try URLs.getConfigureMediaAlbumUrl()
      let _device = HandlerSettings.shared.device!
      let _user = HandlerSettings.shared.user!
      let _request = HandlerSettings.shared.request!
@@ -338,7 +338,7 @@ public class MediaHandler: Handler {
                        caption: String,
                        completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
         // prepare content.
@@ -369,12 +369,12 @@ public class MediaHandler: Handler {
 
         requests.decodeAsync(UploadVideoResponse.self,
                              method: .post,
-                             url: URLs.getUploadVideoUrl(),
+                             url: Result { try URLs.getUploadVideoUrl() },
                              body: .data(content),
                              headers: headers,
                              deliverOnResponseQueue: false) { [weak self] in
                                 guard let me = self, let handler = me.handler else {
-                                    return completionHandler(.failure(CustomErrors.weakReferenceReleased))
+                                    return completionHandler(.failure(GenericError.weakObjectReleased))
                                 }
                                 switch $0 {
                                 case .failure(let error):
@@ -388,7 +388,7 @@ public class MediaHandler: Handler {
                                         let path = url.url?.removingPercentEncoding,
                                         let uploadUrl = URL(string: path) else {
                                             return handler.settings.queues.response.async {
-                                                completionHandler(.failure(CustomErrors.noError))
+                                                completionHandler(.failure(GenericError.unknown))
                                             }
                                     }
 
@@ -425,7 +425,7 @@ public class MediaHandler: Handler {
                                                             case .success(let data, let response):
                                                                 guard data != nil, response?.statusCode == 200 else {
                                                                     return handler.settings.queues.response.async {
-                                                                        completionHandler(.failure(CustomErrors.noError))
+                                                                        completionHandler(.failure(GenericError.unknown))
                                                                     }
                                                                 }
                                                                 me.upload(thumbnail: thumbnail, with: uploadId) {
@@ -437,7 +437,7 @@ public class MediaHandler: Handler {
                                                                     case .success(let hasBeenUploaded):
                                                                         guard hasBeenUploaded else {
                                                                             return handler.settings.queues.response.async {
-                                                                                completionHandler(.failure(CustomErrors.noError))
+                                                                                completionHandler(.failure(GenericError.unknown))
                                                                             }
                                                                         }
                                                                         // configure video.
@@ -457,9 +457,11 @@ public class MediaHandler: Handler {
                 with uploadId: String,
                 completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
-        let url = URLs.getUploadPhotoUrl()
+        guard let url = try? URLs.getUploadPhotoUrl() else {
+            return completionHandler(.failure(GenericError.invalidUrl))
+        }
         var content = Data()
         content.append(string: "--\(uploadId)\n")
         content.append(string: "Content-Type: text/plain; charset=utf-8\n")
@@ -512,9 +514,11 @@ public class MediaHandler: Handler {
                    caption: String,
                    completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
-        let url = URLs.getConfigureMediaUrl()
+        guard let url = try? URLs.getConfigureMediaUrl() else {
+            return completionHandler(.failure(GenericError.invalidUrl))
+        }
         let headers = [Headers.contentTypeKey: Headers.contentTypeApplicationFormValue,
                        "Host": "i.instagram.com"]
 
@@ -542,7 +546,7 @@ public class MediaHandler: Handler {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         guard let payload = try? String(data: encoder.encode(content), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
 
@@ -565,7 +569,7 @@ public class MediaHandler: Handler {
                        with type: MediaTypes,
                        completionHandler: @escaping (Result<DeleteMediaResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -574,7 +578,7 @@ public class MediaHandler: Handler {
 
         requests.decodeAsync(DeleteMediaResponse.self,
                              method: .post,
-                             url: URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: type.rawValue),
+                             url: Result { try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: type.rawValue) },
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
@@ -585,12 +589,12 @@ public class MediaHandler: Handler {
                      tags: UserTags,
                      completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         guard let tagPayload = try? String(data: encoder.encode(tags), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
 
         let content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
@@ -599,7 +603,7 @@ public class MediaHandler: Handler {
                        "caption_text": caption,
                        "usertags": tagPayload]
         guard let payload = try? String(data: encoder.encode(content), encoding: .utf8) else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
 
@@ -611,7 +615,7 @@ public class MediaHandler: Handler {
 
         requests.decodeAsync(MediaModel.self,
                              method: .post,
-                             url: URLs.getEditMediaUrl(mediaId: mediaId),
+                             url: Result { try URLs.getEditMediaUrl(mediaId: mediaId) },
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
@@ -620,7 +624,7 @@ public class MediaHandler: Handler {
     public func likers(ofMedia mediaId: String, completionHandler: @escaping (Result<MediaLikersModel, Error>) -> Void) {
         requests.decodeAsync(MediaLikersModel.self,
                              method: .get,
-                             url: URLs.getMediaLikersUrl(mediaId: mediaId),
+                             url: Result { try URLs.getMediaLikersUrl(mediaId: mediaId) },
                              completionHandler: completionHandler)
     }
 
@@ -628,7 +632,7 @@ public class MediaHandler: Handler {
     public func permalink(ofMedia mediaId: String, completionHandler: @escaping (Result<PermalinkModel, Error>) -> Void) {
         requests.decodeAsync(PermalinkModel.self,
                              method: .get,
-                             url: URLs.getPermalink(mediaId: mediaId),
+                             url: Result { try URLs.getPermalink(mediaId: mediaId) },
                              completionHandler: completionHandler)
     }
 }

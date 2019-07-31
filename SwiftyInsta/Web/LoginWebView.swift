@@ -47,9 +47,9 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         self.completionHandler = completionHandler
         // wipe all cookies and wait to load.
         deleteAllCookies { [weak self] in
-            guard let me = self else { return completionHandler(.failure(CustomErrors.weakReferenceReleased)) }
+            guard let me = self else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             guard let url = URL(string: "https://www.instagram.com/accounts/login/") else {
-                return completionHandler(.failure(CustomErrors.runTimeError("Invalid URL.")))
+                return completionHandler(.failure(GenericError.custom("Invalid URL.")))
             }
             // in some iOS versions, use-agent needs to be different.
             // this use-agent works on iOS 11.4 and iOS 12.0+

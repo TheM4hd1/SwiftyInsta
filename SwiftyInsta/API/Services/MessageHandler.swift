@@ -19,7 +19,7 @@ public class MessageHandler: Handler {
     public func inbox(completionHandler: @escaping (Result<DirectInboxModel, Error>) -> Void) {
         requests.decodeAsync(DirectInboxModel.self,
                              method: .get,
-                             url: URLs.getDirectSendTextMessage(),
+                             url: Result { try URLs.getDirectSendTextMessage() },
                              completionHandler: completionHandler)
     }
 
@@ -36,7 +36,7 @@ public class MessageHandler: Handler {
 
         requests.decodeAsync(DirectSendMessageResponseModel.self,
                              method: .get,
-                             url: URLs.getDirectSendTextMessage(),
+                             url: Result { try URLs.getDirectSendTextMessage() },
                              body: .parameters(body),
                              completionHandler: completionHandler)
     }
@@ -45,7 +45,7 @@ public class MessageHandler: Handler {
     public func `in`(thread: String, completionHandler: @escaping (Result<ThreadModel, Error>) -> Void) {
         requests.decodeAsync(ThreadModel.self,
                              method: .get,
-                             url: URLs.getDirectThread(id: thread),
+                             url: Result { try URLs.getDirectThread(id: thread) },
                              completionHandler: completionHandler)
     }
 
@@ -53,7 +53,7 @@ public class MessageHandler: Handler {
     public func recent(completionHandler: @escaping (Result<RecentRecipientsModel, Error>) -> Void) {
         requests.decodeAsync(RecentRecipientsModel.self,
                              method: .get,
-                             url: URLs.getRecentDirectRecipients(),
+                             url: Result { try URLs.getRecentDirectRecipients() },
                              completionHandler: completionHandler)
     }
 
@@ -61,7 +61,7 @@ public class MessageHandler: Handler {
     public func ranked(completionHandler: @escaping (Result<RankedRecipientsModel, Error>) -> Void) {
         requests.decodeAsync(RankedRecipientsModel.self,
                              method: .get,
-                             url: URLs.getRankedDirectRecipients(),
+                             url: Result { try URLs.getRankedDirectRecipients() },
                              completionHandler: completionHandler)
     }
 }

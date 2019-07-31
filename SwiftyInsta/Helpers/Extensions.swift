@@ -8,74 +8,55 @@
 
 import Foundation
 
+/// `Data` accesories.
 extension Data {
-    mutating func append(string: String) {
-        let data = string.data(
-            using: String.Encoding.utf8,
-            allowLossyConversion: true)
-        append(data!)
+    @discardableResult
+    /// Append `string` to `self`. Returns `true` if successful, `false` otherwise.
+    mutating func append(string: String) -> Bool {
+        guard let data = string.data(using: .utf8, allowLossyConversion: true) else { return false }
+        append(data)
+        return true
     }
 }
 
+/// `Date` accessories.
 extension Date {
+    /// Return `1_000 * timeIntervalSince1970`, rounding to nearest `Int`.
     var millisecondsSince1970: Int {
         return Int((self.timeIntervalSince1970 * 1000.0).rounded())
     }
 
-    init(milliseconds: Int) {
+    /// Create a `Date` from `Int` `milliseconds` since 1970.
+    init(millisecondsSince1970 milliseconds: Int) {
         self = Date(timeIntervalSince1970: TimeInterval(milliseconds) / 1000)
     }
 }
 
-extension Array where Element: HTTPCookie {
-    func toCookieData() -> [Data] {
-        var cookies = [Data]()
-        for cookie in self {
-            if let cookieData = cookie.convertToData() {
-                cookies.append(cookieData)
-            }
-        }
-
-        return cookies
-    }
-
-    func getInstagramCookies() -> [HTTPCookie]? {
-        if let cookies = HTTPCookieStorage.shared.cookies(for: URLs.getInstagramCookieUrl()) {
-            return cookies
-        }
-
-        return [HTTPCookie]()
-    }
+/// A `protocol` for converting `HTTPCookie` to `Data`.
+protocol CookieEncodable {
+    /// Return related `Data`.
+    var cookieData: Data? { get }
 }
-
-extension HTTPCookie {
-    fileprivate func save(cookieProperties: [HTTPCookiePropertyKey: Any]) -> Data {
-        let data = NSKeyedArchiver.archivedData(withRootObject: cookieProperties)
-        return data
-    }
-
-    static fileprivate func loadCookieProperties(from data: Data) -> [HTTPCookiePropertyKey: Any]? {
-        let unarchivedDictionary = NSKeyedUnarchiver.unarchiveObject(with: data)
-        return unarchivedDictionary as? [HTTPCookiePropertyKey: Any]
-    }
-
-    static func loadCookie(using data: Data?) -> HTTPCookie? {
-        guard let data = data, let properties = loadCookieProperties(from: data) else {
-            return nil
-        }
-
-        return HTTPCookie(properties: properties)
-    }
-
-    func convertToData() -> Data? {
-        guard let properties = self.properties else {
-            return nil
-        }
-
-        return save(cookieProperties: properties)
-    }
+/// `Collection`s of `CookieEncodable` should behave similarly to `CookieEncodable`.
+extension Collection where Element: CookieEncodable {
+    /// Return related `[Data]`.
+    var cookieData: [Data] { return compactMap { $0.cookieData }}
 }
-
-extension CharacterSet {
-    static let rfc3986Unreserved = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
+/// `HTTPCookie` accesories.
+extension HTTPCookie: CookieEncodable {
+    /// Save the cookie `properties`.
+    private func saveProperties(_ properties: [HTTPCookiePropertyKey: Any]) -> Data {
+        return NSKeyedArchiver.archivedData(withRootObject: properties)
+    }
+    /// Load the cookie properties from `data`.
+    private static func loadProperties(from data: Data) -> [HTTPCookiePropertyKey: Any]? {
+        return NSKeyedUnarchiver.unarchiveObject(with: data) as? [HTTPCookiePropertyKey: Any]
+    }
+    
+    /// Load `HTTPCookie`.
+    static func load(from data: Data?) -> HTTPCookie? {
+        return data.flatMap(loadProperties).flatMap(HTTPCookie.init)
+    }
+    /// Get `Data` from cookie.
+    var cookieData: Data? { return properties.flatMap(saveProperties) }
 }

@@ -43,10 +43,10 @@ class PaginationHelper: Handler {
                   completionHandler: @escaping PaginationCompletionHandler<M>) where M: Decodable & PaginationProtocol {
         // check for valid pagination.
         guard paginationParamaters.canLoadMore else {
-            return completionHandler(.failure(CustomErrors.runTimeError("Can't load more.")), paginationParamaters)
+            return completionHandler(.failure(GenericError.custom("Can't load more.")), paginationParamaters)
         }
         guard let handler = handler else {
-            return completionHandler(.failure(CustomErrors.weakReferenceReleased), paginationParamaters)
+            return completionHandler(.failure(GenericError.weakObjectReleased), paginationParamaters)
         }
 
         var fetched: [M] = []
@@ -70,7 +70,7 @@ class PaginationHelper: Handler {
                                          deliverOnResponseQueue: false,
                                          delay: delay) { [weak self] in
                 guard let handler = self?.handler else {
-                    return completionHandler(.failure(CustomErrors.weakReferenceReleased), paginationParamaters)
+                    return completionHandler(.failure(GenericError.weakObjectReleased), paginationParamaters)
                 }
                 switch $0 {
                 case .success(let decoded):
