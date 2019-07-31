@@ -108,7 +108,7 @@ public class APIHandler {
                                                                      sessionId: sessionId,
                                                                      rankToken: rankToken),
                                              device: handler.settings.device,
-                                             cookies: cookies.toCookieData())
+                                             cookies: cookies.cookieData)
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             }
