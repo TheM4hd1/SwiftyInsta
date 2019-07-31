@@ -166,14 +166,14 @@ public class MediaHandler: Handler {
         // prepare body.
         let url = URLs.getConfigureMediaUrl()
         let device = handler.settings.device
-        let version = device.frimwareFingerprint.split(separator: "/")[2].split(separator: ":")[1]
+        let version = device.firmwareFingerprint.split(separator: "/")[2].split(separator: ":")[1]
         guard let user = storage.user,
-            let androidVersion = AndroidVersion.fromString(versionString: String(version)) else {
+            let androidVersion = try? Version(from: String(version)) else {
                 return completionHandler(.failure(CustomErrors.runTimeError("Invalid request.")))
         }
         let configureDevice = ConfigureDevice.init(manufacturer: device.hardwareManufacturer,
                                                    model: device.hardwareModel,
-                                                   androidVersion: androidVersion.versionNumber,
+                                                   androidVersion: androidVersion.number,
                                                    androidRelease: androidVersion.apiLevel)
         let configureEdits = ConfigureEdits.init(cropOriginalSize: [photo.width, photo.height], cropCenter: [0.0, -0.0], cropZoom: 1)
         let configureExtras = ConfigureExtras.init(sourceWidth: photo.width, sourceHeight: photo.height)

@@ -24,8 +24,6 @@
 		110454D5221DE7270080F986 /* AccountRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110454D4221DE7270080F986 /* AccountRecovery.swift */; };
 		1104CD092180621400F855BA /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
 		1104CD0B2180627400F855BA /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
-		1104CD0D218062DD00F855BA /* AndroidDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */; };
-		1104CD0F2180639000F855BA /* RequestMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0E2180639000F855BA /* RequestMessageModel.swift */; };
 		1104CD112180644100F855BA /* HttpHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD102180644100F855BA /* HttpHelper.swift */; };
 		110B3F9B21A2CE4D0019523A /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110B3F9A21A2CE4D0019523A /* Extensions.swift */; };
 		110C9D9821989F5800805C68 /* RecentActivitiesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110C9D9721989F5800805C68 /* RecentActivitiesModel.swift */; };
@@ -50,9 +48,7 @@
 		115F1251217FEF6800ED3530 /* ResultInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1250217FEF6800ED3530 /* ResultInfo.swift */; };
 		115F1253217FEFF200ED3530 /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1252217FEFF200ED3530 /* SessionStorage.swift */; };
 		115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1254217FF0E300ED3530 /* UserShortModel.swift */; };
-		115F1257217FF1BF00ED3530 /* AndroidDeviceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */; };
-		115F1259217FF21E00ED3530 /* Devices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1258217FF21E00ED3530 /* Devices.swift */; };
-		1164FB532217FBB100A05EB1 /* CustomUserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */; };
+		115F1257217FF1BF00ED3530 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* Device.swift */; };
 		1165DF9F22DB53B200D87D15 /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
 		116B149F21DEB64B00953A71 /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
 		116C3F3B21A6EBE5003084DD /* MediaTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116C3F3A21A6EBE5003084DD /* MediaTypes.swift */; };
@@ -87,7 +83,7 @@
 		11C487F8219B2A3B00E952A1 /* UserInfoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C487F7219B2A3B00E952A1 /* UserInfoModel.swift */; };
 		11D2AE0A21A02023007D7F1F /* CreateAccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */; };
 		11D3779D22674E340023CF07 /* LoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D3779C22674E340023CF07 /* LoginWebView.swift */; };
-		11DDE51F21A1F94B00754F0F /* AndroidVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */; };
+		11DDE51F21A1F94B00754F0F /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* Version.swift */; };
 		11E148D82209F3300068C8AF /* HttpSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E148D72209F3300068C8AF /* HttpSettings.swift */; };
 		11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E2B134218F13D20095374A /* UserShortListModel.swift */; };
 		11F0CE6B2195CC2400C0F6A4 /* TimelineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */; };
@@ -106,7 +102,6 @@
 		E006E3F722E87EFE002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
 		E006E3F822E87EFE002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E3F922E87EFE002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
-		E006E3FA22E87EFE002DB4BB /* Devices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1258217FF21E00ED3530 /* Devices.swift */; };
 		E006E3FB22E87EFE002DB4BB /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
 		E006E3FC22E87EFE002DB4BB /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
 		E006E3FD22E87EFE002DB4BB /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
@@ -114,7 +109,6 @@
 		E006E3FF22E87EFE002DB4BB /* GenderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DC21AFFB2700769B00 /* GenderTypes.swift */; };
 		E006E40022E87EFE002DB4BB /* VerifyTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1195D5A621B1E6E900C71FE7 /* VerifyTypes.swift */; };
 		E006E40122E87EFE002DB4BB /* TwoFactorEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117AACE822033B48008913FF /* TwoFactorEnums.swift */; };
-		E006E40222E87EFE002DB4BB /* AndroidDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */; };
 		E006E40322E87EFE002DB4BB /* TimelineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */; };
 		E006E40422E87EFE002DB4BB /* BaseStatusResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */; };
 		E006E40522E87EFE002DB4BB /* CaptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B9568721945FD4006661A6 /* CaptionModel.swift */; };
@@ -134,7 +128,6 @@
 		E006E41322E87EFE002DB4BB /* PaginationParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */; };
 		E006E41422E87EFE002DB4BB /* PhoneVerificationSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */; };
 		E006E41522E87EFE002DB4BB /* ProfilePicVersionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */; };
-		E006E41622E87EFE002DB4BB /* RequestMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0E2180639000F855BA /* RequestMessageModel.swift */; };
 		E006E41722E87EFE002DB4BB /* ResultInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1250217FEF6800ED3530 /* ResultInfo.swift */; };
 		E006E41822E87EFE002DB4BB /* SearchUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848607218A23900067FFD6 /* SearchUserModel.swift */; };
 		E006E41922E87EFE002DB4BB /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1252217FEFF200ED3530 /* SessionStorage.swift */; };
@@ -159,7 +152,6 @@
 		E006E42C22E87EFE002DB4BB /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
 		E006E42D22E87EFE002DB4BB /* MediaLikersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */; };
 		E006E42E22E87EFE002DB4BB /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
-		E006E42F22E87EFE002DB4BB /* CustomUserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */; };
 		E006E43022E87EFE002DB4BB /* AccountRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110454D4221DE7270080F986 /* AccountRecovery.swift */; };
 		E006E43122E87EFE002DB4BB /* BlockedUsersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */; };
 		E006E43222E87EFE002DB4BB /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
@@ -182,7 +174,6 @@
 		E006E44422E87EFF002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
 		E006E44522E87EFF002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E44622E87EFF002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
-		E006E44722E87EFF002DB4BB /* Devices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1258217FF21E00ED3530 /* Devices.swift */; };
 		E006E44822E87EFF002DB4BB /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
 		E006E44922E87EFF002DB4BB /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
 		E006E44A22E87EFF002DB4BB /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
@@ -190,7 +181,6 @@
 		E006E44C22E87EFF002DB4BB /* GenderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DC21AFFB2700769B00 /* GenderTypes.swift */; };
 		E006E44D22E87EFF002DB4BB /* VerifyTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1195D5A621B1E6E900C71FE7 /* VerifyTypes.swift */; };
 		E006E44E22E87EFF002DB4BB /* TwoFactorEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117AACE822033B48008913FF /* TwoFactorEnums.swift */; };
-		E006E44F22E87EFF002DB4BB /* AndroidDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */; };
 		E006E45022E87EFF002DB4BB /* TimelineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */; };
 		E006E45122E87EFF002DB4BB /* BaseStatusResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */; };
 		E006E45222E87EFF002DB4BB /* CaptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B9568721945FD4006661A6 /* CaptionModel.swift */; };
@@ -210,7 +200,6 @@
 		E006E46022E87EFF002DB4BB /* PaginationParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */; };
 		E006E46122E87EFF002DB4BB /* PhoneVerificationSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */; };
 		E006E46222E87EFF002DB4BB /* ProfilePicVersionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */; };
-		E006E46322E87EFF002DB4BB /* RequestMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0E2180639000F855BA /* RequestMessageModel.swift */; };
 		E006E46422E87EFF002DB4BB /* ResultInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1250217FEF6800ED3530 /* ResultInfo.swift */; };
 		E006E46522E87EFF002DB4BB /* SearchUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848607218A23900067FFD6 /* SearchUserModel.swift */; };
 		E006E46622E87EFF002DB4BB /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1252217FEFF200ED3530 /* SessionStorage.swift */; };
@@ -235,7 +224,6 @@
 		E006E47922E87EFF002DB4BB /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
 		E006E47A22E87EFF002DB4BB /* MediaLikersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */; };
 		E006E47B22E87EFF002DB4BB /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
-		E006E47C22E87EFF002DB4BB /* CustomUserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */; };
 		E006E47D22E87EFF002DB4BB /* AccountRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110454D4221DE7270080F986 /* AccountRecovery.swift */; };
 		E006E47E22E87EFF002DB4BB /* BlockedUsersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */; };
 		E006E47F22E87EFF002DB4BB /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
@@ -258,7 +246,6 @@
 		E006E49122E87F00002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
 		E006E49222E87F00002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E49322E87F00002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
-		E006E49422E87F00002DB4BB /* Devices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1258217FF21E00ED3530 /* Devices.swift */; };
 		E006E49522E87F00002DB4BB /* CustomErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* CustomErrors.swift */; };
 		E006E49622E87F00002DB4BB /* HTTPMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD082180621400F855BA /* HTTPMethods.swift */; };
 		E006E49722E87F00002DB4BB /* ResponseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1143E0C721809E7700D9FF31 /* ResponseTypes.swift */; };
@@ -266,7 +253,6 @@
 		E006E49922E87F00002DB4BB /* GenderTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115CA6DC21AFFB2700769B00 /* GenderTypes.swift */; };
 		E006E49A22E87F00002DB4BB /* VerifyTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1195D5A621B1E6E900C71FE7 /* VerifyTypes.swift */; };
 		E006E49B22E87F00002DB4BB /* TwoFactorEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117AACE822033B48008913FF /* TwoFactorEnums.swift */; };
-		E006E49C22E87F00002DB4BB /* AndroidDeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */; };
 		E006E49D22E87F00002DB4BB /* TimelineModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */; };
 		E006E49E22E87F00002DB4BB /* BaseStatusResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */; };
 		E006E49F22E87F00002DB4BB /* CaptionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B9568721945FD4006661A6 /* CaptionModel.swift */; };
@@ -286,7 +272,6 @@
 		E006E4AD22E87F00002DB4BB /* PaginationParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */; };
 		E006E4AE22E87F00002DB4BB /* PhoneVerificationSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */; };
 		E006E4AF22E87F00002DB4BB /* ProfilePicVersionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */; };
-		E006E4B022E87F00002DB4BB /* RequestMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0E2180639000F855BA /* RequestMessageModel.swift */; };
 		E006E4B122E87F00002DB4BB /* ResultInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1250217FEF6800ED3530 /* ResultInfo.swift */; };
 		E006E4B222E87F00002DB4BB /* SearchUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848607218A23900067FFD6 /* SearchUserModel.swift */; };
 		E006E4B322E87F00002DB4BB /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1252217FEFF200ED3530 /* SessionStorage.swift */; };
@@ -311,7 +296,6 @@
 		E006E4C622E87F00002DB4BB /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
 		E006E4C722E87F00002DB4BB /* MediaLikersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */; };
 		E006E4C822E87F00002DB4BB /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
-		E006E4C922E87F00002DB4BB /* CustomUserAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */; };
 		E006E4CA22E87F00002DB4BB /* AccountRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110454D4221DE7270080F986 /* AccountRecovery.swift */; };
 		E006E4CB22E87F00002DB4BB /* BlockedUsersModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */; };
 		E006E4CC22E87F00002DB4BB /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
@@ -323,17 +307,29 @@
 		E006E4D222E87F00002DB4BB /* CommonHMAC.h in Headers */ = {isa = PBXBuildFile; fileRef = 112E735D2180E8DF0048A8D7 /* CommonHMAC.h */; };
 		E006E4D322E87F00002DB4BB /* CommonCrypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 1171E4732181217100579B04 /* CommonCrypto.h */; };
 		E006E4D422E87F00002DB4BB /* KeychainSwiftDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */; };
-		E006E4D522E8811E002DB4BB /* AndroidDeviceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */; };
-		E006E4D622E8811E002DB4BB /* AndroidVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */; };
-		E006E4D722E8811E002DB4BB /* AndroidDeviceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */; };
-		E006E4D822E8811E002DB4BB /* AndroidVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */; };
-		E006E4D922E8811F002DB4BB /* AndroidDeviceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */; };
-		E006E4DA22E8811F002DB4BB /* AndroidVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */; };
+		E006E4D522E8811E002DB4BB /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* Device.swift */; };
+		E006E4D622E8811E002DB4BB /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* Version.swift */; };
+		E006E4D722E8811E002DB4BB /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* Device.swift */; };
+		E006E4D822E8811E002DB4BB /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* Version.swift */; };
+		E006E4D922E8811F002DB4BB /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* Device.swift */; };
+		E006E4DA22E8811F002DB4BB /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DDE51E21A1F94B00754F0F /* Version.swift */; };
 		E063077222E253060015AA92 /* PaginationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E063077122E253060015AA92 /* PaginationHelper.swift */; };
+		E076015922F1988500F8961F /* DeviceCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E076015822F1988500F8961F /* DeviceCollection.swift */; };
+		E076015A22F1988500F8961F /* DeviceCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E076015822F1988500F8961F /* DeviceCollection.swift */; };
+		E076015B22F1988500F8961F /* DeviceCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E076015822F1988500F8961F /* DeviceCollection.swift */; };
+		E076015C22F1988500F8961F /* DeviceCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E076015822F1988500F8961F /* DeviceCollection.swift */; };
+		E076015E22F198B900F8961F /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E076015D22F198B900F8961F /* Brand.swift */; };
+		E076015F22F198B900F8961F /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E076015D22F198B900F8961F /* Brand.swift */; };
+		E076016022F198B900F8961F /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E076015D22F198B900F8961F /* Brand.swift */; };
+		E076016122F198B900F8961F /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E076015D22F198B900F8961F /* Brand.swift */; };
 		E07EBC8B22E74DDA0031647F /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
 		E089AFEB22E8A88100AE815D /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; };
 		E089AFEC22E8A88200AE815D /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; };
 		E089AFED22E8A88200AE815D /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; };
+		E08C1DA822F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
+		E08C1DA922F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
+		E08C1DAA22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
+		E08C1DAB22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
 		E0978EDA22E5B1FF00179111 /* KeychainSwiftDistrib.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */; };
 		E0F2355022E9A89A0039F5A6 /* PermalinkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1141BDA022E85AD800D987FF /* PermalinkModel.swift */; };
 		E0F2355122E9A89A0039F5A6 /* PermalinkModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1141BDA022E85AD800D987FF /* PermalinkModel.swift */; };
@@ -352,8 +348,6 @@
 		110454D4221DE7270080F986 /* AccountRecovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountRecovery.swift; sourceTree = "<group>"; };
 		1104CD082180621400F855BA /* HTTPMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPMethods.swift; sourceTree = "<group>"; };
 		1104CD0A2180627400F855BA /* CustomErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomErrors.swift; sourceTree = "<group>"; };
-		1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidDeviceModel.swift; sourceTree = "<group>"; };
-		1104CD0E2180639000F855BA /* RequestMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestMessageModel.swift; sourceTree = "<group>"; };
 		1104CD102180644100F855BA /* HttpHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpHelper.swift; sourceTree = "<group>"; };
 		110B3F9A21A2CE4D0019523A /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		110C9D9721989F5800805C68 /* RecentActivitiesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentActivitiesModel.swift; sourceTree = "<group>"; };
@@ -380,9 +374,7 @@
 		115F1250217FEF6800ED3530 /* ResultInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultInfo.swift; sourceTree = "<group>"; };
 		115F1252217FEFF200ED3530 /* SessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStorage.swift; sourceTree = "<group>"; };
 		115F1254217FF0E300ED3530 /* UserShortModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortModel.swift; sourceTree = "<group>"; };
-		115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidDeviceGenerator.swift; sourceTree = "<group>"; };
-		115F1258217FF21E00ED3530 /* Devices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Devices.swift; sourceTree = "<group>"; };
-		1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUserAgent.swift; sourceTree = "<group>"; };
+		115F1256217FF1BF00ED3530 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestReelsMediaFeed.swift; sourceTree = "<group>"; };
 		116B149E21DEB64B00953A71 /* SessionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCache.swift; sourceTree = "<group>"; };
 		116C3F3A21A6EBE5003084DD /* MediaTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTypes.swift; sourceTree = "<group>"; };
@@ -423,7 +415,7 @@
 		11C487F7219B2A3B00E952A1 /* UserInfoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoModel.swift; sourceTree = "<group>"; };
 		11D2AE0921A02023007D7F1F /* CreateAccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountModel.swift; sourceTree = "<group>"; };
 		11D3779C22674E340023CF07 /* LoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebView.swift; sourceTree = "<group>"; };
-		11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AndroidVersion.swift; sourceTree = "<group>"; };
+		11DDE51E21A1F94B00754F0F /* Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		11E148D72209F3300068C8AF /* HttpSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpSettings.swift; sourceTree = "<group>"; };
 		11E2B134218F13D20095374A /* UserShortListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserShortListModel.swift; sourceTree = "<group>"; };
 		11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineModel.swift; sourceTree = "<group>"; };
@@ -445,7 +437,10 @@
 		E006E3CA22E87E2C002DB4BB /* SwiftyInsta_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E006E3E622E87E42002DB4BB /* SwiftyInsta_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E063077122E253060015AA92 /* PaginationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationHelper.swift; sourceTree = "<group>"; };
+		E076015822F1988500F8961F /* DeviceCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DeviceCollection.swift; path = DeviceCollection.swift; sourceTree = "<group>"; };
+		E076015D22F198B900F8961F /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Brand.swift; path = Brand.swift; sourceTree = "<group>"; };
 		E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationHandler.swift; sourceTree = "<group>"; };
+		E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ParsedResponse.swift; path = ParsedResponse.swift; sourceTree = "<group>"; };
 		E0978ED922E5B1FF00179111 /* KeychainSwiftDistrib.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainSwiftDistrib.swift; sourceTree = "<group>"; };
 		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
 		E9497D8DD2D1B4C4F52B1DC5 /* Pods-SwiftyInsta.iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -572,7 +567,7 @@
 		115F1239217FE83B00ED3530 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				1104CD0C218062DD00F855BA /* AndroidDeviceModel.swift */,
+				E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */,
 				11F0CE6A2195CC2400C0F6A4 /* TimelineModel.swift */,
 				112022972188AACF00CA58BA /* BaseStatusResponseModel.swift */,
 				11B9568721945FD4006661A6 /* CaptionModel.swift */,
@@ -592,7 +587,6 @@
 				11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */,
 				114B848321871E9B00F84161 /* PhoneVerificationSettingsModel.swift */,
 				11905DFE2191C98600FF297A /* ProfilePicVersionsModel.swift */,
-				1104CD0E2180639000F855BA /* RequestMessageModel.swift */,
 				115F1250217FEF6800ED3530 /* ResultInfo.swift */,
 				11848607218A23900067FFD6 /* SearchUserModel.swift */,
 				115F1252217FEFF200ED3530 /* SessionStorage.swift */,
@@ -617,7 +611,6 @@
 				116B149E21DEB64B00953A71 /* SessionCache.swift */,
 				1177ACA621F34BE1008A0C4C /* MediaLikersModel.swift */,
 				E8314D5D2210652400D13BEA /* UserTags.swift */,
-				1164FB522217FBB100A05EB1 /* CustomUserAgent.swift */,
 				110454D4221DE7270080F986 /* AccountRecovery.swift */,
 				11F57CC3229D2E78001A1C0A /* BlockedUsersModel.swift */,
 				1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */,
@@ -638,7 +631,6 @@
 		115F1247217FEA9D00ED3530 /* Enums */ = {
 			isa = PBXGroup;
 			children = (
-				115F1258217FF21E00ED3530 /* Devices.swift */,
 				1104CD0A2180627400F855BA /* CustomErrors.swift */,
 				1104CD082180621400F855BA /* HTTPMethods.swift */,
 				1143E0C721809E7700D9FF31 /* ResponseTypes.swift */,
@@ -663,24 +655,18 @@
 		115F124B217FEBE800ED3530 /* Android */ = {
 			isa = PBXGroup;
 			children = (
-				115F1256217FF1BF00ED3530 /* AndroidDeviceGenerator.swift */,
-				11DDE51E21A1F94B00754F0F /* AndroidVersion.swift */,
+				E076015822F1988500F8961F /* DeviceCollection.swift */,
+				E076015D22F198B900F8961F /* Brand.swift */,
+				115F1256217FF1BF00ED3530 /* Device.swift */,
+				11DDE51E21A1F94B00754F0F /* Version.swift */,
 			);
 			path = Android;
-			sourceTree = "<group>";
-		};
-		115F124C217FEBF000ED3530 /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = iOS;
 			sourceTree = "<group>";
 		};
 		115F124D217FEBF900ED3530 /* Devices */ = {
 			isa = PBXGroup;
 			children = (
 				115F124B217FEBE800ED3530 /* Android */,
-				115F124C217FEBF000ED3530 /* iOS */,
 			);
 			path = Devices;
 			sourceTree = "<group>";
@@ -1036,7 +1022,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1104CD0D218062DD00F855BA /* AndroidDeviceModel.swift in Sources */,
 				E0F49BA422E4F0D3004C3E7F /* MessageHandler.swift in Sources */,
 				114B848421871E9B00F84161 /* PhoneVerificationSettingsModel.swift in Sources */,
 				1141BDA122E85AD800D987FF /* PermalinkModel.swift in Sources */,
@@ -1046,6 +1031,7 @@
 				11C487F8219B2A3B00E952A1 /* UserInfoModel.swift in Sources */,
 				E0978EDA22E5B1FF00179111 /* KeychainSwiftDistrib.swift in Sources */,
 				11F57CC4229D2E78001A1C0A /* BlockedUsersModel.swift in Sources */,
+				E076015922F1988500F8961F /* DeviceCollection.swift in Sources */,
 				11905DFD2191C2C100FF297A /* CurrentUserModel.swift in Sources */,
 				112022982188AACF00CA58BA /* BaseStatusResponseModel.swift in Sources */,
 				117AACE922033B48008913FF /* TwoFactorEnums.swift in Sources */,
@@ -1073,7 +1059,7 @@
 				11AE440321A99CD400BD9EFB /* CommentHandler.swift in Sources */,
 				11905DFF2191C98600FF297A /* ProfilePicVersionsModel.swift in Sources */,
 				115F1246217FEA5200ED3530 /* URLs.swift in Sources */,
-				115F1257217FF1BF00ED3530 /* AndroidDeviceGenerator.swift in Sources */,
+				115F1257217FF1BF00ED3530 /* Device.swift in Sources */,
 				115F1251217FEF6800ED3530 /* ResultInfo.swift in Sources */,
 				11D3779D22674E340023CF07 /* LoginWebView.swift in Sources */,
 				E0F49BA322E4D864004C3E7F /* MediaHandler.swift in Sources */,
@@ -1084,14 +1070,11 @@
 				11C439D4219A429B00467381 /* ProfilePrivacyResponseModel.swift in Sources */,
 				1177ACA721F34BE1008A0C4C /* MediaLikersModel.swift in Sources */,
 				115F1255217FF0E300ED3530 /* UserShortModel.swift in Sources */,
-				1164FB532217FBB100A05EB1 /* CustomUserAgent.swift in Sources */,
-				11DDE51F21A1F94B00754F0F /* AndroidVersion.swift in Sources */,
+				11DDE51F21A1F94B00754F0F /* Version.swift in Sources */,
 				1195D5A721B1E6E900C71FE7 /* VerifyTypes.swift in Sources */,
 				11B9567C219454B9006661A6 /* ExploreItemInfoModel.swift in Sources */,
-				115F1259217FF21E00ED3530 /* Devices.swift in Sources */,
 				11B9567A21945494006661A6 /* MediaModel.swift in Sources */,
 				E0F49BA222E4A53D004C3E7F /* UserHandler.swift in Sources */,
-				1104CD0F2180639000F855BA /* RequestMessageModel.swift in Sources */,
 				11848602218A1DDB0067FFD6 /* UserModel.swift in Sources */,
 				11B95674219453B7006661A6 /* ExploreFeedItemModel.swift in Sources */,
 				E07EBC8B22E74DDA0031647F /* AuthenticationHandler.swift in Sources */,
@@ -1104,6 +1087,7 @@
 				1171E472218118A400579B04 /* DelayModel.swift in Sources */,
 				11B956782194542D006661A6 /* StoryModel.swift in Sources */,
 				11B9568821945FD4006661A6 /* CaptionModel.swift in Sources */,
+				E08C1DA822F0B39A003A8BA8 /* ParsedResponse.swift in Sources */,
 				11848608218A23900067FFD6 /* SearchUserModel.swift in Sources */,
 				11848604218A1F460067FFD6 /* FriendshipStatusModel.swift in Sources */,
 				1171E47821812C9400579B04 /* LoginResultModel.swift in Sources */,
@@ -1112,6 +1096,7 @@
 				E063077222E253060015AA92 /* PaginationHelper.swift in Sources */,
 				1104CD092180621400F855BA /* HTTPMethods.swift in Sources */,
 				11E2B135218F13D20095374A /* UserShortListModel.swift in Sources */,
+				E076015E22F198B900F8961F /* Brand.swift in Sources */,
 				11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */,
 				115CA6DD21AFFB2700769B00 /* GenderTypes.swift in Sources */,
 			);
@@ -1147,6 +1132,7 @@
 				E006E43222E87EFE002DB4BB /* RequestReelsMediaFeed.swift in Sources */,
 				E006E40E22E87EFE002DB4BB /* LoginBaseResponseModel.swift in Sources */,
 				E006E3F022E87EFE002DB4BB /* CommentHandler.swift in Sources */,
+				E076015A22F1988500F8961F /* DeviceCollection.swift in Sources */,
 				E006E3F822E87EFE002DB4BB /* URLs.swift in Sources */,
 				E006E42822E87EFE002DB4BB /* CommentModel.swift in Sources */,
 				E006E3FE22E87EFE002DB4BB /* MediaTypes.swift in Sources */,
@@ -1163,10 +1149,8 @@
 				E006E3F222E87EFE002DB4BB /* MediaHandler.swift in Sources */,
 				E006E41B22E87EFE002DB4BB /* TrayModel.swift in Sources */,
 				E006E3FB22E87EFE002DB4BB /* CustomErrors.swift in Sources */,
-				E006E42F22E87EFE002DB4BB /* CustomUserAgent.swift in Sources */,
 				E006E40922E87EFE002DB4BB /* ExploreFeedItemModel.swift in Sources */,
 				E006E41122E87EFE002DB4BB /* MediaModel.swift in Sources */,
-				E006E3FA22E87EFE002DB4BB /* Devices.swift in Sources */,
 				E006E40022E87EFE002DB4BB /* VerifyTypes.swift in Sources */,
 				E006E3FF22E87EFE002DB4BB /* GenderTypes.swift in Sources */,
 				E006E41A22E87EFE002DB4BB /* StoryModel.swift in Sources */,
@@ -1177,9 +1161,8 @@
 				E006E42D22E87EFE002DB4BB /* MediaLikersModel.swift in Sources */,
 				E006E42122E87EFE002DB4BB /* UserFeedModel.swift in Sources */,
 				E006E42622E87EFE002DB4BB /* ProfilePrivacyResponseModel.swift in Sources */,
-				E006E4D522E8811E002DB4BB /* AndroidDeviceGenerator.swift in Sources */,
+				E006E4D522E8811E002DB4BB /* Device.swift in Sources */,
 				E006E43322E87EFE002DB4BB /* HttpHelper.swift in Sources */,
-				E006E40222E87EFE002DB4BB /* AndroidDeviceModel.swift in Sources */,
 				E006E3F922E87EFE002DB4BB /* Headers.swift in Sources */,
 				E006E41F22E87EFE002DB4BB /* UserShortModel.swift in Sources */,
 				E006E42A22E87EFE002DB4BB /* CreateAccountModel.swift in Sources */,
@@ -1188,16 +1171,17 @@
 				E006E42522E87EFE002DB4BB /* RecentRecipientsModel.swift in Sources */,
 				E006E40C22E87EFE002DB4BB /* FriendshipStatusModel.swift in Sources */,
 				E006E42B22E87EFE002DB4BB /* EditProfileModel.swift in Sources */,
-				E006E4D622E8811E002DB4BB /* AndroidVersion.swift in Sources */,
+				E006E4D622E8811E002DB4BB /* Version.swift in Sources */,
 				E006E40A22E87EFE002DB4BB /* ExploreFeedModel.swift in Sources */,
 				E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */,
 				E006E40822E87EFE002DB4BB /* DelayModel.swift in Sources */,
 				E006E43022E87EFE002DB4BB /* AccountRecovery.swift in Sources */,
 				E006E3F422E87EFE002DB4BB /* ProfileHandler.swift in Sources */,
 				E006E40622E87EFE002DB4BB /* ChallengeModel.swift in Sources */,
+				E076015F22F198B900F8961F /* Brand.swift in Sources */,
 				E006E41522E87EFE002DB4BB /* ProfilePicVersionsModel.swift in Sources */,
 				E006E42422E87EFE002DB4BB /* DirectInboxModel.swift in Sources */,
-				E006E41622E87EFE002DB4BB /* RequestMessageModel.swift in Sources */,
+				E08C1DA922F0B39A003A8BA8 /* ParsedResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1231,6 +1215,7 @@
 				E006E47F22E87EFF002DB4BB /* RequestReelsMediaFeed.swift in Sources */,
 				E006E45B22E87EFF002DB4BB /* LoginBaseResponseModel.swift in Sources */,
 				E006E43D22E87EFF002DB4BB /* CommentHandler.swift in Sources */,
+				E076015B22F1988500F8961F /* DeviceCollection.swift in Sources */,
 				E006E44522E87EFF002DB4BB /* URLs.swift in Sources */,
 				E006E47522E87EFF002DB4BB /* CommentModel.swift in Sources */,
 				E006E44B22E87EFF002DB4BB /* MediaTypes.swift in Sources */,
@@ -1247,10 +1232,8 @@
 				E006E43F22E87EFF002DB4BB /* MediaHandler.swift in Sources */,
 				E006E46822E87EFF002DB4BB /* TrayModel.swift in Sources */,
 				E006E44822E87EFF002DB4BB /* CustomErrors.swift in Sources */,
-				E006E47C22E87EFF002DB4BB /* CustomUserAgent.swift in Sources */,
 				E006E45622E87EFF002DB4BB /* ExploreFeedItemModel.swift in Sources */,
 				E006E45E22E87EFF002DB4BB /* MediaModel.swift in Sources */,
-				E006E44722E87EFF002DB4BB /* Devices.swift in Sources */,
 				E006E44D22E87EFF002DB4BB /* VerifyTypes.swift in Sources */,
 				E006E44C22E87EFF002DB4BB /* GenderTypes.swift in Sources */,
 				E006E46722E87EFF002DB4BB /* StoryModel.swift in Sources */,
@@ -1261,9 +1244,8 @@
 				E006E47A22E87EFF002DB4BB /* MediaLikersModel.swift in Sources */,
 				E006E46E22E87EFF002DB4BB /* UserFeedModel.swift in Sources */,
 				E006E47322E87EFF002DB4BB /* ProfilePrivacyResponseModel.swift in Sources */,
-				E006E4D722E8811E002DB4BB /* AndroidDeviceGenerator.swift in Sources */,
+				E006E4D722E8811E002DB4BB /* Device.swift in Sources */,
 				E006E48022E87EFF002DB4BB /* HttpHelper.swift in Sources */,
-				E006E44F22E87EFF002DB4BB /* AndroidDeviceModel.swift in Sources */,
 				E006E44622E87EFF002DB4BB /* Headers.swift in Sources */,
 				E006E46C22E87EFF002DB4BB /* UserShortModel.swift in Sources */,
 				E006E47722E87EFF002DB4BB /* CreateAccountModel.swift in Sources */,
@@ -1272,16 +1254,17 @@
 				E006E47222E87EFF002DB4BB /* RecentRecipientsModel.swift in Sources */,
 				E006E45922E87EFF002DB4BB /* FriendshipStatusModel.swift in Sources */,
 				E006E47822E87EFF002DB4BB /* EditProfileModel.swift in Sources */,
-				E006E4D822E8811E002DB4BB /* AndroidVersion.swift in Sources */,
+				E006E4D822E8811E002DB4BB /* Version.swift in Sources */,
 				E006E45722E87EFF002DB4BB /* ExploreFeedModel.swift in Sources */,
 				E006E43C22E87EFF002DB4BB /* APIHandler.swift in Sources */,
 				E006E45522E87EFF002DB4BB /* DelayModel.swift in Sources */,
 				E006E47D22E87EFF002DB4BB /* AccountRecovery.swift in Sources */,
 				E006E44122E87EFF002DB4BB /* ProfileHandler.swift in Sources */,
 				E006E45322E87EFF002DB4BB /* ChallengeModel.swift in Sources */,
+				E076016022F198B900F8961F /* Brand.swift in Sources */,
 				E006E46222E87EFF002DB4BB /* ProfilePicVersionsModel.swift in Sources */,
 				E006E47122E87EFF002DB4BB /* DirectInboxModel.swift in Sources */,
-				E006E46322E87EFF002DB4BB /* RequestMessageModel.swift in Sources */,
+				E08C1DAA22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1315,6 +1298,7 @@
 				E006E4CC22E87F00002DB4BB /* RequestReelsMediaFeed.swift in Sources */,
 				E006E4A822E87F00002DB4BB /* LoginBaseResponseModel.swift in Sources */,
 				E006E48A22E87F00002DB4BB /* CommentHandler.swift in Sources */,
+				E076015C22F1988500F8961F /* DeviceCollection.swift in Sources */,
 				E006E49222E87F00002DB4BB /* URLs.swift in Sources */,
 				E006E4C222E87F00002DB4BB /* CommentModel.swift in Sources */,
 				E006E49822E87F00002DB4BB /* MediaTypes.swift in Sources */,
@@ -1331,10 +1315,8 @@
 				E006E48C22E87F00002DB4BB /* MediaHandler.swift in Sources */,
 				E006E4B522E87F00002DB4BB /* TrayModel.swift in Sources */,
 				E006E49522E87F00002DB4BB /* CustomErrors.swift in Sources */,
-				E006E4C922E87F00002DB4BB /* CustomUserAgent.swift in Sources */,
 				E006E4A322E87F00002DB4BB /* ExploreFeedItemModel.swift in Sources */,
 				E006E4AB22E87F00002DB4BB /* MediaModel.swift in Sources */,
-				E006E49422E87F00002DB4BB /* Devices.swift in Sources */,
 				E006E49A22E87F00002DB4BB /* VerifyTypes.swift in Sources */,
 				E006E49922E87F00002DB4BB /* GenderTypes.swift in Sources */,
 				E006E4B422E87F00002DB4BB /* StoryModel.swift in Sources */,
@@ -1345,9 +1327,8 @@
 				E006E4C722E87F00002DB4BB /* MediaLikersModel.swift in Sources */,
 				E006E4BB22E87F00002DB4BB /* UserFeedModel.swift in Sources */,
 				E006E4C022E87F00002DB4BB /* ProfilePrivacyResponseModel.swift in Sources */,
-				E006E4D922E8811F002DB4BB /* AndroidDeviceGenerator.swift in Sources */,
+				E006E4D922E8811F002DB4BB /* Device.swift in Sources */,
 				E006E4CD22E87F00002DB4BB /* HttpHelper.swift in Sources */,
-				E006E49C22E87F00002DB4BB /* AndroidDeviceModel.swift in Sources */,
 				E006E49322E87F00002DB4BB /* Headers.swift in Sources */,
 				E006E4B922E87F00002DB4BB /* UserShortModel.swift in Sources */,
 				E006E4C422E87F00002DB4BB /* CreateAccountModel.swift in Sources */,
@@ -1356,16 +1337,17 @@
 				E006E4BF22E87F00002DB4BB /* RecentRecipientsModel.swift in Sources */,
 				E006E4A622E87F00002DB4BB /* FriendshipStatusModel.swift in Sources */,
 				E006E4C522E87F00002DB4BB /* EditProfileModel.swift in Sources */,
-				E006E4DA22E8811F002DB4BB /* AndroidVersion.swift in Sources */,
+				E006E4DA22E8811F002DB4BB /* Version.swift in Sources */,
 				E006E4A422E87F00002DB4BB /* ExploreFeedModel.swift in Sources */,
 				E006E48922E87F00002DB4BB /* APIHandler.swift in Sources */,
 				E006E4A222E87F00002DB4BB /* DelayModel.swift in Sources */,
 				E006E4CA22E87F00002DB4BB /* AccountRecovery.swift in Sources */,
 				E006E48E22E87F00002DB4BB /* ProfileHandler.swift in Sources */,
 				E006E4A022E87F00002DB4BB /* ChallengeModel.swift in Sources */,
+				E076016122F198B900F8961F /* Brand.swift in Sources */,
 				E006E4AF22E87F00002DB4BB /* ProfilePicVersionsModel.swift in Sources */,
 				E006E4BE22E87F00002DB4BB /* DirectInboxModel.swift in Sources */,
-				E006E4B022E87F00002DB4BB /* RequestMessageModel.swift in Sources */,
+				E08C1DAB22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
