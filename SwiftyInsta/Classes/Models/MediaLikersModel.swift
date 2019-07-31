@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct MediaLikersModel: Codable, BaseStatusResponseProtocol {
+public struct MediaLikersModel: Codable, StatusEnforceable {
     public var users: [UserShortModel]?
     public var userCount: Int?
     public var status: String?

@@ -67,7 +67,7 @@ public struct CurrentUser: Codable, UserShortProtocol {
     }
 }
 
-public struct CurrentUserModel: Codable, BaseStatusResponseProtocol {
+public struct CurrentUserModel: Codable, StatusEnforceable {
     public var user: CurrentUser?
     public var status: String?
 

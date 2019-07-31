@@ -59,13 +59,13 @@ public struct InstaVideo: UploadMediaProtocol {
     }
 }
 
-public struct UploadPhotoResponse: Codable, BaseStatusResponseProtocol {
+public struct UploadPhotoResponse: Codable, StatusEnforceable {
     var media: MediaModel?
     var uploadId: String?
     var status: String?
 }
 
-public struct UploadPhotoAlbumResponse: Codable, BaseStatusResponseProtocol {
+public struct UploadPhotoAlbumResponse: Codable, StatusEnforceable {
     var clientSidecarId: String?
     var media: MediaModel?
     var status: String?
@@ -134,7 +134,7 @@ struct ConfigureChildren: Codable {
     let uploadId: String
 }
 
-struct UploadVideoResponse: Codable, BaseStatusResponseProtocol {
+struct UploadVideoResponse: Codable, StatusEnforceable {
     let videoUploadUrls: [VideoUploadUrls]?
     let uploadId: String?
     var status: String?

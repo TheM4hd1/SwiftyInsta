@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ProfilePrivacyResponseModel: Codable, BaseStatusResponseProtocol {
+public struct ProfilePrivacyResponseModel: Codable, StatusEnforceable {
     public var user: UserShortModel?
     public var status: String?
 

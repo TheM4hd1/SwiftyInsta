@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct UserShortListModel: Codable, BaseStatusResponseProtocol, PaginationProtocol {
+public struct UserShortListModel: Codable, StatusEnforceable, PaginationProtocol {
     public var status: String?
     public var nextMaxId: String? = ""
     public var bigList: Bool?
@@ -24,7 +24,7 @@ public struct UserShortListModel: Codable, BaseStatusResponseProtocol, Paginatio
     }
 }
 
-public struct PendingFriendshipsModel: Codable, BaseStatusResponseProtocol {
+public struct PendingFriendshipsModel: Codable, StatusEnforceable {
     public var status: String?
     public var nextMaxId: String? = ""
     public var bigList: Bool?

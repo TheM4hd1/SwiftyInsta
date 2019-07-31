@@ -40,7 +40,7 @@ public struct FriendshipStatusModel: Codable {
     }
 }
 
-public struct FollowResponseModel: Codable, BaseStatusResponseProtocol {
+public struct FollowResponseModel: Codable, StatusEnforceable {
     public var friendshipStatus: FriendshipStatusModel?
     public var status: String?
 

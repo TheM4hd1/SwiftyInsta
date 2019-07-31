@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ExploreFeedModel: Codable, PaginationProtocol, BaseStatusResponseProtocol {
+public struct ExploreFeedModel: Codable, PaginationProtocol, StatusEnforceable {
     public var rankToken: String?
     public var autoLoadMoreEnabled: Bool?
     public var moreAvailable: Bool?

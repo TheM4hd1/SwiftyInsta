@@ -194,7 +194,7 @@ public class StoryHandler: Handler {
     public func mark(stories: [TrayItems],
                      with sourceId: String?,
                      asSeen seen: Bool,
-                     completionHandler: @escaping (Result<BaseStatusResponseModel, Error>) -> Void) {
+                     completionHandler: @escaping (Result<StatusResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -246,7 +246,7 @@ public class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(BaseStatusResponseModel.self,
+            requests.decode(StatusResponse.self,
                             method: .post,
                             url: Result { try URLs.markStoriesAsSeenUrl() },
                             body: .parameters(body),

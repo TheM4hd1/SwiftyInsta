@@ -10,6 +10,16 @@
 import CryptoSwift
 import Foundation
 
+/// **Instagram** accepted `Gender`s.
+public enum Gender: String {
+    /// Male.
+    case male = "1"
+    /// Female.
+    case female = "2"
+    /// Unknown.
+    case unknown = "3"
+}
+
 public class ProfileHandler: Handler {
     /// Set the account to public.
     public func markAsPublic(completionHandler: @escaping (Result<ProfilePrivacyResponseModel, Error>) -> Void) {
@@ -68,7 +78,7 @@ public class ProfileHandler: Handler {
     /// Update password.
     public func update(password: String,
                        oldPassword: String,
-                       completionHandler: @escaping (Result<BaseStatusResponseModel, Error>) -> Void) {
+                       completionHandler: @escaping (Result<StatusResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -79,7 +89,7 @@ public class ProfileHandler: Handler {
                        "old_password": oldPassword,
                        "new_password1": password,
                        "new_password2": password]
-        requests.decode(BaseStatusResponseModel.self,
+        requests.decode(StatusResponse.self,
                         method: .post,
                         url: Result { try URLs.getChangePasswordUrl() },
                         body: .parameters(content),
@@ -93,7 +103,7 @@ public class ProfileHandler: Handler {
                      url: String?,
                      email: String?,
                      phone: String?,
-                     gender: GenderTypes,
+                     gender: Gender,
                      completionHandler: @escaping (Result<EditProfileModel, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
@@ -151,7 +161,7 @@ public class ProfileHandler: Handler {
     }
 
     /// Edit biography.
-    public func edit(biography: String, completionHandler: @escaping (Result<BaseStatusResponseModel, Error>) -> Void) {
+    public func edit(biography: String, completionHandler: @escaping (Result<StatusResponse, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -160,7 +170,7 @@ public class ProfileHandler: Handler {
                        "_uuid": handler!.settings.device.deviceGuid.uuidString,
                        "raw_text": biography]
 
-        requests.decode(BaseStatusResponseModel.self,
+        requests.decode(StatusResponse.self,
                         method: .post,
                         url: Result { try URLs.getEditBiographyUrl() },
                         body: .parameters(content),

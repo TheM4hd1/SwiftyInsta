@@ -690,11 +690,11 @@ public class UserHandler: Handler {
                         "is_spam": "true",
                         "reason_id": "1"]
 
-            requests.decode(BaseStatusResponseModel.self,
+            requests.decode(StatusResponse.self,
                             method: .post,
                             url: Result { try URLs.reportUserUrl(userPk: pk) },
                             body: .parameters(body),
-                            completionHandler: { completionHandler($0.map { $0.isOk() }) })
+                            completionHandler: { completionHandler($0.map { $0.state == .ok }) })
         }
     }
 }
