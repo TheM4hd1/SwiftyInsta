@@ -13,14 +13,7 @@ public struct SessionCache: Codable {
     /// The default storage.
     public var storage: SessionStorage?
     /// The device in use.
-    public var device: AndroidDeviceModel
-
-    /// use this function from Siwa framework.
-    public static func from(cookies: [Data]) -> SessionCache {
-        return .init(storage: nil,
-                     device: AndroidDeviceGenerator.getRandomAndroidDevice(),
-                     cookies: cookies)
-    }
-
+    public var device: Device
+    /// The `HTTPCookie` stored as `Data`.
     let cookies: [Data]
 }

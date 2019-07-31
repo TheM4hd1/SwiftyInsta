@@ -51,7 +51,7 @@ public class FeedHandler: Handler {
             "timezone_offset": Headers.timeZoneOffsetValue,
             "_csrftoken": storage.csrfToken,
             "client_session_id": storage.sessionId,
-            "device_id": handler.settings.device.deviceId,
+            "device_id": handler.settings.device.id,
             "_uuid": storage.dsUserId,
             "is_charging": 0,
             "will_sound_on": 1,
@@ -63,7 +63,7 @@ public class FeedHandler: Handler {
             "latest_story_pk": ""
         ]
         let headers = ["X-Ads-Opt-Out": "0",
-                       "X-Google-AD-ID": handler.settings.device.googleAdId?.uuidString ?? UUID().uuidString,
+                       "X-Google-AD-ID": handler.settings.device.googleAdId.uuidString,
                        "X-DEVICE-ID": handler.settings.device.deviceGuid.uuidString,
                        "X-FB": "1"]
 
