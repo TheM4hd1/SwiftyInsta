@@ -36,7 +36,7 @@ class PaginationHelper: Handler {
     func fetch<M>(_ result: M.Type,
                   with paginationParamaters: PaginationParameters,
                   at url: @escaping (PaginationParameters) throws -> URL,
-                  body: ((PaginationParameters) -> HttpHelper.Body?)? = nil,
+                  body: ((PaginationParameters) -> HTTPHelper.Body?)? = nil,
                   headers: ((PaginationParameters) -> [String: String])? = nil,
                   delay: ClosedRange<Double>? = nil,
                   updateHandler: PaginationUpdateHandler<M>?,
@@ -62,40 +62,40 @@ class PaginationHelper: Handler {
                 }
             }
             // fetch values.
-            handler.requests.decodeAsync(M.self,
-                                         method: .get,
-                                         url: endpoint,
-                                         body: body?(paginationParamaters),
-                                         headers: headers?(paginationParamaters) ?? [:],
-                                         deliverOnResponseQueue: false,
-                                         delay: delay) { [weak self] in
-                guard let handler = self?.handler else {
-                    return completionHandler(.failure(GenericError.weakObjectReleased), paginationParamaters)
-                }
-                switch $0 {
-                case .success(let decoded):
-                    // increase pagination parameters.
-                    paginationParamaters.loadedPages += 1
-                    fetched.append(decoded)
-                    // notify.
-                    handler.settings.queues.response.async {
-                        updateHandler?(decoded, paginationParamaters, fetched)
-                    }
-                    // load more.
-                    guard paginationParamaters.canLoadMore else {
-                        return handler.settings.queues.response.async {
-                            completionHandler(.success(fetched), paginationParamaters)
-                        }
-                    }
-                    paginationParamaters.nextMaxId = decoded.nextMaxId.flatMap { String($0) }
-                    guard !(paginationParamaters.nextMaxId ?? "").isEmpty else {
-                        return handler.settings.queues.response.async {
-                         completionHandler(.success(fetched), paginationParamaters)
-                        }
-                    }
-                    getPage()
-                case .failure(let error): completionHandler(.failure(error), paginationParamaters)
-                }
+            handler.requests.decode(M.self,
+                                    method: .get,
+                                    url: endpoint,
+                                    body: body?(paginationParamaters),
+                                    headers: headers?(paginationParamaters) ?? [:],
+                                    deliverOnResponseQueue: false,
+                                    delay: delay) { [weak self] in
+                                        guard let handler = self?.handler else {
+                                            return completionHandler(.failure(GenericError.weakObjectReleased), paginationParamaters)
+                                        }
+                                        switch $0 {
+                                        case .success(let decoded):
+                                            // increase pagination parameters.
+                                            paginationParamaters.loadedPages += 1
+                                            fetched.append(decoded)
+                                            // notify.
+                                            handler.settings.queues.response.async {
+                                                updateHandler?(decoded, paginationParamaters, fetched)
+                                            }
+                                            // load more.
+                                            guard paginationParamaters.canLoadMore else {
+                                                return handler.settings.queues.response.async {
+                                                    completionHandler(.success(fetched), paginationParamaters)
+                                                }
+                                            }
+                                            paginationParamaters.nextMaxId = decoded.nextMaxId.flatMap { String($0) }
+                                            guard !(paginationParamaters.nextMaxId ?? "").isEmpty else {
+                                                return handler.settings.queues.response.async {
+                                                    completionHandler(.success(fetched), paginationParamaters)
+                                                }
+                                            }
+                                            getPage()
+                                        case .failure(let error): completionHandler(.failure(error), paginationParamaters)
+                                        }
             }
         }
         // exhaust pages.

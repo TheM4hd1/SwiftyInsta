@@ -45,14 +45,23 @@ extension Collection where Element: CookieEncodable {
 /// `HTTPCookie` accesories.
 extension HTTPCookie: CookieEncodable {
     /// Save the cookie `properties`.
-    private func saveProperties(_ properties: [HTTPCookiePropertyKey: Any]) -> Data {
-        return NSKeyedArchiver.archivedData(withRootObject: properties)
+    private func saveProperties(_ properties: [HTTPCookiePropertyKey: Any]) -> Data? {
+        if #available(iOS 11, OSX 10.13, tvOS 11, watchOS 4, *) {
+            return try? NSKeyedArchiver.archivedData(withRootObject: properties,
+                                                     requiringSecureCoding: true)
+        } else {
+            return NSKeyedArchiver.archivedData(withRootObject: properties)
+        }
     }
     /// Load the cookie properties from `data`.
     private static func loadProperties(from data: Data) -> [HTTPCookiePropertyKey: Any]? {
-        return NSKeyedUnarchiver.unarchiveObject(with: data) as? [HTTPCookiePropertyKey: Any]
+        if #available(iOS 11, OSX 10.13, tvOS 11, watchOS 4, *) {
+            return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? [HTTPCookiePropertyKey: Any]
+        } else {
+            return NSKeyedUnarchiver.unarchiveObject(with: data) as? [HTTPCookiePropertyKey: Any]
+        }
     }
-    
+
     /// Load `HTTPCookie`.
     static func load(from data: Data?) -> HTTPCookie? {
         return data.flatMap(loadProperties).flatMap(HTTPCookie.init)

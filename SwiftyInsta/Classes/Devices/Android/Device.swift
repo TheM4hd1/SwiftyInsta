@@ -7,6 +7,7 @@
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
+import CryptoSwift
 import Foundation
 
 /// A `protocol` defyining a `Device` generator.
@@ -73,7 +74,7 @@ public struct Device: Codable {
          hardwareManufacturer: String,
          hardwareModel: String) {
         self.brand = brand
-        self.id = "android-\(deviceGuid.uuidString.MD5.prefix(16))"
+        self.id = "android-\(deviceGuid.uuidString.md5().prefix(16))"
         self.model = model
         self.phoneGuid = phoneGuid
         self.deviceGuid = deviceGuid

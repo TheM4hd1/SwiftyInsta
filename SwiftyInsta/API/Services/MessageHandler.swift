@@ -17,10 +17,10 @@ public enum MessageRecipients {
 public class MessageHandler: Handler {
     /// Get the user's inbox.
     public func inbox(completionHandler: @escaping (Result<DirectInboxModel, Error>) -> Void) {
-        requests.decodeAsync(DirectInboxModel.self,
-                             method: .get,
-                             url: Result { try URLs.getDirectSendTextMessage() },
-                             completionHandler: completionHandler)
+        requests.decode(DirectInboxModel.self,
+                        method: .get,
+                        url: Result { try URLs.getDirectSendTextMessage() },
+                        completionHandler: completionHandler)
     }
 
     /// Send message to user(s) in thred.
@@ -34,34 +34,34 @@ public class MessageHandler: Handler {
         case .thread(let thread): body["thread_ids"] = "[\(thread)]"
         }
 
-        requests.decodeAsync(DirectSendMessageResponseModel.self,
-                             method: .get,
-                             url: Result { try URLs.getDirectSendTextMessage() },
-                             body: .parameters(body),
-                             completionHandler: completionHandler)
+        requests.decode(DirectSendMessageResponseModel.self,
+                        method: .get,
+                        url: Result { try URLs.getDirectSendTextMessage() },
+                        body: .parameters(body),
+                        completionHandler: completionHandler)
     }
 
     /// Get thread by id.
     public func `in`(thread: String, completionHandler: @escaping (Result<ThreadModel, Error>) -> Void) {
-        requests.decodeAsync(ThreadModel.self,
-                             method: .get,
-                             url: Result { try URLs.getDirectThread(id: thread) },
-                             completionHandler: completionHandler)
+        requests.decode(ThreadModel.self,
+                        method: .get,
+                        url: Result { try URLs.getDirectThread(id: thread) },
+                        completionHandler: completionHandler)
     }
 
     /// Get recent receipients.
     public func recent(completionHandler: @escaping (Result<RecentRecipientsModel, Error>) -> Void) {
-        requests.decodeAsync(RecentRecipientsModel.self,
-                             method: .get,
-                             url: Result { try URLs.getRecentDirectRecipients() },
-                             completionHandler: completionHandler)
+        requests.decode(RecentRecipientsModel.self,
+                        method: .get,
+                        url: Result { try URLs.getRecentDirectRecipients() },
+                        completionHandler: completionHandler)
     }
 
     /// Get ranked receipients.
     public func ranked(completionHandler: @escaping (Result<RankedRecipientsModel, Error>) -> Void) {
-        requests.decodeAsync(RankedRecipientsModel.self,
-                             method: .get,
-                             url: Result { try URLs.getRankedDirectRecipients() },
-                             completionHandler: completionHandler)
+        requests.decode(RankedRecipientsModel.self,
+                        method: .get,
+                        url: Result { try URLs.getRankedDirectRecipients() },
+                        completionHandler: completionHandler)
     }
 }

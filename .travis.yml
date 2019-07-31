@@ -4,7 +4,7 @@ osx_image: xcode11
 
 before_install:
   - pod init
-  - curl https://gist.githubusercontent.com/sbertix/2e8a618086e1bc50ba57e2cfc443a1ab/raw/86b2ee0096bac5de5acdcaa00aab6c2b74290363/SwiftyInsta.podfile --output Podfile
+  - curl https://gist.githubusercontent.com/sbertix/2e8a618086e1bc50ba57e2cfc443a1ab/raw/193059aeb491444e2595d2f712f62ab52a49a769/SwiftyInsta.podfile --output Podfile
   - pod install
 
 env:
