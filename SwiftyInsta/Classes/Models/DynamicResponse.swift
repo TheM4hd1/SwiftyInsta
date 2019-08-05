@@ -96,7 +96,7 @@ public enum DynamicResponse: Equatable {
         case .double(let double): return double
         case .int(let int): return int
         case .string(let string): return string
-        case .url(let url): return url
+        case .url(let url): return url.absoluteString
         case .none: return NSNull()
         }
     }
