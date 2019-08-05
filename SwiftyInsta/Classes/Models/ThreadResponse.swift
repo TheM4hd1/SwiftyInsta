@@ -27,6 +27,16 @@ public struct Thread: ThreadIdentifiableParsedResponse {
     public var users: [User] { rawResponse.users.array?.map(User.init) ?? [] }
     /// The `messages` value.
     public var messages: [Message] { rawResponse.items.array?.map(Message.init) ?? [] }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }
 
 /// A `Message` response.
@@ -48,6 +58,16 @@ public struct Message: ItemIdentifiableParsedResponse, UserIdentifiableParsedRes
     public var text: String? {
         rawResponse.text.string
     }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }
 
 /// A `Recipient` model.
@@ -62,4 +82,14 @@ public struct Recipient: ParsedResponse {
     public var user: User? { User(rawResponse: rawResponse.user) }
     /// The `thread` value.
     public var thread: Thread? { Thread(rawResponse: rawResponse.thread) }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }

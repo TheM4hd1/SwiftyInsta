@@ -20,6 +20,16 @@ public struct Tray: IdentifiableParsedResponse {
     public var items: [TrayElement] {
         return rawResponse.tray.array?.compactMap { TrayElement(rawResponse: $0) } ?? []
     }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }
 
 /// A `TrayArchive` response.
@@ -32,6 +42,16 @@ public struct TrayArchive: IdentifiableParsedResponse {
 
     /// The `mediaCount` value.
     public var count: Int { rawResponse.mediaCount.int ?? 0 }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }
 
 /// A `TrayElement` response.
@@ -92,6 +112,16 @@ public struct TrayElement: IdentifiableParsedResponse {
     public var user: User? {
         User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
     }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }
 
 // MARK: - Paginated
@@ -109,4 +139,14 @@ public struct StoryViewers: PaginatedResponse {
     public var users: Int { rawResponse.userCount.int ?? 0 }
     /// Total viewers count.
     public var viewers: Int { rawResponse.totalViewerCount.int ?? 0 }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }

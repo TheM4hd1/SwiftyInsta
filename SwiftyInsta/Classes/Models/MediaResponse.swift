@@ -12,7 +12,7 @@ import Foundation
 /// A `Media` response.
 public struct Media: IdentifiableParsedResponse {
     /// A media element `Version` response.
-    public struct Version {
+    public struct Version: Codable {
         /// The `url`.
         public var url: URL
         /// The `size` value.
@@ -33,7 +33,7 @@ public struct Media: IdentifiableParsedResponse {
     }
 
     /// A `Picture` response.
-    public struct Picture {
+    public struct Picture: Codable {
         /// The `versions` value.
         public let versions: [Version]
 
@@ -46,7 +46,7 @@ public struct Media: IdentifiableParsedResponse {
         }
     }
     /// A `Video` response.
-    public struct Video {
+    public struct Video: Codable {
         /// The `videoDuration` value.
         public let duration: TimeInterval
         /// The `versions` value.
@@ -68,7 +68,11 @@ public struct Media: IdentifiableParsedResponse {
     }
 
     /// The content type.
-    public enum Content {
+    public enum Content: Codable {
+        enum CodingKeys: CodingKey {
+            case picture, video, album
+        }
+        
         /// A picture.
         case picture(Picture)
         /// A video.
@@ -77,6 +81,29 @@ public struct Media: IdentifiableParsedResponse {
         case album([Content])
         /// No content.
         case none
+        
+        // MARK: Codable
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            if let picture = try container.decodeIfPresent(Picture.self, forKey: .picture) {
+                self = .picture(picture)
+            } else if let video = try container.decodeIfPresent(Video.self, forKey: .video) {
+                self = .video(video)
+            } else if let content = try container.decodeIfPresent([Content].self, forKey: .album) {
+                self = .album(content)
+            } else {
+                self = .none
+            }
+        }
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            switch self {
+            case .picture(let picture): try container.encode(picture, forKey: .picture)
+            case .video(let video): try container.encode(video, forKey: .video)
+            case .album(let content): try container.encode(content, forKey: .album)
+            default: break
+            }
+        }
     }
 
     /// Init with `rawResponse`.
@@ -133,6 +160,16 @@ public struct Media: IdentifiableParsedResponse {
     /// The `user` value.
     public var user: User? {
         User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
+    }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
     }
 }
 

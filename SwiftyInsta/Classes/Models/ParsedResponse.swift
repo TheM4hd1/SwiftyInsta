@@ -9,23 +9,12 @@
 import Foundation
 
 /// A `protocol` holding reference to endpoint responses.
-public protocol ParsedResponse {
+public protocol ParsedResponse: Codable {
     /// The associated `JSON` response.
     var rawResponse: DynamicResponse { get }
 
     /// Init with `rawResponse`.
     init(rawResponse: DynamicResponse)
-}
-/// A pseudo-`Coding` extension.
-public extension ParsedResponse {
-    /// Encode.
-    func encode() throws -> Data {
-        return try rawResponse.data()
-    }
-    /// Decode.
-    static func decode(data: Data) throws -> Self {
-        return try Self(rawResponse: DynamicResponse(data: data))
-    }
 }
 
 /// The identifier type.

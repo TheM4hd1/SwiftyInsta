@@ -35,4 +35,14 @@ public enum ExploreElement: ParsedResponse {
             self = .none
         }
     }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self = try .init(rawResponse: DynamicResponse(data: container.decode(Data.self)))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }

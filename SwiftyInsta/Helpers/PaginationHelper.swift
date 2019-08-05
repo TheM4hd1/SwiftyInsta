@@ -43,6 +43,17 @@ public struct AnyPaginatedResponse: PaginatedResponse {
     public init(rawResponse: DynamicResponse) {
         self.rawResponse = rawResponse
     }
+    
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }
 
 public typealias PaginationUpdateHandler<R, P> = (

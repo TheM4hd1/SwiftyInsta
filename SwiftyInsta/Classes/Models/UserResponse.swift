@@ -46,4 +46,14 @@ public struct User: IdentifiableParsedResponse {
     public var byline: String? { rawResponse.byline.string }
     /// The `isBusiness` value.
     public var isBusiness: Bool? { rawResponse.isBusiness.bool }
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }

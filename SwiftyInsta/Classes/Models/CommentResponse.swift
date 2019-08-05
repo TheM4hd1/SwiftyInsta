@@ -24,6 +24,17 @@ public struct Comment: IdentifiableParsedResponse, UserIdentifiableParsedRespons
     public var user: User? {
         User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
     }
+    
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }
 
 // MARK: - Paginated
@@ -43,4 +54,15 @@ public struct MediaComments: PaginatedResponse {
     public var comments: Int { rawResponse.commentCount.int ?? 0 }
     /// The `previewComments` value.
     public var previews: [Comment] { rawResponse.previewComments.array?.map { Comment(rawResponse: $0) } ?? [] }
+    
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
 }
