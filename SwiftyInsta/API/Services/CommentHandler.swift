@@ -14,17 +14,20 @@ public class CommentHandler: Handler {
     /// Fetch all comments for media.
     public func all(forMedia mediaId: String,
                     with paginationParameters: PaginationParameters,
-                    updateHandler: PaginationUpdateHandler<MediaCommentsResponseModel>?,
-                    completionHandler: @escaping PaginationCompletionHandler<MediaCommentsResponseModel>) {
-        pages.fetch(MediaCommentsResponseModel.self,
+                    updateHandler: PaginationUpdateHandler<Comment, MediaComments>?,
+                    completionHandler: @escaping PaginationCompletionHandler<Comment>) {
+        pages.parse(Comment.self,
+                    paginatedResponse: MediaComments.self,
                     with: paginationParameters,
                     at: { try URLs.getComments(for: mediaId, maxId: $0.nextMaxId ?? "") },
+                    processingHandler: { $0.rawResponse.comments.array?.map(Comment.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
 
     /// Add comment to media.
     public func add(_ comment: String, to mediaId: String, completionHandler: @escaping (Result<CommentResponse, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -68,7 +71,7 @@ public class CommentHandler: Handler {
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
-        requests.decode(StatusResponse.self,
+        requests.decode(Status.self,
                         method: .post,
                         url: Result { try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentId) },
                         body: .parameters(body),
@@ -86,7 +89,7 @@ public class CommentHandler: Handler {
                     "reason": "1",
                     "comment_id": commentId,
                     "media_id": mediaId]
-        requests.decode(StatusResponse.self,
+        requests.decode(Status.self,
                         method: .post,
                         url: Result { try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId) },
                         body: .parameters(body),

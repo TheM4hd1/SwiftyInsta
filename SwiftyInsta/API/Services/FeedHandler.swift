@@ -11,11 +11,13 @@ import Foundation
 public class FeedHandler: Handler {
     /// Fetch the explore feed.
     public func explore(with paginationParameters: PaginationParameters,
-                        updateHandler: PaginationUpdateHandler<ExploreFeedModel>?,
-                        completionHandler: @escaping PaginationCompletionHandler<ExploreFeedModel>) {
-        pages.fetch(ExploreFeedModel.self,
+                        updateHandler: PaginationUpdateHandler<ExploreElement, AnyPaginatedResponse>?,
+                        completionHandler: @escaping PaginationCompletionHandler<ExploreElement>) {
+        pages.parse(ExploreElement.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
                     at: { try URLs.getExploreFeedUrl(maxId: $0.nextMaxId ?? "") },
+                    processingHandler: { $0.rawResponse.items.array?.map(ExploreElement.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -23,19 +25,21 @@ public class FeedHandler: Handler {
     /// Fetch the tag feed.
     public func tag(_ tag: String,
                     with paginationParameters: PaginationParameters,
-                    updateHandler: PaginationUpdateHandler<TagFeedModel>?,
-                    completionHandler: @escaping PaginationCompletionHandler<TagFeedModel>) {
-        pages.fetch(TagFeedModel.self,
+                    updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
+                    completionHandler: @escaping PaginationCompletionHandler<Media>) {
+        pages.parse(Media.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
                     at: { try URLs.getTagFeed(for: tag, maxId: $0.nextMaxId ?? "") },
+                    processingHandler: { $0.rawResponse.items.array?.map(Media.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
 
     /// Fetch the timeline.
     public func timeline(with paginationParameters: PaginationParameters,
-                         updateHandler: PaginationUpdateHandler<TimelineModel>?,
-                         completionHandler: @escaping PaginationCompletionHandler<TimelineModel>) {
+                         updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
+                         completionHandler: @escaping PaginationCompletionHandler<Media>) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
                                      paginationParameters)
@@ -67,9 +71,10 @@ public class FeedHandler: Handler {
                        "X-DEVICE-ID": handler.settings.device.deviceGuid.uuidString,
                        "X-FB": "1"]
 
-        pages.fetch(TimelineModel.self,
+        pages.parse(Media.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
-                    at: { _ in try URLs.getUserTimeLineUrl(maxId: "") }, //$0.nextMaxId ?? "") },
+                    at: { _ in try URLs.getUserTimeLineUrl(maxId: "") },
                     body: {
                         switch $0.nextMaxId {
                         case .none:
@@ -79,8 +84,9 @@ public class FeedHandler: Handler {
                             return .gzip(body.merging(["reason": "pagination", "max_id": maxId],
                                                       uniquingKeysWith: { lhs, _ in lhs }))
                         }
-                    },
+        },
                     headers: { _ in headers },
+                    processingHandler: { $0.rawResponse.feedItems.array?.map { Media(rawResponse: $0.mediaOrAd) } ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }

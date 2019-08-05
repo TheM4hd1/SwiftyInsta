@@ -16,17 +16,23 @@ public enum MessageRecipients {
 
 public class MessageHandler: Handler {
     /// Get the user's inbox.
-    public func inbox(completionHandler: @escaping (Result<DirectInboxModel, Error>) -> Void) {
-        requests.decode(DirectInboxModel.self,
-                        method: .get,
-                        url: Result { try URLs.getDirectSendTextMessage() },
-                        completionHandler: completionHandler)
+    public func inbox(with paginationParameters: PaginationParameters,
+                      updateHandler: PaginationUpdateHandler<Thread, AnyPaginatedResponse>?,
+                      completionHandler: @escaping PaginationCompletionHandler<Thread>) {
+        pages.parse(Thread.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
+                    with: paginationParameters,
+                    at: { try URLs.getDirectInbox(maxId: $0.nextMaxId ?? "") },
+                    processingHandler: { $0.rawResponse.inbox.threads.array?.map(Thread.init) ?? [] },
+                    updateHandler: updateHandler,
+                    completionHandler: completionHandler)
     }
 
     /// Send message to user(s) in thred.
     public func send(_ text: String,
                      to receipients: MessageRecipients,
                      completionHandler: @escaping (Result<DirectSendMessageResponseModel, Error>) -> Void) {
+        #warning("uses old models.")
         var body = ["text": text,
                     "action": "send_item"]
         switch receipients {
@@ -42,26 +48,34 @@ public class MessageHandler: Handler {
     }
 
     /// Get thread by id.
-    public func `in`(thread: String, completionHandler: @escaping (Result<ThreadModel, Error>) -> Void) {
-        requests.decode(ThreadModel.self,
-                        method: .get,
-                        url: Result { try URLs.getDirectThread(id: thread) },
-                        completionHandler: completionHandler)
+    public func `in`(thread: String, completionHandler: @escaping (Result<Thread, Error>) -> Void) {
+        requests.parse(Thread.self,
+                       method: .get,
+                       url: Result { try URLs.getDirectThread(id: thread) },
+                       completionHandler: completionHandler)
     }
 
     /// Get recent receipients.
-    public func recent(completionHandler: @escaping (Result<RecentRecipientsModel, Error>) -> Void) {
-        requests.decode(RecentRecipientsModel.self,
-                        method: .get,
-                        url: Result { try URLs.getRecentDirectRecipients() },
-                        completionHandler: completionHandler)
+    public func recent(completionHandler: @escaping (Result<[Recipient], Error>) -> Void) {
+        pages.parse(Recipient.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
+                    with: .init(maxPagesToLoad: 1),
+                    at: { _ in try URLs.getRecentDirectRecipients() },
+                    processingHandler: { $0.rawResponse.recentRecipients.array?.map(Recipient.init) ?? [] },
+                    updateHandler: nil) { result, _ in
+                        completionHandler(result)
+        }
     }
 
     /// Get ranked receipients.
-    public func ranked(completionHandler: @escaping (Result<RankedRecipientsModel, Error>) -> Void) {
-        requests.decode(RankedRecipientsModel.self,
-                        method: .get,
-                        url: Result { try URLs.getRankedDirectRecipients() },
-                        completionHandler: completionHandler)
+    public func ranked(completionHandler: @escaping (Result<[Recipient], Error>) -> Void) {
+        pages.parse(Recipient.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
+                    with: .init(maxPagesToLoad: 1),
+                    at: { _ in try URLs.getRankedDirectRecipients() },
+                    processingHandler: { $0.rawResponse.rankedRecipients.array?.map(Recipient.init) ?? [] },
+                    updateHandler: nil) { result, _ in
+                        completionHandler(result)
+        }
     }
 }

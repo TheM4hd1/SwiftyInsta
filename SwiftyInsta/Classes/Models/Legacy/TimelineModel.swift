@@ -8,32 +8,6 @@
 
 import Foundation
 
-public struct TimelineModel: Codable, PaginationProtocol, StatusEnforceable {
-    public var autoLoadMoreEnabled: Bool?
-    public var moreAvailable: Bool?
-    public var nextMaxId: String?
-    public var numResults: Int?
-    public var status: String?
-    public var feedItems: [TimeLineItemModel]?
-    public var isDirectV2Enabled: Bool?
-
-    public init(autoLoadMoreEnabled: Bool?,
-                moreAvailable: Bool?,
-                nextMaxId: String?,
-                numResults: Int?,
-                status: String?,
-                feedItems: [TimeLineItemModel]?,
-                isDirectV2Enabled: Bool?) {
-        self.autoLoadMoreEnabled = autoLoadMoreEnabled
-        self.moreAvailable = moreAvailable
-        self.nextMaxId = nextMaxId
-        self.numResults = numResults
-        self.status = status
-        self.feedItems = feedItems
-        self.isDirectV2Enabled = isDirectV2Enabled
-    }
-}
-
 public struct SuggestionModel: Codable {
     public var user: SuggestionUser?//UserShortModel?
     public var algorithm: String?
@@ -59,16 +33,6 @@ public struct SuggestedUsersModel: Codable {
         self.suggestions = suggestions
         self.id = id
         self.trackingToken = trackingToken
-    }
-}
-
-public struct TimeLineItemModel: Codable {
-    public var mediaOrAd: MediaModel?
-    public var suggestedUsers: SuggestedUsersModel?
-
-    public init(mediaOrAd: MediaModel?, suggestedUsers: SuggestedUsersModel?) {
-        self.mediaOrAd = mediaOrAd
-        self.suggestedUsers = suggestedUsers
     }
 }
 

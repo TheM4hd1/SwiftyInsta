@@ -59,7 +59,7 @@ public class APIHandler {
     /// The login response.
     public var response: Login.Response?
     /// The authenticated user.
-    public var user: CurrentUser? { return response?.cache?.storage?.user }
+    public var user: User? { return response?.cache?.storage?.user }
 
     // MARK: Init
     /// Create an instance of `APIHandler`.

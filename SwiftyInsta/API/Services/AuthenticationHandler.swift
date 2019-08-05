@@ -19,9 +19,9 @@ class AuthenticationHandler: Handler {
             // fetch the user.
             handler.users.current(delay: 0...0) { [weak self] in
                 switch $0 {
-                case .success(let model):
+                case .success(let user):
                     // update user info alone.
-                    if let user = model.user { self?.handler.response?.cache?.storage?.user = user }
+                    self?.handler.response?.cache?.storage?.user = user
                     completionHandler(.success(.init(model: .success, cache: cache)))
                 case .failure(let error): completionHandler(.failure(error))
                 }
@@ -420,7 +420,7 @@ class AuthenticationHandler: Handler {
                     // decode data.
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let decoded = try decoder.decode(StatusResponse.self, from: data)
+                    let decoded = try decoder.decode(Status.self, from: data)
                     return .success(decoded.state == .ok)
                 } catch { return .failure(error) }
             }

@@ -1,5 +1,5 @@
 //
-//  StatusResponse.swift
+//  Status.swift
 //  SwiftyInsta
 //
 //  Created by Mahdi on 10/30/18.
@@ -16,7 +16,7 @@ protocol StatusEnforceable {
 }
 
 /// A basic `struct` conforming to `StatusEnforceable`.
-public struct StatusResponse: Codable, StatusEnforceable {
+public struct Status: Codable, StatusEnforceable {
     /// The current `state`.
     public enum State {
         case ok, fail, unknown

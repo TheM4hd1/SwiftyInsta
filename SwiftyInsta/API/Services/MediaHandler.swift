@@ -11,7 +11,7 @@ import CryptoSwift
 import Foundation
 
 /// **Instagram** accepted `Media`s.
-public enum Media: String {
+public enum MediaType: String {
     /// Image.
     case image = "1"
     /// Video.
@@ -24,8 +24,8 @@ public class MediaHandler: Handler {
     /// Get user media.
     public func by(user: UserReference,
                    with paginationParameters: PaginationParameters,
-                   updateHandler: PaginationUpdateHandler<UserFeedModel>?,
-                   completionHandler: @escaping PaginationCompletionHandler<UserFeedModel>) {
+                   updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
+                   completionHandler: @escaping PaginationCompletionHandler<Media>) {
         switch user {
         case .username:
             // fetch username.
@@ -34,8 +34,8 @@ public class MediaHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased), paginationParameters)
                 }
                 switch $0 {
-                case .success(let user) where user?.pk != nil:
-                    handler.by(user: .pk(user?.pk ?? -1),
+                case .success(let user) where user?.identity.primaryKey != nil:
+                    handler.by(user: .pk(user?.identity.primaryKey ?? -1),
                                with: paginationParameters,
                                updateHandler: updateHandler,
                                completionHandler: completionHandler)
@@ -45,20 +45,27 @@ public class MediaHandler: Handler {
             }
         case .pk(let pk):
             // load media directly.
-            pages.fetch(UserFeedModel.self,
+            pages.parse(Media.self,
+                        paginatedResponse: AnyPaginatedResponse.self,
                         with: paginationParameters,
                         at: { try URLs.getUserFeedUrl(userPk: pk, maxId: $0.nextMaxId ?? "") },
+                        processingHandler: { $0.rawResponse.items.array?.map(Media.init) ?? [] },
                         updateHandler: updateHandler,
                         completionHandler: completionHandler)
         }
     }
 
     /// Get media info.
-    public func info(for mediaId: String, completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
-        requests.decode(MediaModel.self,
-                        method: .get,
-                        url: Result { try URLs.getMediaUrl(mediaId: mediaId) },
-                        completionHandler: completionHandler)
+    public func info(for mediaId: String, completionHandler: @escaping (Result<Media?, Error>) -> Void) {
+        pages.parse(Media.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
+                    with: .init(maxPagesToLoad: 1),
+                    at: { _ in try URLs.getMediaUrl(mediaId: mediaId) },
+                    processingHandler: { $0.rawResponse.items.array?.map(Media.init) ?? [] },
+                    updateHandler: nil,
+                    completionHandler: { result, _ in
+                        completionHandler(result.map { $0.first })
+        })
     }
 
     /// Like media.
@@ -71,7 +78,7 @@ public class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decode(StatusResponse.self,
+        requests.decode(Status.self,
                         method: .post,
                         url: Result { try URLs.getLikeMediaUrl(mediaId: mediaId) },
                         body: .parameters(body),
@@ -88,7 +95,7 @@ public class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decode(StatusResponse.self,
+        requests.decode(Status.self,
                         method: .post,
                         url: Result { try URLs.getUnLikeMediaUrl(mediaId: mediaId) },
                         body: .parameters(body),
@@ -97,6 +104,7 @@ public class MediaHandler: Handler {
 
     /// Upload photo.
     public func upload(photo: InstaPhoto, completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -171,6 +179,7 @@ public class MediaHandler: Handler {
                    with uploadId: String,
                    caption: String,
                    completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -189,7 +198,7 @@ public class MediaHandler: Handler {
         let configureEdits = ConfigureEdits.init(cropOriginalSize: [photo.width, photo.height], cropCenter: [0.0, -0.0], cropZoom: 1)
         let configureExtras = ConfigureExtras.init(sourceWidth: photo.width, sourceHeight: photo.height)
         let configure = ConfigurePhotoModel.init(uuid: device.deviceGuid.uuidString,
-                                                 uid: user.pk ?? -1,
+                                                 uid: user.identity.primaryKey ?? -1,
                                                  csrfToken: storage.csrfToken,
                                                  mediaFolder: "Camera",
                                                  sourceType: "4",
@@ -350,6 +359,7 @@ public class MediaHandler: Handler {
                        thumbnail: InstaPhoto,
                        caption: String,
                        completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -469,6 +479,7 @@ public class MediaHandler: Handler {
     func upload(thumbnail: InstaPhoto,
                 with uploadId: String,
                 completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -526,6 +537,7 @@ public class MediaHandler: Handler {
                    with uploadId: String,
                    caption: String,
                    completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -581,8 +593,9 @@ public class MediaHandler: Handler {
 
     /// Delete media.
     public func delete(media mediaId: String,
-                       with type: Media,
+                       with type: MediaType,
                        completionHandler: @escaping (Result<DeleteMediaResponse, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -603,6 +616,7 @@ public class MediaHandler: Handler {
                      caption: String,
                      tags: UserTags,
                      completionHandler: @escaping (Result<MediaModel, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -638,18 +652,25 @@ public class MediaHandler: Handler {
     }
 
     /// Get media likers.
-    public func likers(ofMedia mediaId: String, completionHandler: @escaping (Result<MediaLikersModel, Error>) -> Void) {
-        requests.decode(MediaLikersModel.self,
-                        method: .get,
-                        url: Result { try URLs.getMediaLikersUrl(mediaId: mediaId) },
-                        completionHandler: completionHandler)
+    public func likers(ofMedia mediaId: String,
+                       with paginationParameters: PaginationParameters,
+                       updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
+                       completionHandler: @escaping PaginationCompletionHandler<User>) {
+        pages.parse(User.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
+                    with: paginationParameters,
+                    at: { try URLs.getMediaLikersUrl(mediaId: mediaId, maxId: $0.nextMaxId ?? "")},
+                    processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
+                    updateHandler: updateHandler,
+                    completionHandler: completionHandler)
     }
 
     /// Get media permalink.
-    public func permalink(ofMedia mediaId: String, completionHandler: @escaping (Result<PermalinkModel, Error>) -> Void) {
-        requests.decode(PermalinkModel.self,
-                        method: .get,
-                        url: Result { try URLs.getPermalink(mediaId: mediaId) },
-                        completionHandler: completionHandler)
+    public func permalink(ofMedia mediaId: String, completionHandler: @escaping (Result<String?, Error>) -> Void) {
+        requests.parse(String?.self,
+                       method: .get,
+                       url: Result { try URLs.getPermalink(mediaId: mediaId) },
+                       processingHandler: { $0.permalink.string },
+                       completionHandler: completionHandler)
     }
 }

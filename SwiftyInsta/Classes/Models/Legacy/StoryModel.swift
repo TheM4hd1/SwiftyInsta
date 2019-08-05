@@ -32,63 +32,6 @@ public struct TopLiveModel: Codable {
     }
 }
 
-public struct StoryFeedModel: Codable, StatusEnforceable {
-    public var tray: [TrayModel]?
-    public var storyRankingToken: String?
-    public var faceFilterNuxVersion: Int?
-    public var hasNewNuxStory: Bool?
-    public var status: String?
-    //var postLive
-    //var broadcasts
-
-    public init(tray: [TrayModel]?, storyRankingToken: String?, faceFilterNuxVersion: Int?, hasNewNuxStory: Bool?, status: String?) {
-        self.tray = tray
-        self.storyRankingToken = storyRankingToken
-        self.faceFilterNuxVersion = faceFilterNuxVersion
-        self.hasNewNuxStory = hasNewNuxStory
-        self.status = status
-    }
-}
-
-public struct StoryReelFeedModel: Codable, StatusEnforceable {
-    //var broadcast
-    public var reel: TrayModel?
-    public var status: String?
-
-    public init(reel: TrayModel?, status: String?) {
-        self.reel = reel
-        self.status = status
-    }
-}
-
-public struct StoryReelsFeedModel: Codable, StatusEnforceable {
-    public var reels: [String: TrayModel]?
-    public var status: String?
-}
-
-public struct StoryArchiveFeedModel: Codable, StatusEnforceable {
-    public var moreAvailable: Bool?
-    public var numResults: Int?
-    public var items: [StoryArchiveModel]?
-    public var status: String?
-
-    public init(moreAvailable: Bool?, numResults: Int?, items: [StoryArchiveModel]?) {
-        self.moreAvailable = moreAvailable
-        self.numResults = numResults
-        self.items = items
-    }
-}
-
-public struct StoryArchiveModel: Codable {
-    public var id: String?
-    public var mediaCount: Int?
-
-    public init(id: String?, mediaCount: Int?) {
-        self.id = id
-        self.mediaCount = mediaCount
-    }
-}
-
 public struct ConfigureStoryUploadModel: Codable {
     enum CodingKeys: String, CodingKey {
         case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
@@ -125,15 +68,6 @@ public struct ConfigureStoryUploadModel: Codable {
         self.configureMode = configureMode
         self.cameraPosition = cameraPosition
     }
-}
-
-public struct StoryViewers: Codable, StatusEnforceable, PaginationProtocol {
-    public var users: [UserModel]?
-    public var nextMaxId: String?
-    //public var updatedMedia: MediaModel?
-    public var userCount: Int?
-    public var totalViewerCount: Int?
-    public var status: String?
 }
 
 public struct StoryHighlights: Codable {

@@ -23,6 +23,7 @@ public enum Gender: String {
 public class ProfileHandler: Handler {
     /// Set the account to public.
     public func markAsPublic(completionHandler: @escaping (Result<ProfilePrivacyResponseModel, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -50,6 +51,7 @@ public class ProfileHandler: Handler {
 
     /// Set the account to private.
     public func markAsPrivate(completionHandler: @escaping (Result<ProfilePrivacyResponseModel, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -78,7 +80,7 @@ public class ProfileHandler: Handler {
     /// Update password.
     public func update(password: String,
                        oldPassword: String,
-                       completionHandler: @escaping (Result<StatusResponse, Error>) -> Void) {
+                       completionHandler: @escaping (Result<Status, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -89,7 +91,7 @@ public class ProfileHandler: Handler {
                        "old_password": oldPassword,
                        "new_password1": password,
                        "new_password2": password]
-        requests.decode(StatusResponse.self,
+        requests.decode(Status.self,
                         method: .post,
                         url: Result { try URLs.getChangePasswordUrl() },
                         body: .parameters(content),
@@ -105,6 +107,7 @@ public class ProfileHandler: Handler {
                      phone: String?,
                      gender: Gender,
                      completionHandler: @escaping (Result<EditProfileModel, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -161,7 +164,7 @@ public class ProfileHandler: Handler {
     }
 
     /// Edit biography.
-    public func edit(biography: String, completionHandler: @escaping (Result<StatusResponse, Error>) -> Void) {
+    public func edit(biography: String, completionHandler: @escaping (Result<Status, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -170,7 +173,7 @@ public class ProfileHandler: Handler {
                        "_uuid": handler!.settings.device.deviceGuid.uuidString,
                        "raw_text": biography]
 
-        requests.decode(StatusResponse.self,
+        requests.decode(Status.self,
                         method: .post,
                         url: Result { try URLs.getEditBiographyUrl() },
                         body: .parameters(content),
@@ -179,6 +182,7 @@ public class ProfileHandler: Handler {
 
     /// Remove profile picture.
     public func deleteProfilePicture(completionHandler: @escaping (Result<EditProfileModel, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -197,6 +201,7 @@ public class ProfileHandler: Handler {
 
     /// Upload profile picture.
     public func upload(profilePicture photo: InstaPhoto, completionHandler: @escaping (Result<EditProfileModel, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }

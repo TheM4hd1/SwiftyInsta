@@ -2,7 +2,7 @@
 //  ParsedResponse.swift
 //  SwiftyInsta
 //
-//  Created by Stefano Bertagno on 30/07/2019.
+//  Created by Stefano Bertagno on 07/30/2019.
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
@@ -10,13 +10,22 @@ import Foundation
 
 /// A `protocol` holding reference to endpoint responses.
 public protocol ParsedResponse {
-    /// The associated `JSON` response type.
-    associatedtype RawResponse: Codable & Hashable
     /// The associated `JSON` response.
-    var rawResponse: RawResponse { get }
+    var rawResponse: DynamicResponse { get }
 
     /// Init with `rawResponse`.
-    init(_ rawResponse: RawResponse)
+    init(rawResponse: DynamicResponse)
+}
+/// A pseudo-`Coding` extension.
+public extension ParsedResponse {
+    /// Encode.
+    func encode() throws -> Data {
+        return try rawResponse.data()
+    }
+    /// Decode.
+    static func decode(data: Data) throws -> Self {
+        return try Self(rawResponse: DynamicResponse(data: data))
+    }
 }
 
 /// The identifier type.
@@ -50,7 +59,60 @@ public protocol IdentifiableParsedResponse: ParsedResponse {
     /// The identifier.
     var identity: Identity { get }
 }
+/// The defaullt implementation.
 public extension IdentifiableParsedResponse {
     /// The identifier type.
     typealias Identity = Identifier<Self>
+    /// The identifier.
+    var identity: Identifier<Self> {
+        .init(primaryKey: rawResponse.pk.int ?? rawResponse.pk.string.flatMap(Int.init),
+              identifier: rawResponse.id.string)
+    }
+}
+
+/// A **user identifiable** `ParsedResponse`.
+public protocol UserIdentifiableParsedResponse: ParsedResponse {
+    /// The user identifier.
+    var userIdentity: Identifier<User> { get }
+}
+/// The default implementation.
+public extension UserIdentifiableParsedResponse {
+    /// The user identifier.
+    var userIdentity: Identifier<User> {
+        .init(primaryKey: rawResponse.userPk.int ?? rawResponse.userPk.string.flatMap(Int.init),
+              identifier: rawResponse.userId.string)
+    }
+}
+
+/// A **thread identifiable** `ParsedResponse`.
+public protocol ThreadIdentifiableParsedResponse: ParsedResponse {
+    /// The thread identifier.
+    var threadIdentifier: Identifier<Thread> { get }
+}
+/// The default implementation.
+public extension ThreadIdentifiableParsedResponse {
+    /// The thread identifier.
+    var threadIdentifier: Identifier<Thread> {
+        .init(primaryKey: nil,
+              identifier: rawResponse.threadId.string)
+    }
+    /// The account identifier.
+    var viewerIdentifier: Identifier<User> {
+        .init(primaryKey: rawResponse.viewerId.int ?? rawResponse.viewerId.string.flatMap(Int.init),
+              identifier: nil)
+    }
+}
+
+/// An **item identifiable** `ParsedResponse`.
+public protocol ItemIdentifiableParsedResponse: ParsedResponse {
+    /// The item identifier.
+    var itemIdentifier: Identifier<Message> { get }
+}
+/// The default implementation.
+public extension ItemIdentifiableParsedResponse {
+    /// The item identifier.
+    var itemIdentifier: Identifier<Message> {
+        .init(primaryKey: nil,
+              identifier: rawResponse.itemId.string)
+    }
 }

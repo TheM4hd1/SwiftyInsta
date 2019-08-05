@@ -12,15 +12,15 @@ import Foundation
 
 public class StoryHandler: Handler {
     /// Get the story feed.
-    public func tray(completionHandler: @escaping (Result<StoryFeedModel, Error>) -> Void) {
-        requests.decode(StoryFeedModel.self,
-                        method: .get,
-                        url: Result { try URLs.getStoryFeedUrl() },
-                        completionHandler: completionHandler)
+    public func tray(completionHandler: @escaping (Result<Tray, Error>) -> Void) {
+        requests.parse(Tray.self,
+                       method: .get,
+                       url: Result { try URLs.getStoryFeedUrl() },
+                       completionHandler: completionHandler)
     }
 
     /// Get user's stories.
-    public func by(user: UserReference, completionHandler: @escaping (Result<TrayModel, Error>) -> Void) {
+    public func by(user: UserReference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         switch user {
         case .username:
             // fetch username.
@@ -29,23 +29,23 @@ public class StoryHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.pk != nil:
-                    handler.by(user: .pk(user!.pk!), completionHandler: completionHandler)
+                case .success(let user) where user?.identity.primaryKey != nil:
+                    handler.by(user: .pk(user!.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
             }
         case .pk(let pk):
             // load stories directly.
-            requests.decode(TrayModel.self,
-                            method: .get,
-                            url: Result { try URLs.getUserStoryUrl(userId: pk) },
-                            completionHandler: completionHandler)
+            requests.parse(Tray.self,
+                           method: .get,
+                           url: Result { try URLs.getUserStoryUrl(userId: pk) },
+                           completionHandler: completionHandler)
         }
     }
 
     /// Get reel feed.
-    public func reelBy(user: UserReference, completionHandler: @escaping (Result<StoryReelFeedModel, Error>) -> Void) {
+    public func reelBy(user: UserReference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         switch user {
         case .username:
             // fetch username.
@@ -54,23 +54,25 @@ public class StoryHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.pk != nil:
-                    handler.reelBy(user: .pk(user!.pk!), completionHandler: completionHandler)
+                case .success(let user) where user?.identity.primaryKey != nil:
+                    handler.reelBy(user: .pk(user!.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
             }
         case .pk(let pk):
             // load stories directly.
-            requests.decode(StoryReelFeedModel.self,
-                            method: .get,
-                            url: Result { try URLs.getUserStoryFeed(userId: pk) },
-                            completionHandler: completionHandler)
+            requests.parse(Tray.self,
+                           method: .get,
+                           url: Result { try URLs.getUserStoryFeed(userId: pk) },
+                           processingHandler: { Tray(rawResponse: $0.reel) },
+                           completionHandler: completionHandler)
         }
     }
 
     /// Upload photo.
     public func upload(photo: InstaPhoto, completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -142,6 +144,7 @@ public class StoryHandler: Handler {
                    with uploadId: String,
                    caption: String,
                    completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -181,11 +184,13 @@ public class StoryHandler: Handler {
     /// Get story viewers.
     public func viewers(forStory storyId: String,
                         with paginationParameters: PaginationParameters,
-                        updateHandler: PaginationUpdateHandler<StoryViewers>?,
-                        completionHandler: @escaping PaginationCompletionHandler<StoryViewers>) {
-        pages.fetch(StoryViewers.self,
+                        updateHandler: PaginationUpdateHandler<User, StoryViewers>?,
+                        completionHandler: @escaping PaginationCompletionHandler<User>) {
+        pages.parse(User.self,
+                    paginatedResponse: StoryViewers.self,
                     with: paginationParameters,
                     at: { try URLs.getStoryViewersUrl(pk: storyId, maxId: $0.nextMaxId ?? "") },
+                    processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
     }
@@ -194,7 +199,8 @@ public class StoryHandler: Handler {
     public func mark(stories: [TrayItems],
                      with sourceId: String?,
                      asSeen seen: Bool,
-                     completionHandler: @escaping (Result<StatusResponse, Error>) -> Void) {
+                     completionHandler: @escaping (Result<Status, Error>) -> Void) {
+        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -246,7 +252,7 @@ public class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(StatusResponse.self,
+            requests.decode(Status.self,
                             method: .post,
                             url: Result { try URLs.markStoriesAsSeenUrl() },
                             body: .parameters(body),
@@ -255,7 +261,7 @@ public class StoryHandler: Handler {
     }
 
     /// Get reels media feed.
-    public func reelsMedia(_ feeds: [String], completionHandler: @escaping (Result<StoryReelsFeedModel, Error>) -> Void) {
+    public func reelsMedia(_ feeds: [String], completionHandler: @escaping (Result<[String: Tray], Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -280,18 +286,25 @@ public class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(StoryReelsFeedModel.self,
-                            method: .post,
-                            url: Result { try URLs.getReelsMediaFeed() },
-                            body: .parameters(body),
-                            completionHandler: completionHandler)
+            requests.parse([String: Tray].self,
+                           method: .post,
+                           url: Result { try URLs.getReelsMediaFeed() },
+                           body: .parameters(body),
+                           processingHandler: { $0.reels.dictionary?.mapValues { Tray(rawResponse: $0) } ?? [:] },
+                           completionHandler: completionHandler)
         } catch { completionHandler(.failure(error)) }
     }
 
-    func archive(completionHandler: @escaping (Result<StoryArchiveFeedModel, Error>) -> Void) {
-        requests.decode(StoryArchiveFeedModel.self,
-                        method: .get,
-                        url: Result { try URLs.getStoryArchiveUrl() },
-                        completionHandler: completionHandler)
+    /// Get reels archive.
+    func archive(with paginationParameters: PaginationParameters,
+                 updateHandler: PaginationUpdateHandler<TrayArchive, AnyPaginatedResponse>?,
+                 completionHandler: @escaping PaginationCompletionHandler<TrayArchive>) {
+        pages.parse(TrayArchive.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
+                    with: paginationParameters,
+                    at: { try URLs.getStoryArchiveUrl(maxId: $0.nextMaxId ?? "") },
+                    processingHandler: { $0.rawResponse.items.array?.map(TrayArchive.init) ?? [] },
+                    updateHandler: updateHandler,
+                    completionHandler: completionHandler)
     }
 }

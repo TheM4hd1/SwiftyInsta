@@ -291,9 +291,14 @@ struct URLs {
         throw GenericError.invalidUrl
     }
 
-    static func getDirectInbox() throws -> URL {
+    static func getDirectInbox(maxId: String) throws -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, directInbox)) {
-            return url
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if !maxId.isEmpty {
+                urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+
+            return (urlComponent?.url)!
         }
         throw GenericError.invalidUrl
     }
@@ -401,9 +406,14 @@ struct URLs {
         throw GenericError.invalidUrl
     }
 
-    static func pendingFriendshipsUrl() throws -> URL {
+    static func pendingFriendshipsUrl(maxId: String) throws -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, pendingFriendships)) {
-            return url
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if !maxId.isEmpty {
+                urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+
+            return (urlComponent?.url)!
         }
         throw GenericError.invalidUrl
     }
@@ -436,9 +446,14 @@ struct URLs {
         throw GenericError.invalidUrl
     }
 
-    static func getBlockedList() throws -> URL {
+    static func getBlockedList(maxId: String) throws -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, blockedList)) {
-            return url
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            if !maxId.isEmpty {
+                urlComponent?.queryItems = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+
+            return (urlComponent?.url)!
         }
         throw GenericError.invalidUrl
     }
@@ -610,9 +625,17 @@ struct URLs {
         throw GenericError.invalidUrl
     }
 
-    static func getMediaLikersUrl(mediaId: String) throws -> URL {
+    static func getMediaLikersUrl(mediaId: String, maxId: String) throws -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, String(format: mediaLikers, mediaId))) {
-            return url
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+
+            var queries = [URLQueryItem]()
+            if !maxId.isEmpty {
+                queries = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+
+            urlComponent?.queryItems = queries
+            return (urlComponent?.url)!
         }
         throw GenericError.invalidUrl
     }
@@ -700,9 +723,17 @@ struct URLs {
         throw GenericError.invalidUrl
     }
 
-    static func getStoryArchiveUrl() throws -> URL {
+    static func getStoryArchiveUrl(maxId: String) throws -> URL {
         if let url = URL(string: String(format: "%@%@", baseInstagramApiUrl, storyArchive)) {
-            return url
+            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+
+            var queries = [URLQueryItem]()
+            if !maxId.isEmpty {
+                queries = [URLQueryItem(name: "max_id", value: maxId)]
+            }
+
+            urlComponent?.queryItems = queries
+            return (urlComponent?.url)!
         }
         throw GenericError.invalidUrl
     }
