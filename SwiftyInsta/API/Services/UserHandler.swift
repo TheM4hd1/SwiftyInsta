@@ -32,7 +32,7 @@ public class UserHandler: Handler {
                        url: Result { try URLs.getCurrentUser() },
                        body: .parameters(body),
                        delay: delay,
-                       processingHandler: { $0.user == .none ? nil : User(rawResponse: $0) },
+                       processingHandler: { $0.user == .none ? nil : User(rawResponse: $0.user) },
                        completionHandler: completionHandler)
     }
 
