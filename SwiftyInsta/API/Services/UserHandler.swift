@@ -15,11 +15,11 @@ public enum UserReference {
 }
 
 public class UserHandler: Handler {
-    public func current(completionHandler: @escaping (Result<User, Error>) -> Void) {
+    public func current(completionHandler: @escaping (Result<User?, Error>) -> Void) {
         current(delay: nil, completionHandler: completionHandler)
     }
 
-    func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User, Error>) -> Void) {
+    func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User?, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -27,11 +27,12 @@ public class UserHandler: Handler {
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
 
-        requests.parse(User.self,
+        requests.parse(User?.self,
                        method: .get,
                        url: Result { try URLs.getCurrentUser() },
                        body: .parameters(body),
                        delay: delay,
+                       processingHandler: { $0.rawResponse.user == .none ? nil : User(rawResponse: $0) },
                        completionHandler: completionHandler)
     }
 

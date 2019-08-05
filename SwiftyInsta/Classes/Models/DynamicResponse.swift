@@ -3,7 +3,7 @@
 //  SwiftyInsta
 //
 //  Created by Stefano Bertagno on 08/02/2019.
-//  Inspired by https://github.com/saoudrizwan/DynamicJSON.
+//  Inspired by https://github.com/saoudrizwan/DynamicJSON
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
@@ -16,7 +16,7 @@ public extension String {
         return split(separator: "_")
             .map(String.init)
             .enumerated()
-            .map { $0.offset > 0 ? $0.element.capitalized : $0.element.lowercased() }
+            .map { $0.offset > 0 ? $0.element.beginningWithUppercase : $0.element.beginningWithLowercase }
             .joined()
     }
     /// To `snake-case`.
@@ -25,6 +25,15 @@ public extension String {
             result += new.isUppercase ? "-"+String(new).lowercased() : String(new)
         }
     }
+
+    /// Convert first letter to uppercase.
+    var beginningWithUppercase: String {
+        return prefix(1).uppercased()+dropFirst()
+    }
+    /// Convert first letter to lowercase.
+    var beginningWithLowercase: String {
+        return prefix(1).lowercased()+dropFirst()
+    }
 }
 
 @dynamicMemberLookup
@@ -32,18 +41,12 @@ public extension String {
 public enum DynamicResponse: Equatable {
     /// An `Array`.
     case array([DynamicResponse])
-    /// A `Bool`.
-    case bool(Bool)
-    /// A `Double`.
-    case double(Double)
-    /// An `Int`.
-    case int(Int)
+    /// A `Bool`, `Double` or `Int`.
+    case number(NSNumber)
     /// A `Dictionary`.
     case dictionary([String: DynamicResponse])
     /// A `String`.
     case string(String)
-    /// A `URL`.
-    case url(URL)
     /// An empty value.
     case none
 
@@ -58,15 +61,9 @@ public enum DynamicResponse: Equatable {
         // match `Array`.
         case let array as [Any]:
             self = .array(array.map(DynamicResponse.init))
-        // match `Bool`.
-        case let bool as Bool:
-            self = .bool(bool)
-        // match `Int`.
-        case let int as Int:
-            self = .int(int)
-        // match `Double`.
-        case let double as Double:
-            self = .double(double)
+        // match `Bool`, `Double` or `Int`.
+        case let number as NSNumber:
+            self = .number(number)
         // match `Data`.
         case let data as Data:
             self = (try? DynamicResponse(data: data)) ?? .none
@@ -75,7 +72,7 @@ public enum DynamicResponse: Equatable {
             self = .dictionary(Dictionary(uniqueKeysWithValues: dictionary.map { ($0.key.camelCased, DynamicResponse($0.value)) }))
         // match `String`.
         case let string as String:
-            self = URL(string: string).flatMap(DynamicResponse.url) ?? .string(string)
+            self = .string(string)
         // anything else.
         default:
             self = .none
@@ -91,12 +88,9 @@ public enum DynamicResponse: Equatable {
     public var any: Any {
         switch self {
         case .array(let array): return array.map { $0.any }
-        case .bool(let bool): return bool
         case .dictionary(let dictionary): return dictionary.mapValues { $0.any }
-        case .double(let double): return double
-        case .int(let int): return int
+        case .number(let number): return number
         case .string(let string): return string
-        case .url(let url): return url.absoluteString
         case .none: return NSNull()
         }
     }
@@ -110,8 +104,7 @@ public enum DynamicResponse: Equatable {
     /// `Bool` if  `.bool`, `.int`, `.string` or `nil`.
     public var bool: Bool? {
         switch self {
-        case .bool(let bool): return bool
-        case .int(let int) where int >= 0: return int != 0
+        case .number(let number): return number.boolValue
         case .string(let string) where ["yes", "y", "true", "t", "1"].contains(string.lowercased()):
             return true
         case .string(let string) where ["no", "n", "false", "f", "0"].contains(string.lowercased()):
@@ -129,32 +122,34 @@ public enum DynamicResponse: Equatable {
     /// `Double` if `.double`, `.int` or `nil`.
     public var double: Double? {
         switch self {
-        case .double(let double): return double
-        case .int(let int): return Double(int)
+        case .number(let number): return number.doubleValue
         default: return nil
         }
     }
 
     /// `Int` if `.int` or `nil`.
     public var int: Int? {
-        guard case let .int(int) = self else { return nil }
-        return int
+        switch self {
+        case .number(let number): return number.intValue
+        default: return nil
+        }
     }
 
     /// `String` if `.string`, `.url` or `nil`.
     public var string: String? {
         switch self {
-        case .url(let url): return url.absoluteString
         case .string(let string): return string
-        case .int(let int): return String(format: "%ld", int)
+        case .number(let number): return number.description(withLocale: Locale.current)
         default: return nil
         }
     }
 
     /// `URL` if `.url` or `nil`.
     public var url: URL? {
-        guard case let .url(url) = self else { return nil }
-        return url
+        switch self {
+        case .string(let string): return URL(string: string)
+        default: return nil
+        }
     }
 
     // MARK: Subscripts
@@ -166,8 +161,7 @@ public enum DynamicResponse: Equatable {
 
     /// Access `index`-th item in `.array`.
     public subscript(index: Int) -> DynamicResponse {
-        guard case let .array(array) = self,
-            index >= 0 && index < array.count else { return .none }
+        guard case let .array(array) = self, (0..<array.count).contains(index) else { return .none }
         return array[index]
     }
 
@@ -184,7 +178,7 @@ extension DynamicResponse: ExpressibleByArrayLiteral {
 }
 extension DynamicResponse: ExpressibleByBooleanLiteral {
     public init(booleanLiteral value: BooleanLiteralType) {
-        self = .bool(value)
+        self = .number(value as NSNumber)
     }
 }
 extension DynamicResponse: ExpressibleByDictionaryLiteral {
@@ -194,12 +188,12 @@ extension DynamicResponse: ExpressibleByDictionaryLiteral {
 }
 extension DynamicResponse: ExpressibleByFloatLiteral {
     public init(floatLiteral value: FloatLiteralType) {
-        self = .double(value)
+        self = .number(value as NSNumber)
     }
 }
 extension DynamicResponse: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: IntegerLiteralType) {
-        self = .int(value)
+        self = .number(value as NSNumber)
     }
 }
 extension DynamicResponse: ExpressibleByNilLiteral {
@@ -209,6 +203,6 @@ extension DynamicResponse: ExpressibleByNilLiteral {
 }
 extension DynamicResponse: ExpressibleByStringLiteral {
     public init(stringLiteral value: StringLiteralType) {
-        self = URL(string: value).flatMap(DynamicResponse.url) ?? .string(value)
+        self = .string(value)
     }
 }
