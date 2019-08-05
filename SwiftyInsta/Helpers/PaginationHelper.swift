@@ -43,8 +43,7 @@ public struct AnyPaginatedResponse: PaginatedResponse {
     public init(rawResponse: DynamicResponse) {
         self.rawResponse = rawResponse
     }
-    
-    
+
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
