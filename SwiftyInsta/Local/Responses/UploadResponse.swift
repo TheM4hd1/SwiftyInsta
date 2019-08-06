@@ -32,7 +32,7 @@ public extension Upload {
 }
 public extension Upload.Response.Video {
     /// The `Video` url structure.
-    public struct URL: Codable {
+    struct URL: Codable {
         /// The url.
         public let url: String?
         /// The job.
