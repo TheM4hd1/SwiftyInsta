@@ -17,7 +17,7 @@ public struct User: IdentifiableParsedResponse {
         /// The username.
         case username(String)
     }
-    
+
     /// Init with `rawResponse`.
     public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
 
@@ -77,7 +77,7 @@ public struct Friendship: ParsedResponse {
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
-    
+
     /// The `following` value.
     public var isFollowedByYou: Bool {
         rawResponse.following.bool ?? false
@@ -94,7 +94,7 @@ public struct Friendship: ParsedResponse {
     public var isInYourCloseFriendsList: Bool? {
         rawResponse.isBestie.bool
     }
-    
+
     /// The `incomingRequest` value.
     public var requestedToFollowYou: Bool? {
         rawResponse.incomingRequest.bool
@@ -103,7 +103,7 @@ public struct Friendship: ParsedResponse {
     public var followRequestSent: Bool? {
         rawResponse.outgoingRequest.bool
     }
-    
+
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

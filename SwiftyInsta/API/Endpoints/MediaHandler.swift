@@ -193,7 +193,10 @@ public class MediaHandler: Handler {
                                                    model: device.hardwareModel,
                                                    androidVersion: androidVersion.number,
                                                    androidRelease: androidVersion.apiLevel)
-        let configureEdits = ConfigureEdits.init(cropOriginalSize: [Int(photo.size.width), Int(photo.size.height)], cropCenter: [0.0, -0.0], cropZoom: 1)
+        let configureEdits = ConfigureEdits.init(cropOriginalSize: [Int(photo.size.width),
+                                                                    Int(photo.size.height)],
+                                                 cropCenter: [0.0, -0.0],
+                                                 cropZoom: 1)
         let configureExtras = ConfigureExtras.init(sourceWidth: Int(photo.size.width), sourceHeight: Int(photo.size.height))
         let configure = ConfigurePhotoModel.init(uuid: device.deviceGuid.uuidString,
                                                  uid: user.identity.primaryKey ?? -1,

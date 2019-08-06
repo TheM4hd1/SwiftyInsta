@@ -191,7 +191,7 @@ public class ProfileHandler: Handler {
     }
 
     /// Upload profile picture.
-    public func upload(profilePicture photo: InstaPhoto, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+    public func upload(profilePicture photo: Upload.Picture, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }

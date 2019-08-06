@@ -30,7 +30,7 @@ public enum Upload {
         public var caption: String
         /// The size.
         public var size: CGSize
-        
+
         /// Init.
         public init(image: Image, caption: String, size: CGSize) {
             self.image = image
@@ -52,7 +52,7 @@ public enum Upload {
         public var size: CGSize
         /// The type.
         public var type: Int
-        
+
         /// Init.
         public init(data: Data,
                     file: String,
@@ -68,7 +68,7 @@ public enum Upload {
             self.type = type
         }
     }
-    
+
     /// A photo.
     case picture(Picture)
     /// A video.
@@ -81,18 +81,18 @@ public extension User {
         enum CodingKeys: CodingKey {
             case userId, position
         }
-        
+
         /// The user id.
         public let userId: Int
         /// The position.
         public let position: CGPoint
-        
+
         /// Init.
         public init(userId: Int, position: CGPoint) {
             self.userId = userId
             self.position = position
         }
-        
+
         // MARK: Codable
         public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -111,7 +111,7 @@ public extension User {
         enum CodingKeys: String, CodingKey {
             case adding = "in", removing = "removed"
         }
-        
+
         /// `Tag`s in the picture.
         public let adding: [Tag]
         /// Removed `userId`s.

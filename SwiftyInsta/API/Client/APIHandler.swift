@@ -241,7 +241,7 @@ public struct Login {
             case responseError
             case pending
         }
-        
+
         /// The login model.
         public var model: State
         /// The session cache.

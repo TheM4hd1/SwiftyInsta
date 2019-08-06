@@ -21,19 +21,6 @@ public extension Upload {
         }
         /// A `struct` holding reference to a successful `Upload.video`.
         public struct Video: Codable, StatusEnforceable {
-            /// The `Video` url structure.
-            public struct URL: Codable {
-                /// The url.
-                public let url: String?
-                /// The job.
-                public let job: String?
-                /// The expiration.
-                public let expires: Double?
-            }
-            enum CodingKeys: String, CodingKey {
-                case urls = "videoUploadUrls", uploadId, status
-            }
-            
             /// The urls.
             public var urls: [URL]
             /// The upload id.
@@ -41,5 +28,19 @@ public extension Upload {
             /// The status.
             public var status: String?
         }
+    }
+}
+public extension Upload.Response.Video {
+    /// The `Video` url structure.
+    public struct URL: Codable {
+        /// The url.
+        public let url: String?
+        /// The job.
+        public let job: String?
+        /// The expiration.
+        public let expires: Double?
+    }
+    enum CodingKeys: String, CodingKey {
+        case urls = "videoUploadUrls", uploadId, status
     }
 }

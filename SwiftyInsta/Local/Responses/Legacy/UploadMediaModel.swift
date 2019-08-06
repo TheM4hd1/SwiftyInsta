@@ -8,52 +8,6 @@
 
 import Foundation
 
-public protocol UploadMediaProtocol {
-    var caption: String {get}
-    var width: Int {get}
-    var height: Int {get}
-}
-
-public struct InstaPhoto: UploadMediaProtocol {
-    public var image: Image
-    public var caption: String
-    public var width: Int
-    public var height: Int
-
-    public init(image: Image, caption: String, width: Int, height: Int) {
-        self.image = image
-        self.caption = caption
-        self.width = width
-        self.height = height
-    }
-}
-
-public struct InstaVideo: UploadMediaProtocol {
-    public var data: Data
-    public var fileName: String
-    public var caption: String
-    public var audioMuted: Bool
-    public var width: Int
-    public var height: Int
-    public var type: Int
-
-    public init(data: Data, name: String, caption: String, muted: Bool, width: Int, height: Int, type: Int) {
-        self.data = data
-        self.fileName = name
-        self.caption = caption
-        self.audioMuted = muted
-        self.width = width
-        self.height = height
-        self.type = type
-    }
-}
-
-public struct UploadPhotoResponse: Codable, StatusEnforceable {
-    var media: Media?
-    var uploadId: String?
-    var status: String?
-}
-
 public struct UploadPhotoAlbumResponse: Codable, StatusEnforceable {
     var clientSidecarId: String?
     var media: Media?
@@ -121,18 +75,6 @@ struct ConfigureChildren: Codable {
     let disableComments: Bool
     let sourceType: Int
     let uploadId: String
-}
-
-struct UploadVideoResponse: Codable, StatusEnforceable {
-    let videoUploadUrls: [VideoUploadUrls]?
-    let uploadId: String?
-    var status: String?
-}
-
-struct VideoUploadUrls: Codable {
-    let url: String?
-    let job: String?
-    let expires: Double?
 }
 
 struct ConfigureVideoModel: Codable {

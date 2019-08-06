@@ -496,10 +496,10 @@ public class UserHandler: Handler {
                         "radio_type": "wifi-none"]
 
             requests.parse(Friendship.self,
-                            method: .get,
-                            url: Result { try URLs.getFriendshipStatusUrl(for: pk) },
-                            body: .parameters(body),
-                            completionHandler: completionHandler)
+                           method: .get,
+                           url: Result { try URLs.getFriendshipStatusUrl(for: pk) },
+                           body: .parameters(body),
+                           completionHandler: completionHandler)
         }
     }
 

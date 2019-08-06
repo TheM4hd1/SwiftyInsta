@@ -26,7 +26,7 @@ public class MessageHandler: Handler {
     /// Send message to user(s) in thred.
     public func send(_ text: String,
                      to receipients: Recipient.Reference,
-                     completionHandler: @escaping (Result<DirectSendMessageResponseModel, Error>) -> Void) {
+                     completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         var body = ["text": text,
                     "action": "send_item"]
         switch receipients {
@@ -34,11 +34,10 @@ public class MessageHandler: Handler {
         case .thread(let thread): body["thread_ids"] = "[\(thread)]"
         }
 
-        requests.decode(DirectSendMessageResponseModel.self,
+        requests.decode(Status.self,
                         method: .get,
                         url: Result { try URLs.getDirectSendTextMessage() },
-                        body: .parameters(body),
-                        completionHandler: completionHandler)
+                        body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
     /// Get thread by id.
