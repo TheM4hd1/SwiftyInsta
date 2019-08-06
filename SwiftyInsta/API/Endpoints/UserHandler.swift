@@ -469,8 +469,7 @@ public class UserHandler: Handler {
     }
 
     /// Friendship status.
-    public func friendshipStatus(withUser user: User.Reference, completionHandler: @escaping (Result<FriendshipStatusModel, Error>) -> Void) {
-        #warning("uses old models.")
+    public func friendshipStatus(withUser user: User.Reference, completionHandler: @escaping (Result<Friendship, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -496,7 +495,7 @@ public class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.decode(FriendshipStatusModel.self,
+            requests.parse(Friendship.self,
                             method: .get,
                             url: Result { try URLs.getFriendshipStatusUrl(for: pk) },
                             body: .parameters(body),

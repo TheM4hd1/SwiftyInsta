@@ -43,6 +43,10 @@ public struct User: IdentifiableParsedResponse {
     public var isPrivate: Bool { rawResponse.isPrivate.bool ?? true }
     /// The `isVerified` value.
     public var isVerified: Bool { rawResponse.isVerified.bool ?? false }
+    /// The `friendship` value.
+    public var friendship: Friendship? {
+        rawResponse.friendship == .none ? nil : Friendship(rawResponse: rawResponse.friendship)
+    }
 
     /// The `phoneNumber` value.
     public var phoneNumber: String? { rawResponse.phoneNumber.string }
@@ -55,6 +59,51 @@ public struct User: IdentifiableParsedResponse {
     /// The `isBusiness` value.
     public var isBusiness: Bool? { rawResponse.isBusiness.bool }
 
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
+}
+
+/// A `Friendship` response.
+public struct Friendship: ParsedResponse {
+    /// Init with `rawResponse`.
+    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+
+    /// The `rawResponse`.
+    public let rawResponse: DynamicResponse
+    
+    /// The `following` value.
+    public var isFollowedByYou: Bool {
+        rawResponse.following.bool ?? false
+    }
+    /// The `followedBy` value.
+    public var isFollowingYou: Bool? {
+        rawResponse.followedBy.bool
+    }
+    /// The `blocking` value.
+    public var isBlockedByYou: Bool? {
+        rawResponse.blocking.bool
+    }
+    /// The `isBestie` value.
+    public var isInYourCloseFriendsList: Bool? {
+        rawResponse.isBestie.bool
+    }
+    
+    /// The `incomingRequest` value.
+    public var requestedToFollowYou: Bool? {
+        rawResponse.incomingRequest.bool
+    }
+    /// The `outgoingRequest` value.
+    public var followRequestSent: Bool? {
+        rawResponse.outgoingRequest.bool
+    }
+    
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

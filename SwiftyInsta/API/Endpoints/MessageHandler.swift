@@ -9,11 +9,6 @@
 
 import Foundation
 
-public enum MessageRecipients {
-    case users([Int])
-    case thread(String)
-}
-
 public class MessageHandler: Handler {
     /// Get the user's inbox.
     public func inbox(with paginationParameters: PaginationParameters,
@@ -30,9 +25,8 @@ public class MessageHandler: Handler {
 
     /// Send message to user(s) in thred.
     public func send(_ text: String,
-                     to receipients: MessageRecipients,
+                     to receipients: Recipient.Reference,
                      completionHandler: @escaping (Result<DirectSendMessageResponseModel, Error>) -> Void) {
-        #warning("uses old models.")
         var body = ["text": text,
                     "action": "send_item"]
         switch receipients {

@@ -103,8 +103,7 @@ public class MediaHandler: Handler {
     }
 
     /// Upload photo.
-    public func upload(photo: InstaPhoto, completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
-        #warning("uses old models.")
+    public func upload(photo: Upload.Picture, completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -146,7 +145,7 @@ public class MediaHandler: Handler {
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decode(UploadPhotoResponse.self,
+        requests.decode(Upload.Response.Picture.self,
                         method: .post,
                         url: Result { try URLs.getUploadPhotoUrl() },
                         body: .data(content),
@@ -175,11 +174,10 @@ public class MediaHandler: Handler {
     }
 
     /// Set up photo.
-    func configure(photo: InstaPhoto,
+    func configure(photo: Upload.Picture,
                    with uploadId: String,
                    caption: String,
-                   completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
-        #warning("uses old models.")
+                   completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -195,8 +193,8 @@ public class MediaHandler: Handler {
                                                    model: device.hardwareModel,
                                                    androidVersion: androidVersion.number,
                                                    androidRelease: androidVersion.apiLevel)
-        let configureEdits = ConfigureEdits.init(cropOriginalSize: [photo.width, photo.height], cropCenter: [0.0, -0.0], cropZoom: 1)
-        let configureExtras = ConfigureExtras.init(sourceWidth: photo.width, sourceHeight: photo.height)
+        let configureEdits = ConfigureEdits.init(cropOriginalSize: [Int(photo.size.width), Int(photo.size.height)], cropCenter: [0.0, -0.0], cropZoom: 1)
+        let configureExtras = ConfigureExtras.init(sourceWidth: Int(photo.size.width), sourceHeight: Int(photo.size.height))
         let configure = ConfigurePhotoModel.init(uuid: device.deviceGuid.uuidString,
                                                  uid: user.identity.primaryKey ?? -1,
                                                  csrfToken: storage.csrfToken,
@@ -222,7 +220,7 @@ public class MediaHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(UploadPhotoResponse.self,
+            requests.decode(Upload.Response.Picture.self,
                             method: .post,
                             url: url,
                             body: .parameters(body),
@@ -355,11 +353,10 @@ public class MediaHandler: Handler {
     // Make sure file is valid (correct format, codecs, width, height and aspect ratio)
     // also its important to provide fileName.extenstion in InstaVideo
     // to convert video to data you need to pass file's URL to Data.init(contentsOf: URL)
-    public func upload(video: InstaVideo,
-                       thumbnail: InstaPhoto,
+    public func upload(video: Upload.Video,
+                       thumbnail: Upload.Picture,
                        caption: String,
                        completionHandler: @escaping (Result<Media, Error>) -> Void) {
-        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -390,7 +387,7 @@ public class MediaHandler: Handler {
 
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decode(UploadVideoResponse.self,
+        requests.decode(Upload.Response.Video.self,
                         method: .post,
                         url: Result { try URLs.getUploadVideoUrl() },
                         body: .data(content),
@@ -406,7 +403,7 @@ public class MediaHandler: Handler {
                                 }
                             case .success(let decoded):
                                 guard decoded.status == "ok",
-                                    let url = decoded.videoUploadUrls?.first,
+                                    let url = decoded.urls.first,
                                     let job = url.job,
                                     let path = url.url?.removingPercentEncoding,
                                     let uploadUrl = URL(string: path) else {
@@ -432,7 +429,7 @@ public class MediaHandler: Handler {
                                 videoContent.append(string: "--\(uploadId)\r\n")
                                 videoContent.append(string: "Content-Transfer-Encoding: binary\r\n")
                                 videoContent.append(string: "Content-Type: application/octet-stream\r\n")
-                                videoContent.append(string: "Content-Disposition: attachment; filename=\"\(video.fileName)\"\r\n\r\n")
+                                videoContent.append(string: "Content-Disposition: attachment; filename=\"\(video.file)\"\r\n\r\n")
                                 videoContent.append(video.data)
                                 videoContent.append(string: "\r\n--\(uploadId)--\r\n\r\n")
 
@@ -476,10 +473,9 @@ public class MediaHandler: Handler {
         }
     }
 
-    func upload(thumbnail: InstaPhoto,
+    func upload(thumbnail: Upload.Picture,
                 with uploadId: String,
                 completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -533,11 +529,10 @@ public class MediaHandler: Handler {
         }
     }
 
-    func configure(video: InstaVideo,
+    func configure(video: Upload.Video,
                    with uploadId: String,
                    caption: String,
                    completionHandler: @escaping (Result<Media, Error>) -> Void) {
-        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -561,7 +556,7 @@ public class MediaHandler: Handler {
                                           extra: extra,
                                           clips: [clips],
                                           posterFrameIndex: 0,
-                                          audioMuted: video.audioMuted,
+                                          audioMuted: video.isAudioMuted,
                                           filterType: "0",
                                           videoResult: "deprecated",
                                           csrfToken: "",
@@ -594,8 +589,7 @@ public class MediaHandler: Handler {
     /// Delete media.
     public func delete(media mediaId: String,
                        with type: MediaType,
-                       completionHandler: @escaping (Result<DeleteMediaResponse, Error>) -> Void) {
-        #warning("uses old models.")
+                       completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -604,19 +598,19 @@ public class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decode(DeleteMediaResponse.self,
-                        method: .post,
-                        url: Result { try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: type.rawValue) },
-                        body: .parameters(body),
-                        completionHandler: completionHandler)
+        requests.parse(Bool.self,
+                       method: .post,
+                       url: Result { try URLs.getDeleteMediaUrl(mediaId: mediaId, mediaType: type.rawValue) },
+                       body: .parameters(body),
+                       processingHandler: { $0.didDelete.bool ?? false },
+                       completionHandler: completionHandler)
     }
 
     /// Edit media.
     public func edit(media mediaId: String,
                      caption: String,
-                     tags: UserTags,
+                     tags: User.Tags,
                      completionHandler: @escaping (Result<Media, Error>) -> Void) {
-        #warning("uses old models.")
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }

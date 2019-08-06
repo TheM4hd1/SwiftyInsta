@@ -1,26 +1,12 @@
 //
-//  RequestReelsMediaFeed.swift
+//  SupportedCapabilities.swift
 //  SwiftyInsta
 //
-//  Created by Mahdi on 7/14/19.
+//  Created by Stefano Bertagno on 06/08/2019.
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
 import Foundation
-
-struct RequestReelsMediaFeed: Codable {
-    enum CodingKeys: String, CodingKey {
-        case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
-        case supportedCapabilitiesNew, userIds, source
-    }
-
-    let supportedCapabilitiesNew: [SupportedCapability]
-    let uuid: String
-    let uid: String
-    let csrfToken: String
-    let userIds: [String]
-    let source: String
-}
 
 struct SupportedCapability: Codable {
     let name: String

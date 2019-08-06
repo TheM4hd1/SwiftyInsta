@@ -71,8 +71,7 @@ public class StoryHandler: Handler {
     }
 
     /// Upload photo.
-    public func upload(photo: InstaPhoto, completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
-        #warning("uses old models.")
+    public func upload(photo: Upload.Picture, completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -111,7 +110,7 @@ public class StoryHandler: Handler {
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decode(UploadPhotoResponse.self,
+        requests.decode(Upload.Response.Picture.self,
                         method: .post,
                         url: Result { try URLs.getUploadPhotoUrl() },
                         body: .data(content),
@@ -140,11 +139,10 @@ public class StoryHandler: Handler {
     }
 
     // Set up photo.
-    func configure(photo: InstaPhoto,
+    func configure(photo: Upload.Picture,
                    with uploadId: String,
                    caption: String,
-                   completionHandler: @escaping (Result<UploadPhotoResponse, Error>) -> Void) {
-        #warning("uses old models.")
+                   completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
@@ -173,7 +171,7 @@ public class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(UploadPhotoResponse.self,
+            requests.decode(Upload.Response.Picture.self,
                             method: .post,
                             url: Result { try URLs.getConfigureStoryUrl() },
                             body: .parameters(body),
@@ -263,16 +261,15 @@ public class StoryHandler: Handler {
         guard let storage = handler.response?.cache?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
         }
-        let data = RequestReelsMediaFeed(supportedCapabilitiesNew: SupportedCapability.generate(),
-                                         uuid: handler!.settings.device.deviceGuid.uuidString,
-                                         uid: storage.dsUserId,
-                                         csrfToken: storage.csrfToken,
-                                         userIds: feeds,
-                                         source: "feed_timeline")
+        let supportedCapabilities = SupportedCapability.generate().map { ["name": $0.name, "value": $0.value] }
+        let dynamicData: DynamicRequest = ["supported_capabilities_new": supportedCapabilities,
+                                           "_uuid": handler!.settings.device.deviceGuid.uuidString,
+                                           "_uid": storage.dsUserId,
+                                           "csrfToken": storage.csrfToken,
+                                           "userIds": feeds,
+                                           "source": "feed_timeline"]
 
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        guard let payload = try? String(data: encoder.encode(data), encoding: .utf8) else {
+        guard let payload = try? String(data: dynamicData.data(), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {

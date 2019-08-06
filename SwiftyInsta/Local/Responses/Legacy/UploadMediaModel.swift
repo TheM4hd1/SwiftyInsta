@@ -8,17 +8,6 @@
 
 import Foundation
 
-#if os(OSX)
-    import AppKit
-    public typealias Image = NSImage
-#elseif os(watchOS)
-    import WatchKit
-    public typealias Image = UIImage
-#else
-    import UIKit
-    public typealias Image = UIImage
-#endif
-
 public protocol UploadMediaProtocol {
     var caption: String {get}
     var width: Int {get}

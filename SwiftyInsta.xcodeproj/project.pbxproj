@@ -35,7 +35,6 @@
 		115F1246217FEA5200ED3530 /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		115F1253217FEFF200ED3530 /* SessionStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1252217FEFF200ED3530 /* SessionStorage.swift */; };
 		115F1257217FF1BF00ED3530 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* Device.swift */; };
-		1165DF9F22DB53B200D87D15 /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
 		116B149F21DEB64B00953A71 /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
 		11723A592187C23400968DA5 /* CredentialsAuthenticationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11723A582187C23400968DA5 /* CredentialsAuthenticationResponse.swift */; };
 		11848604218A1F460067FFD6 /* FriendshipStatusModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */; };
@@ -85,8 +84,6 @@
 		E006E42422E87EFE002DB4BB /* DirectInboxModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112C1FCF21998AEC00A698D5 /* DirectInboxModel.swift */; };
 		E006E42922E87EFE002DB4BB /* UploadMediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B8518E219F5208009527CD /* UploadMediaModel.swift */; };
 		E006E42C22E87EFE002DB4BB /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
-		E006E42E22E87EFE002DB4BB /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
-		E006E43222E87EFE002DB4BB /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
 		E006E43322E87EFE002DB4BB /* HTTPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD102180644100F855BA /* HTTPHelper.swift */; };
 		E006E43422E87EFE002DB4BB /* PaginationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E063077122E253060015AA92 /* PaginationHelper.swift */; };
 		E006E43622E87EFE002DB4BB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110B3F9A21A2CE4D0019523A /* Extensions.swift */; };
@@ -120,8 +117,6 @@
 		E006E47122E87EFF002DB4BB /* DirectInboxModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112C1FCF21998AEC00A698D5 /* DirectInboxModel.swift */; };
 		E006E47622E87EFF002DB4BB /* UploadMediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B8518E219F5208009527CD /* UploadMediaModel.swift */; };
 		E006E47922E87EFF002DB4BB /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
-		E006E47B22E87EFF002DB4BB /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
-		E006E47F22E87EFF002DB4BB /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
 		E006E48022E87EFF002DB4BB /* HTTPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD102180644100F855BA /* HTTPHelper.swift */; };
 		E006E48122E87EFF002DB4BB /* PaginationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E063077122E253060015AA92 /* PaginationHelper.swift */; };
 		E006E48322E87EFF002DB4BB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110B3F9A21A2CE4D0019523A /* Extensions.swift */; };
@@ -155,8 +150,6 @@
 		E006E4BE22E87F00002DB4BB /* DirectInboxModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112C1FCF21998AEC00A698D5 /* DirectInboxModel.swift */; };
 		E006E4C322E87F00002DB4BB /* UploadMediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B8518E219F5208009527CD /* UploadMediaModel.swift */; };
 		E006E4C622E87F00002DB4BB /* SessionCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116B149E21DEB64B00953A71 /* SessionCache.swift */; };
-		E006E4C822E87F00002DB4BB /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
-		E006E4CC22E87F00002DB4BB /* RequestReelsMediaFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */; };
 		E006E4CD22E87F00002DB4BB /* HTTPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD102180644100F855BA /* HTTPHelper.swift */; };
 		E006E4CE22E87F00002DB4BB /* PaginationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E063077122E253060015AA92 /* PaginationHelper.swift */; };
 		E006E4D022E87F00002DB4BB /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110B3F9A21A2CE4D0019523A /* Extensions.swift */; };
@@ -211,13 +204,32 @@
 		E0B9940F22F3BF8B0036BFA5 /* MediaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B9940D22F3BF8B0036BFA5 /* MediaResponse.swift */; };
 		E0B9941022F3BF8B0036BFA5 /* MediaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B9940D22F3BF8B0036BFA5 /* MediaResponse.swift */; };
 		E0B9941122F3BF8B0036BFA5 /* MediaResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B9940D22F3BF8B0036BFA5 /* MediaResponse.swift */; };
+		E0D0EF1522F8EA7B00CBFE36 /* UploadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D0EF1422F8EA7B00CBFE36 /* UploadRequest.swift */; };
+		E0D0EF1622F8EA7B00CBFE36 /* UploadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D0EF1422F8EA7B00CBFE36 /* UploadRequest.swift */; };
+		E0D0EF1722F8EA7B00CBFE36 /* UploadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D0EF1422F8EA7B00CBFE36 /* UploadRequest.swift */; };
+		E0D0EF1822F8EA7B00CBFE36 /* UploadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D0EF1422F8EA7B00CBFE36 /* UploadRequest.swift */; };
+		E0D0EF1A22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D0EF1922F8EBBB00CBFE36 /* UploadResponse.swift */; };
+		E0D0EF1B22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D0EF1922F8EBBB00CBFE36 /* UploadResponse.swift */; };
+		E0D0EF1C22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D0EF1922F8EBBB00CBFE36 /* UploadResponse.swift */; };
+		E0D0EF1D22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D0EF1922F8EBBB00CBFE36 /* UploadResponse.swift */; };
 		E0F49BA122E49E34004C3E7F /* FeedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FD21A99CD400BD9EFB /* FeedHandler.swift */; };
 		E0F49BA222E4A53D004C3E7F /* UserHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FE21A99CD400BD9EFB /* UserHandler.swift */; };
 		E0F49BA322E4D864004C3E7F /* MediaHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE440221A99CD400BD9EFB /* MediaHandler.swift */; };
 		E0F49BA422E4F0D3004C3E7F /* MessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE440021A99CD400BD9EFB /* MessageHandler.swift */; };
 		E0F49BA522E505CF004C3E7F /* StoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A95BEE21AC0B9800839250 /* StoryHandler.swift */; };
 		E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FF21A99CD400BD9EFB /* ProfileHandler.swift */; };
-		E8314D5E2210652400D13BEA /* UserTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8314D5D2210652400D13BEA /* UserTags.swift */; };
+		E0F8D51222F9DE0E0004309C /* MessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51122F9DE0E0004309C /* MessageRequest.swift */; };
+		E0F8D51322F9DE0E0004309C /* MessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51122F9DE0E0004309C /* MessageRequest.swift */; };
+		E0F8D51422F9DE0E0004309C /* MessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51122F9DE0E0004309C /* MessageRequest.swift */; };
+		E0F8D51522F9DE0E0004309C /* MessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51122F9DE0E0004309C /* MessageRequest.swift */; };
+		E0F8D51722F9E4680004309C /* DynamicRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51622F9E4680004309C /* DynamicRequest.swift */; };
+		E0F8D51822F9E4680004309C /* DynamicRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51622F9E4680004309C /* DynamicRequest.swift */; };
+		E0F8D51922F9E4680004309C /* DynamicRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51622F9E4680004309C /* DynamicRequest.swift */; };
+		E0F8D51A22F9E4680004309C /* DynamicRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51622F9E4680004309C /* DynamicRequest.swift */; };
+		E0F8D51C22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
+		E0F8D51D22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
+		E0F8D51E22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
+		E0F8D51F22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -237,7 +249,6 @@
 		115F1245217FEA5200ED3530 /* URLs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLs.swift; sourceTree = "<group>"; };
 		115F1252217FEFF200ED3530 /* SessionStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStorage.swift; sourceTree = "<group>"; };
 		115F1256217FF1BF00ED3530 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
-		1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestReelsMediaFeed.swift; sourceTree = "<group>"; };
 		116B149E21DEB64B00953A71 /* SessionCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCache.swift; sourceTree = "<group>"; };
 		11723A582187C23400968DA5 /* CredentialsAuthenticationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsAuthenticationResponse.swift; sourceTree = "<group>"; };
 		11848603218A1F460067FFD6 /* FriendshipStatusModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendshipStatusModel.swift; sourceTree = "<group>"; };
@@ -287,7 +298,11 @@
 		E0B9940222F3A8450036BFA5 /* StoryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryResponse.swift; sourceTree = "<group>"; };
 		E0B9940822F3B7DB0036BFA5 /* UserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserResponse.swift; sourceTree = "<group>"; };
 		E0B9940D22F3BF8B0036BFA5 /* MediaResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaResponse.swift; sourceTree = "<group>"; };
-		E8314D5D2210652400D13BEA /* UserTags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTags.swift; sourceTree = "<group>"; };
+		E0D0EF1422F8EA7B00CBFE36 /* UploadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadRequest.swift; sourceTree = "<group>"; };
+		E0D0EF1922F8EBBB00CBFE36 /* UploadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadResponse.swift; sourceTree = "<group>"; };
+		E0F8D51122F9DE0E0004309C /* MessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequest.swift; sourceTree = "<group>"; };
+		E0F8D51622F9E4680004309C /* DynamicRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicRequest.swift; sourceTree = "<group>"; };
+		E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedCapabilities.swift; sourceTree = "<group>"; };
 		E9497D8DD2D1B4C4F52B1DC5 /* Pods-SwiftyInsta.iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -412,12 +427,13 @@
 				E0B993FD22F398860036BFA5 /* DynamicResponse.swift */,
 				E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */,
 				112022972188AACF00CA58BA /* StatusResponse.swift */,
+				E0D0EF1922F8EBBB00CBFE36 /* UploadResponse.swift */,
 				E0B9940822F3B7DB0036BFA5 /* UserResponse.swift */,
 				E0B9940222F3A8450036BFA5 /* StoryResponse.swift */,
 				E0B9940D22F3BF8B0036BFA5 /* MediaResponse.swift */,
 				E007B1B522F8207F00750E6D /* CommentResponse.swift */,
-				E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */,
 				E0114B1922F8554E00DACAC5 /* ThreadResponse.swift */,
+				E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */,
 				E0B9940722F3B3EC0036BFA5 /* Legacy */,
 			);
 			path = Responses;
@@ -428,6 +444,7 @@
 			children = (
 				115F1245217FEA5200ED3530 /* URLs.swift */,
 				115F1243217FEA4400ED3530 /* Headers.swift */,
+				E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -437,6 +454,7 @@
 			children = (
 				E06E067E22F8E55C004F81C1 /* Authentication */,
 				115F124D217FEBF900ED3530 /* Devices */,
+				E0D0EF1322F8EA6100CBFE36 /* Requests */,
 				115F1239217FE83B00ED3530 /* Responses */,
 			);
 			path = Local;
@@ -523,10 +541,18 @@
 				110C9D9721989F5800805C68 /* RecentActivitiesModel.swift */,
 				112C1FCF21998AEC00A698D5 /* DirectInboxModel.swift */,
 				11B8518E219F5208009527CD /* UploadMediaModel.swift */,
-				E8314D5D2210652400D13BEA /* UserTags.swift */,
-				1165DF9E22DB53B200D87D15 /* RequestReelsMediaFeed.swift */,
 			);
 			path = Legacy;
+			sourceTree = "<group>";
+		};
+		E0D0EF1322F8EA6100CBFE36 /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				E0F8D51622F9E4680004309C /* DynamicRequest.swift */,
+				E0D0EF1422F8EA7B00CBFE36 /* UploadRequest.swift */,
+				E0F8D51122F9DE0E0004309C /* MessageRequest.swift */,
+			);
+			path = Requests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -837,12 +863,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				E0F49BA422E4F0D3004C3E7F /* MessageHandler.swift in Sources */,
+				E0D0EF1522F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E0F49BA522E505CF004C3E7F /* StoryHandler.swift in Sources */,
 				E0B9940E22F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
 				E076015922F1988500F8961F /* DeviceCollection.swift in Sources */,
 				112022982188AACF00CA58BA /* StatusResponse.swift in Sources */,
 				E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */,
-				1165DF9F22DB53B200D87D15 /* RequestReelsMediaFeed.swift in Sources */,
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
 				1104CD0B2180627400F855BA /* Error.swift in Sources */,
 				110C9D9821989F5800805C68 /* RecentActivitiesModel.swift in Sources */,
@@ -850,21 +876,24 @@
 				11F0CE6B2195CC2400C0F6A4 /* TimelineModel.swift in Sources */,
 				E007B1B622F8207F00750E6D /* CommentResponse.swift in Sources */,
 				E0F49BA122E49E34004C3E7F /* FeedHandler.swift in Sources */,
+				E0D0EF1A22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
 				115F1244217FEA4400ED3530 /* Headers.swift in Sources */,
 				E0B993FE22F398860036BFA5 /* DynamicResponse.swift in Sources */,
 				110B3F9B21A2CE4D0019523A /* Extensions.swift in Sources */,
-				E8314D5E2210652400D13BEA /* UserTags.swift in Sources */,
 				11AE440321A99CD400BD9EFB /* CommentHandler.swift in Sources */,
 				11905DFF2191C98600FF297A /* ProfilePicVersionsModel.swift in Sources */,
 				115F1246217FEA5200ED3530 /* URLs.swift in Sources */,
 				115F1257217FF1BF00ED3530 /* Device.swift in Sources */,
+				E0F8D51222F9DE0E0004309C /* MessageRequest.swift in Sources */,
 				11D3779D22674E340023CF07 /* LoginWebView.swift in Sources */,
 				E0F49BA322E4D864004C3E7F /* MediaHandler.swift in Sources */,
+				E0F8D51C22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */,
 				11723A592187C23400968DA5 /* CredentialsAuthenticationResponse.swift in Sources */,
 				1131A45421974F9D00497992 /* TagFeedModel.swift in Sources */,
 				11B9568621945F09006661A6 /* VideoVersionModel.swift in Sources */,
 				11DDE51F21A1F94B00754F0F /* Version.swift in Sources */,
 				11B9567A21945494006661A6 /* MediaModel.swift in Sources */,
+				E0F8D51722F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E0F49BA222E4A53D004C3E7F /* UserHandler.swift in Sources */,
 				E0114B1A22F8554E00DACAC5 /* ThreadResponse.swift in Sources */,
 				E0B9940922F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
@@ -898,7 +927,6 @@
 				E006E42922E87EFE002DB4BB /* UploadMediaModel.swift in Sources */,
 				E006E43422E87EFE002DB4BB /* PaginationHelper.swift in Sources */,
 				E0B9940A22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
-				E006E42E22E87EFE002DB4BB /* UserTags.swift in Sources */,
 				E006E41222E87EFE002DB4BB /* NameTagModel.swift in Sources */,
 				E006E43622E87EFE002DB4BB /* Extensions.swift in Sources */,
 				E006E42C22E87EFE002DB4BB /* SessionCache.swift in Sources */,
@@ -906,13 +934,16 @@
 				E006E40322E87EFE002DB4BB /* TimelineModel.swift in Sources */,
 				E006E41322E87EFE002DB4BB /* PaginationParameters.swift in Sources */,
 				E006E42322E87EFE002DB4BB /* RecentActivitiesModel.swift in Sources */,
-				E006E43222E87EFE002DB4BB /* RequestReelsMediaFeed.swift in Sources */,
+				E0D0EF1B22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
 				E006E3F022E87EFE002DB4BB /* CommentHandler.swift in Sources */,
 				E076015A22F1988500F8961F /* DeviceCollection.swift in Sources */,
 				E006E3F822E87EFE002DB4BB /* URLs.swift in Sources */,
+				E0F8D51822F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E006E3F122E87EFE002DB4BB /* FeedHandler.swift in Sources */,
+				E0F8D51322F9DE0E0004309C /* MessageRequest.swift in Sources */,
 				E006E3F722E87EFE002DB4BB /* AuthenticationHandler.swift in Sources */,
 				E006E42022E87EFE002DB4BB /* VideoVersionModel.swift in Sources */,
+				E0F8D51D22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */,
 				E006E3F222E87EFE002DB4BB /* MediaHandler.swift in Sources */,
 				E006E3FB22E87EFE002DB4BB /* Error.swift in Sources */,
 				E007B1B722F8207F00750E6D /* CommentResponse.swift in Sources */,
@@ -929,6 +960,7 @@
 				E006E40C22E87EFE002DB4BB /* FriendshipStatusModel.swift in Sources */,
 				E006E4D622E8811E002DB4BB /* Version.swift in Sources */,
 				E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */,
+				E0D0EF1622F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E3F422E87EFE002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9940F22F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
 				E006E40622E87EFE002DB4BB /* ChalllengeForm.swift in Sources */,
@@ -952,7 +984,6 @@
 				E006E47622E87EFF002DB4BB /* UploadMediaModel.swift in Sources */,
 				E006E48122E87EFF002DB4BB /* PaginationHelper.swift in Sources */,
 				E0B9940B22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
-				E006E47B22E87EFF002DB4BB /* UserTags.swift in Sources */,
 				E006E45F22E87EFF002DB4BB /* NameTagModel.swift in Sources */,
 				E006E48322E87EFF002DB4BB /* Extensions.swift in Sources */,
 				E006E47922E87EFF002DB4BB /* SessionCache.swift in Sources */,
@@ -960,13 +991,16 @@
 				E006E45022E87EFF002DB4BB /* TimelineModel.swift in Sources */,
 				E006E46022E87EFF002DB4BB /* PaginationParameters.swift in Sources */,
 				E006E47022E87EFF002DB4BB /* RecentActivitiesModel.swift in Sources */,
-				E006E47F22E87EFF002DB4BB /* RequestReelsMediaFeed.swift in Sources */,
+				E0D0EF1C22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
 				E006E43D22E87EFF002DB4BB /* CommentHandler.swift in Sources */,
 				E076015B22F1988500F8961F /* DeviceCollection.swift in Sources */,
 				E006E44522E87EFF002DB4BB /* URLs.swift in Sources */,
+				E0F8D51922F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E006E43E22E87EFF002DB4BB /* FeedHandler.swift in Sources */,
+				E0F8D51422F9DE0E0004309C /* MessageRequest.swift in Sources */,
 				E006E44422E87EFF002DB4BB /* AuthenticationHandler.swift in Sources */,
 				E006E46D22E87EFF002DB4BB /* VideoVersionModel.swift in Sources */,
+				E0F8D51E22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */,
 				E006E43F22E87EFF002DB4BB /* MediaHandler.swift in Sources */,
 				E006E44822E87EFF002DB4BB /* Error.swift in Sources */,
 				E007B1B822F8207F00750E6D /* CommentResponse.swift in Sources */,
@@ -983,6 +1017,7 @@
 				E006E45922E87EFF002DB4BB /* FriendshipStatusModel.swift in Sources */,
 				E006E4D822E8811E002DB4BB /* Version.swift in Sources */,
 				E006E43C22E87EFF002DB4BB /* APIHandler.swift in Sources */,
+				E0D0EF1722F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E44122E87EFF002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9941022F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
 				E006E45322E87EFF002DB4BB /* ChalllengeForm.swift in Sources */,
@@ -1006,7 +1041,6 @@
 				E006E4C322E87F00002DB4BB /* UploadMediaModel.swift in Sources */,
 				E006E4CE22E87F00002DB4BB /* PaginationHelper.swift in Sources */,
 				E0B9940C22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
-				E006E4C822E87F00002DB4BB /* UserTags.swift in Sources */,
 				E006E4AC22E87F00002DB4BB /* NameTagModel.swift in Sources */,
 				E006E4D022E87F00002DB4BB /* Extensions.swift in Sources */,
 				E006E4C622E87F00002DB4BB /* SessionCache.swift in Sources */,
@@ -1014,13 +1048,16 @@
 				E006E49D22E87F00002DB4BB /* TimelineModel.swift in Sources */,
 				E006E4AD22E87F00002DB4BB /* PaginationParameters.swift in Sources */,
 				E006E4BD22E87F00002DB4BB /* RecentActivitiesModel.swift in Sources */,
-				E006E4CC22E87F00002DB4BB /* RequestReelsMediaFeed.swift in Sources */,
+				E0D0EF1D22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
 				E006E48A22E87F00002DB4BB /* CommentHandler.swift in Sources */,
 				E076015C22F1988500F8961F /* DeviceCollection.swift in Sources */,
 				E006E49222E87F00002DB4BB /* URLs.swift in Sources */,
+				E0F8D51A22F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E006E48B22E87F00002DB4BB /* FeedHandler.swift in Sources */,
+				E0F8D51522F9DE0E0004309C /* MessageRequest.swift in Sources */,
 				E006E49122E87F00002DB4BB /* AuthenticationHandler.swift in Sources */,
 				E006E4BA22E87F00002DB4BB /* VideoVersionModel.swift in Sources */,
+				E0F8D51F22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */,
 				E006E48C22E87F00002DB4BB /* MediaHandler.swift in Sources */,
 				E006E49522E87F00002DB4BB /* Error.swift in Sources */,
 				E007B1B922F8207F00750E6D /* CommentResponse.swift in Sources */,
@@ -1037,6 +1074,7 @@
 				E006E4A622E87F00002DB4BB /* FriendshipStatusModel.swift in Sources */,
 				E006E4DA22E8811F002DB4BB /* Version.swift in Sources */,
 				E006E48922E87F00002DB4BB /* APIHandler.swift in Sources */,
+				E0D0EF1822F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E48E22E87F00002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9941122F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
 				E006E4A022E87F00002DB4BB /* ChalllengeForm.swift in Sources */,

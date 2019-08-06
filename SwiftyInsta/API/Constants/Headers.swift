@@ -9,7 +9,6 @@
 import Foundation
 
 struct Headers {
-
     private init() {}
 
     static let acceptLanguageKey = "Accept-Language"
