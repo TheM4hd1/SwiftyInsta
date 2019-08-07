@@ -39,6 +39,8 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
     public var didSuccessfullyLogIn: (() -> Void)?
     /// Retrieve session cache and handler.
     public var completionHandler: ((_ sessionCache: SessionCache, _ handler: APIHandlerProtocol) -> Void)!
+    /// A value used to track the creation of cookies.
+    var startedAt: Date?
     
     @available(*, deprecated, message: "use `InstagramLoginWebView` properties instead.")
     /// The login delegate. Deprecated. User `InstagramLoginWebView` closure properties instead.
@@ -52,29 +54,47 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
     }
 
     // MARK: Init
+    public class func create(with frame: CGRect,
+                      didReachEndOfLoginFlow: (() -> Void)? = nil,
+                      didSuccessfullyLogIn: (() -> Void)? = nil,
+                      completionHandler: ((_ sessionCache: SessionCache, _ handler: APIHandlerProtocol) -> Void)?,
+                      returnHandler: @escaping (InstagramLoginWebView) -> Void) {
+        DispatchQueue.main.async {
+            // start by removing all cookies and website data.
+            HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+            WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+                                                    modifiedSince: .distantPast) {
+                                                        // configure.
+                                                        let configuration = WKWebViewConfiguration()
+                                                        configuration.processPool = WKProcessPool()
+                                                        configuration.suppressesIncrementalRendering = true
+                                                        // return web view.
+                                                        let webView = InstagramLoginWebView(frame: frame,
+                                                                                            configuration: configuration)
+                                                        webView.didReachEndOfLoginFlow = didReachEndOfLoginFlow
+                                                        webView.didSuccessfullyLogIn = didSuccessfullyLogIn
+                                                        webView.completionHandler = completionHandler
+                                                        returnHandler(webView)
+            }
+        }
+    }
+    
+    @available(*, unavailable, message: "use `InstagramLoginWebView.create` instead.")
     public init(frame: CGRect,
                 configuration: WKWebViewConfiguration = .init(),
                 didReachEndOfLoginFlow: (() -> Void)? = nil,
                 didSuccessfullyLogIn: (() -> Void)? = nil,
                 completionHandler: ((_ sessionCache: SessionCache, _ handler: APIHandlerProtocol) -> Void)?) {
-        // update the process pool.
-        let copy = configuration.copy() as! WKWebViewConfiguration
-        copy.processPool = WKProcessPool()
-        // init login.
-        self.didReachEndOfLoginFlow = didReachEndOfLoginFlow
-        self.didSuccessfullyLogIn = didSuccessfullyLogIn
-        self.completionHandler = completionHandler
-        super.init(frame: frame, configuration: configuration)
-        self.navigationDelegate = self
+        fatalError("`init(frame:configuration:didReachEndOfLoginFlow:…)` has been removed.")
     }
         
     @available(*, unavailable, message: "use `init(frame:configuration:didReachEndOfLoginFlow:didSuccessfullyLogIn:completionHandler:)` instead.")
     public init(frame: CGRect, configurationBlock: ((WKWebViewConfiguration) -> Void)? = nil) {
         fatalError("init(frame:, configurationBlock:) has been removed")
     }
-    @available(*, unavailable, message: "use `init(frame:configuration:didReachEndOfLoginFlow:didSuccessfullyLogIn:completionHandler:)` instead.")
     private override init(frame: CGRect, configuration: WKWebViewConfiguration) {
-        fatalError("init(frame:, configuration:) has been removed")
+        super.init(frame: frame, configuration: configuration)
+        self.navigationDelegate = self
     }
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -82,11 +102,6 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
 
     // MARK: Log in
     public func loadInstagramLogin() {
-        // wipe all cookies and wait to load.
-        deleteAllCookies { [weak self] in self?.requestLogIn() }
-    }
-    
-    private func requestLogIn() {
         let urlString = "https://www.instagram.com/accounts/login/"
         
         // in some iOS versions, use-agent needs to be different.
@@ -102,10 +117,14 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
         self.load(URLRequest(url: URL(string: urlString)!))
     }
     
-    public func isUserLoggedIn(instagramCookies : [HTTPCookie]?) {
+    private func isUserLoggedIn(instagramCookies : [HTTPCookie]?) {
         // check for cookies.
-        guard let cookies = instagramCookies?.filter({ $0.domain.contains("instagram.com") }) else { return }
-        let filtered = cookies.filter { !$0.value.isEmpty && ($0.name == "ds_user_id" || $0.name == "csrftoken" || $0.name == "sessionid") }
+        guard let cookies = instagramCookies?.filter({ $0.domain.contains("instagram.com") }),
+            let startedAt = self.startedAt else { return }
+        let filtered = cookies.filter {
+            !$0.value.isEmpty
+                && $0.properties?[.init(rawValue: "Created")] as? TimeInterval ?? 0 > startedAt.timeIntervalSinceReferenceDate
+                && ($0.name == "ds_user_id" || $0.name == "csrftoken" || $0.name == "sessionid") }
         guard filtered.count >= 3 else { return }
         // notify user.
         didReachEndOfLoginFlow?()
@@ -172,17 +191,13 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
         }
     }
     
-    private func deleteAllCookies(completionHandler: @escaping () -> Void) {
-        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
-        WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
-                                                modifiedSince: .distantPast,
-                                                completionHandler: completionHandler)
-    }
-    
     // MARK: Navigation delegate
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // fetch cookies.
-        fetchCookies()
+        switch webView.url?.absoluteString {
+        case "https://www.instagram.com/accounts/login/"?:
+            startedAt = .init()
+        default:
+            fetchCookies()
+        }
     }
 }
-
