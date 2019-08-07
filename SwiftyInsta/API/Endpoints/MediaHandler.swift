@@ -240,11 +240,11 @@ public class MediaHandler: Handler {
      var _uploadIds = uploadIds
      var _photos = photos
      let _currentPhoto = _photos.removeFirst()
-     
+
      let _device = HandlerSettings.shared.device!
      let _user = HandlerSettings.shared.user!
      let _request = HandlerSettings.shared.request!
-     
+
      let uploadId = _request.generateUploadId()
      var content = Data()
      content.append(string: "--\(uploadId)\n")
@@ -271,12 +271,12 @@ public class MediaHandler: Handler {
      content.append(string: "Content-Transfer-Encoding: binary\n")
      content.append(string: "Content-Type: application/octet-stream\n")
      content.append(string: "Content-Disposition: form-data; name=photo; filename=pending_media_\(uploadId).jpg; filename*=utf-8''pending_media_\(uploadId).jpg\n\n")
-     
+
      let imageData = _currentPhoto.image.jpegData(compressionQuality: 1)
-     
+
      content.append(imageData!)
      content.append(string: "\n--\(uploadId)--\n\n")
-     
+
      let header = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
      guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
      httpHelper.sendAsync(method: .post, url: try URLs.getUploadPhotoUrl(), body: [:], header: header, data: content) { [weak self] (data, response, error) in
@@ -304,26 +304,26 @@ public class MediaHandler: Handler {
      }
      }
      }
-     
+
      }
      }
-     
+
      fileprivate func configureMediaAlbum(uploadIds: [String], caption: String, completion: @escaping (UploadPhotoAlbumResponse?, Error?) -> ()) {
      let url = try URLs.getConfigureMediaAlbumUrl()
      let _device = HandlerSettings.shared.device!
      let _user = HandlerSettings.shared.user!
      let _request = HandlerSettings.shared.request!
-     
-     
+
+
      let clientSidecarId = _request.generateUploadId()
-     
+
      var childrens: [ConfigureChildren] = []
      for id in uploadIds {
      childrens.append(ConfigureChildren.init(scene_capture_type: "standard", mas_opt_in: "NOT_PROMPTED", camera_position: "unknown", allow_multi_configures: false, geotag_enabled: false, disable_comments: false, source_type: 0, upload_id: id))
      }
-     
+
      let content = ConfigurePhotoAlbumModel.init(_uuid: _device.deviceGuid.uuidString, _uid: _user.loggedInUser.pk!, _csrftoken: _user.csrfToken, caption: caption, client_sidecar_id: clientSidecarId, geotag_enabled: false, disable_comments: false, children_metadata: childrens)
-     
+
      let encoder = JSONEncoder()
      let payload = String(data: try! encoder.encode(content), encoding: .utf8)!
      let hash = payload.hmac(algorithm: .SHA256, key: Headers.igSignatureValue)
