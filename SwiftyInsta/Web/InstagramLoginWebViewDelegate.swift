@@ -105,8 +105,10 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
     public func isUserLoggedIn(instagramCookies : [HTTPCookie]?) {
         // check for cookies.
         guard let cookies = instagramCookies?.filter({ $0.domain.contains("instagram.com") }) else { return }
-        let filtered = cookies.filter { $0.name == "ds_user_id" || $0.name == "csrftoken" }
-        guard filtered.count >= 2 else { return }
+        let filtered = cookies.filter { !$0.value.isEmpty && ($0.name == "ds_user_id" || $0.name == "csrftoken" || $0.name == "sessionid") }
+        guard filtered.count >= 3 else { return }
+        // notify user.
+        didReachEndOfLoginFlow?()
         
         // deal with log in.
         let session = URLSession(configuration: .default)
@@ -179,9 +181,6 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
     
     // MARK: Navigation delegate
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        guard webView.url?.absoluteString == "https://www.instagram.com/" else { return }
-        // notify user.
-        didReachEndOfLoginFlow?()
         // fetch cookies.
         fetchCookies()
     }
