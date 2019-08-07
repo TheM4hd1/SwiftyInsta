@@ -22,5 +22,8 @@ Pod::Spec.new do |s|
   s.macos.frameworks = 'AppKit'
   s.tvos.frameworks = 'UIKit'
   s.watchos.frameworks = 'UIKit'
+
+  s.dependency "CryptoSwift", "~> 1.0"
   s.dependency "GzipSwift", "~> 5.0"
+  s.dependency "KeychainSwift", "~> 16.0"
 end

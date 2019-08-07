@@ -1,5 +1,6 @@
 disabled_rules:
     - operator_whitespace
+    - multiple_closures_with_trailing_closure
 
 opt_in_rules:
     - array_init
@@ -98,6 +99,13 @@ identifier_name:
       - me
       - URL
       - url
+      
+type_name:
+    min_length:
+        warning: 3
+        error: 1
+    excluded:
+        - LG
 
 function_parameter_count:
     warning: 8

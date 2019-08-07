@@ -18,7 +18,7 @@ Use this at your own risk.
 ```terminal
 $ gem install cocoapods
 ```
-To integrate SwiftyInsta into your Xcode project using CocoaPods, specify it in your `Podfile`:
+To integrate **SwiftyInsta** into your Xcode project using CocoaPods, specify it in your `Podfile`:
 ```text
 use_frameworks!
 
@@ -30,6 +30,8 @@ Then, run the following command:
 ```terminal
 $ pod install
 ````
+
+**SwiftyInsta** depends on [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift), [GzipSwift](https://github.com/1024jp/GzipSwift), and [keychain-swift](https://github.com/evgenyneu/keychain-swift).
 
 <!--
 ### Manually
@@ -46,7 +48,7 @@ self.credentials = Credentials(username: /* username */, password: /* password *
 self.handler = APIHandler()
 handler.authenticate(with: .credentials(credentials)) {
     switch $0 {
-    case .success(let response, _): 
+    case .success(let response, _):
         print("Login successful.")
         // persist cache safely in the keychain for logging in again in the future.
         guard let key = response.persist() else { return print("`SessionCache` could not be persisted.") }
