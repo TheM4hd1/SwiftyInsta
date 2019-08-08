@@ -55,10 +55,10 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
 
     // MARK: Init
     public class func create(with frame: CGRect,
-                      didReachEndOfLoginFlow: (() -> Void)? = nil,
-                      didSuccessfullyLogIn: (() -> Void)? = nil,
-                      completionHandler: ((_ sessionCache: SessionCache, _ handler: APIHandlerProtocol) -> Void)?,
-                      returnHandler: @escaping (InstagramLoginWebView) -> Void) {
+                             didReachEndOfLoginFlow: (() -> Void)? = nil,
+                             didSuccessfullyLogIn: (() -> Void)? = nil,
+                             completionHandler: @escaping (_ sessionCache: SessionCache, _ handler: APIHandlerProtocol) -> Void,
+                             returnHandler: @escaping (InstagramLoginWebView) -> Void) {
         DispatchQueue.main.async {
             // start by removing all cookies and website data.
             HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
@@ -180,7 +180,7 @@ public class InstagramLoginWebView: WKWebView, WKNavigationDelegate, InstagramLo
                                                  cookies: cookies.toCookieData(),
                                                  isUserAuthenticated: true)
             // notify delegate.
-            self?.completionHandler(sessionCache, handler)
+            self?.completionHandler?(sessionCache, handler)
         }
     }
 
