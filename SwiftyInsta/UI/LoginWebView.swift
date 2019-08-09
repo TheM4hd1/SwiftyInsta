@@ -10,6 +10,35 @@
 import UIKit
 import WebKit
 
+// Deal with banners etc.
+extension WKWebViewConfiguration {
+    func improveReadability() {
+        let user = WKUserContentController()
+        let hideHeader = """
+            var el = document.getElementsByClassName('lOPC8 DPEif'); \
+            if (el.length > 0) el[0].parentNode.removeChild(el[0]);
+            """
+        let hideAppStoreBanner = """
+            var el = document.getElementsByClassName('MFkQJ ABLKx VhasA _1-msl'); \
+            if (el.length > 0) el[0].parentNode.removeChild(el[0]);
+            """
+        let hideFooter = """
+            var el = document.getElementsByClassName(' tHaIX Igw0E rBNOH YBx95 ybXk5 _4EzTm O1flK _7JkPY PdTAI ZUqME'); \
+            if (el.length > 0) el[0].parentNode.removeChild(el[0]);
+            """
+        user.addUserScript(WKUserScript(source: hideHeader,
+                                        injectionTime: .atDocumentEnd,
+                                        forMainFrameOnly: false))
+        user.addUserScript(WKUserScript(source: hideAppStoreBanner,
+                                        injectionTime: .atDocumentEnd,
+                                        forMainFrameOnly: false))
+        user.addUserScript(WKUserScript(source: hideFooter,
+                                        injectionTime: .atDocumentEnd,
+                                        forMainFrameOnly: false))
+        userContentController = user
+    }
+}
+
 // MARK: Views
 @available(iOS 11, *)
 public class LoginWebView: WKWebView, WKNavigationDelegate {
@@ -21,14 +50,16 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
 
     // MARK: Init
     public init(frame: CGRect,
-                configuration: WKWebViewConfiguration = .init(),
+                improvingReadability shouldImproveReadability: Bool = true,
                 didReachEndOfLoginFlow: (() -> Void)? = nil) {
         // update the process pool.
-        let copy = configuration.copy() as? WKWebViewConfiguration ?? WKWebViewConfiguration()
-        copy.processPool = WKProcessPool()
+        let configuration = WKWebViewConfiguration()
+        configuration.processPool = WKProcessPool()
+        // improve readability.
+        if shouldImproveReadability { configuration.improveReadability() }
         // init login.
         self.didReachEndOfLoginFlow = didReachEndOfLoginFlow
-        super.init(frame: frame, configuration: copy)
+        super.init(frame: frame, configuration: configuration)
         self.navigationDelegate = self
     }
 
