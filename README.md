@@ -117,7 +117,7 @@ If you've already persisted a user's `Authentication.Response`:
 // in our example, we stored it in `UserDefaults`.
 guard let key = UserDefaults.standard.string(forKey: "current.account") else { return print("`key` not found.") }
 // recover the safely persisted `Authentication.Response`.
-guard let cache = SessionCache.persisted(with: key) else { return print("`Authentication.Response` not found.") }
+guard let cache = Authentication.Response.persisted(with: key) else { return print("`Authentication.Response` not found.") }
 // log in.
 let handler = APIHandler()
 handler.authenticate(with: .cache(cache)) { _ in
