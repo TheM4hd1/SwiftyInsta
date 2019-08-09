@@ -137,6 +137,8 @@ handler.authenticate(with: .cache(cache)) { _ in
 
 _Pull requests_ and _issues_ are more than welcome.
 
+[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/0)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/0)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/1)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/1)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/2)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/2)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/3)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/3)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/4)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/4)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/5)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/5)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/6)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/6)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/7)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/7)
+
 ## License
 
 **SwiftyInsta** is licensed under the MIT license. See [LICENSE](https://github.com/TheM4hd1/SwiftyInsta/blob/master/LICENSE) for more info.
