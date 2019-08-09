@@ -125,13 +125,24 @@ handler.authenticate(with: .cache(cache)) { _ in
 }
 ```
 
-<!--
-## Documentation
+## Usage
+All endpoints are easily accessible from your `APIHandller` instance.
 
-- See [Features](https://github.com/TheM4hd1/SwiftyInsta/wiki/Features) for all available APIs
-- See [Usage](https://github.com/TheM4hd1/SwiftyInsta/wiki/Usage) for a more in-depth overview
-- See [Tests](https://github.com/TheM4hd1/SwiftyInsta/tree/master/SwiftyInstaTests) for some real world examples
--->
+```swift
+let handler: APIHandler = /* a valid, authenticated handler */
+// for instance you can…
+// …fetch your inbox.
+handler.messages.inbox(with: .init(maxPagesToLoad: .max),
+                       updateHandler: nil,
+                       completionHandler: { _, _ in /* do something */ })
+// …fetch all your followers.
+handler.users.following(user: .primaryKey(handler.user?.identity.primaryKey ?? -1),
+                        with: .init(maxPagesToLoad: .max),
+                        updateHandler: nil,
+                        completionHandler: { _, _ in /* do something */ })
+```
+
+Futhermore, responses now display every single value contained in the `JSON` file returned by the **API**: just access any `ParsedResponse` `rawResponse` and start browsing, or stick with the suggested accessories (e.g. `User`'s `username`, `name`, etc. and `Media`'s `aspectRatio`, `takenAt`, `content`, etc.).
 
 ## Contributions
 
