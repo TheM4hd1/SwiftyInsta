@@ -120,7 +120,7 @@ public class APIHandler {
                                                                        sessionId: sessionId,
                                                                        rankToken: rankToken,
                                                                        user: nil),
-                                                        cookies: cookies.cookieData)
+                                                        cookies: cookies.data)
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             }

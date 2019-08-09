@@ -52,6 +52,8 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     public init(frame: CGRect,
                 improvingReadability shouldImproveReadability: Bool = true,
                 didReachEndOfLoginFlow: (() -> Void)? = nil) {
+        // delete all cookies.
+        HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         // update the process pool.
         let configuration = WKWebViewConfiguration()
         configuration.processPool = WKProcessPool()
@@ -96,11 +98,13 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     // MARK: Clean cookies
     private func fetchCookies() {
         configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] in
-            self?.completionHandler?(.success($0))
+            self?.completionHandler?(.success($0.compactMap { $0.copy() as? HTTPCookie }))
+            // delete cookies.
+            self?.deleteAllCookies()
         }
     }
 
-    private func deleteAllCookies(completionHandler: @escaping () -> Void) {
+    private func deleteAllCookies(completionHandler: @escaping () -> Void = { }) {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
                                                 modifiedSince: .distantPast,
@@ -109,11 +113,33 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
 
     // MARK: Navigation delegate
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        guard webView.url?.absoluteString == "https://www.instagram.com/" else { return }
-        // notify user.
-        didReachEndOfLoginFlow?()
-        // fetch cookies.
-        fetchCookies()
+        switch webView.url?.absoluteString {
+        case "https://www.instagram.com/"?:
+            // notify user.
+            didReachEndOfLoginFlow?()
+            // fetch cookies.
+            fetchCookies()
+            // no need to check anymore.
+            navigationDelegate = nil
+        case "https://www.instagram.com/accounts/login/"?:
+            // do nothing, just wait.
+            break
+        default:
+            // check for cookies.
+            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] in
+                let filtered = $0.filter { ["ds_user_id", "csrftoken", "sessionid"].contains($0.name) }
+                    .filter { !$0.value.isEmpty }
+                guard filtered.count >= 3 else { return }
+                // notify user.
+                self?.didReachEndOfLoginFlow?()
+                // fetch cookies.
+                self?.completionHandler?(.success($0.compactMap { $0.copy() as? HTTPCookie }))
+                // no need to check anymore.
+                self?.navigationDelegate = nil
+                // delete cookies.
+                self?.deleteAllCookies()
+            }
+        }
     }
 }
 #endif
