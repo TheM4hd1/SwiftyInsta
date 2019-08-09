@@ -51,8 +51,8 @@ handler.authenticate(with: .credentials(credentials)) {
     case .success(let response, _):
         print("Login successful.")
         // persist cache safely in the keychain for logging in again in the future.
-        guard let key = response.persist() else { return print("`SessionCache` could not be persisted.") }
-        // store the `key` wherever you want, so you can access the `SessionCache` later.
+        guard let key = response.persist() else { return print("`Authentication.Response` could not be persisted.") }
+        // store the `key` wherever you want, so you can access the `Authentication.Response` later.
         // `UserDefaults` is just an example.
         UserDefaults.standard.set(key, forKey: "current.account")
         UserDefaults.standard.synchronize()
@@ -99,8 +99,8 @@ class LoginViewController: UIViewController {
             guard let (response, _) = try? $0.get() else { return print("Login failed.") }
             print("Login successful.")
             // persist cache safely in the keychain for logging in again in the future.
-            guard let key = response.persist() else { return print("`SessionCache` could not be persisted.") }
-            // store the `key` wherever you want, so you can access the `SessionCache` later.
+            guard let key = response.persist() else { return print("`Authentication.Response` could not be persisted.") }
+            // store the `key` wherever you want, so you can access the `Authentication.Response` later.
             // `UserDefaults` is just an example.
             UserDefaults.standard.set(key, forKey: "current.account")
             UserDefaults.standard.synchronize()
@@ -109,28 +109,29 @@ class LoginViewController: UIViewController {
 }
 ```
 
-### `SessionCache`
-If you've already persisted a user's `SessionCache`:
+### `Authentication.Response`
+If you've already persisted a user's `Authentication.Response`:
 
 ```swift
-// recover the `key` returned by `Login.Response.persist()`.
+// recover the `key` returned by `Authentication.Response.persist()`.
 // in our example, we stored it in `UserDefaults`.
 guard let key = UserDefaults.standard.string(forKey: "current.account") else { return print("`key` not found.") }
-// recover the safely persisted `SessionCache`.
-guard let cache = SessionCache.persisted(with: key) else { return print("`SessionCache` not found.") }
+// recover the safely persisted `Authentication.Response`.
+guard let cache = SessionCache.persisted(with: key) else { return print("`Authentication.Response` not found.") }
 // log in.
 let handler = APIHandler()
 handler.authenticate(with: .cache(cache)) { _ in
     /* do something here */
 }
 ```
-(`1.*` `SessionCache`s are not compatible with `2.0`: you are going to need to log in again)
 
+<!--
 ## Documentation
 
 - See [Features](https://github.com/TheM4hd1/SwiftyInsta/wiki/Features) for all available APIs
 - See [Usage](https://github.com/TheM4hd1/SwiftyInsta/wiki/Usage) for a more in-depth overview
 - See [Tests](https://github.com/TheM4hd1/SwiftyInsta/tree/master/SwiftyInstaTests) for some real world examples
+-->
 
 ## Contributions
 
