@@ -10,7 +10,7 @@
 import CryptoSwift
 import Foundation
 
-public class CommentHandler: Handler {
+public final class CommentHandler: Handler {
     /// Fetch all comments for media.
     public func all(forMedia mediaId: String,
                     with paginationParameters: PaginationParameters,
@@ -27,8 +27,8 @@ public class CommentHandler: Handler {
 
     /// Add comment to media.
     public func add(_ comment: String, to mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let content = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                        "_uid": storage.dsUserId,
@@ -63,8 +63,8 @@ public class CommentHandler: Handler {
 
     /// Delete a comment.
     public func delete(comment commentId: String, in mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -78,8 +78,8 @@ public class CommentHandler: Handler {
 
     /// Report a comment.
     public func report(comment commentId: String, in mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,

@@ -9,14 +9,14 @@
 
 import Foundation
 
-public class UserHandler: Handler {
+public final class UserHandler: Handler {
     public func current(completionHandler: @escaping (Result<User?, Error>) -> Void) {
         current(delay: nil, completionHandler: completionHandler)
     }
 
     func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User?, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -99,8 +99,8 @@ public class UserHandler: Handler {
 
     /// Search for users matching the query.
     public func search(forUsersMatching query: String, completionHandler: @escaping (Result<[User], Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let headers = [Headers.timeZoneOffsetKey: Headers.timeZoneOffsetValue,
                        Headers.countKey: Headers.countValue,
@@ -140,8 +140,8 @@ public class UserHandler: Handler {
                        with paginationParameters: PaginationParameters,
                        updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                        completionHandler: @escaping PaginationCompletionHandler<Media>) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")),
                                      paginationParameters)
         }
         switch user {
@@ -181,8 +181,8 @@ public class UserHandler: Handler {
                           with paginationParameters: PaginationParameters,
                           updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                           completionHandler: @escaping PaginationCompletionHandler<User>) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")),
                                      paginationParameters)
         }
         switch user {
@@ -224,8 +224,8 @@ public class UserHandler: Handler {
                          with paginationParameters: PaginationParameters,
                          updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                          completionHandler: @escaping PaginationCompletionHandler<User>) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")),
                                      paginationParameters)
         }
         switch user {
@@ -287,8 +287,8 @@ public class UserHandler: Handler {
 
     /// Unfollow user.
     public func remove(follower user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:
@@ -321,8 +321,8 @@ public class UserHandler: Handler {
 
     /// Approve friendship.
     public func approveRequest(from user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:
@@ -355,8 +355,8 @@ public class UserHandler: Handler {
 
     /// Reject friendship.
     public func rejectRequest(from user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:
@@ -402,8 +402,8 @@ public class UserHandler: Handler {
 
     /// Follow user.
     public func follow(user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:
@@ -436,8 +436,8 @@ public class UserHandler: Handler {
 
     /// Unfollow user.
     public func unfollow(user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:
@@ -470,8 +470,8 @@ public class UserHandler: Handler {
 
     /// Friendship status.
     public func friendshipStatus(withUser user: User.Reference, completionHandler: @escaping (Result<Friendship, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:
@@ -547,8 +547,8 @@ public class UserHandler: Handler {
 
     /// Block user.
     public func block(user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:
@@ -581,8 +581,8 @@ public class UserHandler: Handler {
 
     /// Unblock user.
     public func unblock(user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:
@@ -672,8 +672,8 @@ public class UserHandler: Handler {
 
     /// Report user.
     public func report(user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
         case .username:

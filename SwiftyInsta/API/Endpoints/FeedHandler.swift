@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class FeedHandler: Handler {
+public final class FeedHandler: Handler {
     /// Fetch the explore feed.
     public func explore(with paginationParameters: PaginationParameters,
                         updateHandler: PaginationUpdateHandler<ExploreElement, AnyPaginatedResponse>?,
@@ -40,8 +40,8 @@ public class FeedHandler: Handler {
     public func timeline(with paginationParameters: PaginationParameters,
                          updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                          completionHandler: @escaping PaginationCompletionHandler<Media>) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")),
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")),
                                      paginationParameters)
         }
         // prepare body.
