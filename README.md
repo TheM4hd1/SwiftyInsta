@@ -80,7 +80,7 @@ And the `completionHandler` in the previous `authenticate(with: completionHandle
 
 ### `LoginWebViewController` (>= iOS 11 only)
 ```swift
-let login = LoginViewController { controller, result in
+let login = LoginWebViewController { controller, result in
     controller.dismiss(animated: true, completion: nil)
     // deal with authentication response.
     guard let (response, _) = try? result.get() else { return print("Login failed.") }
