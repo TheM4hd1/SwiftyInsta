@@ -10,10 +10,6 @@
 import Foundation
 
 public final class UserHandler: Handler {
-    public func current(completionHandler: @escaping (Result<User?, Error>) -> Void) {
-        current(delay: nil, completionHandler: completionHandler)
-    }
-
     func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User?, Error>) -> Void) {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
@@ -120,6 +116,9 @@ public final class UserHandler: Handler {
     /// Get user matching username.
     public func user(_ user: User.Reference, completionHandler: @escaping (Result<User?, Error>) -> Void) {
         switch user {
+        case .me:
+            // fetch current user.
+            current(delay: nil, completionHandler: completionHandler)
         case .username(let username):
             // fetch username.
             search(forUsersMatching: username) {
@@ -145,6 +144,15 @@ public final class UserHandler: Handler {
                                      paginationParameters)
         }
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache), paginationParameters)
+            }
+            tagged(user: .primaryKey(pk),
+                   with: paginationParameters,
+                   updateHandler: updateHandler,
+                   completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -186,6 +194,15 @@ public final class UserHandler: Handler {
                                      paginationParameters)
         }
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache), paginationParameters)
+            }
+            following(user: .primaryKey(pk),
+                      with: paginationParameters,
+                      updateHandler: updateHandler,
+                      completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -229,6 +246,15 @@ public final class UserHandler: Handler {
                                      paginationParameters)
         }
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache), paginationParameters)
+            }
+            followed(byUser: .primaryKey(pk),
+                     with: paginationParameters,
+                     updateHandler: updateHandler,
+                     completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -291,6 +317,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot unfollow yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -325,6 +353,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -359,6 +389,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -406,6 +438,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -440,6 +474,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -474,6 +510,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -551,6 +589,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -585,6 +625,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in
@@ -676,6 +718,8 @@ public final class UserHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         switch user {
+        case .me:
+            completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
         case .username:
             // fetch username.
             self.user(user) { [weak self] in

@@ -27,6 +27,15 @@ public final class MediaHandler: Handler {
                    updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                    completionHandler: @escaping PaginationCompletionHandler<Media>) {
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache), paginationParameters)
+            }
+            by(user: .primaryKey(pk),
+               with: paginationParameters,
+               updateHandler: updateHandler,
+               completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.handler.users.user(user) { [weak self] in

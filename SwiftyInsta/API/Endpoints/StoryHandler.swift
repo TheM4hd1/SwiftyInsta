@@ -22,6 +22,12 @@ public final class StoryHandler: Handler {
     /// Get user's stories.
     public func by(user: User.Reference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache))
+            }
+            by(user: .primaryKey(pk), completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.handler.users.user(user) { [weak self] in
@@ -47,6 +53,12 @@ public final class StoryHandler: Handler {
     /// Get reel feed.
     public func reelBy(user: User.Reference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache))
+            }
+            reelBy(user: .primaryKey(pk), completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.handler.users.user(user) { [weak self] in
