@@ -3,6 +3,7 @@
 [![Version](https://img.shields.io/cocoapods/v/SwiftyInsta.svg?style=flat)](https://cocoapods.org/pods/SwiftyInsta)
 [![License](https://img.shields.io/cocoapods/l/SwiftyInsta.svg?style=flat)](https://github.com/TheM4hd1/SwiftyInsta/LICENSE.md)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftyInsta.svg?style=flat)](https://cocoapods.org/pods/SwiftyInsta)
+<img src="https://img.shields.io/badge/supports-CocoaPods%2C%20Swift%20Package%20Manager-ff69b4.svg">
 
 **Instagram** offers two kinds of APIs to developers. The [Instagram API Platform](https://www.instagram.com/developer/) (extremely limited in functionality and close to being discontinued), and the [Instagram Graph API](https://developers.facebook.com/docs/instagram-api) for _Business_ and _Creator_ accounts only.
 
