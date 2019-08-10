@@ -94,7 +94,7 @@ let login = LoginViewController { controller, result in
 }
 present(login, animated: true, completion: nil)
 ```
-Or implement your own custom `UIViewController` using `LoginWebView`.
+Or implement your own custom `UIViewController` using `LoginWebView`, and pass it to an `APIHandler` `authenticate` method using `.webView(/* your login web view */)`.
 
 ### `Authentication.Response`
 If you've already persisted a user's `Authentication.Response`:
