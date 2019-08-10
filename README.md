@@ -93,7 +93,7 @@ let login = LoginViewController { controller, result in
     UserDefaults.standard.synchronize()
 }
 if #available(iOS 13, *) {
-    present(login, animated: true, completion: nil)
+    present(login, animated: true, completion: nil) // just swipe down to dismiss.
 } else {
     present(UINavigationController(rootViewController: login),  // already adds a `Cancel` button to dismiss it.
             animated: true,
