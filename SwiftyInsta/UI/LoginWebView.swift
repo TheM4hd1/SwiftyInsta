@@ -98,7 +98,7 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     // MARK: Clean cookies
     private func fetchCookies() {
         configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] in
-            self?.completionHandler?(.success($0.compactMap { $0.copy() as? HTTPCookie }))
+            self?.completionHandler?(.success($0))
             // delete cookies.
             self?.deleteAllCookies()
         }
@@ -133,7 +133,7 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
                 // notify user.
                 self?.didReachEndOfLoginFlow?()
                 // fetch cookies.
-                self?.completionHandler?(.success($0.compactMap { $0.copy() as? HTTPCookie }))
+                self?.completionHandler?(.success($0))
                 // no need to check anymore.
                 self?.navigationDelegate = nil
                 // delete cookies.
