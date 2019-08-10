@@ -78,41 +78,21 @@ self.credentials.code = /* the code */
 And the `completionHandler` in the previous `authenticate(with: completionHandler:)` will automatically catch the response.
 
 
-### `LoginWebView` (>= iOS 11 only)
+### `LoginWebViewController` (>= iOS 11 only)
 ```swift
-import UIKit
-import SwiftyInsta
-
-@available(iOS 11, *)
-class LoginViewController: UIViewController {
-    /// The web view used for logging in.
-    lazy var webView = LoginWebView(frame: view.bounds,
-                                    didReachEndOfLoginFlow: {
-                                        /* remove the web view from the view hierarchy and notify the user */
-    })
-    /// The endpoints handler. Use `.init(with: APIHandler.Settings)` to customize it.
-    lazy var handler = APIHandler()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // remember to add the web view to the view hierarchy
-        // before you try to authenticate.
-        view.addSubview(webView)
-        // prepare handler.
-        handler.authenticate(with: .webView(webView)) {
-            guard let (response, _) = try? $0.get() else { return print("Login failed.") }
-            print("Login successful.")
-            // persist cache safely in the keychain for logging in again in the future.
-            guard let key = response.persist() else { return print("`Authentication.Response` could not be persisted.") }
-            // store the `key` wherever you want, so you can access the `Authentication.Response` later.
-            // `UserDefaults` is just an example.
-            UserDefaults.standard.set(key, forKey: "current.account")
-            UserDefaults.standard.synchronize()
-        }
-    }
+let login = LoginViewController { _, result in
+    guard let (response, _) = try? result.get() else { return print("Login failed.") }
+    print("Login successful.")
+    // persist cache safely in the keychain for logging in again in the future.
+    guard let key = response.persist() else { return print("`Authentication.Response` could not be persisted.") }
+    // store the `key` wherever you want, so you can access the `Authentication.Response` later.
+    // `UserDefaults` is just an example.
+    UserDefaults.standard.set(key, forKey: "current.account")
+    UserDefaults.standard.synchronize()
 }
+present(login, animated: true, completion: nil)
 ```
+Or implement your own custom `UIViewController` using `LoginWebView`.
 
 ### `Authentication.Response`
 If you've already persisted a user's `Authentication.Response`:

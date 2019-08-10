@@ -160,6 +160,7 @@
 		E08C1DA922F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
 		E08C1DAA22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
 		E08C1DAB22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
+		E09FCB8622FED639000E02F1 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */; };
 		E0B993FE22F398860036BFA5 /* DynamicResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B993FD22F398860036BFA5 /* DynamicResponse.swift */; };
 		E0B993FF22F398860036BFA5 /* DynamicResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B993FD22F398860036BFA5 /* DynamicResponse.swift */; };
 		E0B9940022F398860036BFA5 /* DynamicResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B993FD22F398860036BFA5 /* DynamicResponse.swift */; };
@@ -259,6 +260,7 @@
 		E076015D22F198B900F8961F /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
 		E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationHandler.swift; sourceTree = "<group>"; };
 		E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedResponse.swift; sourceTree = "<group>"; };
+		E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebViewController.swift; sourceTree = "<group>"; };
 		E0B993FD22F398860036BFA5 /* DynamicResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicResponse.swift; sourceTree = "<group>"; };
 		E0B9940222F3A8450036BFA5 /* StoryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryResponse.swift; sourceTree = "<group>"; };
 		E0B9940822F3B7DB0036BFA5 /* UserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserResponse.swift; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 			isa = PBXGroup;
 			children = (
 				11D3779C22674E340023CF07 /* LoginWebView.swift */,
+				E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -851,6 +854,7 @@
 				E0F8D51722F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E0F49BA222E4A53D004C3E7F /* UserHandler.swift in Sources */,
 				E0114B1A22F8554E00DACAC5 /* ThreadResponse.swift in Sources */,
+				E09FCB8622FED639000E02F1 /* LoginWebViewController.swift in Sources */,
 				E0B9940922F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
 				E07EBC8B22E74DDA0031647F /* AuthenticationHandler.swift in Sources */,
 				114B84862187200500F84161 /* ChalllengeForm.swift in Sources */,
