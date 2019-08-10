@@ -89,14 +89,24 @@ public class LoginWebViewController: UIViewController {
                                                         self?.authenticate()
                                                     }
         }
+        // navigation helpers.
+        title = "Login"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
+                                                            target: self,
+                                                            action: #selector(dismissWithAnimation))
     }
-
+        
+    // MARK: Internal methods
     func authenticate() {
         guard let webView = webView else { return }
         handler.authenticate(with: .webView(webView)) { [weak self] in
             guard let self = self else { return }
             self.completionHandler(self, $0)
         }
+    }
+
+    @objc func dismissWithAnimation() {
+        dismiss(animated: true, completion: nil)
     }
 }
 #endif

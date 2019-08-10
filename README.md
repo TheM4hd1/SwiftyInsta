@@ -92,7 +92,13 @@ let login = LoginViewController { controller, result in
     UserDefaults.standard.set(key, forKey: "current.account")
     UserDefaults.standard.synchronize()
 }
-present(login, animated: true, completion: nil)
+if #available(iOS 13, *) {
+    present(login, animated: true, completion: nil)
+} else {
+    present(UINavigationController(rootViewController: login),  // already adds a `Cancel` button to dismiss it.
+            animated: true,
+            completion: nil)
+}
 ```
 Or implement your own custom `UIViewController` using `LoginWebView`, and pass it to an `APIHandler` `authenticate` method using `.webView(/* your login web view */)`.
 
