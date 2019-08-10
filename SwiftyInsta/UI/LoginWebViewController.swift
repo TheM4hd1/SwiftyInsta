@@ -95,7 +95,7 @@ public class LoginWebViewController: UIViewController {
                                                             target: self,
                                                             action: #selector(dismissWithAnimation))
     }
-        
+
     // MARK: Internal methods
     func authenticate() {
         guard let webView = webView else { return }

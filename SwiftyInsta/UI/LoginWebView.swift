@@ -13,8 +13,10 @@ import WebKit
 // MARK: Views
 @available(iOS 11, *)
 public class LoginWebView: WKWebView, WKNavigationDelegate {
+    /// Whether javascript injection should be used to make web pages less crowded.
+    var shouldImproveReadability: Bool
     /// Called when reaching the end of the login flow.
-    ///  You should probably hide the `InstagramLoginWebView` and notify the user with an activity indicator.
+    /// You should probably hide the `InstagramLoginWebView` and notify the user with an activity indicator.
     public var didReachEndOfLoginFlow: (() -> Void)?
     /// Called once the flow is completed.
     var completionHandler: ((Result<[HTTPCookie], Error>) -> Void)!
@@ -56,6 +58,7 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         }
         // init login.
         self.didReachEndOfLoginFlow = didReachEndOfLoginFlow
+        self.shouldImproveReadability = shouldImproveReadability
         super.init(frame: frame, configuration: configuration)
         self.navigationDelegate = self
     }
@@ -115,6 +118,7 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             // no need to check anymore.
             navigationDelegate = nil
         case "https://www.instagram.com/accounts/login/"?:
+            guard shouldImproveReadability else { break }
             // do nothing, just wait.
             webView.evaluateJavaScript(
                 """
