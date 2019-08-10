@@ -116,7 +116,17 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             navigationDelegate = nil
         case "https://www.instagram.com/accounts/login/"?:
             // do nothing, just wait.
-            break
+            webView.evaluateJavaScript(
+                """
+                var el = document.getElementsByClassName('lOPC8 DPEif'); \
+                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
+                var el = document.getElementsByClassName('MFkQJ ABLKx VhasA _1-msl'); \
+                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
+                var el = document.getElementsByClassName(' tHaIX Igw0E rBNOH YBx95 ybXk5 _4EzTm O1flK _7JkPY PdTAI ZUqME'); \
+                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
+                """,
+                completionHandler: nil
+            )
         default:
             // check for cookies.
             webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] in
