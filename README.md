@@ -13,6 +13,11 @@ These _Private API_ require no _token_ or _app registration_ but they're not _au
 Use this at your own risk.
 
 ## Installation
+### Swift Package Manager (Xcode 11 and above)
+1. Select `File`/`Swift Packages`/`Add Package Dependency…` from the menu.
+1. Paste `https://github.com/TheM4hd1/SwiftyInsta.git`.
+1. Follow the steps.
+
 ### CocoaPods
 [CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. You can install it with the following command:
 ```terminal
@@ -31,7 +36,7 @@ Then, run the following command:
 $ pod install
 ````
 
-**SwiftyInsta** depends on [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift), [GzipSwift](https://github.com/1024jp/GzipSwift), and [keychain-swift](https://github.com/evgenyneu/keychain-swift).
+**SwiftyInsta** depends on [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)<!--[GzipSwift](https://github.com/1024jp/GzipSwift),--> and [keychain-swift](https://github.com/evgenyneu/keychain-swift).
 
 <!--
 ### Manually
