@@ -201,6 +201,7 @@ class HTTPHelper {
     func getDefaultRequest(for url: URL, method: Method) -> URLRequest {
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
         request.httpMethod = method.rawValue
+        request.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: handler.response?.cookies ?? [])
         request.addValue(Headers.acceptLanguageValue, forHTTPHeaderField: Headers.acceptLanguageKey)
         request.addValue(Headers.igCapabilitiesValue, forHTTPHeaderField: Headers.igCapabilitiesKey)
         request.addValue(Headers.igConnectionTypeValue, forHTTPHeaderField: Headers.igConnectionTypeKey)
@@ -226,17 +227,5 @@ class HTTPHelper {
             let data = queries.joined(separator: "&")
             request.httpBody = data.data(using: String.Encoding.utf8)
         }
-    }
-
-    func setCookies(_ cookiesData: [Data]) throws {
-        var cookies = [HTTPCookie]()
-        for data in cookiesData {
-            if let cookieFromData = HTTPCookie.load(from: data) {
-                cookies.append(cookieFromData)
-            }
-        }
-        HTTPCookieStorage.shared.setCookies(cookies,
-                                            for: try URLs.getInstagramCookieUrl(),
-                                            mainDocumentURL: nil)
     }
 }

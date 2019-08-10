@@ -15,21 +15,16 @@ final class AuthenticationHandler: Handler {
         // update handler.
         handler.settings.device = cache.device
         handler.response = cache
-        do {
-            try requests.setCookies(cache.cookies)
-            // fetch the user.
-            handler.users.current(delay: 0...0) { [weak self] in
-                switch $0 {
-                case .success(let user):
-                    // update user info alone.
-                    self?.handler.response?.storage?.user = user
-                    cache.storage?.user = user
-                    completionHandler(.success(cache))
-                case .failure(let error): completionHandler(.failure(error))
-                }
+        // fetch the user.
+        handler.users.current(delay: 0...0) { [weak self] in
+            switch $0 {
+            case .success(let user):
+                // update user info alone.
+                self?.handler.response?.storage?.user = user
+                cache.storage?.user = user
+                completionHandler(.success(cache))
+            case .failure(let error): completionHandler(.failure(error))
             }
-        } catch {
-            completionHandler(.failure(AuthenticationError.invalidCache))
         }
     }
 
@@ -110,7 +105,7 @@ final class AuthenticationHandler: Handler {
                                                 )
                                                 let cache = Authentication.Response(device: handler.settings.device,
                                                                                     storage: storage,
-                                                                                    cookies: cookies.data)
+                                                                                    data: cookies.data)
                                                 // actually authenticate.
                                                 handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                                             } else if response.user ?? false {
@@ -267,7 +262,7 @@ final class AuthenticationHandler: Handler {
                                                              user: nil)
                         let cache = Authentication.Response(device: handler.settings.device,
                                                             storage: storage,
-                                                            cookies: cookies.data)
+                                                            data: cookies.data)
                         handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                     }
                 } else {
@@ -328,7 +323,7 @@ final class AuthenticationHandler: Handler {
                                 )
                                 let cache = Authentication.Response(device: handler.settings.device,
                                                                     storage: storage,
-                                                                    cookies: cookies.data)
+                                                                    data: cookies.data)
                                 handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                             case 400:
                                 user.response = .failure
@@ -400,7 +395,7 @@ final class AuthenticationHandler: Handler {
                                                          user: nil)
                     let cache = Authentication.Response(device: handler.settings.device,
                                                         storage: storage,
-                                                        cookies: cookies.data)
+                                                        data: cookies.data)
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             default:

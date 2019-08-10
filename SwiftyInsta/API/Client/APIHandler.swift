@@ -100,8 +100,8 @@ public class APIHandler {
                 switch $0 {
                 case .failure(let error): completionHandler(.failure(error))
                 case .success(let instagramCookies):
-                    let cookies = instagramCookies.filter({ $0.domain.contains("instagram.com") })
-                    let filtered = cookies.filter { $0.name == "ds_user_id" || $0.name == "csrftoken" || $0.name == "sessionid" }
+                    let data = instagramCookies.filter({ $0.domain.contains(".instagram.com") })
+                    let filtered = data.filter { $0.name == "ds_user_id" || $0.name == "csrftoken" || $0.name == "sessionid" }
                     guard filtered.count >= 3 else {
                         return handler.settings.queues.response.async {
                             completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` response.")))
@@ -120,7 +120,7 @@ public class APIHandler {
                                                                        sessionId: sessionId,
                                                                        rankToken: rankToken,
                                                                        user: nil),
-                                                        cookies: cookies.data)
+                                                        data: data.data)
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             }

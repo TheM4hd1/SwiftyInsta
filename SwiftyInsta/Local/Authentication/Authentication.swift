@@ -47,7 +47,9 @@ public struct Authentication {
         /// The default storage.
         var storage: Storage?
         /// The `HTTPCookie` stored as `Data`.
-        let cookies: [Data]
+        let data: [Data]
+        //// The `HTTPCookie`s.
+        var cookies: [HTTPCookie] { data.compactMap(HTTPCookie.load) }
 
         /// Store the cache **if valid** in the user's keychain.
         /// You can save the returned value safely in your `UserDefaults`, or your database
