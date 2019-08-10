@@ -8,7 +8,7 @@
 //
 
 import Foundation
-import Gzip
+// import Gzip
 
 /// An _abstract_ `class` providing reference for all `*Handler`s.
 class HTTPHelper {
@@ -26,7 +26,7 @@ class HTTPHelper {
     enum Body {
         case parameters([String: Any])
         case data(Data)
-        case gzip([String: Any])
+        // case gzip([String: Any])
     }
 
     /// The referenced handler.
@@ -180,10 +180,10 @@ class HTTPHelper {
             switch body {
             case .parameters(let parameters)?: me.addBody(to: &request, body: parameters)
             case .data(let data)?: request.httpBody = data
-            case .gzip(let parameters)?:
+            /*case .gzip(let parameters)?:
                 me.addHeaders(to: &request, header: ["Content-Encoding": "gzip"])
                 me.addBody(to: &request, body: parameters)
-                request.httpBody = request.httpBody.flatMap { try? $0.gzipped() }
+                request.httpBody = request.httpBody.flatMap { try? $0.gzipped() }*/
             default: break
             }
             // start task.

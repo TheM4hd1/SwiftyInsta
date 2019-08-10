@@ -13,7 +13,6 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/evgenyneu/keychain-swift.git", from: "16.0.0"),
-        .package(url: "https://github.com/1024jp/GzipSwift.git", from: "5.0.0"),
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.0.0"),
     ],
     targets: [
@@ -21,7 +20,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "SwiftyInsta.iOS",
-            dependencies: ["KeychainSwift", "GzipSwift", "CryptoSwift"],
+            dependencies: ["KeychainSwift", "CryptoSwift"],
             path: "SwiftyInsta"
         ),
     ]

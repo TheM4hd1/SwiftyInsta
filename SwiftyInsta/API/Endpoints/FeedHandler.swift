@@ -78,11 +78,11 @@ public final class FeedHandler: Handler {
                     body: {
                         switch $0.nextMaxId {
                         case .none:
-                            return .gzip(body.merging(["reason": "cold_start_fresh"],
-                                                      uniquingKeysWith: { lhs, _ in lhs }))
+                            return .parameters(body.merging(["reason": "cold_start_fresh"],
+                                                            uniquingKeysWith: { lhs, _ in lhs }))
                         case let maxId?:
-                            return .gzip(body.merging(["reason": "pagination", "max_id": maxId],
-                                                      uniquingKeysWith: { lhs, _ in lhs }))
+                            return .parameters(body.merging(["reason": "pagination", "max_id": maxId],
+                                                            uniquingKeysWith: { lhs, _ in lhs }))
                         }
         },
                     headers: { _ in headers },
