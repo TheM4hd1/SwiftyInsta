@@ -80,7 +80,9 @@ And the `completionHandler` in the previous `authenticate(with: completionHandle
 
 ### `LoginWebViewController` (>= iOS 11 only)
 ```swift
-let login = LoginViewController { _, result in
+let login = LoginViewController { controller, result in
+    controller.dismiss(animated: true, completion: nil)
+    // deal with authentication response.
     guard let (response, _) = try? result.get() else { return print("Login failed.") }
     print("Login successful.")
     // persist cache safely in the keychain for logging in again in the future.
@@ -92,7 +94,7 @@ let login = LoginViewController { _, result in
 }
 present(login, animated: true, completion: nil)
 ```
-Or implement your own custom `UIViewController` using `LoginWebView`.
+Or implement your own custom `UIViewController` using `LoginWebView`, and pass it to an `APIHandler` `authenticate` method using `.webView(/* your login web view */)`.
 
 ### `Authentication.Response`
 If you've already persisted a user's `Authentication.Response`:
