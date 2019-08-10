@@ -14,7 +14,7 @@ Use this at your own risk.
 
 ## Installation
 ### Swift Package Manager (Xcode 11 and above)
-1. Select `Fille`/`Swift Packages`/`Add Package Dependency…` from the menu.
+1. Select `File`/`Swift Packages`/`Add Package Dependency…` from the menu.
 1. Paste `https://github.com/TheM4hd1/SwiftyInsta.git`.
 1. Follow the steps.
 
