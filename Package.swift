@@ -21,7 +21,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "SwiftyInsta.iOS",
-            dependencies: ["KeychainSwift", "GzipSwift", "CryptoSwift"]
+            dependencies: ["KeychainSwift", "GzipSwift", "CryptoSwift"],
+            path: "SwiftyInsta"
         ),
     ]
 )
