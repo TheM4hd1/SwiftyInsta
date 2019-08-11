@@ -66,13 +66,8 @@ public class LoginWebViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         // setup views.
-        if #available(iOS 13, *) {
-            view.backgroundColor = .systemBackground
-            indicator = .init(style: .large)
-        } else {
-            view.backgroundColor = .white
-            indicator = .init(style: .gray)
-        }
+        view.backgroundColor = .white
+        indicator = .init(style: .gray)
         // init the web view.
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),

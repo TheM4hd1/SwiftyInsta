@@ -40,16 +40,16 @@ public struct Authentication {
         public var device: Device
 
         /// The cached value for the logged-in `User` `primaryKey`.
-        public var identifier: String? { storage?.dsUserId }
+        public var identifier: String? { return storage?.dsUserId }
         /// The cached value for the logged-in `User`.
-        public var user: User? { storage?.user }
+        public var user: User? { return storage?.user }
 
         /// The default storage.
         var storage: Storage?
         /// The `HTTPCookie` stored as `Data`.
         let data: [Data]
         //// The `HTTPCookie`s.
-        var cookies: [HTTPCookie] { data.compactMap(HTTPCookie.load) }
+        var cookies: [HTTPCookie] { return data.compactMap(HTTPCookie.load) }
 
         /// Store the cache **if valid** in the user's keychain.
         /// You can save the returned value safely in your `UserDefaults`, or your database

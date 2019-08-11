@@ -17,16 +17,16 @@ public struct Thread: ThreadIdentifiableParsedResponse {
     public let rawResponse: DynamicResponse
 
     /// The `muted` value.
-    public var isMuted: Bool { rawResponse.muted.bool ?? false }
+    public var isMuted: Bool { return rawResponse.muted.bool ?? false }
     /// The `threadTitle` value.
-    public var title: String { rawResponse.threadTitle.string ?? "" }
+    public var title: String { return rawResponse.threadTitle.string ?? "" }
     /// The `isGroup` value.
-    public var isGroup: Bool { rawResponse.isGroup.bool ?? false }
+    public var isGroup: Bool { return rawResponse.isGroup.bool ?? false }
 
     /// The `users` value.
-    public var users: [User] { rawResponse.users.array?.map(User.init) ?? [] }
+    public var users: [User] { return rawResponse.users.array?.map(User.init) ?? [] }
     /// The `messages` value.
-    public var messages: [Message] { rawResponse.items.array?.map(Message.init) ?? [] }
+    public var messages: [Message] { return rawResponse.items.array?.map(Message.init) ?? [] }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {
@@ -49,14 +49,14 @@ public struct Message: ItemIdentifiableParsedResponse, UserIdentifiableParsedRes
 
     /// The `timestamp` value.
     public var sentAt: Date {
-        rawResponse.timestamp
+        return rawResponse.timestamp
             .double
             .flatMap { $0 > 9_999_999_999 ? $0/1_000 : $0 }
             .flatMap { Date(timeIntervalSince1970: $0) } ?? .distantPast
     }
     /// The `text` value.
     public var text: String? {
-        rawResponse.text.string
+        return rawResponse.text.string
     }
 
     // MARK: Codable
@@ -79,9 +79,9 @@ public struct Recipient: ParsedResponse {
     public let rawResponse: DynamicResponse
 
     /// The `user` value.
-    public var user: User? { User(rawResponse: rawResponse.user) }
+    public var user: User? { return User(rawResponse: rawResponse.user) }
     /// The `thread` value.
-    public var thread: Thread? { Thread(rawResponse: rawResponse.thread) }
+    public var thread: Thread? { return Thread(rawResponse: rawResponse.thread) }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {

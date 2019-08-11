@@ -41,7 +41,7 @@ public struct TrayArchive: IdentifiableParsedResponse {
     public let rawResponse: DynamicResponse
 
     /// The `mediaCount` value.
-    public var count: Int { rawResponse.mediaCount.int ?? 0 }
+    public var count: Int { return rawResponse.mediaCount.int ?? 0 }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {
@@ -64,53 +64,53 @@ public struct TrayElement: IdentifiableParsedResponse {
 
     /// The `title` value.
     public var title: String? {
-        rawResponse.title.string
+        return rawResponse.title.string
     }
     /// The `latestReelMedia` value.
     public var updatedAt: Date {
-        rawResponse.latestReelMedia
+        return rawResponse.latestReelMedia
             .double
             .flatMap { $0 > 9_999_999_999 ? $0/1_000 : $0 }
             .flatMap { Date(timeIntervalSince1970: $0) } ?? .distantPast
     }
     /// The `expiringAtDate` value.
     public var expiringAt: Date {
-        rawResponse.expiringAt
+        return rawResponse.expiringAt
             .double
             .flatMap { $0 > 9_999_999_999 ? $0/1_000 : $0 }
             .flatMap { Date(timeIntervalSince1970: $0) } ?? .distantPast
     }
     /// The `lastSeenOnDate` value.
     public var lastSeenOn: Date {
-        rawResponse.seen
+        return rawResponse.seen
             .double
             .flatMap { $0 > 9_999_999_999 ? $0/1_000 : $0 }
             .flatMap { Date(timeIntervalSince1970: $0) } ?? .distantPast
     }
     /// The `containsUnseen` value.
     public var containsUnseenMedia: Bool {
-        updatedAt > lastSeenOn
+        return updatedAt > lastSeenOn
     }
     /// The `hasBestiesMedia` value.
     public var containsBestiesOnlyMedia: Bool {
-        rawResponse.hasBestiesMedia.bool ?? false
+        return rawResponse.hasBestiesMedia.bool ?? false
     }
     /// The `muted` value.
     public var isMuted: Bool {
-        rawResponse.muted.bool ?? false
+        return rawResponse.muted.bool ?? false
     }
 
     /// The `coverMedia` value.
     public var cover: Media? {
-        Media(rawResponse: rawResponse.coverMedia)
+        return Media(rawResponse: rawResponse.coverMedia)
     }
     /// The `media` value.
     public var media: [Media] {
-        rawResponse.items.array?.compactMap { Media(rawResponse: $0) } ?? []
+        return rawResponse.items.array?.compactMap { Media(rawResponse: $0) } ?? []
     }
     /// The `user` value.
     public var user: User? {
-        User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
+        return User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
     }
 
     // MARK: Codable
@@ -136,9 +136,9 @@ public struct StoryViewers: PaginatedResponse {
     }
 
     /// User count.
-    public var users: Int { rawResponse.userCount.int ?? 0 }
+    public var users: Int { return rawResponse.userCount.int ?? 0 }
     /// Total viewers count.
-    public var viewers: Int { rawResponse.totalViewerCount.int ?? 0 }
+    public var viewers: Int { return rawResponse.totalViewerCount.int ?? 0 }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {
