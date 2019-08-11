@@ -33,7 +33,7 @@ protocol PaginatedResponse: ParsedResponse {
 }
 extension PaginatedResponse {
     /// The `nextMaxId`.
-    var nextMaxId: String? { rawResponse.nextMaxId.string }
+    var nextMaxId: String? { return rawResponse.nextMaxId.string }
 }
 public struct AnyPaginatedResponse: PaginatedResponse {
     /// The `rawResponse`.
