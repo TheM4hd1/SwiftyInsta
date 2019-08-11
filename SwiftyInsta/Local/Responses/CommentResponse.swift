@@ -17,12 +17,12 @@ public struct Comment: IdentifiableParsedResponse, UserIdentifiableParsedRespons
     public let rawResponse: DynamicResponse
 
     /// The `text` value.
-    public var text: String { rawResponse.text.string ?? "" }
+    public var text: String { return rawResponse.text.string ?? "" }
     /// The `commentLikeCount` value.
-    public var likes: Int { rawResponse.commentLikeCount.int ?? 0 }
+    public var likes: Int { return rawResponse.commentLikeCount.int ?? 0 }
     /// The `user` value.
     public var user: User? {
-        User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
+        return User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
     }
 
     // MARK: Codable
@@ -48,11 +48,11 @@ public struct MediaComments: PaginatedResponse {
     }
 
     /// The `caption` value.
-    public var caption: Comment? { Comment(rawResponse: rawResponse.caption) }
+    public var caption: Comment? { return Comment(rawResponse: rawResponse.caption) }
     /// The `commentCount` value.
-    public var comments: Int { rawResponse.commentCount.int ?? 0 }
+    public var comments: Int { return rawResponse.commentCount.int ?? 0 }
     /// The `previewComments` value.
-    public var previews: [Comment] { rawResponse.previewComments.array?.map { Comment(rawResponse: $0) } ?? [] }
+    public var previews: [Comment] { return rawResponse.previewComments.array?.map { Comment(rawResponse: $0) } ?? [] }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {

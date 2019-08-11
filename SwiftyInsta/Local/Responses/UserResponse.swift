@@ -27,39 +27,41 @@ public struct User: IdentifiableParsedResponse {
     public let rawResponse: DynamicResponse
 
     /// The `username` value.
-    public var username: String { rawResponse.username.string ?? "" }
+    public var username: String { return rawResponse.username.string ?? "" }
     /// The `fullName` value.
-    public var name: String? { rawResponse.fullName.string }
+    public var name: String? { return rawResponse.fullName.string }
     /// The `biography` value.
-    public var biography: String? { rawResponse.biography.string }
+    public var biography: String? { return rawResponse.biography.string }
     /// The `profilePicURL` value.
-    public var thumbnail: URL? { rawResponse.profilePicUrl.url }
+    public var thumbnail: URL? { return rawResponse.profilePicUrl.url }
     /// The `hdProfillePicVersion` value.
     public var avatar: URL? {
-        rawResponse.hdProfilePicVersions
+        return rawResponse.hdProfilePicVersions
             .array?
             .first?
             .url
     }
     /// The `isPrivate` value.
-    public var isPrivate: Bool { rawResponse.isPrivate.bool ?? true }
+    public var isPrivate: Bool { return rawResponse.isPrivate.bool ?? true }
     /// The `isVerified` value.
-    public var isVerified: Bool { rawResponse.isVerified.bool ?? false }
+    public var isVerified: Bool { return rawResponse.isVerified.bool ?? false }
     /// The `friendship` value.
     public var friendship: Friendship? {
-        rawResponse.friendship == .none ? nil : Friendship(rawResponse: rawResponse.friendship)
+        return rawResponse.friendship == .none
+            ? nil
+            : Friendship(rawResponse: rawResponse.friendship)
     }
 
     /// The `phoneNumber` value.
-    public var phoneNumber: String? { rawResponse.phoneNumber.string }
+    public var phoneNumber: String? { return rawResponse.phoneNumber.string }
     /// The `email` value.
-    public var email: String? { rawResponse.emaill.string }
+    public var email: String? { return rawResponse.emaill.string }
     /// The `externalUrl` value.
-    public var website: URL? { rawResponse.externalUrl.url }
+    public var website: URL? { return rawResponse.externalUrl.url }
     /// The `byline` value.
-    public var byline: String? { rawResponse.byline.string }
+    public var byline: String? { return rawResponse.byline.string }
     /// The `isBusiness` value.
-    public var isBusiness: Bool? { rawResponse.isBusiness.bool }
+    public var isBusiness: Bool? { return rawResponse.isBusiness.bool }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {
@@ -82,28 +84,28 @@ public struct Friendship: ParsedResponse {
 
     /// The `following` value.
     public var isFollowedByYou: Bool {
-        rawResponse.following.bool ?? false
+        return rawResponse.following.bool ?? false
     }
     /// The `followedBy` value.
     public var isFollowingYou: Bool? {
-        rawResponse.followedBy.bool
+        return rawResponse.followedBy.bool
     }
     /// The `blocking` value.
     public var isBlockedByYou: Bool? {
-        rawResponse.blocking.bool
+        return rawResponse.blocking.bool
     }
     /// The `isBestie` value.
     public var isInYourCloseFriendsList: Bool? {
-        rawResponse.isBestie.bool
+        return rawResponse.isBestie.bool
     }
 
     /// The `incomingRequest` value.
     public var requestedToFollowYou: Bool? {
-        rawResponse.incomingRequest.bool
+        return rawResponse.incomingRequest.bool
     }
     /// The `outgoingRequest` value.
     public var followRequestSent: Bool? {
-        rawResponse.outgoingRequest.bool
+        return rawResponse.outgoingRequest.bool
     }
 
     // MARK: Codable

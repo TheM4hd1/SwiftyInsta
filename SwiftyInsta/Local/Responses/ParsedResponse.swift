@@ -54,8 +54,8 @@ public extension IdentifiableParsedResponse {
     typealias Identity = Identifier<Self>
     /// The identifier.
     var identity: Identifier<Self> {
-        .init(primaryKey: rawResponse.pk.int ?? rawResponse.pk.string.flatMap(Int.init),
-              identifier: rawResponse.id.string)
+        return .init(primaryKey: rawResponse.pk.int ?? rawResponse.pk.string.flatMap(Int.init),
+                     identifier: rawResponse.id.string)
     }
 }
 
@@ -68,8 +68,8 @@ public protocol UserIdentifiableParsedResponse: ParsedResponse {
 public extension UserIdentifiableParsedResponse {
     /// The user identifier.
     var userIdentity: Identifier<User> {
-        .init(primaryKey: rawResponse.userPk.int ?? rawResponse.userPk.string.flatMap(Int.init),
-              identifier: rawResponse.userId.string)
+        return .init(primaryKey: rawResponse.userPk.int ?? rawResponse.userPk.string.flatMap(Int.init),
+                     identifier: rawResponse.userId.string)
     }
 }
 
@@ -82,13 +82,13 @@ public protocol ThreadIdentifiableParsedResponse: ParsedResponse {
 public extension ThreadIdentifiableParsedResponse {
     /// The thread identifier.
     var threadIdentifier: Identifier<Thread> {
-        .init(primaryKey: nil,
-              identifier: rawResponse.threadId.string)
+        return .init(primaryKey: nil,
+                     identifier: rawResponse.threadId.string)
     }
     /// The account identifier.
     var viewerIdentifier: Identifier<User> {
-        .init(primaryKey: rawResponse.viewerId.int ?? rawResponse.viewerId.string.flatMap(Int.init),
-              identifier: nil)
+        return .init(primaryKey: rawResponse.viewerId.int ?? rawResponse.viewerId.string.flatMap(Int.init),
+                     identifier: nil)
     }
 }
 
@@ -101,7 +101,7 @@ public protocol ItemIdentifiableParsedResponse: ParsedResponse {
 public extension ItemIdentifiableParsedResponse {
     /// The item identifier.
     var itemIdentifier: Identifier<Message> {
-        .init(primaryKey: nil,
-              identifier: rawResponse.itemId.string)
+        return .init(primaryKey: nil,
+                     identifier: rawResponse.itemId.string)
     }
 }
