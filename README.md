@@ -3,6 +3,7 @@
 [![Version](https://img.shields.io/cocoapods/v/SwiftyInsta.svg?style=flat)](https://cocoapods.org/pods/SwiftyInsta)
 [![License](https://img.shields.io/cocoapods/l/SwiftyInsta.svg?style=flat)](https://github.com/TheM4hd1/SwiftyInsta/LICENSE.md)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftyInsta.svg?style=flat)](https://cocoapods.org/pods/SwiftyInsta)
+<img src="https://img.shields.io/badge/supports-CocoaPods%2C%20Swift%20Package%20Manager-ff69b4.svg">
 
 **Instagram** offers two kinds of APIs to developers. The [Instagram API Platform](https://www.instagram.com/developer/) (extremely limited in functionality and close to being discontinued), and the [Instagram Graph API](https://developers.facebook.com/docs/instagram-api) for _Business_ and _Creator_ accounts only.
 
@@ -13,6 +14,11 @@ These _Private API_ require no _token_ or _app registration_ but they're not _au
 Use this at your own risk.
 
 ## Installation
+### Swift Package Manager (Xcode 11 and above)
+1. Select `File`/`Swift Packages`/`Add Package Dependency…` from the menu.
+1. Paste `https://github.com/TheM4hd1/SwiftyInsta.git`.
+1. Follow the steps.
+
 ### CocoaPods
 [CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. You can install it with the following command:
 ```terminal
@@ -31,7 +37,7 @@ Then, run the following command:
 $ pod install
 ````
 
-**SwiftyInsta** depends on [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift), [GzipSwift](https://github.com/1024jp/GzipSwift), and [keychain-swift](https://github.com/evgenyneu/keychain-swift).
+**SwiftyInsta** depends on [CryptoSwift](https://github.com/krzyzanowskim/CryptoSwift)<!--[GzipSwift](https://github.com/1024jp/GzipSwift),--> and [keychain-swift](https://github.com/evgenyneu/keychain-swift).
 
 <!--
 ### Manually
@@ -51,8 +57,8 @@ handler.authenticate(with: .credentials(credentials)) {
     case .success(let response, _):
         print("Login successful.")
         // persist cache safely in the keychain for logging in again in the future.
-        guard let key = response.persist() else { return print("`SessionCache` could not be persisted.") }
-        // store the `key` wherever you want, so you can access the `SessionCache` later.
+        guard let key = response.persist() else { return print("`Authentication.Response` could not be persisted.") }
+        // store the `key` wherever you want, so you can access the `Authentication.Response` later.
         // `UserDefaults` is just an example.
         UserDefaults.standard.set(key, forKey: "current.account")
         UserDefaults.standard.synchronize()
@@ -73,68 +79,70 @@ self.credentials.code = /* the code */
 And the `completionHandler` in the previous `authenticate(with: completionHandler:)` will automatically catch the response.
 
 
-### `LoginWebView` (>= iOS 11 only)
+### `LoginWebViewController` (>= iOS 11 only)
 ```swift
-import UIKit
-import SwiftyInsta
-
-@available(iOS 11, *)
-class LoginViewController: UIViewController {
-    /// The web view used for logging in.
-    lazy var webView = LoginWebView(frame: view.bounds,
-                                    didReachEndOfLoginFlow: {
-                                        /* remove the web view from the view hierarchy and notify the user */
-    })
-    /// The endpoints handler. Use `.init(with: APIHandler.Settings)` to customize it.
-    lazy var handler = APIHandler()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // remember to add the web view to the view hierarchy
-        // before you try to authenticate.
-        view.addSubview(webView)
-        // prepare handler.
-        handler.authenticate(with: .webView(webView)) {
-            guard let (response, _) = try? $0.get() else { return print("Login failed.") }
-            print("Login successful.")
-            // persist cache safely in the keychain for logging in again in the future.
-            guard let key = response.persist() else { return print("`SessionCache` could not be persisted.") }
-            // store the `key` wherever you want, so you can access the `SessionCache` later.
-            // `UserDefaults` is just an example.
-            UserDefaults.standard.set(key, forKey: "current.account")
-            UserDefaults.standard.synchronize()
-        }
-    }
+let login = LoginWebViewController { controller, result in
+    controller.dismiss(animated: true, completion: nil)
+    // deal with authentication response.
+    guard let (response, _) = try? result.get() else { return print("Login failed.") }
+    print("Login successful.")
+    // persist cache safely in the keychain for logging in again in the future.
+    guard let key = response.persist() else { return print("`Authentication.Response` could not be persisted.") }
+    // store the `key` wherever you want, so you can access the `Authentication.Response` later.
+    // `UserDefaults` is just an example.
+    UserDefaults.standard.set(key, forKey: "current.account")
+    UserDefaults.standard.synchronize()
+}
+if #available(iOS 13, *) {
+    present(login, animated: true, completion: nil) // just swipe down to dismiss.
+} else {
+    present(UINavigationController(rootViewController: login),  // already adds a `Cancel` button to dismiss it.
+            animated: true,
+            completion: nil)
 }
 ```
+Or implement your own custom `UIViewController` using `LoginWebView`, and pass it to an `APIHandler` `authenticate` method using `.webView(/* your login web view */)`.
 
-### `SessionCache`
-If you've already persisted a user's `SessionCache`:
+### `Authentication.Response`
+If you've already persisted a user's `Authentication.Response`:
 
 ```swift
-// recover the `key` returned by `Login.Response.persist()`.
+// recover the `key` returned by `Authentication.Response.persist()`.
 // in our example, we stored it in `UserDefaults`.
 guard let key = UserDefaults.standard.string(forKey: "current.account") else { return print("`key` not found.") }
-// recover the safely persisted `SessionCache`.
-guard let cache = SessionCache.persisted(with: key) else { return print("`SessionCache` not found.") }
+// recover the safely persisted `Authentication.Response`.
+guard let cache = Authentication.Response.persisted(with: key) else { return print("`Authentication.Response` not found.") }
 // log in.
 let handler = APIHandler()
 handler.authenticate(with: .cache(cache)) { _ in
     /* do something here */
 }
 ```
-(`1.*` `SessionCache`s are not compatible with `2.0`: you are going to need to log in again)
 
-## Documentation
+## Usage
+All endpoints are easily accessible from your `APIHandller` instance.
 
-- See [Features](https://github.com/TheM4hd1/SwiftyInsta/wiki/Features) for all available APIs
-- See [Usage](https://github.com/TheM4hd1/SwiftyInsta/wiki/Usage) for a more in-depth overview
-- See [Tests](https://github.com/TheM4hd1/SwiftyInsta/tree/master/SwiftyInstaTests) for some real world examples
+```swift
+let handler: APIHandler = /* a valid, authenticated handler */
+// for instance you can…
+// …fetch your inbox.
+handler.messages.inbox(with: .init(maxPagesToLoad: .max),
+                       updateHandler: nil,
+                       completionHandler: { _, _ in /* do something */ })
+// …fetch all your followers.
+handler.users.following(user: .primaryKey(handler.user?.identity.primaryKey ?? -1),
+                        with: .init(maxPagesToLoad: .max),
+                        updateHandler: nil,
+                        completionHandler: { _, _ in /* do something */ })
+```
+
+Futhermore, responses now display every single value contained in the `JSON` file returned by the **API**: just access any `ParsedResponse` `rawResponse` and start browsing, or stick with the suggested accessories (e.g. `User`'s `username`, `name`, etc. and `Media`'s `aspectRatio`, `takenAt`, `content`, etc.).
 
 ## Contributions
 
 _Pull requests_ and _issues_ are more than welcome.
+
+[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/0)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/0)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/1)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/1)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/2)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/2)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/3)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/3)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/4)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/4)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/5)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/5)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/6)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/6)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/7)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/7)
 
 ## License
 

@@ -12,10 +12,12 @@ import Foundation
 public struct User: IdentifiableParsedResponse {
     /// A quick way to reference a `User`.
     public enum Reference {
-        /// The primary key.
+        /// Through their primary key.
         case primaryKey(Int)
-        /// The username.
+        /// Through their username.
         case username(String)
+        /// The logged in `User`.
+        case me
     }
 
     /// Init with `rawResponse`.

@@ -36,12 +36,12 @@ extension Date {
 /// A `protocol` for converting `HTTPCookie` to `Data`.
 protocol CookieEncodable {
     /// Return related `Data`.
-    var cookieData: Data? { get }
+    var data: Data? { get }
 }
 /// `Collection`s of `CookieEncodable` should behave similarly to `CookieEncodable`.
 extension Collection where Element: CookieEncodable {
     /// Return related `[Data]`.
-    var cookieData: [Data] { return compactMap { $0.cookieData }}
+    var data: [Data] { return compactMap { $0.data }}
 }
 /// `HTTPCookie` accesories.
 extension HTTPCookie: CookieEncodable {
@@ -68,5 +68,5 @@ extension HTTPCookie: CookieEncodable {
         return data.flatMap(loadProperties).flatMap(HTTPCookie.init)
     }
     /// Get `Data` from cookie.
-    var cookieData: Data? { return properties.flatMap(saveProperties) }
+    var data: Data? { return properties.flatMap(saveProperties) }
 }

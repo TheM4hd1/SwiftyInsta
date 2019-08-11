@@ -29,7 +29,7 @@ public enum AuthenticationError: LocalizedError {
     case invalidUsername
     /// Invalid code.
     case invalidCode
-    /// Invalid `SessionCache`.
+    /// Invalid `Authentication.Response`.
     case invalidCache
 
     /// Hit a checkpoint. `suggestions` might be populated with obfuscated emaill and/or phone number.
@@ -58,7 +58,7 @@ public enum AuthenticationError: LocalizedError {
         case .invalidUsername: return "Invalid username."
         case .invalidPassword: return "Invalid password."
         case .invalidCode: return "Invalid code. Try again."
-        case .invalidCache: return "Invalid `SessionCache`. Log out and log in again."
+        case .invalidCache: return "Invalid `Authentication.Response`. Log out and log in again."
         }
     }
 }

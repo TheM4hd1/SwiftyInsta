@@ -20,13 +20,22 @@ public enum MediaType: String {
     case carousel = "8"
 }
 
-public class MediaHandler: Handler {
+public final class MediaHandler: Handler {
     /// Get user media.
     public func by(user: User.Reference,
                    with paginationParameters: PaginationParameters,
                    updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                    completionHandler: @escaping PaginationCompletionHandler<Media>) {
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache), paginationParameters)
+            }
+            by(user: .primaryKey(pk),
+               with: paginationParameters,
+               updateHandler: updateHandler,
+               completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.handler.users.user(user) { [weak self] in
@@ -70,8 +79,8 @@ public class MediaHandler: Handler {
 
     /// Like media.
     public func like(media mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -87,8 +96,8 @@ public class MediaHandler: Handler {
 
     /// Unlike media.
     public func unlike(media mediaId: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -104,8 +113,8 @@ public class MediaHandler: Handler {
 
     /// Upload photo.
     public func upload(photo: Upload.Picture, completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
         // prepare content.
@@ -178,8 +187,8 @@ public class MediaHandler: Handler {
                    with uploadId: String,
                    caption: String,
                    completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         guard let url = try? URLs.getConfigureMediaUrl() else { return completionHandler(.failure(GenericError.invalidUrl)) }
@@ -360,8 +369,8 @@ public class MediaHandler: Handler {
                        thumbnail: Upload.Picture,
                        caption: String,
                        completionHandler: @escaping (Result<Media, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
         // prepare content.
@@ -479,8 +488,8 @@ public class MediaHandler: Handler {
     func upload(thumbnail: Upload.Picture,
                 with uploadId: String,
                 completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         guard let url = try? URLs.getUploadPhotoUrl() else {
             return completionHandler(.failure(GenericError.invalidUrl))
@@ -536,8 +545,8 @@ public class MediaHandler: Handler {
                    with uploadId: String,
                    caption: String,
                    completionHandler: @escaping (Result<Media, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         guard let url = try? URLs.getConfigureMediaUrl() else {
             return completionHandler(.failure(GenericError.invalidUrl))
@@ -593,8 +602,8 @@ public class MediaHandler: Handler {
     public func delete(media mediaId: String,
                        with type: MediaType,
                        completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
@@ -614,8 +623,8 @@ public class MediaHandler: Handler {
                      caption: String,
                      tags: User.Tags,
                      completionHandler: @escaping (Result<Media, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase

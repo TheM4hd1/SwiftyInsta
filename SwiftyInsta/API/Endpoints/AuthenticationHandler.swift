@@ -8,30 +8,27 @@
 
 import Foundation
 
-class AuthenticationHandler: Handler {
+final class AuthenticationHandler: Handler {
     // MARK: Log in
-    func authenticate(cache: SessionCache, completionHandler: @escaping (Result<Login.Response, Error>) -> Void) {
+    func authenticate(cache: Authentication.Response, completionHandler: @escaping (Result<Authentication.Response, Error>) -> Void) {
+        var cache = cache
         // update handler.
         handler.settings.device = cache.device
-        handler.response = .init(model: .pending, cache: cache)
-        do {
-            try requests.setCookies(cache.cookies)
-            // fetch the user.
-            handler.users.current(delay: 0...0) { [weak self] in
-                switch $0 {
-                case .success(let user):
-                    // update user info alone.
-                    self?.handler.response?.cache?.storage?.user = user
-                    completionHandler(.success(.init(model: .success, cache: cache)))
-                case .failure(let error): completionHandler(.failure(error))
-                }
+        handler.response = cache
+        // fetch the user.
+        handler.users.current(delay: 0...0) { [weak self] in
+            switch $0 {
+            case .success(let user):
+                // update user info alone.
+                self?.handler.response?.storage?.user = user
+                cache.storage?.user = user
+                completionHandler(.success(cache))
+            case .failure(let error): completionHandler(.failure(error))
             }
-        } catch {
-            completionHandler(.failure(AuthenticationError.invalidCache))
         }
     }
 
-    func authenticate(user: Credentials, completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
+    func authenticate(user: Credentials, completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         // update user.
         var user = user
         user.handler = handler
@@ -99,14 +96,16 @@ class AuthenticationHandler: Handler {
                                                 // create session cache.
                                                 let cookies = HTTPCookieStorage.shared
                                                     .cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
-                                                let storage = SessionStorage(dsUserId: dsUserId,
-                                                                             user: nil,
-                                                                             csrfToken: csrfToken,
-                                                                             sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
-                                                                             rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString)
-                                                let cache = SessionCache(storage: storage,
-                                                                         device: handler.settings.device,
-                                                                         cookies: cookies.cookieData)
+                                                let storage = Authentication.Storage(
+                                                    dsUserId: dsUserId,
+                                                    csrfToken: csrfToken,
+                                                    sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
+                                                    rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
+                                                    user: nil
+                                                )
+                                                let cache = Authentication.Response(device: handler.settings.device,
+                                                                                    storage: storage,
+                                                                                    data: cookies.data)
                                                 // actually authenticate.
                                                 handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                                             } else if response.user ?? false {
@@ -228,7 +227,7 @@ class AuthenticationHandler: Handler {
     func send(challengeCode code: String,
               at url: URL,
               for user: Credentials,
-              completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
+              completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         var user = user
         let body = ["security_code": code]
         let headers = ["X-CSRFToken": user.csrfToken!,
@@ -256,14 +255,14 @@ class AuthenticationHandler: Handler {
                         // create session cache.
                         let cookies = HTTPCookieStorage.shared.cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
                         let dsUserId = cookies.first(where: { $0.name == "ds_user_id" })!.value
-                        let storage = SessionStorage(dsUserId: dsUserId,
-                                                     user: nil,
-                                                     csrfToken: user.csrfToken ?? cookies.first(where: { $0.name == "csrftoken" })!.value,
-                                                     sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
-                                                     rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString)
-                        let cache = SessionCache(storage: storage,
-                                                 device: handler.settings.device,
-                                                 cookies: cookies.cookieData)
+                        let storage = Authentication.Storage(dsUserId: dsUserId,
+                                                             csrfToken: user.csrfToken ?? cookies.first(where: { $0.name == "csrftoken" })!.value,
+                                                             sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
+                                                             rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
+                                                             user: nil)
+                        let cache = Authentication.Response(device: handler.settings.device,
+                                                            storage: storage,
+                                                            data: cookies.data)
                         handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                     }
                 } else {
@@ -282,7 +281,7 @@ class AuthenticationHandler: Handler {
     func send(twoFactorCode code: String,
               with identifier: String,
               for user: Credentials,
-              completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
+              completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         // guard for url.
         guard let url = try? URLs.twoFactor().absoluteString else { return completionHandler(.failure(GenericError.invalidUrl)) }
         var user = user
@@ -315,14 +314,16 @@ class AuthenticationHandler: Handler {
                                 // create session cache.
                                 let cookies = HTTPCookieStorage.shared.cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
                                 let dsUserId = cookies.first(where: { $0.name == "ds_user_id" })!.value
-                                let storage = SessionStorage(dsUserId: dsUserId,
-                                                             user: nil,
-                                                             csrfToken: user.csrfToken ?? cookies.first(where: { $0.name == "csrftoken" })!.value,
-                                                             sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
-                                                             rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString)
-                                let cache = SessionCache(storage: storage,
-                                                         device: handler.settings.device,
-                                                         cookies: cookies.cookieData)
+                                let storage = Authentication.Storage(
+                                    dsUserId: dsUserId,
+                                    csrfToken: user.csrfToken ?? cookies.first(where: { $0.name == "csrftoken" })!.value,
+                                    sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
+                                    rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
+                                    user: nil
+                                )
+                                let cache = Authentication.Response(device: handler.settings.device,
+                                                                    storage: storage,
+                                                                    data: cookies.data)
                                 handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                             case 400:
                                 user.response = .failure
@@ -344,7 +345,7 @@ class AuthenticationHandler: Handler {
         }
     }
 
-    func afterCheckpointAuthenticate(user: Credentials, completionHandler: @escaping (Result<(Login.Response, APIHandler), Error>) -> Void) {
+    func afterCheckpointAuthenticate(user: Credentials, completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         var user = user
         let body = ["username": user.username,
                     "password": user.password]
@@ -387,14 +388,14 @@ class AuthenticationHandler: Handler {
                     // create session cache.
                     let cookies = HTTPCookieStorage.shared.cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
                     let dsUserId = cookies.first(where: { $0.name == "ds_user_id" })!.value
-                    let storage = SessionStorage(dsUserId: dsUserId,
-                                                 user: nil,
-                                                 csrfToken: user.csrfToken ?? cookies.first(where: { $0.name == "csrftoken" })!.value,
-                                                 sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
-                                                 rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString)
-                    let cache = SessionCache(storage: storage,
-                                             device: handler.settings.device,
-                                             cookies: cookies.cookieData)
+                    let storage = Authentication.Storage(dsUserId: dsUserId,
+                                                         csrfToken: user.csrfToken ?? cookies.first(where: { $0.name == "csrftoken" })!.value,
+                                                         sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
+                                                         rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
+                                                         user: nil)
+                    let cache = Authentication.Response(device: handler.settings.device,
+                                                        storage: storage,
+                                                        data: cookies.data)
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             default:

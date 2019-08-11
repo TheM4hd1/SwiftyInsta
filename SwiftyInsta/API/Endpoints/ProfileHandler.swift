@@ -20,11 +20,11 @@ public enum Gender: String {
     case unknown = "3"
 }
 
-public class ProfileHandler: Handler {
+public final class ProfileHandler: Handler {
     /// Set the account to public.
     public func markAsPublic(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         var content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
@@ -49,8 +49,8 @@ public class ProfileHandler: Handler {
 
     /// Set the account to private.
     public func markAsPrivate(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         var content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
@@ -77,8 +77,8 @@ public class ProfileHandler: Handler {
     public func update(password: String,
                        oldPassword: String,
                        completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         let content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
@@ -102,8 +102,8 @@ public class ProfileHandler: Handler {
                      phone: String?,
                      gender: Gender,
                      completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         requests.decode(User.self,
                         method: .get,
@@ -159,8 +159,8 @@ public class ProfileHandler: Handler {
 
     /// Edit biography.
     public func edit(biography: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let content = ["_csrftoken": storage.csrfToken,
                        "_uid": storage.dsUserId,
@@ -175,8 +175,8 @@ public class ProfileHandler: Handler {
 
     /// Remove profile picture.
     public func deleteProfilePicture(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let content = ["_csrftoken": storage.csrfToken,
                        "_uid": storage.dsUserId,
@@ -192,8 +192,8 @@ public class ProfileHandler: Handler {
 
     /// Upload profile picture.
     public func upload(profilePicture photo: Upload.Picture, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
         // prepare body.

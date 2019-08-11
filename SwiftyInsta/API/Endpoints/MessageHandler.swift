@@ -9,7 +9,7 @@
 
 import Foundation
 
-public class MessageHandler: Handler {
+public final class MessageHandler: Handler {
     /// Get the user's inbox.
     public func inbox(with paginationParameters: PaginationParameters,
                       updateHandler: PaginationUpdateHandler<Thread, AnyPaginatedResponse>?,

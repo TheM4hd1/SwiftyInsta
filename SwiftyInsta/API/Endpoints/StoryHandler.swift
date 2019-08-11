@@ -10,7 +10,7 @@
 import CryptoSwift
 import Foundation
 
-public class StoryHandler: Handler {
+public final class StoryHandler: Handler {
     /// Get the story feed.
     public func tray(completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         requests.parse(Tray.self,
@@ -22,6 +22,12 @@ public class StoryHandler: Handler {
     /// Get user's stories.
     public func by(user: User.Reference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache))
+            }
+            by(user: .primaryKey(pk), completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.handler.users.user(user) { [weak self] in
@@ -47,6 +53,12 @@ public class StoryHandler: Handler {
     /// Get reel feed.
     public func reelBy(user: User.Reference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache))
+            }
+            reelBy(user: .primaryKey(pk), completionHandler: completionHandler)
         case .username:
             // fetch username.
             self.handler.users.user(user) { [weak self] in
@@ -72,8 +84,8 @@ public class StoryHandler: Handler {
 
     /// Upload photo.
     public func upload(photo: Upload.Picture, completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
         // prepare content.
@@ -143,8 +155,8 @@ public class StoryHandler: Handler {
                    with uploadId: String,
                    caption: String,
                    completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
         let data = ConfigureStoryUploadModel.init(uuid: handler!.settings.device.deviceGuid.uuidString,
@@ -198,8 +210,8 @@ public class StoryHandler: Handler {
                      with sourceId: String?,
                      asSeen seen: Bool,
                      completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         guard seen else {
             return handler!.settings.queues.response.async {
@@ -258,8 +270,8 @@ public class StoryHandler: Handler {
 
     /// Get reels media feed.
     public func reelsMedia(_ feeds: [String], completionHandler: @escaping (Result<[String: Tray], Error>) -> Void) {
-        guard let storage = handler.response?.cache?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `SessionCache` in `APIHandler.respone`. Log in again.")))
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let supportedCapabilities = SupportedCapability.generate().map { ["name": $0.name, "value": $0.value] }
         let dynamicData: DynamicRequest = ["supported_capabilities_new": supportedCapabilities,
