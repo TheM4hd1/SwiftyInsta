@@ -120,7 +120,7 @@ handler.authenticate(with: .cache(cache)) { _ in
 ```
 
 ## Usage
-All endpoints are easily accessible from your `APIHandller` instance.
+All endpoints are easily accessible from your `APIHandler` instance.
 
 ```swift
 let handler: APIHandler = /* a valid, authenticated handler */
