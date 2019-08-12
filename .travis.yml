@@ -1,0 +1,16 @@
+os: osx
+language: swift
+osx_image: xcode10.2
+
+before_install:
+  - pod init
+  - curl https://gist.githubusercontent.com/sbertix/2e8a618086e1bc50ba57e2cfc443a1ab/raw/0a2fc9776d415198ae709c38c4bc832c6856086c/SwiftyInsta.podfile --output Podfile
+  - pod install --repo-update
+
+script:
+  - set -o pipefail
+  - swiftlint
+  - xcodebuild clean build -workspace SwiftyInsta.xcworkspace -scheme 'SwiftyInsta.iOS' -sdk 'iphonesimulator' -configuration Debug | xcpretty -c
+  - xcodebuild clean build -workspace SwiftyInsta.xcworkspace -scheme 'SwiftyInsta.macOS' -sdk 'macosx' -configuration Debug | xcpretty -c
+  - xcodebuild clean build -workspace SwiftyInsta.xcworkspace -scheme 'SwiftyInsta.tvOS' -sdk 'appletvsimulator' -configuration Debug | xcpretty -c
+  - xcodebuild clean build -workspace SwiftyInsta.xcworkspace -scheme 'SwiftyInsta.watchOS' -sdk 'watchsimulator' -configuration Debug | xcpretty -c
