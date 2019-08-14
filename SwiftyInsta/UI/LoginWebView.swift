@@ -13,8 +13,6 @@ import WebKit
 // MARK: Views
 @available(iOS 11, *)
 public class LoginWebView: WKWebView, WKNavigationDelegate {
-    /// Whether javascript injection should be used to make web pages less crowded.
-    var shouldImproveReadability: Bool
     /// Called when reaching the end of the login flow.
     /// You should probably hide the `InstagramLoginWebView` and notify the user with an activity indicator.
     public var didReachEndOfLoginFlow: (() -> Void)?
@@ -22,47 +20,24 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     var completionHandler: ((Result<[HTTPCookie], Error>) -> Void)!
 
     // MARK: Init
-    public init(frame: CGRect,
-                improvingReadability shouldImproveReadability: Bool = true,
-                didReachEndOfLoginFlow: (() -> Void)? = nil) {
+    public init(frame: CGRect, didReachEndOfLoginFlow: (() -> Void)? = nil) {
         // delete all cookies.
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         // update the process pool.
         let configuration = WKWebViewConfiguration()
         configuration.processPool = WKProcessPool()
-        // improve readability.
-        if shouldImproveReadability {
-            let user = WKUserContentController()
-            let hideHeader = """
-                var el = document.getElementsByClassName('lOPC8 DPEif'); \
-                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
-                """
-            let hideAppStoreBanner = """
-                var el = document.getElementsByClassName('MFkQJ ABLKx VhasA _1-msl'); \
-                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
-                """
-            let hideFooter = """
-                var el = document.getElementsByClassName(' tHaIX Igw0E rBNOH YBx95 ybXk5 _4EzTm O1flK _7JkPY PdTAI ZUqME'); \
-                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
-                """
-            user.addUserScript(WKUserScript(source: hideHeader,
-                                            injectionTime: .atDocumentEnd,
-                                            forMainFrameOnly: false))
-            user.addUserScript(WKUserScript(source: hideAppStoreBanner,
-                                            injectionTime: .atDocumentEnd,
-                                            forMainFrameOnly: false))
-            user.addUserScript(WKUserScript(source: hideFooter,
-                                            injectionTime: .atDocumentEnd,
-                                            forMainFrameOnly: false))
-            configuration.userContentController = user
-        }
         // init login.
         self.didReachEndOfLoginFlow = didReachEndOfLoginFlow
-        self.shouldImproveReadability = shouldImproveReadability
         super.init(frame: frame, configuration: configuration)
         self.navigationDelegate = self
     }
 
+    @available(*, unavailable, message: "use `init(frame:didReachEndOfLoginFlow:)` instead.")
+    public init(frame: CGRect,
+                improvingReadability shouldImproveReadability: Bool,
+                didReachEndOfLoginFlow: (() -> Void)? = nil) {
+        fatalError("init(frame:improvingReadabililty:didReachEndOfLoginFlow:) has been removed")
+    }
     @available(*, unavailable, message: "use `init(frame:configuration:didReachEndOfLoginFlow:didSuccessfullyLogIn:completionHandler:)` instead.")
     private override init(frame: CGRect, configuration: WKWebViewConfiguration) {
         fatalError("init(frame:, configuration:) has been removed")
@@ -117,33 +92,8 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             fetchCookies()
             // no need to check anymore.
             navigationDelegate = nil
-        case "https://www.instagram.com/accounts/login/"?:
-            guard shouldImproveReadability else { break }
-            // do nothing, just wait.
-            webView.evaluateJavaScript(
-                """
-                var el = document.getElementsByClassName('lOPC8 DPEif'); \
-                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
-                var el = document.getElementsByClassName('MFkQJ ABLKx VhasA _1-msl'); \
-                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
-                var el = document.getElementsByClassName(' tHaIX Igw0E rBNOH YBx95 ybXk5 _4EzTm O1flK _7JkPY PdTAI ZUqME'); \
-                if (el.length > 0) el[0].parentNode.removeChild(el[0]);
-                """,
-                completionHandler: nil
-            )
         default:
-            // check for cookies.
-            webView.configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] in
-                let filtered = $0.filter { ["ds_user_id", "csrftoken", "sessionid"].contains($0.name) }
-                    .filter { !$0.value.isEmpty }
-                guard filtered.count >= 3 else { return }
-                // notify user.
-                self?.didReachEndOfLoginFlow?()
-                // fetch cookies.
-                self?.completionHandler?(.success($0))
-                // no need to check anymore.
-                self?.navigationDelegate = nil
-            }
+            break
         }
     }
 }
