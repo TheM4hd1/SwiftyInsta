@@ -153,7 +153,7 @@ public struct Media: IdentifiableParsedResponse {
         switch rawResponse.mediaType.int {
         case 1?: return .picture(.init(rawResponse: rawResponse))
         case 2?: return .video(.init(rawResponse: rawResponse))
-        case 8?: return .album([])
+        case 8?: return .album(rawResponse.carouselMedia.array?.map { Media(rawResponse: $0).content } ?? [])
         default: return .none
         }
     }
