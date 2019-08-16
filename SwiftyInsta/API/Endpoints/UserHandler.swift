@@ -289,26 +289,29 @@ public final class UserHandler: Handler {
 
     /// Get recent activities.
     public func recentActivities(with paginationParameters: PaginationParameters,
-                                 updateHandler: LegacyPaginationUpdateHandler<RecentActivitiesModel>?,
-                                 completionHandler: @escaping PaginationCompletionHandler<RecentActivitiesModel>) {
-        #warning("uses old models.")
-        pages.decode(RecentActivitiesModel.self,
-                     with: paginationParameters,
-                     at: { try URLs.getRecentActivities(maxId: $0.nextMaxId ?? "") },
-                     updateHandler: updateHandler,
-                     completionHandler: completionHandler)
+                                 updateHandler: PaginationUpdateHandler<SuggestedUser, RecentActivity>?,
+                                 completionHandler: @escaping PaginationCompletionHandler<SuggestedUser>) {
+            pages.parse(SuggestedUser.self,
+                        paginatedResponse: RecentActivity.self,
+                        with: paginationParameters,
+                        at: { try URLs.getRecentActivities(maxId: $0.nextMaxId ?? "") },
+                        paginationHandler: { $0.rawResponse.aymf.nextMaxId.string },
+                        processingHandler: { $0.suggestedUsers },
+                        updateHandler: updateHandler,
+                        completionHandler: completionHandler)
     }
 
     /// Get recent following activities.
     public func recentFollowingActivities(with paginationParameters: PaginationParameters,
-                                          updateHandler: LegacyPaginationUpdateHandler<RecentFollowingsActivitiesModel>?,
-                                          completionHandler: @escaping PaginationCompletionHandler<RecentFollowingsActivitiesModel>) {
-        #warning("uses old models.")
-        pages.decode(RecentFollowingsActivitiesModel.self,
-                     with: paginationParameters,
-                     at: { try URLs.getRecentFollowingActivities(maxId: $0.nextMaxId ?? "") },
-                     updateHandler: updateHandler,
-                     completionHandler: completionHandler)
+                                          updateHandler: PaginationUpdateHandler<RecentActivity.Story, AnyPaginatedResponse>?,
+                                          completionHandler: @escaping PaginationCompletionHandler<RecentActivity.Story>) {
+        pages.parse(RecentActivity.Story.self,
+                    paginatedResponse: AnyPaginatedResponse.self,
+                    with: paginationParameters,
+                    at: { try URLs.getRecentFollowingActivities(maxId: $0.nextMaxId ?? "") },
+                    processingHandler: { $0.rawResponse.stories.array?.map(RecentActivity.Story.init) ?? [] },
+                    updateHandler: updateHandler,
+                    completionHandler: completionHandler)
     }
 
     /// Unfollow user.
