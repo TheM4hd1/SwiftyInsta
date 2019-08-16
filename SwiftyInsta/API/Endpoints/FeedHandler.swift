@@ -36,6 +36,7 @@ public final class FeedHandler: Handler {
                     completionHandler: completionHandler)
     }
 
+    @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
     /// Fetch the timeline.
     public func timeline(with paginationParameters: PaginationParameters,
                          updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,

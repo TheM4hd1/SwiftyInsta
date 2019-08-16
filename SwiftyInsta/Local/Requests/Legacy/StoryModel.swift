@@ -8,30 +8,6 @@
 
 import Foundation
 
-public struct StoryModel: Codable {
-    public var id: Int?
-    public var topLive: TopLiveModel?
-    public var isPortrait: Bool?
-    public var tray: [TrayElement]?
-
-    public init(id: Int?, topLive: TopLiveModel?, isPortrait: Bool?, tray: [TrayElement]?) {
-        self.id = id
-        self.topLive = topLive
-        self.isPortrait = isPortrait
-        self.tray = tray
-    }
-}
-
-public struct TopLiveModel: Codable {
-    public var broadcastOwners: [User]?
-    public var rankedPosition: Int?
-
-    public init(broadcastOwners: [User]?, rankedPosition: Int?) {
-        self.broadcastOwners = broadcastOwners
-        self.rankedPosition = rankedPosition
-    }
-}
-
 public struct ConfigureStoryUploadModel: Codable {
     enum CodingKeys: String, CodingKey {
         case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
