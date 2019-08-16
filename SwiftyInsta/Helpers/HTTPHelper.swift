@@ -53,7 +53,7 @@ class HTTPHelper {
             let result = $0.flatMap { data, response -> Result<R, Error> in
                 do {
                     guard let data = data, !checkingValidStatusCode || response?.statusCode == 200 else {
-                        throw GenericError.custom("Invalid response.")
+                        throw GenericError.custom("Invalid response. \(response?.statusCode ?? -1)")
                     }
                     // decode data.
                     let decoded = try DynamicResponse(data: data)
@@ -138,7 +138,7 @@ class HTTPHelper {
             let result = $0.flatMap { data, response -> Result<D, Error> in
                 do {
                     guard let data = data, !checkingValidStatusCode || response?.statusCode == 200 else {
-                        throw GenericError.custom("Invalid response.")
+                        throw GenericError.custom("Invalid response. \(response?.statusCode ?? -1)")
                     }
                     // decode data.
                     let decoder = JSONDecoder()
