@@ -20,7 +20,7 @@ public final class StoryHandler: Handler {
     }
 
     /// Get user's stories.
-    public func by(user: User.Reference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
+    public func by(user: User.Reference, completionHandler: @escaping (Result<TrayElement, Error>) -> Void) {
         switch user {
         case .me:
             // check for valid user.
@@ -43,7 +43,7 @@ public final class StoryHandler: Handler {
             }
         case .primaryKey(let pk):
             // load stories directly.
-            requests.parse(Tray.self,
+            requests.parse(TrayElement.self,
                            method: .get,
                            url: Result { try URLs.getUserStoryUrl(userId: pk) },
                            completionHandler: completionHandler)
