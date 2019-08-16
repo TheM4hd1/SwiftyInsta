@@ -277,8 +277,8 @@ public final class StoryHandler: Handler {
         let dynamicData: DynamicRequest = ["supported_capabilities_new": supportedCapabilities,
                                            "_uuid": handler!.settings.device.deviceGuid.uuidString,
                                            "_uid": storage.dsUserId,
-                                           "csrfToken": storage.csrfToken,
-                                           "userIds": feeds,
+                                           "_csrftoken": storage.csrfToken,
+                                           "user_ids": feeds,
                                            "source": "feed_timeline"]
 
         guard let payload = try? String(data: dynamicData.data(), encoding: .utf8) else {
