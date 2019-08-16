@@ -175,7 +175,7 @@ public final class StoryHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [
@@ -253,7 +253,7 @@ public final class StoryHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [
@@ -273,19 +273,19 @@ public final class StoryHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        let supportedCapabilities = SupportedCapability.generate().map { ["name": $0.name, "value": $0.value] }
+        let supportedCapabilities = SupportedCapability.generate().map { [$0.name: $0.value] }
         let dynamicData: DynamicRequest = ["supported_capabilities_new": supportedCapabilities,
                                            "_uuid": handler!.settings.device.deviceGuid.uuidString,
                                            "_uid": storage.dsUserId,
-                                           "csrfToken": storage.csrfToken,
-                                           "userIds": feeds,
+                                           "_csrftoken": storage.csrfToken,
+                                           "user_ids": feeds,
                                            "source": "feed_timeline"]
 
         guard let payload = try? String(data: dynamicData.data(), encoding: .utf8) else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [

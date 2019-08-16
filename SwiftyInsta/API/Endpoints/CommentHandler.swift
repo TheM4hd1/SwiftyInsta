@@ -44,7 +44,7 @@ public final class CommentHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes)
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
             let signature = "\(hash).\(payload)"
             guard let escapedSignature = signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
                 return completionHandler(.failure(GenericError.custom("Invalid request.")))
