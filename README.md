@@ -130,7 +130,7 @@ handler.messages.inbox(with: .init(maxPagesToLoad: .max),
                        updateHandler: nil,
                        completionHandler: { _, _ in /* do something */ })
 // …fetch all your followers.
-handler.users.following(user: .primaryKey(handler.user?.identity.primaryKey ?? -1),
+handler.users.following(user: .me,
                         with: .init(maxPagesToLoad: .max),
                         updateHandler: nil,
                         completionHandler: { _, _ in /* do something */ })

@@ -63,6 +63,12 @@ public struct User: IdentifiableParsedResponse {
     /// The `isBusiness` value.
     public var isBusiness: Bool? { return rawResponse.isBusiness.bool }
 
+    /// A `User.Reference`.
+    public var reference: Reference {
+        return identity.primaryKey.flatMap(Reference.primaryKey)
+            ?? .username(username)
+    }
+
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
