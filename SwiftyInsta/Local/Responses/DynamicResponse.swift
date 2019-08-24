@@ -86,6 +86,17 @@ public enum DynamicResponse: Equatable {
     }
 
     // MARK: Accessories
+    /// Returned a beautified description.
+    public var beautifiedDescription: String {
+        let data: Data
+        if #available(iOS 11, macOS 10.13, tvOS 11, watchOS 4, *) {
+          data = (try? self.data(options: [.prettyPrinted, .sortedKeys])) ?? Data()
+        } else {
+          data = (try? self.data(options: [.prettyPrinted])) ?? Data()
+        }
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+
     /// `Any`.
     public var any: Any {
         switch self {
