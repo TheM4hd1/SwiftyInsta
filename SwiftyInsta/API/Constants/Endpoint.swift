@@ -24,8 +24,8 @@ public extension Endpoint {
             .replacingOccurrences(of: "//", with: "/"))
     }
     /// Resolving format.
-    func resolving(_ args: Any...) -> AnyEndpoint {
-        return AnyEndpoint(rawValue: String(format: rawValue, args))
+    func resolving<L>(_ args: L...) -> AnyEndpoint where L: LosslessStringConvertible {
+        return AnyEndpoint(rawValue: String(format: rawValue, args.map(String.init)))
     }
 
     /// `URL`.
@@ -151,11 +151,11 @@ public extension Endpoints {
         /// Timeline.
         case timeline = "/feed/timeline/"
         /// User's feed.
-        case user = "/feed/user/%ld/"
+        case user = "/feed/user/%@/"
         /// Reel media.
-        case userReelMedia = "/feed/user/%ld/reel_media/"
+        case userReelMedia = "/feed/user/%@/reel_media/"
         /// Story feed.
-        case userStory = "/feed/user/%ld/story/"
+        case userStory = "/feed/user/%@/story/"
     }
 }
 
@@ -163,29 +163,29 @@ public extension Endpoints {
 public extension Endpoints {
     enum Friendships: String, Endpoint {
         /// Following.
-        case folllowing = "/friendships/%ld/following/"
+        case folllowing = "/friendships/%@/following/"
         /// Followers.
-        case followers = "/friendships/%ld/followers/"
+        case followers = "/friendships/%@/followers/"
         /// Remove follower.
-        case remove = "/friendships/remove_follower/%ld/"
+        case remove = "/friendships/remove_follower/%@/"
         /// Reject friendship.
-        case reject = "/friendships/ignore/%ld/"
+        case reject = "/friendships/ignore/%@/"
         /// Aprove friendship.
-        case approve = "/friendships/approve/%ld/"
+        case approve = "/friendships/approve/%@/"
         /// Pending friendships.
         case pending = "/friendships/pending/"
         /// Folllow.
-        case follow = "/friendships/create/%ld/"
+        case follow = "/friendships/create/%@/"
         /// Unfollow.
-        case unfollow = "/friendships/destroy/%ld/"
+        case unfollow = "/friendships/destroy/%@/"
         /// Status.
-        case status = "/friendships/show/%ld/"
+        case status = "/friendships/show/%@/"
         /// Statuses.
         case statuses = "/friendships/show_many/"
         /// Block.
-        case block = "/friendships/block/%ld/"
+        case block = "/friendships/block/%@/"
         /// Unblock.
-        case unblock = "/friendships/unblock/%ld/"
+        case unblock = "/friendships/unblock/%@/"
     }
 }
 
@@ -193,7 +193,7 @@ public extension Endpoints {
 public extension Endpoints {
     enum Highlights: String, Endpoint {
         /// Highlights.
-        case tray = "/highlights/%ld/highlights_tray/"
+        case tray = "/highlights/%@/highlights_tray/"
     }
 }
 
@@ -261,11 +261,11 @@ public extension Endpoints {
         /// Search.
         case search = "/users/search/"
         /// Info.
-        case info = "/users/%ld/info/"
+        case info = "/users/%@/info/"
         /// Blocked.
         case blocked = "/users/blocked_list/"
         /// Report.
-        case report = "/users/%ld/flag_user/"
+        case report = "/users/%@/flag_user/"
     }
 }
 
@@ -273,6 +273,6 @@ public extension Endpoints {
 public extension Endpoints {
     enum Usertags: String, Endpoint {
         /// Feed.
-        case feed = "/usertags/%ld/feed/"
+        case feed = "/usertags/%@/feed/"
     }
 }
