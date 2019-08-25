@@ -60,7 +60,7 @@ public enum DynamicResponse: Equatable {
         switch object {
         // match `Array`.
         case let array as [Any]:
-            self = .array(array.map(DynamicResponse.init))
+            self = .array(array.map { DynamicResponse($0) })
         // match `Bool`, `Double` or `Int`.
         case let number as NSNumber:
             self = .number(number)
@@ -69,7 +69,9 @@ public enum DynamicResponse: Equatable {
             self = (try? DynamicResponse(data: data)) ?? .none
         // match `Dictionary`.
         case let dictionary as [String: Any]:
-            self = .dictionary(Dictionary(uniqueKeysWithValues: dictionary.map { ($0.key.camelCased, DynamicResponse($0.value)) }))
+            self = .dictionary(Dictionary(uniqueKeysWithValues: dictionary.map {
+                ($0.key.camelCased, DynamicResponse($0.value))
+            }))
         // match `String`.
         case let string as String:
             self = .string(string)
@@ -84,6 +86,17 @@ public enum DynamicResponse: Equatable {
     }
 
     // MARK: Accessories
+    /// Returned a beautified description.
+    public var beautifiedDescription: String {
+        let data: Data
+        if #available(iOS 11, macOS 10.13, tvOS 11, watchOS 4, *) {
+          data = (try? self.data(options: [.prettyPrinted, .sortedKeys])) ?? Data()
+        } else {
+          data = (try? self.data(options: [.prettyPrinted])) ?? Data()
+        }
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+
     /// `Any`.
     public var any: Any {
         switch self {
@@ -139,7 +152,7 @@ public enum DynamicResponse: Equatable {
     public var string: String? {
         switch self {
         case .string(let string): return string
-        case .number(let number): return number.description(withLocale: Locale.current)
+        case .number(let number): return String(number.intValue)
         default: return nil
         }
     }
@@ -169,40 +182,5 @@ public enum DynamicResponse: Equatable {
     public subscript(key: String) -> DynamicResponse {
         guard case let .dictionary(dictionary) = self else { return .none }
         return dictionary[key] ?? .none
-    }
-}
-extension DynamicResponse: ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: Any...) {
-        self.init(elements)
-    }
-}
-extension DynamicResponse: ExpressibleByBooleanLiteral {
-    public init(booleanLiteral value: BooleanLiteralType) {
-        self = .number(value as NSNumber)
-    }
-}
-extension DynamicResponse: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (String, Any)...) {
-        self.init(elements)
-    }
-}
-extension DynamicResponse: ExpressibleByFloatLiteral {
-    public init(floatLiteral value: FloatLiteralType) {
-        self = .number(value as NSNumber)
-    }
-}
-extension DynamicResponse: ExpressibleByIntegerLiteral {
-    public init(integerLiteral value: IntegerLiteralType) {
-        self = .number(value as NSNumber)
-    }
-}
-extension DynamicResponse: ExpressibleByNilLiteral {
-    public init(nilLiteral: ()) {
-        self = .none
-    }
-}
-extension DynamicResponse: ExpressibleByStringLiteral {
-    public init(stringLiteral value: StringLiteralType) {
-        self = .string(value)
     }
 }

@@ -35,7 +35,7 @@ public final class ProfileHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes)
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes).toHexString()
             let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
             content.updateValue(signature, forKey: Headers.igSignatureKey)
             content.updateValue(Headers.igSignatureVersionValue, forKey: Headers.igSignatureVersionKey)
@@ -61,7 +61,7 @@ public final class ProfileHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes)
+            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes).toHexString()
             let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
             content.updateValue(signature, forKey: Headers.igSignatureKey)
             content.updateValue(Headers.igSignatureVersionValue, forKey: Headers.igSignatureVersionKey)

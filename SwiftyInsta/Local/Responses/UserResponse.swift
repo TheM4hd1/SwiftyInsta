@@ -63,6 +63,12 @@ public struct User: IdentifiableParsedResponse {
     /// The `isBusiness` value.
     public var isBusiness: Bool? { return rawResponse.isBusiness.bool }
 
+    /// A `User.Reference`.
+    public var reference: Reference {
+        return identity.primaryKey.flatMap(Reference.primaryKey)
+            ?? .username(username)
+    }
+
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -106,6 +112,36 @@ public struct Friendship: ParsedResponse {
     /// The `outgoingRequest` value.
     public var followRequestSent: Bool? {
         return rawResponse.outgoingRequest.bool
+    }
+
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
+}
+
+/// A `SuggestedUser` response.
+public struct SuggestedUser: IdentifiableParsedResponse {
+    /// Init with `rawResponse`.
+    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+
+    /// The `rawResponse`.
+    public let rawResponse: DynamicResponse
+
+    /// The `user` value.
+    public var user: User? {
+        return rawResponse.user == .none
+            ? nil
+            : User(rawResponse: rawResponse.user)
+    }
+    /// The `algorithm` value.
+    public var algorithm: String? {
+        return rawResponse.algorithm.string
     }
 
     // MARK: Codable

@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "SwiftyInsta"
-  s.version      = "2.0"
+  s.version      = "2.1.3"
   s.summary      = "Private and Tokenless Instagram RESTful API."
 
   s.homepage     = "https://github.com/TheM4hd1/SwiftyInsta"

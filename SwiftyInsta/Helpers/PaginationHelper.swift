@@ -73,9 +73,10 @@ class PaginationHelper: Handler {
                      body: ((PaginationParameters) -> HTTPHelper.Body?)? = nil,
                      headers: ((PaginationParameters) -> [String: String])? = nil,
                      delay: ClosedRange<Double>? = nil,
+                     paginationHandler: @escaping (P) -> String? = { $0.rawResponse.nextMaxId.string },
                      processingHandler: @escaping (P) -> [M],
                      updateHandler: PaginationUpdateHandler<M, P>?,
-                     completionHandler: @escaping PaginationCompletionHandler<M>) where M: ParsedResponse, P: PaginatedResponse {
+                     completionHandler: @escaping PaginationCompletionHandler<M>) where M: ParsedResponse, P: ParsedResponse {
         // check for valid pagination.
         guard paginationParamaters.canLoadMore else {
             return completionHandler(.failure(GenericError.custom("Can't load more.")), paginationParamaters)
@@ -124,7 +125,7 @@ class PaginationHelper: Handler {
                                                     completionHandler(.success(fetched), paginationParamaters)
                                                 }
                                             }
-                                            paginationParamaters.nextMaxId = decoded.nextMaxId.flatMap { String($0) }
+                                            paginationParamaters.nextMaxId = paginationHandler(decoded)
                                             guard !(paginationParamaters.nextMaxId ?? "").isEmpty else {
                                                 return handler.settings.queues.response.async {
                                                     completionHandler(.success(fetched), paginationParamaters)

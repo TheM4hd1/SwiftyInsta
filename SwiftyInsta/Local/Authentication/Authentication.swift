@@ -70,7 +70,7 @@ public struct Authentication {
         /// Init a `Response` with the data stored in the user's keychain
         /// and persisted through `Authentication.Response.persist()`.
         /// - Parameters:
-        ///     - key:  The `String` returned by `Authentication.Response.persist()`
+        ///     - key: The `String` returned by `Authentication.Response.persist()`
         /// - Returns: The `Response` if valid `Data` is found in the keychain, `nil` otherwise.
         public static func persisted(with key: String) -> Response? {
             let keychain = KeychainSwift()
@@ -78,6 +78,23 @@ public struct Authentication {
             guard let data = keychain.getData(key) else { return nil }
             // decode and return.
             return try? decoder.decode(Response.self, from: data)
+        }
+
+        @discardableResult
+        /// Remove a persisted `Response` from the user's keychain.
+        /// - Parameters:
+        ///     - key: The `String` returned by `Authentication.Response.persist()`
+        /// - Returns: `true` if it was found and deleted, `false` otherwise.
+        public static func invalidate(persistedWithKey key: String) -> Bool {
+            return KeychainSwift().delete(key)
+        }
+
+        @discardableResult
+        /// Remove the persisted `Response` from the user's keychain.
+        /// - Returns: `true` if it was found and deleted, `false` otherwise.
+        public func invalidate() -> Bool {
+            guard let dsUserId = storage?.dsUserId, !dsUserId.isEmpty else { return false }
+            return KeychainSwift().delete(dsUserId)
         }
     }
 
