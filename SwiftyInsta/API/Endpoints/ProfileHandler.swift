@@ -42,7 +42,7 @@ public final class ProfileHandler: Handler {
 
             requests.decode(Status.self,
                             method: .post,
-                            url: Result { try URLs.setPublicProfile() },
+                            url: Result { try Endpoints.Accounts.setPublic.url() },
                             body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
@@ -68,7 +68,7 @@ public final class ProfileHandler: Handler {
 
             requests.decode(Status.self,
                             method: .post,
-                            url: Result { try URLs.setPrivateProfile() },
+                            url: Result { try Endpoints.Accounts.setPrivate.url() },
                             body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
@@ -89,7 +89,7 @@ public final class ProfileHandler: Handler {
                        "new_password2": password]
         requests.decode(Status.self,
                         method: .post,
-                        url: Result { try URLs.getChangePasswordUrl() },
+                        url: Result { try Endpoints.Accounts.changePassword.url() },
                         body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
@@ -107,7 +107,7 @@ public final class ProfileHandler: Handler {
         }
         requests.decode(User.self,
                         method: .get,
-                        url: Result { try URLs.getEditProfileUrl() },
+                        url: Result { try Endpoints.Accounts.editProfile.url() },
                         deliverOnResponseQueue: false) { [weak self] in
                             guard let me = self, let handler = me.handler else {
                                 return completionHandler(.failure(GenericError.weakObjectReleased))
@@ -150,7 +150,7 @@ public final class ProfileHandler: Handler {
 
                                 handler.requests.decode(Status.self,
                                                         method: .post,
-                                                        url: Result { try URLs.getSaveEditProfileUrl() },
+                                                        url: Result { try Endpoints.Accounts.saveEditProfile.url() },
                                                         body: .parameters(content),
                                                         headers: headers) { completionHandler($0.map { $0.state == .ok }) }
                             }
@@ -169,7 +169,7 @@ public final class ProfileHandler: Handler {
 
         requests.decode(Status.self,
                         method: .post,
-                        url: Result { try URLs.getEditBiographyUrl() },
+                        url: Result { try Endpoints.Accounts.editBiography.url() },
                         body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
@@ -185,7 +185,7 @@ public final class ProfileHandler: Handler {
 
         requests.decode(Status.self,
                         method: .post,
-                        url: Result { try URLs.getRemoveProfilePictureUrl() },
+                        url: Result { try Endpoints.Accounts.removeProfilePicture.url() },
                         body: .parameters(content),
                         headers: headers) { completionHandler($0.map { $0.state == .ok }) }
     }
@@ -229,7 +229,7 @@ public final class ProfileHandler: Handler {
 
         requests.decode(Status.self,
                         method: .post,
-                        url: Result { try URLs.getChangePasswordUrl() },
+                        url: Result { try Endpoints.Accounts.changeProfilePicture.url() },
                         body: .data(content),
                         headers: headers) { completionHandler($0.map { $0.state == .ok }) }
     }

@@ -35,7 +35,7 @@ final class AuthenticationHandler: Handler {
         // remove cookies.
         HTTPCookieStorage.shared.removeCookies(since: .distantPast)
         // ask for login.
-        requests.fetch(method: .get, url: Result { try URLs.home() }) { [weak self] in
+        requests.fetch(method: .get, url: Result { try Endpoints.Authentication.home.url() }) { [weak self] in
             guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             // analyze response.
             switch $0 {
@@ -59,7 +59,7 @@ final class AuthenticationHandler: Handler {
                                "Referer": "https://instagram.com/"]
                 me.requests.decode(CredentialsAuthenticationResponse.self,
                                    method: .post,
-                                   url: Result { try URLs.login() },
+                                   url: Result { try Endpoints.Authentication.login.url() },
                                    body: .parameters(body),
                                    headers: headers,
                                    checkingValidStatusCode: false,
@@ -71,7 +71,7 @@ final class AuthenticationHandler: Handler {
                                         }
                                     case .success(let response):
                                         // check for status.
-                                        if let url = try? response.checkpointUrl.flatMap(URLs.checkpoint) {
+                                        if let url = try? response.checkpointUrl.flatMap(Endpoints.Authentication.home.appending)?.url() {
                                             user.completionHandler = completionHandler
                                             user.response = .challenge(url)
                                             me.challengeInfo(for: user) { form in
@@ -283,7 +283,9 @@ final class AuthenticationHandler: Handler {
               for user: Credentials,
               completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         // guard for url.
-        guard let url = try? URLs.twoFactor().absoluteString else { return completionHandler(.failure(GenericError.invalidUrl)) }
+        guard let url = try? Endpoints.Authentication.twoFactor.url().absoluteString else {
+            return completionHandler(.failure(GenericError.invalidUrl))
+        }
         var user = user
         let body = ["username": user.username,
                     "verificationCode": code,
@@ -294,7 +296,7 @@ final class AuthenticationHandler: Handler {
                        "X-Instagram-AJAX": "1"]
 
         requests.fetch(method: .post,
-                       url: Result { try URLs.twoFactor() },
+                       url: Result { try Endpoints.Authentication.twoFactor.url() },
                        body: .parameters(body),
                        headers: headers,
                        delay: 0...0) { [weak self] in
@@ -354,7 +356,10 @@ final class AuthenticationHandler: Handler {
                        "X-Requested-With": "XMLHttpRequest",
                        "Referer": "https://instagram.com/"]
 
-        requests.fetch(method: .post, url: Result { try URLs.login() }, body: .parameters(body), headers: headers) { [weak self] in
+        requests.fetch(method: .post,
+                       url: Result { try Endpoints.Authentication.login.url() },
+                       body: .parameters(body),
+                       headers: headers) { [weak self] in
             guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             // check for response.
             switch $0 {
@@ -413,7 +418,7 @@ final class AuthenticationHandler: Handler {
                 completionHandler(.failure(GenericError.custom("User is not logged in.")))
             }
         }
-        handler.requests.fetch(method: .post, url: Result { try URLs.getLogoutUrl() }) { [weak self] in
+        handler.requests.fetch(method: .post, url: Result { try Endpoints.Accounts.logout.url() }) { [weak self] in
             guard let handler = self?.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             let result = $0.flatMap { data, response -> Result<Bool, Error> in
                 do {

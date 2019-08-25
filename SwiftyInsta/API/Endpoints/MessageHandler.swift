@@ -17,7 +17,7 @@ public final class MessageHandler: Handler {
         pages.parse(Thread.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
-                    at: { try URLs.getDirectInbox(maxId: $0.nextMaxId ?? "") },
+                    at: { try Endpoints.Direct.inbox.url(with: ["max_id": $0.nextMaxId]) },
                     processingHandler: { $0.rawResponse.inbox.threads.array?.map(Thread.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
@@ -36,7 +36,7 @@ public final class MessageHandler: Handler {
 
         requests.decode(Status.self,
                         method: .get,
-                        url: Result { try URLs.getDirectSendTextMessage() },
+                        url: Result { try Endpoints.Direct.text.url() },
                         body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
@@ -44,7 +44,7 @@ public final class MessageHandler: Handler {
     public func `in`(thread: String, completionHandler: @escaping (Result<Thread, Error>) -> Void) {
         requests.parse(Thread.self,
                        method: .get,
-                       url: Result { try URLs.getDirectThread(id: thread) },
+                       url: Result { try Endpoints.Direct.thread.resolving(thread).url() },
                        completionHandler: completionHandler)
     }
 
@@ -53,7 +53,7 @@ public final class MessageHandler: Handler {
         pages.parse(Recipient.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: .init(maxPagesToLoad: 1),
-                    at: { _ in try URLs.getRecentDirectRecipients() },
+                    at: { _ in try Endpoints.Direct.recentRecipients.url() },
                     processingHandler: { $0.rawResponse.recentRecipients.array?.map(Recipient.init) ?? [] },
                     updateHandler: nil) { result, _ in
                         completionHandler(result)
@@ -65,7 +65,7 @@ public final class MessageHandler: Handler {
         pages.parse(Recipient.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: .init(maxPagesToLoad: 1),
-                    at: { _ in try URLs.getRankedDirectRecipients() },
+                    at: { _ in try Endpoints.Direct.rankedRecipients.url() },
                     processingHandler: { $0.rawResponse.rankedRecipients.array?.map(Recipient.init) ?? [] },
                     updateHandler: nil) { result, _ in
                         completionHandler(result)

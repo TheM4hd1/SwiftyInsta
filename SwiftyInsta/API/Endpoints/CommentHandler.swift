@@ -19,7 +19,7 @@ public final class CommentHandler: Handler {
         pages.parse(Comment.self,
                     paginatedResponse: MediaComments.self,
                     with: paginationParameters,
-                    at: { try URLs.getComments(for: mediaId, maxId: $0.nextMaxId ?? "") },
+                    at: { try Endpoints.Media.comments.resolving(mediaId).url(with: ["max_id": $0.nextMaxId]) },
                     processingHandler: { $0.rawResponse.comments.array?.map(Comment.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
@@ -56,7 +56,7 @@ public final class CommentHandler: Handler {
 
             requests.decode(Status.self,
                             method: .post,
-                            url: Result { try URLs.getPostCommentUrl(mediaId: mediaId) },
+                            url: Result { try Endpoints.Media.postComment.resolving(mediaId).url() },
                             body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
@@ -71,7 +71,7 @@ public final class CommentHandler: Handler {
                     "_csrftoken": storage.csrfToken]
         requests.decode(Status.self,
                         method: .post,
-                        url: Result { try URLs.getDeleteCommentUrl(mediaId: mediaId, commentId: commentId) },
+                        url: Result { try Endpoints.Media.deleteComment.resolving(mediaId, commentId).url() },
                         body: .parameters(body),
                         completionHandler: { completionHandler($0.map { $0.state == .ok }) })
     }
@@ -89,7 +89,7 @@ public final class CommentHandler: Handler {
                     "media_id": mediaId]
         requests.decode(Status.self,
                         method: .post,
-                        url: Result { try URLs.reportCommentUrl(mediaId: mediaId, commentId: commentId) },
+                        url: Result { try Endpoints.Media.reportComment.resolving(mediaId, commentId).url() },
                         body: .parameters(body),
                         completionHandler: { completionHandler($0.map { $0.state == .ok }) })
     }
