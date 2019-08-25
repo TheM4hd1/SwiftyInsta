@@ -37,10 +37,10 @@ public extension Endpoint {
     }
     /// `URL` with `queryParameters`.
     func url<L>(with queryParameters: [String: L?]) throws -> URL! where L: LosslessStringConvertible {
-        let parameters = queryParameters.map { URLQueryItem(name: $0.key, value: $0.value.flatMap(String.init)) }
         guard var combine = try URLComponents(url: url(), resolvingAgainstBaseURL: false) else {
             throw GenericError.invalidEndpoint(rawValue)
         }
+        let parameters = queryParameters.map { URLQueryItem(name: $0.key, value: $0.value.flatMap(String.init)) }
         combine.queryItems = parameters
         guard let url = combine.url else { throw GenericError.invalidEndpoint(rawValue) }
         return url
@@ -151,7 +151,7 @@ public extension Endpoints {
         /// Timeline.
         case timeline = "/feed/timeline/"
         /// User's feed.
-        case user = "/feed/user/"
+        case user = "/feed/user/%ld/"
         /// Reel media.
         case userReelMedia = "/feed/user/%ld/reel_media/"
         /// Story feed.
@@ -249,9 +249,9 @@ public extension Endpoints {
 public extension Endpoints {
     enum Upload: String, Endpoint {
         /// Photo.
-        case uploadPhoto = "/upload/photo/"
+        case photo = "/upload/photo/"
         /// Video.
-        case uploadVideo = "/upload/video/"
+        case video = "/upload/video/"
     }
 }
 

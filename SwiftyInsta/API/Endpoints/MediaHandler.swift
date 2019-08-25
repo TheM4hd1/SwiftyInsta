@@ -156,7 +156,7 @@ public final class MediaHandler: Handler {
 
         requests.decode(Upload.Response.Picture.self,
                         method: .post,
-                        url: Result { try Endpoints.Upload.uploadPhoto.url() },
+                        url: Result { try Endpoints.Upload.photo.url() },
                         body: .data(content),
                         headers: headers,
                         deliverOnResponseQueue: false) { [weak self] in
@@ -401,7 +401,7 @@ public final class MediaHandler: Handler {
 
         requests.decode(Upload.Response.Video.self,
                         method: .post,
-                        url: Result { try Endpoints.Upload.uploadVideo.url() },
+                        url: Result { try Endpoints.Upload.video.url() },
                         body: .data(content),
                         headers: headers,
                         deliverOnResponseQueue: false) { [weak self] in
@@ -491,7 +491,7 @@ public final class MediaHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        guard let url = try? Endpoints.Upload.uploadPhoto.url() else {
+        guard let url = try? Endpoints.Upload.photo.url() else {
             return completionHandler(.failure(GenericError.invalidUrl))
         }
         var content = Data()

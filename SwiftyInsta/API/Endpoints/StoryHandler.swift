@@ -124,7 +124,7 @@ public final class StoryHandler: Handler {
 
         requests.decode(Upload.Response.Picture.self,
                         method: .post,
-                        url: Result { try Endpoints.Upload.uploadPhoto.url() },
+                        url: Result { try Endpoints.Upload.photo.url() },
                         body: .data(content),
                         headers: headers,
                         deliverOnResponseQueue: false) { [weak self] in
