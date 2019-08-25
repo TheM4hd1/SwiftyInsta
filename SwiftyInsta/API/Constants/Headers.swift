@@ -25,7 +25,7 @@ struct Headers {
     static let igSignatureKey = "signed_body"
     static let igSignatureValue = "937463b5272b5d60e9d20f0f8d7d192193dd95095a3ad43725d494300a5ea5fc"
     static let igSignatureVersionKey = "ig_sig_key_version"
-    static let igSignatureVersionValue = "4"
+    static let igSignatureVersionValue = "5"
     static let timeZoneOffsetKey = "timezone_offset"
     static let timeZoneOffsetValue = "43200"
     static let countKey = "count"
