@@ -25,7 +25,7 @@ public extension Endpoint {
     }
     /// Resolving format.
     func resolving<L>(_ args: L...) -> AnyEndpoint where L: LosslessStringConvertible {
-        return AnyEndpoint(rawValue: String(format: rawValue, args.map(String.init)))
+        return AnyEndpoint(rawValue: String(format: rawValue, arguments: args.map(String.init)))
     }
 
     /// `URL`.
