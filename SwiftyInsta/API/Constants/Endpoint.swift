@@ -61,10 +61,9 @@ public extension Endpoint {
 
     /// `URL`.
     func url() throws -> URL {
-        guard var components = URLComponents(string: Self.base) else {
+        guard var components = URLComponents(string: Self.base+rawValue) else {
             throw GenericError.invalidEndpoint(Self.base)
         }
-        components.path = rawValue
         components.queryItems = queryItems.isEmpty ? nil : queryItems
         guard let url = components.url else {
             throw GenericError.invalidEndpoint(rawValue)
