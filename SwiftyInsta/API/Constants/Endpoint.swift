@@ -12,37 +12,63 @@ import Foundation
 public protocol Endpoint {
     /// The raw value.
     var rawValue: String { get }
+    /// The query items.
+    var queryItems: [URLQueryItem] { get }
     /// The base path.
     static var base: String { get }
 }
 public extension Endpoint {
     /// The base path.
     static var base: String { return "https://i.instagram.com/api/v1" }
+    /// The base query items.
+    var queryItems: [URLQueryItem] { return [] }
+
     /// Appending.
-    func appending(_ path: String) -> AnyEndpoint {
+    func appending(_ path: String) -> Endpoint {
         return AnyEndpoint(rawValue: (rawValue+path)
-            .replacingOccurrences(of: "//", with: "/"))
+            .replacingOccurrences(of: "//", with: "/"),
+                           queryItems: queryItems)
     }
-    /// Resolving format.
-    func resolving<L>(_ args: L...) -> AnyEndpoint where L: LosslessStringConvertible {
-        return AnyEndpoint(rawValue: String(format: rawValue, arguments: args.map(String.init)))
+    /// Query.
+    func query<L>(_ items: [String: L?]) -> Endpoint where L: LosslessStringConvertible {
+        return AnyEndpoint(rawValue: rawValue,
+                           queryItems: queryItems+items.compactMap {
+                            $0.value == nil ? nil : URLQueryItem(name: $0.key, value: $0.value.flatMap(String.init))
+            })
+    }
+
+    // MARK: Accessories.
+    /// Populate `rank_token`-
+    func rank(_ token: String) -> Endpoint {
+        return query(["rank_token": token])
+    }
+    /// Populate `media_type`-
+    func type(_ mediaType: MediaType) -> Endpoint {
+        return query(["media_type": mediaType.rawValue])
+    }
+    /// Populate `max_id`.
+    func next(_ nextMaxId: String?) -> Endpoint {
+        return query(["max_id": nextMaxId])
+    }
+    /// Populate `q`.
+    func q(_ query: String) -> Endpoint {
+        return self.query(["q": query])
+    }
+    /// Populate `query`.
+    func query(_ query: String?) -> Endpoint {
+        return self.query(["query": query])
     }
 
     /// `URL`.
     func url() throws -> URL {
-        guard let url = URL(string: Self.base)?.appendingPathComponent(rawValue) else {
+        guard var components = URLComponents(string: Self.base) else {
+            throw GenericError.invalidEndpoint(Self.base)
+        }
+        components.path = rawValue
+        components.queryItems = queryItems.isEmpty ? nil : queryItems
+        guard let url = components.url else {
             throw GenericError.invalidEndpoint(rawValue)
         }
-        return url
-    }
-    /// `URL` with `queryParameters`.
-    func url<L>(with queryParameters: [String: L?]) throws -> URL! where L: LosslessStringConvertible {
-        guard var combine = try URLComponents(url: url(), resolvingAgainstBaseURL: false) else {
-            throw GenericError.invalidEndpoint(rawValue)
-        }
-        let parameters = queryParameters.map { URLQueryItem(name: $0.key, value: $0.value.flatMap(String.init)) }
-        combine.queryItems = parameters
-        guard let url = combine.url else { throw GenericError.invalidEndpoint(rawValue) }
         return url
     }
 }
@@ -53,6 +79,8 @@ public struct Endpoints { }
 public struct AnyEndpoint: Endpoint {
     /// The `rawValue`.
     public var rawValue: String
+    /// The query items.
+    public var queryItems: [URLQueryItem]
 }
 
 // MARK: Authentication
@@ -117,17 +145,28 @@ public extension Endpoints {
 
 // MARK: Direct
 public extension Endpoints {
-    enum Direct: String, Endpoint {
+    enum Direct: Endpoint {
         /// Inbox.
-        case inbox = "/direct_v2/inbox/"
+        case inbox
         /// Send message.
-        case text = "/direct_v2/threads/broadcast/text/"
-        /// Thread.
-        case thread = "/direct_v2/threads/%@/"
+        case text
+        /// Thread with identifier.
+        case thread(String)
         /// Recent recipients.
-        case recentRecipients = "/direct_share/recent_recipients/"
+        case recentRecipients
         /// Ranked recipients.
-        case rankedRecipients = "/direct_v2/ranked_recipients/"
+        case rankedRecipients
+
+        /// The raw value.
+        public var rawValue: String {
+            switch self {
+            case .inbox: return "/direct_v2/inbox/"
+            case .text: return "/direct_v2/threads/broadcast/text/"
+            case .thread(let identifier): return "/direct_v2/threads/"+identifier+"/"
+            case .recentRecipients: return "/direct_share/recent_recipients/"
+            case .rankedRecipients: return "/direct_v2/ranked_recipients/"
+            }
+        }
     }
 }
 
@@ -141,97 +180,157 @@ public extension Endpoints {
 
 // MARK: Feed
 public extension Endpoints {
-    enum Feed: String, Endpoint {
+    enum Feed: Endpoint {
         /// Story feed.
-        case story = "/feed/reels_tray/"
+        case reelsTray
         /// Reels media
-        case reelsMedia = "/feed/reels_media/"
+        case reelsMedia
         /// Tag.
-        case tag = "/feed/tag/%@/"
+        case tag(String)
         /// Timeline.
-        case timeline = "/feed/timeline/"
+        case timeline
         /// User's feed.
-        case user = "/feed/user/%@/"
+        case user(Int)
         /// Reel media.
-        case userReelMedia = "/feed/user/%@/reel_media/"
+        case reelMedia(user: Int)
         /// Story feed.
-        case userStory = "/feed/user/%@/story/"
+        case story(user: Int)
+
+        /// The raw value.
+        public var rawValue: String {
+            switch self {
+            case .reelsTray: return "/feed/reels_tray/"
+            case .reelsMedia: return "/feed/reels_media/"
+            case .tag(let tag): return "/feed/tag/"+tag+"/"
+            case .timeline: return "/feed/timeline/"
+            case .user(let primaryKey): return "/feed/user/\(primaryKey)/"
+            case .reelMedia(let primaryKey): return "/feed/user/\(primaryKey)/reel_media/"
+            case .story(let primaryKey): return "/feed/user/\(primaryKey)/story"
+            }
+        }
     }
 }
 
 // MARK: Friendships
 public extension Endpoints {
-    enum Friendships: String, Endpoint {
+    enum Friendships: Endpoint {
         /// Following.
-        case folllowing = "/friendships/%@/following/"
+        case folllowing(user: Int)
         /// Followers.
-        case followers = "/friendships/%@/followers/"
+        case followers(user: Int)
         /// Remove follower.
-        case remove = "/friendships/remove_follower/%@/"
+        case remove(user: Int)
         /// Reject friendship.
-        case reject = "/friendships/ignore/%@/"
+        case reject(user: Int)
         /// Aprove friendship.
-        case approve = "/friendships/approve/%@/"
+        case approve(user: Int)
         /// Pending friendships.
-        case pending = "/friendships/pending/"
+        case pending
         /// Folllow.
-        case follow = "/friendships/create/%@/"
+        case follow(user: Int)
         /// Unfollow.
-        case unfollow = "/friendships/destroy/%@/"
+        case unfollow(user: Int)
         /// Status.
-        case status = "/friendships/show/%@/"
+        case status(user: Int)
         /// Statuses.
-        case statuses = "/friendships/show_many/"
+        case statuses
         /// Block.
-        case block = "/friendships/block/%@/"
+        case block(user: Int)
         /// Unblock.
-        case unblock = "/friendships/unblock/%@/"
+        case unblock(user: Int)
+
+        /// The raw value.
+        public var rawValue: String {
+            switch self {
+            case .folllowing(let primaryKey): return "/friendships/\(primaryKey)/following/"
+            case .followers(let primaryKey): return "/friendships/\(primaryKey)/followers/"
+            case .remove(let primaryKey): return "/friendships/remove_follower/\(primaryKey)/"
+            case .reject(let primaryKey): return "/friendships/ignore/\(primaryKey)/"
+            case .approve(let primaryKey): return "/friendships/approve/\(primaryKey)/"
+            case .pending: return "/friendships/pending/"
+            case .follow(let primaryKey): return "/friendships/create/\(primaryKey)/"
+            case .unfollow(let primaryKey): return "/friendships/destroy/\(primaryKey)/"
+            case .status(let primaryKey): return "/friendships/show/\(primaryKey)/"
+            case .statuses: return "/friendships/show_many/"
+            case .block(let primaryKey): return "/friendships/block/\(primaryKey)/"
+            case .unblock(let primaryKey): return "/friendships/unblock/\(primaryKey)/"
+            }
+        }
     }
 }
 
 // MARK: Highlights
 public extension Endpoints {
-    enum Highlights: String, Endpoint {
+    enum Highlights: Endpoint {
         /// Highlights.
-        case tray = "/highlights/%@/highlights_tray/"
+        case tray(user: Int)
+
+        /// The raw value.
+        public var rawValue: String {
+            switch self {
+            case .tray(let primaryKey): return "/highlights/\(primaryKey)/highlights_tray/"
+            }
+        }
     }
 }
 
 // MARK: Media
 public extension Endpoints {
-    enum Media: String, Endpoint {
+    enum Media: Endpoint {
         /// Info.
-        case info = "/media/%@/info/"
+        case info(media: String)
         /// Like.
-        case like = "/media/%@/like/"
+        case like(media: String)
         /// Unlike.
-        case unlike = "/media/%@/unlike/"
+        case unlike(media: String)
         /// Likers.
-        case likers = "/media/%@/likers/"
+        case likers(media: String)
         /// Comments.
-        case comments = "/media/%@/comments/"
+        case comments(media: String)
         /// Configure.
-        case configureMedia = "/media/configure/"
+        case configure
         /// Configure album.
-        case configureMediaAlbum = "/media/configure_sidecar/"
+        case configureAlbum
         /// Configure story.
-        case configureStory = "/media/configure_to_reel/"
+        case configureStory
         /// Post comment.
-        case postComment = "/media/%@/comment/"
+        case postComment(media: String)
         /// Delete comment.
-        case deleteComment = "/media/%@/comment/%@/delete/"
+        case deleteComment(String, media: String)
         /// Delete media.
-        case deleteMedia = "/media/%@/delete/?media_type=%@/"
+        case delete(media: String)
         /// Edit media.
-        case editMedia = "/media/%@/edit_media/"
+        case edit(media: String)
         /// Story viewers.
-        case storyViewers = "/media/%@/list_reel_media_viewer/"
+        case storyViewers(media: String)
         /// Report comment.
-        case reportComment = "/media/%@/comment/%@/flag/"
+        case reportComment(String, media: String)
         /// Permalink.
-        case permalink = "/media/%@/permalink/"
+        case permalink(media: String)
         /// Mark as seen.
-        case markAsSeen = "/media/seen/?reel=1&live_vod=0/"
+        case markAsSeen
+
+        /// The raw value.
+        public var rawValue: String {
+            switch self {
+            case .info(let media): return "/media/"+media+"/info/"
+            case .like(let media): return "/media/"+media+"/like/"
+            case .unlike(let media): return "/media/"+media+"/unlike/"
+            case .likers(let media): return "/media/"+media+"/likers/"
+            case .comments(let media): return "/media/"+media+"/comments/"
+            case .configure: return "/media/configure/"
+            case .configureAlbum: return "/media/configure_sidecar/"
+            case .configureStory: return "/media/configure_to_reel/"
+            case .postComment(let media): return "/media/"+media+"/comment/"
+            case .deleteComment(let comment, let media): return "/media/"+media+"/comment/"+comment+"/delete/"
+            case .delete(let media): return "/media/"+media+"/delete/"
+            case .edit(let media): return "/media/"+media+"/edit_media/"
+            case .storyViewers(let media): return "/media/"+media+"/list_reel_media_viewer/"
+            case .reportComment(let comment, let media): return "/media/"+media+"/comment/"+comment+"/flag/"
+            case .permalink(let media): return "/media/"+media+"/permalink/"
+            case .markAsSeen: return "/media/seen/?reel=1&live_vod=0"
+            }
+        }
     }
 }
 
@@ -257,22 +356,39 @@ public extension Endpoints {
 
 // MARK: Users
 public extension Endpoints {
-    enum Users: String, Endpoint {
+    enum Users: Endpoint {
         /// Search.
-        case search = "/users/search/"
+        case search
         /// Info.
-        case info = "/users/%@/info/"
+        case info(user: Int)
         /// Blocked.
-        case blocked = "/users/blocked_list/"
+        case blocked
         /// Report.
-        case report = "/users/%@/flag_user/"
+        case report(user: Int)
+
+        /// The raw value.
+        public var rawValue: String {
+            switch self {
+            case .search: return "/users/search/"
+            case .info(let user): return "/users/\(user)/info/"
+            case .blocked: return "/users/blocked_list/"
+            case .report(let user): return "/users/\(user)/flag_user/"
+            }
+        }
     }
 }
 
 // MARK: Usertags
 public extension Endpoints {
-    enum Usertags: String, Endpoint {
+    enum Usertags: Endpoint {
         /// Feed.
-        case feed = "/usertags/%@/feed/"
+        case feed(user: Int)
+
+        /// The raw value.
+        public var rawValue: String {
+            switch self {
+            case .feed(let primaryKey): return "/usertags/\(primaryKey)/feed/"
+            }
+        }
     }
 }

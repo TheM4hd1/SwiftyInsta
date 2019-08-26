@@ -16,7 +16,7 @@ public final class FeedHandler: Handler {
         pages.parse(ExploreElement.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
-                    at: { try Endpoints.Discover.explore.url(with: ["max_id": $0.nextMaxId]) },
+                    at: { try Endpoints.Discover.explore.next($0.nextMaxId).url() },
                     processingHandler: { $0.rawResponse.items.array?.map(ExploreElement.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
@@ -30,7 +30,7 @@ public final class FeedHandler: Handler {
         pages.parse(Media.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
-                    at: { try Endpoints.Feed.tag.resolving(tag).url(with: ["max_id": $0.nextMaxId]) },
+                    at: { try Endpoints.Feed.tag(tag).next($0.nextMaxId).url() },
                     processingHandler: { $0.rawResponse.items.array?.map(Media.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
@@ -75,7 +75,7 @@ public final class FeedHandler: Handler {
         pages.parse(Media.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
-                    at: { try Endpoints.Feed.timeline.url(with: ["max_id": $0.nextMaxId]) },
+                    at: { try Endpoints.Feed.timeline.next($0.nextMaxId).url() },
                     body: {
                         switch $0.nextMaxId {
                         case .none:

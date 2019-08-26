@@ -15,7 +15,7 @@ public final class StoryHandler: Handler {
     public func tray(completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         requests.parse(Tray.self,
                        method: .get,
-                       url: Result { try Endpoints.Feed.story.url() },
+                       url: Result { try Endpoints.Feed.reelsTray.url() },
                        completionHandler: completionHandler)
     }
 
@@ -45,7 +45,7 @@ public final class StoryHandler: Handler {
             // load stories directly.
             requests.parse(TrayElement.self,
                            method: .get,
-                           url: Result { try Endpoints.Feed.userReelMedia.resolving(pk).url() },
+                           url: Result { try Endpoints.Feed.reelMedia(user: pk).url() },
                            completionHandler: completionHandler)
         }
     }
@@ -76,7 +76,7 @@ public final class StoryHandler: Handler {
             // load stories directly.
             requests.parse(Tray.self,
                            method: .get,
-                           url: Result { try Endpoints.Feed.userStory.resolving(pk).url() },
+                           url: Result { try Endpoints.Feed.story(user: pk).url() },
                            processingHandler: { Tray(rawResponse: $0.reel) },
                            completionHandler: completionHandler)
         }
@@ -199,7 +199,7 @@ public final class StoryHandler: Handler {
         pages.parse(User.self,
                     paginatedResponse: StoryViewers.self,
                     with: paginationParameters,
-                    at: { try Endpoints.Media.storyViewers.resolving(storyId).url(with: ["max_id": $0.nextMaxId]) },
+                    at: { try Endpoints.Media.storyViewers(media: storyId).next($0.nextMaxId).url() },
                     processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
@@ -309,7 +309,7 @@ public final class StoryHandler: Handler {
         pages.parse(TrayArchive.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
-                    at: { try Endpoints.Archive.stories.url(with: ["max_id": $0.nextMaxId]) },
+                    at: { try Endpoints.Archive.stories.next($0.nextMaxId).url() },
                     processingHandler: { $0.rawResponse.items.array?.map(TrayArchive.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)

@@ -17,7 +17,7 @@ public final class MessageHandler: Handler {
         pages.parse(Thread.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
-                    at: { try Endpoints.Direct.inbox.url(with: ["max_id": $0.nextMaxId]) },
+                    at: { try Endpoints.Direct.inbox.next($0.nextMaxId).url() },
                     processingHandler: { $0.rawResponse.inbox.threads.array?.map(Thread.init) ?? [] },
                     updateHandler: updateHandler,
                     completionHandler: completionHandler)
@@ -44,7 +44,7 @@ public final class MessageHandler: Handler {
     public func `in`(thread: String, completionHandler: @escaping (Result<Thread, Error>) -> Void) {
         requests.parse(Thread.self,
                        method: .get,
-                       url: Result { try Endpoints.Direct.thread.resolving(thread).url() },
+                       url: Result { try Endpoints.Direct.thread(thread).url() },
                        completionHandler: completionHandler)
     }
 
