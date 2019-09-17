@@ -161,6 +161,12 @@ public struct Media: IdentifiableParsedResponse {
     public var user: User? {
         return User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
     }
+    /// The `storyLocations` value.
+    public var locations: [StoryLocation] {
+        return rawResponse.storyLocations
+            .array?
+            .compactMap { $0 == .none ? nil : StoryLocation(rawResponse: $0) } ?? []
+    }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {

@@ -123,6 +123,10 @@
 		E0230BB722F84E2C00AD0E83 /* ExploreResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */; };
 		E0230BB822F84E2C00AD0E83 /* ExploreResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */; };
 		E0230BB922F84E2C00AD0E83 /* ExploreResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */; };
+		E0337967233118A600C176FC /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0337966233118A600C176FC /* StoryLocationResponse.swift */; };
+		E0337968233118AE00C176FC /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0337966233118A600C176FC /* StoryLocationResponse.swift */; };
+		E0337969233118AE00C176FC /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0337966233118A600C176FC /* StoryLocationResponse.swift */; };
+		E033796A233118AF00C176FC /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0337966233118A600C176FC /* StoryLocationResponse.swift */; };
 		E0628FCC22FDEAA2007E3BEE /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0628FCB22FDEAA2007E3BEE /* Authentication.swift */; };
 		E0628FCD22FDEAA2007E3BEE /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0628FCB22FDEAA2007E3BEE /* Authentication.swift */; };
 		E0628FCE22FDEAA2007E3BEE /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0628FCB22FDEAA2007E3BEE /* Authentication.swift */; };
@@ -242,6 +246,7 @@
 		E007B1B522F8207F00750E6D /* CommentResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentResponse.swift; sourceTree = "<group>"; };
 		E0114B1922F8554E00DACAC5 /* ThreadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadResponse.swift; sourceTree = "<group>"; };
 		E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreResponse.swift; sourceTree = "<group>"; };
+		E0337966233118A600C176FC /* StoryLocationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryLocationResponse.swift; sourceTree = "<group>"; };
 		E0628FCB22FDEAA2007E3BEE /* Authentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
 		E0628FD022FDEF10007E3BEE /* Credentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		E063077122E253060015AA92 /* PaginationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaginationHelper.swift; sourceTree = "<group>"; };
@@ -387,6 +392,7 @@
 				E0D0EF1922F8EBBB00CBFE36 /* UploadResponse.swift */,
 				E0B9940822F3B7DB0036BFA5 /* UserResponse.swift */,
 				E0B9940222F3A8450036BFA5 /* StoryResponse.swift */,
+				E0337966233118A600C176FC /* StoryLocationResponse.swift */,
 				E0B9940D22F3BF8B0036BFA5 /* MediaResponse.swift */,
 				E007B1B522F8207F00750E6D /* CommentResponse.swift */,
 				E0114B1922F8554E00DACAC5 /* ThreadResponse.swift */,
@@ -818,6 +824,7 @@
 				E076015922F1988500F8961F /* DeviceCollection.swift in Sources */,
 				112022982188AACF00CA58BA /* StatusResponse.swift in Sources */,
 				E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */,
+				E0337967233118A600C176FC /* StoryLocationResponse.swift in Sources */,
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
 				E0628FCC22FDEAA2007E3BEE /* Authentication.swift in Sources */,
 				1104CD0B2180627400F855BA /* Error.swift in Sources */,
@@ -872,6 +879,7 @@
 				E006E43622E87EFE002DB4BB /* Extensions.swift in Sources */,
 				E006E41322E87EFE002DB4BB /* PaginationParameters.swift in Sources */,
 				E0D0EF1B22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
+				E0337968233118AE00C176FC /* StoryLocationResponse.swift in Sources */,
 				E006E3F022E87EFE002DB4BB /* CommentHandler.swift in Sources */,
 				E0628FD222FDEF10007E3BEE /* Credentials.swift in Sources */,
 				E076015A22F1988500F8961F /* DeviceCollection.swift in Sources */,
@@ -920,6 +928,7 @@
 				E006E48322E87EFF002DB4BB /* Extensions.swift in Sources */,
 				E006E46022E87EFF002DB4BB /* PaginationParameters.swift in Sources */,
 				E0D0EF1C22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
+				E0337969233118AE00C176FC /* StoryLocationResponse.swift in Sources */,
 				E006E43D22E87EFF002DB4BB /* CommentHandler.swift in Sources */,
 				E0628FD322FDEF10007E3BEE /* Credentials.swift in Sources */,
 				E076015B22F1988500F8961F /* DeviceCollection.swift in Sources */,
@@ -968,6 +977,7 @@
 				E006E4D022E87F00002DB4BB /* Extensions.swift in Sources */,
 				E006E4AD22E87F00002DB4BB /* PaginationParameters.swift in Sources */,
 				E0D0EF1D22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
+				E033796A233118AF00C176FC /* StoryLocationResponse.swift in Sources */,
 				E006E48A22E87F00002DB4BB /* CommentHandler.swift in Sources */,
 				E0628FD422FDEF10007E3BEE /* Credentials.swift in Sources */,
 				E076015C22F1988500F8961F /* DeviceCollection.swift in Sources */,
