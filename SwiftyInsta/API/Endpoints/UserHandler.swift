@@ -555,7 +555,7 @@ public final class UserHandler: Handler {
             let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                         "_uid": storage.dsUserId,
                         "_csrftoken": storage.csrfToken,
-                        "user_ids": ids.map(String.init).joined(separator: ", "),
+                        "user_ids": Set(ids).map(String.init).joined(separator: ", "),
                         "radio_type": "wifi-none"]
 
             pages.parse([User.Reference: Friendship].self,
