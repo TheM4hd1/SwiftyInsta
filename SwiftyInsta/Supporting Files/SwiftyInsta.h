@@ -6,7 +6,7 @@
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 //! Project version number for SwiftyInsta.
 FOUNDATION_EXPORT double SwiftyInstaVersionNumber;
