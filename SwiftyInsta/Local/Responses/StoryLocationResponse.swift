@@ -6,8 +6,8 @@
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 /// A `StoryLocation` response.
 public struct StoryLocation: IdentifiableParsedResponse {
@@ -20,7 +20,7 @@ public struct StoryLocation: IdentifiableParsedResponse {
     public var identity: Identifier<StoryLocation> {
         return .init(primaryKey: rawResponse.location.pk.int, identifier: nil)
     }
-    
+
     /// The `location.address` value.
     public var address: String? {
         return rawResponse.location.address.string
@@ -43,7 +43,7 @@ public struct StoryLocation: IdentifiableParsedResponse {
     public var shortName: String {
         return rawResponse.location.shortName.string ?? ""
     }
-    
+
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()

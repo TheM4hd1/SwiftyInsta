@@ -550,7 +550,7 @@ public final class UserHandler: Handler {
             guard !ids.isEmpty else {
                 return completionHandler(.failure(GenericError.custom("`ids` must be non-empty.")))
             }
-            
+
             // get status directly.
             let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                         "_uid": storage.dsUserId,

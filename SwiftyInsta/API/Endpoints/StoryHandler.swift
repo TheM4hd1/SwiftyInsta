@@ -304,8 +304,8 @@ public final class StoryHandler: Handler {
 
     /// Get reels archive.
     public func archive(with paginationParameters: PaginationParameters,
-                 updateHandler: PaginationUpdateHandler<TrayArchive, AnyPaginatedResponse>?,
-                 completionHandler: @escaping PaginationCompletionHandler<TrayArchive>) {
+                        updateHandler: PaginationUpdateHandler<TrayArchive, AnyPaginatedResponse>?,
+                        completionHandler: @escaping PaginationCompletionHandler<TrayArchive>) {
         pages.parse(TrayArchive.self,
                     paginatedResponse: AnyPaginatedResponse.self,
                     with: paginationParameters,
