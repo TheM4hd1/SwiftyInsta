@@ -529,7 +529,7 @@ public final class UserHandler: Handler {
             // get status directly.
             friendshipStatuses(withUsersMatchingIDs: [pk]) {
                 completionHandler($0.flatMap {
-                    guard let status = $0.first?.values.first else {
+                    guard let status = $0.values.first else {
                         return .failure(GenericError.custom("No response for \(pk)."))
                     }
                     return .success(status)
@@ -540,7 +540,7 @@ public final class UserHandler: Handler {
 
     /// Friendship statuses.
     public func friendshipStatuses<C: Collection>(withUsersMatchingIDs ids: C,
-                                                  completionHandler: @escaping(Result<[[User.Reference: Friendship]], Error>) -> Void)
+                                                  completionHandler: @escaping(Result<[User.Reference: Friendship], Error>) -> Void)
         where C.Element == Int {
             guard let storage = handler.response?.storage else {
                 return completionHandler(.failure(
@@ -564,15 +564,18 @@ public final class UserHandler: Handler {
                         at: { _ in try URLs.getFriendshipStatusesUrl() },
                         body: { _ in .parameters(body) },
                         processingHandler: {
-                            $0.rawResponse.friendshipStatuses.array?.compactMap {
-                                guard let dictionary = $0.dictionary,
-                                    let primaryKey = dictionary.keys.first.flatMap(Int.init),
-                                    let status = dictionary.values.first.flatMap(Friendship.init) else { return nil }
-                                return [User.Reference.primaryKey(primaryKey): status]
-                            } ?? []
+                            $0.rawResponse.friendshipStatuses.dictionary?
+                                .compactMap { key, value -> [User.Reference: Friendship]? in
+                                    guard let primaryKey = Int(key) else { return nil }
+                                    return [User.Reference.primaryKey(primaryKey): Friendship(rawResponse: value)]
+                                } ?? []
             },
                         updateHandler: nil,
-                        completionHandler: { result, _ in completionHandler(result) })
+                        completionHandler: { result, _ in
+                            completionHandler(result.map {
+                                Dictionary(uniqueKeysWithValues: $0.map { $0.map { ($0, $1) } }.joined())
+                            })
+            })
     }
 
     /// Get blocked users.
