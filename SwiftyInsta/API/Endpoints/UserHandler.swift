@@ -509,9 +509,6 @@ public final class UserHandler: Handler {
 
     /// Friendship status.
     public func friendshipStatus(withUser user: User.Reference, completionHandler: @escaping (Result<Friendship, Error>) -> Void) {
-        guard let storage = handler.response?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
-        }
         switch user {
         case .me:
             completionHandler(.failure(GenericError.custom("You cannot interact with yourself.")))
@@ -529,49 +526,57 @@ public final class UserHandler: Handler {
                 }
             }
         case .primaryKey(let pk):
-            // follow user directly.
-            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
-                        "_uid": storage.dsUserId,
-                        "_csrftoken": storage.csrfToken,
-                        "user_id": String(pk),
-                        "radio_type": "wifi-none"]
-
-            requests.parse(Friendship.self,
-                           method: .get,
-                           url: Result { try URLs.getFriendshipStatusUrl(for: pk) },
-                           body: .parameters(body),
-                           completionHandler: completionHandler)
+            // get status directly.
+            friendshipStatuses(withUsersMatchingIDs: [pk]) {
+                completionHandler($0.flatMap {
+                    guard let status = $0.values.first else {
+                        return .failure(GenericError.custom("No response for \(pk)."))
+                    }
+                    return .success(status)
+                })
+            }
         }
     }
 
-    /*func getFriendshipStatuses(of userIds: [Int], completion: @escaping (InstagramResult<FriendshipStatusesModel>) -> ()) throws {
-     
-     let body = [
-     "_uuid": HandlerSettings.shared.device!.deviceGuid.uuidString,
-     "_uid": String(HandlerSettings.shared.user!.loggedInUser.pk!),
-     "_csrftoken": HandlerSettings.shared.user!.csrfToken,
-     "user_ids": userIds.map{String($0)}.joined(separator: ", "),
-     "radio_type": "wifi-none"
-     ]
-     
-     guard let httpHelper = HandlerSettings.shared.httpHelper else {return}
-     httpHelper.sendAsync(method: .post, url: try URLs.getFriendshipStatusesUrl(), body: body, header: [:]) { (data, response, error) in
-     if let error = error {
-     completion(Return.fail(error: error, response: .fail, value: nil))
-     } else {
-     if let data = data {
-     let decoder = JSONDecoder()
-     decoder.keyDecodingStrategy = .convertFromSnakeCase
-     do {
-     let value = try decoder.decode(FriendshipStatusesModel.self, from: data)
-     completion(Return.success(value: value))
-     } catch {
-     completion(Return.fail(error: error, response: .ok, value: nil))
-     }
-     }
-     }
-     }
-     }*/
+    /// Friendship statuses.
+    public func friendshipStatuses<C: Collection>(withUsersMatchingIDs ids: C,
+                                                  completionHandler: @escaping(Result<[User.Reference: Friendship], Error>) -> Void)
+        where C.Element == Int {
+            guard let storage = handler.response?.storage else {
+                return completionHandler(.failure(
+                    GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")
+                ))
+            }
+            guard !ids.isEmpty else {
+                return completionHandler(.failure(GenericError.custom("`ids` must be non-empty.")))
+            }
+
+            // get status directly.
+            let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                        "_uid": storage.dsUserId,
+                        "_csrftoken": storage.csrfToken,
+                        "user_ids": Set(ids).map(String.init).joined(separator: ", "),
+                        "radio_type": "wifi-none"]
+
+            pages.parse([User.Reference: Friendship].self,
+                        paginatedResponse: AnyPaginatedResponse.self,
+                        with: .init(maxPagesToLoad: 1),
+                        at: { _ in try URLs.getFriendshipStatusesUrl() },
+                        body: { _ in .parameters(body) },
+                        processingHandler: {
+                            $0.rawResponse.friendshipStatuses.dictionary?
+                                .compactMap { key, value -> [User.Reference: Friendship]? in
+                                    guard let primaryKey = Int(key) else { return nil }
+                                    return [User.Reference.primaryKey(primaryKey): Friendship(rawResponse: value)]
+                                } ?? []
+            },
+                        updateHandler: nil,
+                        completionHandler: { result, _ in
+                            completionHandler(result.map {
+                                Dictionary(uniqueKeysWithValues: $0.map { $0.map { ($0, $1) } }.joined())
+                            })
+            })
+    }
 
     /// Get blocked users.
     public func blocked(with paginationParameters: PaginationParameters,

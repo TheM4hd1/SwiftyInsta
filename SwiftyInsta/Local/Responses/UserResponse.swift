@@ -11,7 +11,7 @@ import Foundation
 /// A `User` response.
 public struct User: IdentifiableParsedResponse {
     /// A quick way to reference a `User`.
-    public enum Reference {
+    public enum Reference: Hashable {
         /// Through their primary key.
         case primaryKey(Int)
         /// Through their username.
