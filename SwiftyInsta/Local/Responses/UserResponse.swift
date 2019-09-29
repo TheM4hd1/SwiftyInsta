@@ -113,7 +113,7 @@ public struct Friendship: ParsedResponse {
     public var isRestricted: Bool {
         return rawResponse.isRestricted.bool ?? false
     }
-    
+
     /// The `incomingRequest` value.
     public var requestedToFollowYou: Bool {
         return rawResponse.incomingRequest.bool ?? false
