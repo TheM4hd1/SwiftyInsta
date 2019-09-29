@@ -527,18 +527,15 @@ public final class UserHandler: Handler {
             }
         case .primaryKey(let pk):
             // get status directly.
-            friendshipStatuses(withUsersMatchingIDs: [pk]) {
-                completionHandler($0.flatMap {
-                    guard let status = $0.values.first else {
-                        return .failure(GenericError.custom("No response for \(pk)."))
-                    }
-                    return .success(status)
-                })
-            }
+            requests.parse(Friendship.self,
+                           method: .get,
+                           url: Result { try URLs.getFriendshipStatusUrl(for: pk) },
+                           completionHandler: completionHandler)
         }
     }
 
     /// Friendship statuses.
+    /// Use `friendshipStatus(withUser: completionHandler:)` on each and every element of `ids` to retreieve all properties in `Friendship`.
     public func friendshipStatuses<C: Collection>(withUsersMatchingIDs ids: C,
                                                   completionHandler: @escaping(Result<[User.Reference: Friendship], Error>) -> Void)
         where C.Element == Int {
