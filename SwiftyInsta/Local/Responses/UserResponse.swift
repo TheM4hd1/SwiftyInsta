@@ -11,7 +11,7 @@ import Foundation
 /// A `User` response.
 public struct User: IdentifiableParsedResponse {
     /// A quick way to reference a `User`.
-    public enum Reference {
+    public enum Reference: Hashable {
         /// Through their primary key.
         case primaryKey(Int)
         /// Through their username.
@@ -48,7 +48,7 @@ public struct User: IdentifiableParsedResponse {
     /// The `friendship` value.
     public var friendship: Friendship? {
         return rawResponse.friendship == .none
-            ? nil
+            ? (rawResponse.friendshipStatus == .none ? nil : Friendship(rawResponse: rawResponse.friendshipStatus))
             : Friendship(rawResponse: rawResponse.friendship)
     }
 
@@ -101,17 +101,26 @@ public struct Friendship: ParsedResponse {
         return rawResponse.blocking.bool
     }
     /// The `isBestie` value.
-    public var isInYourCloseFriendsList: Bool? {
-        return rawResponse.isBestie.bool
+    public var isInYourCloseFriendsList: Bool {
+        return rawResponse.isBestie.bool ?? false
+    }
+
+    /// The `isPrivate` value.
+    public var isPrivate: Bool {
+        return rawResponse.isPrivate.bool ?? false
+    }
+    /// The `isRestricted` value.
+    public var isRestricted: Bool {
+        return rawResponse.isRestricted.bool ?? false
     }
 
     /// The `incomingRequest` value.
-    public var requestedToFollowYou: Bool? {
-        return rawResponse.incomingRequest.bool
+    public var requestedToFollowYou: Bool {
+        return rawResponse.incomingRequest.bool ?? false
     }
     /// The `outgoingRequest` value.
-    public var followRequestSent: Bool? {
-        return rawResponse.outgoingRequest.bool
+    public var followRequestSent: Bool {
+        return rawResponse.outgoingRequest.bool ?? false
     }
 
     // MARK: Codable

@@ -76,7 +76,7 @@ class PaginationHelper: Handler {
                      paginationHandler: @escaping (P) -> String? = { $0.rawResponse.nextMaxId.string },
                      processingHandler: @escaping (P) -> [M],
                      updateHandler: PaginationUpdateHandler<M, P>?,
-                     completionHandler: @escaping PaginationCompletionHandler<M>) where M: ParsedResponse, P: ParsedResponse {
+                     completionHandler: @escaping PaginationCompletionHandler<M>) where P: ParsedResponse {
         // check for valid pagination.
         guard paginationParamaters.canLoadMore else {
             return completionHandler(.failure(GenericError.custom("Can't load more.")), paginationParamaters)
