@@ -40,10 +40,10 @@ public final class ProfileHandler: Handler {
             content.updateValue(signature, forKey: Headers.igSignatureKey)
             content.updateValue(Headers.igSignatureVersionValue, forKey: Headers.igSignatureVersionKey)
 
-            requests.decode(Status.self,
-                            method: .post,
-                            url: Result { try Endpoints.Accounts.setPublic.url() },
-                            body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
+            requests.request(Status.self,
+                             method: .post,
+                             endpoint: Endpoints.Accounts.setPublic,
+                             body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -66,10 +66,10 @@ public final class ProfileHandler: Handler {
             content.updateValue(signature, forKey: Headers.igSignatureKey)
             content.updateValue(Headers.igSignatureVersionValue, forKey: Headers.igSignatureVersionKey)
 
-            requests.decode(Status.self,
-                            method: .post,
-                            url: Result { try Endpoints.Accounts.setPrivate.url() },
-                            body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
+            requests.request(Status.self,
+                             method: .post,
+                             endpoint: Endpoints.Accounts.setPrivate,
+                             body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -87,10 +87,10 @@ public final class ProfileHandler: Handler {
                        "old_password": oldPassword,
                        "new_password1": password,
                        "new_password2": password]
-        requests.decode(Status.self,
-                        method: .post,
-                        url: Result { try Endpoints.Accounts.changePassword.url() },
-                        body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoints.Accounts.changePassword,
+                         body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
     /// Edit profile.
@@ -105,10 +105,10 @@ public final class ProfileHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        requests.decode(User.self,
-                        method: .get,
-                        url: Result { try Endpoints.Accounts.editProfile.url() },
-                        deliverOnResponseQueue: false) { [weak self] in
+        requests.request(User.self,
+                         method: .get,
+                         endpoint: Endpoints.Accounts.editProfile,
+                         options: .validateResponse) { [weak self] in
                             guard let me = self, let handler = me.handler else {
                                 return completionHandler(.failure(GenericError.weakObjectReleased))
                             }
@@ -148,11 +148,11 @@ public final class ProfileHandler: Handler {
                                                "email": email]
                                 let headers = ["Host": "i.instagram.com"]
 
-                                handler.requests.decode(Status.self,
-                                                        method: .post,
-                                                        url: Result { try Endpoints.Accounts.saveEditProfile.url() },
-                                                        body: .parameters(content),
-                                                        headers: headers) { completionHandler($0.map { $0.state == .ok }) }
+                                handler.requests.request(Status.self,
+                                                         method: .post,
+                                                         endpoint: Endpoints.Accounts.saveEditProfile,
+                                                         body: .parameters(content),
+                                                         headers: headers) { completionHandler($0.map { $0.state == .ok }) }
                             }
         }
     }
@@ -167,10 +167,10 @@ public final class ProfileHandler: Handler {
                        "_uuid": handler!.settings.device.deviceGuid.uuidString,
                        "raw_text": biography]
 
-        requests.decode(Status.self,
-                        method: .post,
-                        url: Result { try Endpoints.Accounts.editBiography.url() },
-                        body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoints.Accounts.editBiography,
+                         body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
     /// Remove profile picture.
@@ -183,11 +183,11 @@ public final class ProfileHandler: Handler {
                        "_uuid": handler!.settings.device.deviceGuid.uuidString]
         let headers = ["Host": "i.instagram.com"]
 
-        requests.decode(Status.self,
-                        method: .post,
-                        url: Result { try Endpoints.Accounts.removeProfilePicture.url() },
-                        body: .parameters(content),
-                        headers: headers) { completionHandler($0.map { $0.state == .ok }) }
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoints.Accounts.removeProfilePicture,
+                         body: .parameters(content),
+                         headers: headers) { completionHandler($0.map { $0.state == .ok }) }
     }
 
     /// Upload profile picture.
@@ -227,10 +227,10 @@ public final class ProfileHandler: Handler {
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decode(Status.self,
-                        method: .post,
-                        url: Result { try Endpoints.Accounts.changeProfilePicture.url() },
-                        body: .data(content),
-                        headers: headers) { completionHandler($0.map { $0.state == .ok }) }
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoints.Accounts.changeProfilePicture,
+                         body: .data(content),
+                         headers: headers) { completionHandler($0.map { $0.state == .ok }) }
     }
 }

@@ -28,6 +28,18 @@ class HTTPHelper {
         case data(Data)
         // case gzip([String: Any])
     }
+    /// A list of options.
+    struct Options: OptionSet {
+        let rawValue: Int
+        
+        /// Validate response.
+        static let validateResponse = Options(rawValue: 1 << 0)
+        /// Deliver on response queue.
+        static let deliverOnResponseQueue = Options(rawValue: 1 << 1)
+        
+        /// Default.
+        static let `default`: Options = [.validateResponse, .deliverOnResponseQueue]
+    }
 
     /// The referenced handler.
     weak var handler: APIHandler!
@@ -37,120 +49,114 @@ class HTTPHelper {
         self.handler = handler
     }
 
-    /// Parse.
-    func parse<R>(_ type: R.Type,
-                  method: Method,
-                  url: Result<URL, Error>,
-                  body: Body? = nil,
-                  headers: [String: String] = [:],
-                  checkingValidStatusCode: Bool = true,
-                  deliverOnResponseQueue: Bool = true,
-                  delay: ClosedRange<Double>? = nil,
-                  processingHandler: @escaping (DynamicResponse) -> R,
-                  completionHandler: @escaping (Result<R, Error>) -> Void) {
-        fetch(method: method, url: url, body: body, headers: headers, delay: delay) { [weak self] in
-            guard let handler = self?.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
-            let result = $0.flatMap { data, response -> Result<R, Error> in
-                do {
-                    guard let data = data, !checkingValidStatusCode || response?.statusCode == 200 else {
-                        throw GenericError.custom("Invalid response. \(response?.statusCode ?? -1)")
-                    }
-                    // decode data.
-                    let decoded = try DynamicResponse(data: data)
-                    return .success(processingHandler(decoded))
-                } catch { return .failure(error) }
-            }
-            if deliverOnResponseQueue { handler.settings.queues.response.async { completionHandler(result) }} else { completionHandler(result) }
-        }
+    // MARK: Parse
+    /// Parse a specific `Response`.
+    func request<Response>(_ response: Response.Type,
+                           method: Method,
+                           endpoint: Endpoint,
+                           body: Body? = nil,
+                           headers: [String: String]? = nil,
+                           options: Options = .default,
+                           delay: ClosedRange<Double>? = nil,
+                           process: @escaping (DynamicResponse) -> Response,
+                           completion: @escaping(Result<Response, Error>) -> Void) {
+        // fetch and parse response.
+        request(response,
+                method: method,
+                endpoint: endpoint,
+                body: body,
+                headers: headers,
+                options: options,
+                delay: delay,
+                process: { Optional.some(process($0)) },
+                completion: completion)
     }
-    /// Parse endpoint response.
-    func parse<R>(_ type: R.Type,
-                  method: Method,
-                  url: Result<URL, Error>,
-                  body: Body? = nil,
-                  headers: [String: String] = [:],
-                  checkingValidStatusCode: Bool = true,
-                  deliverOnResponseQueue: Bool = true,
-                  delay: ClosedRange<Double>? = nil,
-                  completionHandler: @escaping (Result<R, Error>) -> Void) where R: ParsedResponse {
-        parse(type,
-              method: method,
-              url: url,
-              body: body,
-              headers: headers,
-              delay: delay,
-              processingHandler: { R(rawResponse: $0) },
-              completionHandler: completionHandler)
-    }
-    /// Parse accessory.
-    func parse<R>(_ type: R.Type,
-                  method: Method,
-                  url: URL,
-                  body: Body? = nil,
-                  headers: [String: String] = [:],
-                  checkingValidStatusCode: Bool = true,
-                  deliverOnResponseQueue: Bool = true,
-                  delay: ClosedRange<Double>? = nil,
-                  completionHandler: @escaping (Result<R, Error>) -> Void) where R: ParsedResponse {
-        parse(type,
-              method: method,
-              url: Result { url },
-              body: body,
-              headers: headers,
-              checkingValidStatusCode: checkingValidStatusCode,
-              deliverOnResponseQueue: deliverOnResponseQueue,
-              delay: delay,
-              completionHandler: completionHandler)
-    }
-
-    /// Decoding accessory.
-    func decode<D>(_ type: D.Type,
-                   method: Method,
-                   url: URL,
-                   body: Body? = nil,
-                   headers: [String: String] = [:],
-                   checkingValidStatusCode: Bool = true,
-                   deliverOnResponseQueue: Bool = true,
-                   delay: ClosedRange<Double>? = nil,
-                   completionHandler: @escaping (Result<D, Error>) -> Void) where D: Decodable {
-        decode(type,
-               method: method,
-               url: Result { url },
-               body: body,
-               headers: headers,
-               checkingValidStatusCode: checkingValidStatusCode,
-               deliverOnResponseQueue: deliverOnResponseQueue,
-               delay: delay,
-               completionHandler: completionHandler)
-    }
-    /// Decode endpoint response.
-    func decode<D>(_ type: D.Type,
-                   method: Method,
-                   url: Result<URL, Error>,
-                   body: Body? = nil,
-                   headers: [String: String] = [:],
-                   checkingValidStatusCode: Bool = true,
-                   deliverOnResponseQueue: Bool = true,
-                   delay: ClosedRange<Double>? = nil,
-                   completionHandler: @escaping (Result<D, Error>) -> Void) where D: Decodable {
-        fetch(method: method, url: url, body: body, headers: headers, delay: delay) { [weak self] in
-            guard let handler = self?.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
-            let result = $0.flatMap { data, response -> Result<D, Error> in
-                do {
-                    guard let data = data, !checkingValidStatusCode || response?.statusCode == 200 else {
-                        throw GenericError.custom("Invalid response. \(response?.statusCode ?? -1)")
-                    }
-                    // decode data.
+    /// Parse a specific `Decodable`.
+    func request<Response>(_ response: Response.Type,
+                           method: Method,
+                           endpoint: Endpoint,
+                           body: Body? = nil,
+                           headers: [String: String]? = nil,
+                           options: Options = .default,
+                           delay: ClosedRange<Double>? = nil,
+                           completion: @escaping(Result<Response, Error>) -> Void) where Response: Decodable {
+        // fetch and parse response.
+        request(response,
+                method: method,
+                endpoint: endpoint,
+                body: body,
+                headers: headers,
+                options: options,
+                delay: delay,
+                process: { response -> Response? in
+                    guard let data = try? response.data() else { return nil }
                     let decoder = JSONDecoder()
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    let decoded = try decoder.decode(D.self, from: data)
-                    return .success(decoded)
-                } catch { return .failure(error) }
-            }
-            if deliverOnResponseQueue { handler.settings.queues.response.async { completionHandler(result) }} else { completionHandler(result) }
+                    return try? decoder.decode(Response.self, from: data)
+        },
+                completion: completion)
+    }
+    /// Parse a specific `ParsedResponse`.
+    func request<Response>(_ response: Response.Type,
+                           method: Method,
+                           endpoint: Endpoint,
+                           body: Body? = nil,
+                           headers: [String: String]? = nil,
+                           options: Options = .default,
+                           delay: ClosedRange<Double>? = nil,
+                           completion: @escaping(Result<Response, Error>) -> Void) where Response: ParsedResponse {
+        // fetch and parse response.
+        request(response,
+                method: method,
+                endpoint: endpoint,
+                body: body,
+                headers: headers,
+                options: options,
+                delay: delay,
+                process: Response.init,
+                completion: completion)
+    }
+    /// Parse a specific optional `Response`.
+    func request<Response>(_ response: Response.Type,
+                           method: Method,
+                           endpoint: Endpoint,
+                           body: Body? = nil,
+                           headers: [String: String]? = nil,
+                           options: Options = .default,
+                           delay: ClosedRange<Double>? = nil,
+                           process: @escaping (DynamicResponse) -> Response?,
+                           completion: @escaping(Result<Response, Error>) -> Void) {
+        // fetch and parse response.
+        fetch(method: method,
+              url: Result { try endpoint.url() },
+              body: body,
+              headers: headers ?? [:],
+              delay: delay) { [weak self] in
+                guard let handler = self?.handler else { return completion(.failure(GenericError.weakObjectReleased)) }
+                // consider response.
+                let result = $0.flatMap { data, response -> Result<Response, Error> in
+                    do {
+                        guard let data = data, !options.contains(.validateResponse) || response?.statusCode == 200 else {
+                            throw GenericError.custom("Invalid response. \(response?.statusCode ?? -1)")
+                        }
+                        // decode data.
+                        if let response = process(try DynamicResponse(data: data)) {
+                            return .success(response)
+                        }
+                        // raise exception.
+                        throw GenericError.custom("Invalid response. Processing handler returned `nil`.")
+                    } catch { return .failure(error) }
+                }
+                // notify results.
+                if options.contains(.deliverOnResponseQueue) {
+                    handler.settings.queues.response.async { completion(result) }
+                } else {
+                    completion(result)
+                }
         }
     }
 
+    // MARK: Fetch
     /// Accessory fetch async resource.
     func fetch(method: Method,
                url: URL,
@@ -180,10 +186,6 @@ class HTTPHelper {
             switch body {
             case .parameters(let parameters)?: me.addBody(to: &request, body: parameters)
             case .data(let data)?: request.httpBody = data
-            /*case .gzip(let parameters)?:
-                me.addHeaders(to: &request, header: ["Content-Encoding": "gzip"])
-                me.addBody(to: &request, body: parameters)
-                request.httpBody = request.httpBody.flatMap { try? $0.gzipped() }*/
             default: break
             }
             // start task.

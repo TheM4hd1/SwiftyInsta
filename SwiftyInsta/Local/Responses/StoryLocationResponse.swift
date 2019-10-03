@@ -12,7 +12,10 @@ import Foundation
 /// A `StoryLocation` response.
 public struct StoryLocation: IdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse

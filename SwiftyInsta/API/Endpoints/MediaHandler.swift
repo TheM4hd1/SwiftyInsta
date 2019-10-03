@@ -43,8 +43,8 @@ public final class MediaHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased), paginationParameters)
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.by(user: .primaryKey(user?.identity.primaryKey ?? -1),
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.by(user: .primaryKey(user.identity.primaryKey ?? -1),
                                with: paginationParameters,
                                updateHandler: updateHandler,
                                completionHandler: completionHandler)
@@ -54,25 +54,25 @@ public final class MediaHandler: Handler {
             }
         case .primaryKey(let pk):
             // load media directly.
-            pages.parse(Media.self,
-                        paginatedResponse: AnyPaginatedResponse.self,
-                        with: paginationParameters,
-                        at: { try Endpoints.Feed.user(pk).next($0.nextMaxId).url() },
-                        processingHandler: { $0.rawResponse.items.array?.map(Media.init) ?? [] },
-                        updateHandler: updateHandler,
-                        completionHandler: completionHandler)
+            pages.request(Media.self,
+                          page: AnyPaginatedResponse.self,
+                          with: paginationParameters,
+                          endpoint: { Endpoints.Feed.user(pk).next($0.nextMaxId) },
+                          splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
+                          update: updateHandler,
+                          completion: completionHandler)
         }
     }
 
     /// Get media info.
     public func info(for mediaId: String, completionHandler: @escaping (Result<Media?, Error>) -> Void) {
-        pages.parse(Media.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: .init(maxPagesToLoad: 1),
-                    at: { _ in try Endpoints.Media.info(media: mediaId).url() },
-                    processingHandler: { $0.rawResponse.items.array?.map(Media.init) ?? [] },
-                    updateHandler: nil,
-                    completionHandler: { result, _ in
+        pages.request(Media.self,
+                      page: AnyPaginatedResponse.self,
+                      with: .init(maxPagesToLoad: 1),
+                      endpoint: { _ in Endpoints.Media.info(media: mediaId) },
+                      splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
+                      update: nil,
+                      completion: { result, _ in
                         completionHandler(result.map { $0.first })
         })
     }
@@ -87,11 +87,11 @@ public final class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decode(Status.self,
-                        method: .post,
-                        url: Result { try Endpoints.Media.like(media: mediaId).url() },
-                        body: .parameters(body),
-                        completionHandler: { completionHandler($0.map { $0.state == .ok }) })
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoints.Media.like(media: mediaId),
+                         body: .parameters(body),
+                         completion: { completionHandler($0.map { $0.state == .ok }) })
     }
 
     /// Unlike media.
@@ -104,11 +104,11 @@ public final class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.decode(Status.self,
-                        method: .post,
-                        url: Result { try Endpoints.Media.unlike(media: mediaId).url() },
-                        body: .parameters(body),
-                        completionHandler: { completionHandler($0.map { $0.state == .ok }) })
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoints.Media.unlike(media: mediaId),
+                         body: .parameters(body),
+                         completion: { completionHandler($0.map { $0.state == .ok }) })
     }
 
     /// Upload photo.
@@ -154,12 +154,12 @@ public final class MediaHandler: Handler {
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decode(Upload.Response.Picture.self,
-                        method: .post,
-                        url: Result { try Endpoints.Upload.photo.url() },
-                        body: .data(content),
-                        headers: headers,
-                        deliverOnResponseQueue: false) { [weak self] in
+        requests.request(Upload.Response.Picture.self,
+                         method: .post,
+                         endpoint: Endpoints.Upload.photo,
+                         body: .data(content),
+                         headers: headers,
+                         options: .deliverOnResponseQueue) { [weak self] in
                             guard let me = self, let handler = me.handler else {
                                 return completionHandler(.failure(GenericError.weakObjectReleased))
                             }
@@ -191,7 +191,7 @@ public final class MediaHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
-        guard let url = try? Endpoints.Media.configure.url() else { return completionHandler(.failure(GenericError.invalidUrl)) }
+        let endpoint = Endpoints.Media.configure
         let device = handler.settings.device
         let version = device.firmwareFingerprint.split(separator: "/")[2].split(separator: ":")[1]
         guard let user = storage.user,
@@ -232,11 +232,11 @@ public final class MediaHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(Upload.Response.Picture.self,
-                            method: .post,
-                            url: url,
-                            body: .parameters(body),
-                            completionHandler: completionHandler)
+            requests.request(Upload.Response.Picture.self,
+                             method: .post,
+                             endpoint: endpoint,
+                             body: .parameters(body),
+                             completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -399,12 +399,12 @@ public final class MediaHandler: Handler {
 
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decode(Upload.Response.Video.self,
-                        method: .post,
-                        url: Result { try Endpoints.Upload.video.url() },
-                        body: .data(content),
-                        headers: headers,
-                        deliverOnResponseQueue: false) { [weak self] in
+        requests.request(Upload.Response.Video.self,
+                         method: .post,
+                         endpoint: Endpoints.Upload.video,
+                         body: .data(content),
+                         headers: headers,
+                         options: .validateResponse) { [weak self] in
                             guard let me = self, let handler = me.handler else {
                                 return completionHandler(.failure(GenericError.weakObjectReleased))
                             }
@@ -548,9 +548,6 @@ public final class MediaHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        guard let url = try? Endpoints.Media.configure.url() else {
-            return completionHandler(.failure(GenericError.invalidUrl))
-        }
         let headers = [Headers.contentTypeKey: Headers.contentTypeApplicationFormValue,
                        "Host": "i.instagram.com"]
 
@@ -589,12 +586,12 @@ public final class MediaHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(Media.self,
-                            method: .post,
-                            url: url,
-                            body: .parameters(body),
-                            headers: headers,
-                            completionHandler: completionHandler)
+            requests.request(Media.self,
+                             method: .post,
+                             endpoint: Endpoints.Media.configure,
+                             body: .parameters(body),
+                             headers: headers,
+                             completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -610,12 +607,12 @@ public final class MediaHandler: Handler {
                     "_csrftoken": storage.csrfToken,
                     "media_id": mediaId]
 
-        requests.parse(Bool.self,
-                       method: .post,
-                       url: Result { try Endpoints.Media.delete(media: mediaId).type(type).url() },
-                       body: .parameters(body),
-                       processingHandler: { $0.didDelete.bool ?? false },
-                       completionHandler: completionHandler)
+        requests.request(Bool.self,
+                         method: .post,
+                         endpoint: Endpoints.Media.delete(media: mediaId).type(type),
+                         body: .parameters(body),
+                         process: { $0.didDelete.bool ?? false },
+                         completion: completionHandler)
     }
 
     /// Edit media.
@@ -649,11 +646,11 @@ public final class MediaHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(Media.self,
-                            method: .post,
-                            url: Result { try Endpoints.Media.edit(media: mediaId).url() },
-                            body: .parameters(body),
-                            completionHandler: completionHandler)
+            requests.request(Media.self,
+                             method: .post,
+                             endpoint: Endpoints.Media.edit(media: mediaId),
+                             body: .parameters(body),
+                             completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -662,21 +659,21 @@ public final class MediaHandler: Handler {
                        with paginationParameters: PaginationParameters,
                        updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                        completionHandler: @escaping PaginationCompletionHandler<User>) {
-        pages.parse(User.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.Media.likers(media: mediaId).next($0.nextMaxId).url() },
-                    processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(User.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Media.likers(media: mediaId).next($0.nextMaxId) },
+                      splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     /// Get media permalink.
-    public func permalink(ofMedia mediaId: String, completionHandler: @escaping (Result<String?, Error>) -> Void) {
-        requests.parse(String?.self,
-                       method: .get,
-                       url: Result { try Endpoints.Media.permalink(media: mediaId).url() },
-                       processingHandler: { $0.permalink.string },
-                       completionHandler: completionHandler)
+    public func permalink(ofMedia mediaId: String, completionHandler: @escaping (Result<String, Error>) -> Void) {
+        requests.request(String.self,
+                         method: .get,
+                         endpoint: Endpoints.Media.permalink(media: mediaId),
+                         process: { $0.permalink.string },
+                         completion: completionHandler)        
     }
 }

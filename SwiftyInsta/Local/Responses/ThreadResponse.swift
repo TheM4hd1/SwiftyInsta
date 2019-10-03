@@ -11,7 +11,10 @@ import Foundation
 /// A `Thread` response.
 public struct Thread: ThreadIdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -24,9 +27,9 @@ public struct Thread: ThreadIdentifiableParsedResponse {
     public var isGroup: Bool { return rawResponse.isGroup.bool ?? false }
 
     /// The `users` value.
-    public var users: [User] { return rawResponse.users.array?.map(User.init) ?? [] }
+    public var users: [User] { return rawResponse.users.array?.compactMap(User.init) ?? [] }
     /// The `messages` value.
-    public var messages: [Message] { return rawResponse.items.array?.map(Message.init) ?? [] }
+    public var messages: [Message] { return rawResponse.items.array?.compactMap(Message.init) ?? [] }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {
@@ -42,7 +45,10 @@ public struct Thread: ThreadIdentifiableParsedResponse {
 /// A `Message` response.
 public struct Message: ItemIdentifiableParsedResponse, UserIdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -73,7 +79,10 @@ public struct Message: ItemIdentifiableParsedResponse, UserIdentifiableParsedRes
 /// A `Recipient` model.
 public struct Recipient: ParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse

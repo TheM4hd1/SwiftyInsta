@@ -10,7 +10,7 @@
 import Foundation
 
 public final class UserHandler: Handler {
-    func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User?, Error>) -> Void) {
+    func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User, Error>) -> Void) {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
@@ -18,13 +18,13 @@ public final class UserHandler: Handler {
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
 
-        requests.parse(User?.self,
-                       method: .get,
-                       url: Result { try Endpoints.Accounts.current.url() },
-                       body: .parameters(body),
-                       delay: delay,
-                       processingHandler: { $0.user == .none ? nil : User(rawResponse: $0.user) },
-                       completionHandler: completionHandler)
+        requests.request(User.self,
+                         method: .get,
+                         endpoint: Endpoints.Accounts.current,
+                         body: .parameters(body),
+                         delay: delay,
+                         process: { User(rawResponse: $0.user) },
+                         completion: completionHandler)
     }
 
     // Its not working yet.
@@ -102,19 +102,19 @@ public final class UserHandler: Handler {
                        Headers.countKey: Headers.countValue,
                        Headers.rankTokenKey: storage.rankToken]
 
-        pages.parse(User.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: .init(maxPagesToLoad: 1),
-                    at: { _ in try Endpoints.Users.search.q(query).url() },
-                    headers: { _ in headers },
-                    processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
-                    updateHandler: nil) { result, _ in
+        pages.request(User.self,
+                      page: AnyPaginatedResponse.self,
+                      with: .init(maxPagesToLoad: 1),
+                      endpoint: { _ in Endpoints.Users.search.q(query) },
+                      headers: { _ in headers },
+                      splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
+                      update: nil) { result, _ in
                         completionHandler(result)
         }
     }
 
     /// Get user matching username.
-    public func user(_ user: User.Reference, completionHandler: @escaping (Result<User?, Error>) -> Void) {
+    public func user(_ user: User.Reference, completionHandler: @escaping (Result<User, Error>) -> Void) {
         switch user {
         case .me:
             // fetch current user.
@@ -122,15 +122,17 @@ public final class UserHandler: Handler {
         case .username(let username):
             // fetch username.
             search(forUsersMatching: username) {
-                completionHandler($0.map { $0.first(where: { $0.username == username }) })
+                completionHandler($0.flatMap {
+                    $0.first.flatMap(Result.success) ?? .failure(GenericError.custom("Invalid response. Processing handler returned `nil`."))
+                })
             }
         case .primaryKey(let pk):
             // load user info directly.
-            requests.parse(User?.self,
-                           method: .get,
-                           url: Result { try Endpoints.Users.info(user: pk).url() },
-                           processingHandler: { $0.user == .none ? nil : User(rawResponse: $0.user) },
-                           completionHandler: completionHandler)
+            requests.request(User.self,
+                             method: .get,
+                             endpoint: Endpoints.Users.info(user: pk),
+                             process: { User(rawResponse: $0.user) },
+                             completion: completionHandler)
         }
     }
 
@@ -160,8 +162,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased), paginationParameters)
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.tagged(user: .primaryKey(user!.identity.primaryKey!),
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.tagged(user: .primaryKey(user.identity.primaryKey!),
                                    with: paginationParameters,
                                    updateHandler: updateHandler,
                                    completionHandler: completionHandler)
@@ -171,13 +173,13 @@ public final class UserHandler: Handler {
             }
         case .primaryKey(let pk):
             // load user tags directly.
-            pages.parse(Media.self,
-                        paginatedResponse: AnyPaginatedResponse.self,
-                        with: paginationParameters,
-                        at: { try Endpoints.Usertags.feed(user: pk).rank(storage.rankToken).next($0.nextMaxId).url() },
-                        processingHandler: { $0.rawResponse.items.array?.map(Media.init) ?? [] },
-                        updateHandler: updateHandler,
-                        completionHandler: completionHandler)
+            pages.request(Media.self,
+                          page: AnyPaginatedResponse.self,
+                          with: paginationParameters,
+                          endpoint: { Endpoints.Usertags.feed(user: pk).rank(storage.rankToken).next($0.nextMaxId) },
+                          splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
+                          update: updateHandler,
+                          completion: completionHandler)
         }
     }
 
@@ -208,8 +210,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased), paginationParameters)
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.following(user: .primaryKey(user!.identity.primaryKey!),
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.following(user: .primaryKey(user.identity.primaryKey!),
                                       usersMatchinQuery: query,
                                       with: paginationParameters,
                                       updateHandler: updateHandler,
@@ -220,17 +222,16 @@ public final class UserHandler: Handler {
             }
         case .primaryKey(let pk):
             // load user followers directly.
-            pages.parse(User.self,
-                        paginatedResponse: AnyPaginatedResponse.self,
-                        with: paginationParameters,
-                        at: { try Endpoints.Friendships.followers(user: pk)
+            pages.request(User.self,
+                          page: AnyPaginatedResponse.self,
+                          with: paginationParameters,
+                          endpoint: { Endpoints.Friendships.followers(user: pk)
                             .rank(storage.rankToken)
                             .query(query)
-                            .next($0.nextMaxId)
-                            .url() },
-                        processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
-                        updateHandler: updateHandler,
-                        completionHandler: completionHandler)
+                            .next($0.nextMaxId) },
+                        splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
+                        update: updateHandler,
+                        completion: completionHandler)
         }
     }
 
@@ -261,8 +262,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased), paginationParameters)
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.followed(byUser: .primaryKey(user!.identity.primaryKey!),
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.followed(byUser: .primaryKey(user.identity.primaryKey!),
                                      usersMatchinQuery: query,
                                      with: paginationParameters,
                                      updateHandler: updateHandler,
@@ -273,17 +274,16 @@ public final class UserHandler: Handler {
             }
         case .primaryKey(let pk):
             // load user following directly.
-            pages.parse(User.self,
-                        paginatedResponse: AnyPaginatedResponse.self,
-                        with: paginationParameters,
-                        at: { try Endpoints.Friendships.folllowing(user: pk)
+            pages.request(User.self,
+                          page: AnyPaginatedResponse.self,
+                          with: paginationParameters,
+                          endpoint: { Endpoints.Friendships.folllowing(user: pk)
                             .rank(storage.rankToken)
                             .query(query)
-                            .next($0.nextMaxId)
-                            .url() },
-                        processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
-                        updateHandler: updateHandler,
-                        completionHandler: completionHandler)
+                            .next($0.nextMaxId) },
+                        splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
+                        update: updateHandler,
+                        completion: completionHandler)
         }
     }
 
@@ -291,27 +291,27 @@ public final class UserHandler: Handler {
     public func recentActivities(with paginationParameters: PaginationParameters,
                                  updateHandler: PaginationUpdateHandler<SuggestedUser, RecentActivity>?,
                                  completionHandler: @escaping PaginationCompletionHandler<SuggestedUser>) {
-            pages.parse(SuggestedUser.self,
-                        paginatedResponse: RecentActivity.self,
-                        with: paginationParameters,
-                        at: { try Endpoints.News.activities.next($0.nextMaxId).url() },
-                        paginationHandler: { $0.rawResponse.aymf.nextMaxId.string },
-                        processingHandler: { $0.suggestedUsers },
-                        updateHandler: updateHandler,
-                        completionHandler: completionHandler)
+            pages.request(SuggestedUser.self,
+                          page: RecentActivity.self,
+                          with: paginationParameters,
+                          endpoint: { Endpoints.News.activities.next($0.nextMaxId) },
+                          next: { $0.aymf.nextMaxId.string },
+                          splice: { $0.suggestedUsers },
+                          update: updateHandler,
+                          completion: completionHandler)
     }
 
     /// Get recent following activities.
     public func recentFollowingActivities(with paginationParameters: PaginationParameters,
                                           updateHandler: PaginationUpdateHandler<RecentActivity.Story, AnyPaginatedResponse>?,
                                           completionHandler: @escaping PaginationCompletionHandler<RecentActivity.Story>) {
-        pages.parse(RecentActivity.Story.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.News.followingActivities.next($0.nextMaxId).url() },
-                    processingHandler: { $0.rawResponse.stories.array?.map(RecentActivity.Story.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(RecentActivity.Story.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.News.followingActivities.next($0.nextMaxId) },
+                      splice: { $0.rawResponse.stories.array?.compactMap(RecentActivity.Story.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     /// Unfollow user.
@@ -329,8 +329,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.remove(follower: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.remove(follower: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
@@ -365,8 +365,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.approveRequest(from: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.approveRequest(from: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
@@ -401,8 +401,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.rejectRequest(from: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.rejectRequest(from: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
@@ -426,13 +426,13 @@ public final class UserHandler: Handler {
     public func pendingRequests(with paginationParameters: PaginationParameters,
                                 updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                                 completionHandler: @escaping PaginationCompletionHandler<User>) {
-        pages.parse(User.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.Friendships.pending.next($0.nextMaxId).url() },
-                    processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(User.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Friendships.pending.next($0.nextMaxId) },
+                      splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     /// Follow user.
@@ -450,8 +450,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.follow(user: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.follow(user: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
@@ -486,8 +486,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.unfollow(user: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.unfollow(user: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
@@ -519,18 +519,18 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.friendshipStatus(withUser: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.friendshipStatus(withUser: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
             }
         case .primaryKey(let pk):
             // get status directly.
-            requests.parse(Friendship.self,
-                           method: .get,
-                           url: Result { try Endpoints.Friendships.status(user: pk).url() },
-                           completionHandler: completionHandler)
+            requests.request(Friendship.self,
+                             method: .get,
+                             endpoint: Endpoints.Friendships.status(user: pk),
+                             completion: completionHandler)
         }
     }
 
@@ -555,20 +555,21 @@ public final class UserHandler: Handler {
                         "user_ids": Set(ids).map(String.init).joined(separator: ", "),
                         "radio_type": "wifi-none"]
 
-            pages.parse([User.Reference: Friendship].self,
-                        paginatedResponse: AnyPaginatedResponse.self,
-                        with: .init(maxPagesToLoad: 1),
-                        at: { _ in try Endpoints.Friendships.statuses.url() },
-                        body: { _ in .parameters(body) },
-                        processingHandler: {
+            pages.request([User.Reference: Friendship].self,
+                          page: AnyPaginatedResponse.self,
+                          with: .init(maxPagesToLoad: 1),
+                          endpoint: { _ in Endpoints.Friendships.statuses },
+                          body: { _ in .parameters(body) },
+                          splice: {
                             $0.rawResponse.friendshipStatuses.dictionary?
                                 .compactMap { key, value -> [User.Reference: Friendship]? in
                                     guard let primaryKey = Int(key) else { return nil }
                                     return [User.Reference.primaryKey(primaryKey): Friendship(rawResponse: value)]
+                                        .compactMapValues { $0 }
                                 } ?? []
             },
-                        updateHandler: nil,
-                        completionHandler: { result, _ in
+                        update: nil,
+                        completion: { result, _ in
                             completionHandler(result.map {
                                 Dictionary(uniqueKeysWithValues: $0.map { $0.map { ($0, $1) } }.joined())
                             })
@@ -579,13 +580,13 @@ public final class UserHandler: Handler {
     public func blocked(with paginationParameters: PaginationParameters,
                         updateHandler: PaginationUpdateHandler<User, AnyPaginatedResponse>?,
                         completionHandler: @escaping PaginationCompletionHandler<User>) {
-        pages.parse(User.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.Users.blocked.next($0.nextMaxId).url() },
-                    processingHandler: { $0.rawResponse.blockedList.array?.map(User.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(User.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Users.blocked.next($0.nextMaxId) },
+                      splice: { $0.rawResponse.blockedList.array?.compactMap(User.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     /// Block user.
@@ -603,8 +604,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.block(user: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.block(user: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
@@ -639,8 +640,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.unblock(user: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.unblock(user: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
@@ -732,8 +733,8 @@ public final class UserHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.report(user: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.report(user: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }

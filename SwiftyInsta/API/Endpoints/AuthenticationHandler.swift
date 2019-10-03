@@ -57,75 +57,75 @@ final class AuthenticationHandler: Handler {
                                "X-CSRFToken": csrfToken,
                                "X-Requested-With": "XMLHttpRequest",
                                "Referer": "https://instagram.com/"]
-                me.requests.decode(CredentialsAuthenticationResponse.self,
-                                   method: .post,
-                                   url: Result { try Endpoints.Authentication.login.url() },
-                                   body: .parameters(body),
-                                   headers: headers,
-                                   checkingValidStatusCode: false,
-                                   delay: 0...0) {
-                                    switch $0 {
-                                    case .failure(let error):
-                                        handler.settings.queues.response.async {
-                                            completionHandler(.failure(error))
-                                        }
-                                    case .success(let response):
-                                        // check for status.
-                                        if let url = try? response.checkpointUrl.flatMap(Endpoints.Authentication.home.appending)?.url() {
-                                            user.completionHandler = completionHandler
-                                            user.response = .challenge(url)
-                                            me.challengeInfo(for: user) { form in
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.checkpoint(suggestions: form?.suggestion)))
-                                                }
-                                            }
-                                            // ask for verification code.
-                                            me.challenge(csrfToken: csrfToken, url: url, verification: user.verification) {
-                                                completionHandler(.failure($0))
-                                            }
-                                        } else if let identifier = response.twoFactorInfo?.twoFactorIdentifier {
-                                            user.completionHandler = completionHandler
-                                            user.response = .twoFactor(identifier)
-                                            handler.settings.queues.response.async {
-                                                completionHandler(.failure(AuthenticationError.twoFactor))
-                                            }
-                                        } else if let authentication = response.authenticated {
-                                            // check for authentication status.
-                                            if authentication, let dsUserId = response.userId {
-                                                user.response = .success
-                                                // create session cache.
-                                                let cookies = HTTPCookieStorage.shared
-                                                    .cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
-                                                let storage = Authentication.Storage(
-                                                    dsUserId: dsUserId,
-                                                    csrfToken: csrfToken,
-                                                    sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
-                                                    rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
-                                                    user: nil
-                                                )
-                                                let cache = Authentication.Response(device: handler.settings.device,
-                                                                                    storage: storage,
-                                                                                    data: cookies.data)
-                                                // actually authenticate.
-                                                handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
-                                            } else if response.user ?? false {
-                                                user.response = .failure
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.invalidPassword))
-                                                }
-                                            } else {
-                                                user.response = .failure
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.invalidUsername))
-                                                }
-                                            }
-                                        } else {
-                                            user.response = .failure
-                                            handler.settings.queues.response.async {
-                                                completionHandler(.failure(GenericError.custom("Unknown error.")))
-                                            }
-                                        }
-                                    }
+                me.requests.request(CredentialsAuthenticationResponse.self,
+                                    method: .post,
+                                    endpoint: Endpoints.Authentication.login,
+                                    body: .parameters(body),
+                                    headers: headers,
+                                    options: .deliverOnResponseQueue,
+                                    delay: 0...0) {
+                    switch $0 {
+                    case .failure(let error):
+                        handler.settings.queues.response.async {
+                            completionHandler(.failure(error))
+                        }
+                    case .success(let response):
+                        // check for status.
+                        if let url = try? response.checkpointUrl.flatMap(Endpoints.Authentication.home.appending)?.url() {
+                            user.completionHandler = completionHandler
+                            user.response = .challenge(url)
+                            me.challengeInfo(for: user) { form in
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(AuthenticationError.checkpoint(suggestions: form?.suggestion)))
+                                }
+                            }
+                            // ask for verification code.
+                            me.challenge(csrfToken: csrfToken, url: url, verification: user.verification) {
+                                completionHandler(.failure($0))
+                            }
+                        } else if let identifier = response.twoFactorInfo?.twoFactorIdentifier {
+                            user.completionHandler = completionHandler
+                            user.response = .twoFactor(identifier)
+                            handler.settings.queues.response.async {
+                                completionHandler(.failure(AuthenticationError.twoFactor))
+                            }
+                        } else if let authentication = response.authenticated {
+                            // check for authentication status.
+                            if authentication, let dsUserId = response.userId {
+                                user.response = .success
+                                // create session cache.
+                                let cookies = HTTPCookieStorage.shared
+                                    .cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
+                                let storage = Authentication.Storage(
+                                    dsUserId: dsUserId,
+                                    csrfToken: csrfToken,
+                                    sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
+                                    rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
+                                    user: nil
+                                )
+                                let cache = Authentication.Response(device: handler.settings.device,
+                                                                    storage: storage,
+                                                                    data: cookies.data)
+                                // actually authenticate.
+                                handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
+                            } else if response.user ?? false {
+                                user.response = .failure
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(AuthenticationError.invalidPassword))
+                                }
+                            } else {
+                                user.response = .failure
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(AuthenticationError.invalidUsername))
+                                }
+                            }
+                        } else {
+                            user.response = .failure
+                            handler.settings.queues.response.async {
+                                completionHandler(.failure(GenericError.custom("Unknown error.")))
+                            }
+                        }
+                    }
                 }
             default:
                 user.response = .failure

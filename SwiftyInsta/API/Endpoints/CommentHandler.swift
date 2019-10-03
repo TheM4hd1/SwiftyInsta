@@ -16,13 +16,13 @@ public final class CommentHandler: Handler {
                     with paginationParameters: PaginationParameters,
                     updateHandler: PaginationUpdateHandler<Comment, MediaComments>?,
                     completionHandler: @escaping PaginationCompletionHandler<Comment>) {
-        pages.parse(Comment.self,
-                    paginatedResponse: MediaComments.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.Media.comments(media: mediaId).next($0.nextMaxId).url() },
-                    processingHandler: { $0.rawResponse.comments.array?.map(Comment.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(Comment.self,
+                      page: MediaComments.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Media.comments(media: mediaId).next($0.nextMaxId) },
+                      splice: { $0.rawResponse.comments.array?.compactMap(Comment.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     /// Add comment to media.
@@ -54,10 +54,10 @@ public final class CommentHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(Status.self,
-                            method: .post,
-                            url: Result { try Endpoints.Media.postComment(media: mediaId).url() },
-                            body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
+            requests.request(Status.self,
+                             method: .post,
+                             endpoint: Endpoints.Media.postComment(media: mediaId),
+                             body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -69,11 +69,11 @@ public final class CommentHandler: Handler {
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken]
-        requests.decode(Status.self,
-                        method: .post,
-                        url: Result { try Endpoints.Media.deleteComment(commentId, media: mediaId).url() },
-                        body: .parameters(body),
-                        completionHandler: { completionHandler($0.map { $0.state == .ok }) })
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoints.Media.deleteComment(commentId, media: mediaId),
+                         body: .parameters(body),
+                         completion: { completionHandler($0.map { $0.state == .ok }) })
     }
 
     /// Report a comment.
@@ -87,10 +87,10 @@ public final class CommentHandler: Handler {
                     "reason": "1",
                     "comment_id": commentId,
                     "media_id": mediaId]
-        requests.decode(Status.self,
-                        method: .post,
-                        url: Result { try Endpoints.Media.reportComment(commentId, media: mediaId).url() },
-                        body: .parameters(body),
-                        completionHandler: { completionHandler($0.map { $0.state == .ok }) })
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoints.Media.reportComment(commentId, media: mediaId),
+                         body: .parameters(body),
+                         completion: { completionHandler($0.map { $0.state == .ok }) })
     }
 }

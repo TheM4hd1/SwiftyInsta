@@ -14,13 +14,13 @@ public final class MessageHandler: Handler {
     public func inbox(with paginationParameters: PaginationParameters,
                       updateHandler: PaginationUpdateHandler<Thread, AnyPaginatedResponse>?,
                       completionHandler: @escaping PaginationCompletionHandler<Thread>) {
-        pages.parse(Thread.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.Direct.inbox.next($0.nextMaxId).url() },
-                    processingHandler: { $0.rawResponse.inbox.threads.array?.map(Thread.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(Thread.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Direct.inbox.next($0.nextMaxId) },
+                      splice: { $0.rawResponse.inbox.threads.array?.compactMap(Thread.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     /// Send message to user(s) in thred.
@@ -34,40 +34,40 @@ public final class MessageHandler: Handler {
         case .thread(let thread): body["thread_ids"] = "[\(thread)]"
         }
 
-        requests.decode(Status.self,
-                        method: .get,
-                        url: Result { try Endpoints.Direct.text.url() },
-                        body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
+        requests.request(Status.self,
+                         method: .get,
+                         endpoint: Endpoints.Direct.text,
+                         body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
     /// Get thread by id.
     public func `in`(thread: String, completionHandler: @escaping (Result<Thread, Error>) -> Void) {
-        requests.parse(Thread.self,
-                       method: .get,
-                       url: Result { try Endpoints.Direct.thread(thread).url() },
-                       completionHandler: completionHandler)
+        requests.request(Thread.self,
+                         method: .get,
+                         endpoint: Endpoints.Direct.thread(thread),
+                         completion: completionHandler)
     }
 
     /// Get recent receipients.
     public func recent(completionHandler: @escaping (Result<[Recipient], Error>) -> Void) {
-        pages.parse(Recipient.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: .init(maxPagesToLoad: 1),
-                    at: { _ in try Endpoints.Direct.recentRecipients.url() },
-                    processingHandler: { $0.rawResponse.recentRecipients.array?.map(Recipient.init) ?? [] },
-                    updateHandler: nil) { result, _ in
+        pages.request(Recipient.self,
+                      page: AnyPaginatedResponse.self,
+                      with: .init(maxPagesToLoad: 1),
+                      endpoint: { _ in Endpoints.Direct.recentRecipients },
+                      splice: { $0.rawResponse.recentRecipients.array?.compactMap(Recipient.init) ?? [] },
+                      update: nil) { result, _ in
                         completionHandler(result)
         }
     }
 
     /// Get ranked receipients.
     public func ranked(completionHandler: @escaping (Result<[Recipient], Error>) -> Void) {
-        pages.parse(Recipient.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: .init(maxPagesToLoad: 1),
-                    at: { _ in try Endpoints.Direct.rankedRecipients.url() },
-                    processingHandler: { $0.rawResponse.rankedRecipients.array?.map(Recipient.init) ?? [] },
-                    updateHandler: nil) { result, _ in
+        pages.request(Recipient.self,
+                      page: AnyPaginatedResponse.self,
+                      with: .init(maxPagesToLoad: 1),
+                      endpoint: { _ in Endpoints.Direct.rankedRecipients },
+                      splice: { $0.rawResponse.rankedRecipients.array?.compactMap(Recipient.init) ?? [] },
+                      update: nil) { result, _ in
                         completionHandler(result)
         }
     }

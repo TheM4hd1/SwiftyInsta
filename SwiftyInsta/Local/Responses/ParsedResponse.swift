@@ -14,7 +14,7 @@ public protocol ParsedResponse: Codable {
     var rawResponse: DynamicResponse { get }
 
     /// Init with `rawResponse`.
-    init(rawResponse: DynamicResponse)
+    init?(rawResponse: DynamicResponse)
 }
 
 /// The identifier type.

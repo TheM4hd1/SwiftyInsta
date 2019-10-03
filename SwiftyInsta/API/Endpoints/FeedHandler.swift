@@ -13,13 +13,13 @@ public final class FeedHandler: Handler {
     public func explore(with paginationParameters: PaginationParameters,
                         updateHandler: PaginationUpdateHandler<ExploreElement, AnyPaginatedResponse>?,
                         completionHandler: @escaping PaginationCompletionHandler<ExploreElement>) {
-        pages.parse(ExploreElement.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.Discover.explore.next($0.nextMaxId).url() },
-                    processingHandler: { $0.rawResponse.items.array?.map(ExploreElement.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(ExploreElement.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Discover.explore.next($0.nextMaxId) },
+                      splice: { $0.rawResponse.items.array?.compactMap(ExploreElement.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     /// Fetch the tag feed.
@@ -27,13 +27,13 @@ public final class FeedHandler: Handler {
                     with paginationParameters: PaginationParameters,
                     updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
                     completionHandler: @escaping PaginationCompletionHandler<Media>) {
-        pages.parse(Media.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.Feed.tag(tag).next($0.nextMaxId).url() },
-                    processingHandler: { $0.rawResponse.items.array?.map(Media.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(Media.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Feed.tag(tag).next($0.nextMaxId) },
+                      splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
@@ -72,23 +72,24 @@ public final class FeedHandler: Handler {
                        "X-DEVICE-ID": handler.settings.device.deviceGuid.uuidString,
                        "X-FB": "1"]
 
-        pages.parse(Media.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try Endpoints.Feed.timeline.next($0.nextMaxId).url() },
-                    body: {
+        pages.request(Media.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Feed.timeline.next($0.nextMaxId) },
+                      body: {
                         switch $0.nextMaxId {
-                        case .none:
-                            return .parameters(body.merging(["reason": "cold_start_fresh"],
+                            case .none:
+                                return .parameters(body.merging(["reason": "cold_start_fresh"],
                                                             uniquingKeysWith: { lhs, _ in lhs }))
                         case let maxId?:
                             return .parameters(body.merging(["reason": "pagination", "max_id": maxId],
                                                             uniquingKeysWith: { lhs, _ in lhs }))
                         }
+                        
         },
-                    headers: { _ in headers },
-                    processingHandler: { $0.rawResponse.feedItems.array?.map { Media(rawResponse: $0.mediaOrAd) } ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+                      headers: { _ in headers },
+                      splice: { $0.rawResponse.feedItems.array?.compactMap { Media(rawResponse: $0.mediaOrAd) } ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 }

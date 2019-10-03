@@ -21,7 +21,10 @@ public struct User: IdentifiableParsedResponse {
     }
 
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -47,9 +50,7 @@ public struct User: IdentifiableParsedResponse {
     public var isVerified: Bool { return rawResponse.isVerified.bool ?? false }
     /// The `friendship` value.
     public var friendship: Friendship? {
-        return rawResponse.friendship == .none
-            ? (rawResponse.friendshipStatus == .none ? nil : Friendship(rawResponse: rawResponse.friendshipStatus))
-            : Friendship(rawResponse: rawResponse.friendship)
+        return Friendship(rawResponse: rawResponse.friendship) ?? Friendship(rawResponse: rawResponse.friendshipStatus)
     }
 
     /// The `phoneNumber` value.
@@ -83,7 +84,10 @@ public struct User: IdentifiableParsedResponse {
 /// A `Friendship` response.
 public struct Friendship: ParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -137,16 +141,17 @@ public struct Friendship: ParsedResponse {
 /// A `SuggestedUser` response.
 public struct SuggestedUser: IdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
 
     /// The `user` value.
     public var user: User? {
-        return rawResponse.user == .none
-            ? nil
-            : User(rawResponse: rawResponse.user)
+        return User(rawResponse: rawResponse.user)
     }
     /// The `algorithm` value.
     public var algorithm: String? {
