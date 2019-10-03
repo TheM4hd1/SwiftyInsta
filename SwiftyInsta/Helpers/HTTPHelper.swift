@@ -31,12 +31,12 @@ class HTTPHelper {
     /// A list of options.
     struct Options: OptionSet {
         let rawValue: Int
-        
+
         /// Validate response.
         static let validateResponse = Options(rawValue: 1 << 0)
         /// Deliver on response queue.
         static let deliverOnResponseQueue = Options(rawValue: 1 << 1)
-        
+
         /// Default.
         static let `default`: Options = [.validateResponse, .deliverOnResponseQueue]
     }

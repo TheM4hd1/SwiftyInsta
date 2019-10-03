@@ -99,7 +99,7 @@ identifier_name:
       - me
       - URL
       - url
-      
+
 type_name:
     min_length:
         warning: 3
@@ -108,7 +108,7 @@ type_name:
         - LG
 
 function_parameter_count:
-    warning: 8
+    warning: 10
     error: 15
 
 reporter: "xcode"

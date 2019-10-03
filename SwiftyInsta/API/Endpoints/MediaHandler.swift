@@ -674,6 +674,6 @@ public final class MediaHandler: Handler {
                          method: .get,
                          endpoint: Endpoints.Media.permalink(media: mediaId),
                          process: { $0.permalink.string },
-                         completion: completionHandler)        
+                         completion: completionHandler)
     }
 }

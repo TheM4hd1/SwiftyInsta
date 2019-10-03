@@ -78,14 +78,14 @@ public final class FeedHandler: Handler {
                       endpoint: { Endpoints.Feed.timeline.next($0.nextMaxId) },
                       body: {
                         switch $0.nextMaxId {
-                            case .none:
-                                return .parameters(body.merging(["reason": "cold_start_fresh"],
+                        case .none:
+                            return .parameters(body.merging(["reason": "cold_start_fresh"],
                                                             uniquingKeysWith: { lhs, _ in lhs }))
                         case let maxId?:
                             return .parameters(body.merging(["reason": "pagination", "max_id": maxId],
                                                             uniquingKeysWith: { lhs, _ in lhs }))
                         }
-                        
+
         },
                       headers: { _ in headers },
                       splice: { $0.rawResponse.feedItems.array?.compactMap { Media(rawResponse: $0.mediaOrAd) } ?? [] },
