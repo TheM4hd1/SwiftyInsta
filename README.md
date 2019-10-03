@@ -1,5 +1,5 @@
 # SwiftyInsta
-[![CI Status](https://img.shields.io/travis/TheM4hd1/SwiftyInsta.svg?style=flat)](https://travis-ci.org/TheM4hd1/SwiftyInsta)
+[![CI Status](https://img.shields.io/travis/TheM4hd1/SwiftyInsta/master.svg?style=flat)](https://travis-ci.org/TheM4hd1/SwiftyInsta)
 [![Version](https://img.shields.io/cocoapods/v/SwiftyInsta.svg?style=flat)](https://cocoapods.org/pods/SwiftyInsta)
 [![License](https://img.shields.io/cocoapods/l/SwiftyInsta.svg?style=flat)](https://github.com/TheM4hd1/SwiftyInsta/LICENSE.md)
 [![Platform](https://img.shields.io/cocoapods/p/SwiftyInsta.svg?style=flat)](https://cocoapods.org/pods/SwiftyInsta)
