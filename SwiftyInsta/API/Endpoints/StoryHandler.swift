@@ -183,11 +183,11 @@ public final class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(Upload.Response.Picture.self,
-                            method: .post,
-                            url: Result { try Endpoints.Media.configureStory.url() },
-                            body: .parameters(body),
-                            completionHandler: completionHandler)
+            requests.request(Upload.Response.Picture.self,
+                             method: .post,
+                             endpoint: Endpoints.Media.configureStory,
+                             body: .parameters(body),
+                             completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -261,10 +261,10 @@ public final class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(Status.self,
-                            method: .post,
-                            url: Result { try Endpoints.Media.markAsSeen.url() },
-                            body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
+            requests.request(Status.self,
+                             method: .post,
+                             endpoint: Endpoints.Media.markAsSeen,
+                             body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
 
