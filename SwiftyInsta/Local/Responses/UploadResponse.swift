@@ -27,7 +27,7 @@ public extension Upload {
             public var uploadId: String? { return rawResponse.uploadId.string }
             /// The status.
             public var status: String? { return rawResponse.status.string }
-            
+
             // MARK: Codable
             public init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()
@@ -55,7 +55,7 @@ public extension Upload {
             public var uploadId: String? { return rawResponse.uploadId.string }
             /// The status.
             public var status: String? { return rawResponse.status.string }
-            
+
             // MARK: Codable
             public init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()
@@ -86,7 +86,7 @@ public extension Upload.Response.Video {
         public var job: String? { return rawResponse.job.string }
         /// The expiration.
         public var expires: Double? { return rawResponse.expires.double }
-        
+
         // MARK: Codable
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
