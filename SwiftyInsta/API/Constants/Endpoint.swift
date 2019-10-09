@@ -10,16 +10,16 @@ import Foundation
 
 /// A protocol describing a generic `Endpoint`.
 public protocol Endpoint {
+    /// The base path.
+    var base: String { get }
     /// The raw value.
     var rawValue: String { get }
     /// The query items.
     var queryItems: [URLQueryItem] { get }
-    /// The base path.
-    static var base: String { get }
 }
 public extension Endpoint {
     /// The base path.
-    static var base: String { return "https://i.instagram.com/api/v1" }
+    var base: String { return "https://i.instagram.com/api/v1" }
     /// The base query items.
     var queryItems: [URLQueryItem] { return [] }
 
@@ -61,8 +61,9 @@ public extension Endpoint {
 
     /// `URL`.
     func url() throws -> URL {
-        guard var components = URLComponents(string: Self.base+rawValue) else {
-            throw GenericError.invalidEndpoint(Self.base)
+        let base = self.base
+        guard var components = URLComponents(string: base+rawValue) else {
+            throw GenericError.invalidEndpoint(base)
         }
         components.queryItems = queryItems.isEmpty ? nil : queryItems
         guard let url = components.url else {
@@ -309,6 +310,13 @@ public extension Endpoints {
         /// Mark as seen.
         case markAsSeen
 
+        /// The base path.
+        public var base: String {
+            switch self {
+            case .markAsSeen: return "https://i.instagram.com/api/v2"
+            default: return "https://i.instagram.com/api/v1"
+            }
+        }
         /// The raw value.
         public var rawValue: String {
             switch self {

@@ -301,17 +301,12 @@ public final class UserHandler: Handler {
                           completion: completionHandler)
     }
 
+    @available(*, unavailable, message: "Instagram no longer supports this endpoint.")
     /// Get recent following activities.
     public func recentFollowingActivities(with paginationParameters: PaginationParameters,
                                           updateHandler: PaginationUpdateHandler<RecentActivity.Story, AnyPaginatedResponse>?,
                                           completionHandler: @escaping PaginationCompletionHandler<RecentActivity.Story>) {
-        pages.request(RecentActivity.Story.self,
-                      page: AnyPaginatedResponse.self,
-                      with: paginationParameters,
-                      endpoint: { Endpoints.News.followingActivities.next($0.nextMaxId) },
-                      splice: { $0.rawResponse.stories.array?.compactMap(RecentActivity.Story.init) ?? [] },
-                      update: updateHandler,
-                      completion: completionHandler)
+        fatalError("Instagram no longer supports this endpoint.")
     }
 
     /// Unfollow user.
