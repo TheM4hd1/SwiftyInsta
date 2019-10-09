@@ -11,36 +11,90 @@ import Foundation
 public extension Upload {
     struct Response {
         /// A `struct` holding reference to a successful `Upload.picture`.
-        public struct Picture: Codable, StatusEnforceable {
+        public struct Picture: ParsedResponse, StatusEnforceable {
+            /// Init with `rawResponse`.
+            public init?(rawResponse: DynamicResponse) {
+                guard rawResponse != .none else { return nil }
+                self.rawResponse = rawResponse
+            }
+
+            /// The `rawResponse`.
+            public let rawResponse: DynamicResponse
+
             /// The media.
-            public var media: Media?
+            public var media: Media? { return Media(rawResponse: rawResponse.media) }
             /// The upload id.
-            public var uploadId: String?
+            public var uploadId: String? { return rawResponse.uploadId.string }
             /// The status.
-            public var status: String?
+            public var status: String? { return rawResponse.status.string }
+            
+            // MARK: Codable
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+            }
+            public func encode(to encoder: Encoder) throws {
+                var container = encoder.singleValueContainer()
+                try container.encode(rawResponse.data())
+            }
         }
         /// A `struct` holding reference to a successful `Upload.video`.
-        public struct Video: Codable, StatusEnforceable {
-            /// The urls.
-            public var urls: [URL]
+        public struct Video: ParsedResponse, StatusEnforceable {
+            /// Init with `rawResponse`.
+            public init?(rawResponse: DynamicResponse) {
+                guard rawResponse != .none else { return nil }
+                self.rawResponse = rawResponse
+            }
+
+            /// The `rawResponse`.
+            public let rawResponse: DynamicResponse
+
+            /// The media.
+            public var urls: [URL] { return rawResponse.videoUploadUrls.array?.compactMap(URL.init) ?? [] }
             /// The upload id.
-            public var uploadId: String?
+            public var uploadId: String? { return rawResponse.uploadId.string }
             /// The status.
-            public var status: String?
+            public var status: String? { return rawResponse.status.string }
+            
+            // MARK: Codable
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+            }
+            public func encode(to encoder: Encoder) throws {
+                var container = encoder.singleValueContainer()
+                try container.encode(rawResponse.data())
+            }
         }
     }
 }
 public extension Upload.Response.Video {
     /// The `Video` url structure.
-    struct URL: Codable {
+    struct URL: ParsedResponse {
+        /// Init with `rawResponse`.
+        public init?(rawResponse: DynamicResponse) {
+            guard rawResponse != .none else { return nil }
+            self.rawResponse = rawResponse
+        }
+
+        /// The `rawResponse`.
+        public let rawResponse: DynamicResponse
+
         /// The url.
-        public let url: String?
+        public var url: String? { return rawResponse["url"].string }
         /// The job.
-        public let job: String?
+        public var job: String? { return rawResponse.job.string }
         /// The expiration.
-        public let expires: Double?
-    }
-    enum CodingKeys: String, CodingKey {
-        case urls = "videoUploadUrls", uploadId, status
+        public var expires: Double? { return rawResponse.expires.double }
+        
+        // MARK: Codable
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+        }
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(rawResponse.data())
+        }
     }
 }
