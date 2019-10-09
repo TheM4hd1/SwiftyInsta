@@ -52,7 +52,7 @@ To use this library in your project manually you may:
 // these need to be strong references.
 self.credentials = Credentials(username: /* username */, password: /* password */, verifyBy: .text)
 self.handler = APIHandler()
-handler.authenticate(with: .credentials(credentials)) {
+handler.authenticate(with: .user(credentials)) {
     switch $0 {
     case .success(let response, _):
         print("Login successful.")
