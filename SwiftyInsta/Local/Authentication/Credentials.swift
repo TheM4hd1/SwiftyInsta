@@ -9,7 +9,7 @@
 import Foundation
 
 /// A class holding reference to the `base authentication` user.
-public struct Credentials {
+public class Credentials {
     /// Prefered verification method.
     public enum Verification: String { case email = "1", text = "0" }
     /// Response.
