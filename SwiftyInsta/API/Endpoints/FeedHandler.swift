@@ -21,6 +21,19 @@ public final class FeedHandler: Handler {
                       update: updateHandler,
                       completion: completionHandler)
     }
+    
+    /// Fetch the liked feed.
+    public func liked(with paginationParameters: PaginationParameters,
+                      updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
+                      completionHandler: @escaping PaginationCompletionHandler<Media>) {
+        pages.request(Media.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoints.Feed.liked.next($0.nextMaxId) },
+                      splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
+    }
 
     /// Fetch the tag feed.
     public func tag(_ tag: String,

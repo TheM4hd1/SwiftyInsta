@@ -185,6 +185,8 @@ public extension Endpoints {
         case reelsTray
         /// Reels media
         case reelsMedia
+        /// Liked media.
+        case liked
         /// Tag.
         case tag(String)
         /// Timeline.
@@ -201,6 +203,7 @@ public extension Endpoints {
             switch self {
             case .reelsTray: return "/feed/reels_tray/"
             case .reelsMedia: return "/feed/reels_media/"
+            case .liked: return "/feed/liked/"
             case .tag(let tag): return "/feed/tag/"+tag+"/"
             case .timeline: return "/feed/timeline/"
             case .user(let primaryKey): return "/feed/user/\(primaryKey)/"
