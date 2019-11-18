@@ -21,7 +21,7 @@ public final class FeedHandler: Handler {
                       update: updateHandler,
                       completion: completionHandler)
     }
-    
+
     /// Fetch the liked feed.
     public func liked(with paginationParameters: PaginationParameters,
                       updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,

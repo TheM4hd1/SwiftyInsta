@@ -30,7 +30,7 @@ final class AuthenticationHandler: Handler {
 
     func authenticate(user: Credentials, completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         // update user.
-        var user = user
+        let user = user
         user.handler = handler
         // remove cookies.
         HTTPCookieStorage.shared.removeCookies(since: .distantPast)
@@ -228,7 +228,7 @@ final class AuthenticationHandler: Handler {
               at url: URL,
               for user: Credentials,
               completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
-        var user = user
+        let user = user
         let body = ["security_code": code]
         let headers = ["X-CSRFToken": user.csrfToken!,
                        "X-Requested-With": "XMLHttpRequest",
@@ -286,7 +286,7 @@ final class AuthenticationHandler: Handler {
         guard let url = try? Endpoints.Authentication.twoFactor.url().absoluteString else {
             return completionHandler(.failure(GenericError.invalidUrl))
         }
-        var user = user
+        let user = user
         let body = ["username": user.username,
                     "verificationCode": code,
                     "identifier": identifier]
@@ -348,7 +348,7 @@ final class AuthenticationHandler: Handler {
     }
 
     func afterCheckpointAuthenticate(user: Credentials, completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
-        var user = user
+        let user = user
         let body = ["username": user.username,
                     "password": user.password]
         let headers = ["X-Instagram-AJAX": "1",
