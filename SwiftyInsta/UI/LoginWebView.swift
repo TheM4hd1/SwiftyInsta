@@ -92,6 +92,9 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             fetchCookies()
             // no need to check anymore.
             navigationDelegate = nil
+        case "https://www.instagram.com/accounts/login/"?:
+          let removeElementIdScript = "document.getElementsByClassName('z1VUo')[0].remove();"
+          webView.evaluateJavaScript(removeElementIdScript) { (response, error) in}
         default:
             break
         }
