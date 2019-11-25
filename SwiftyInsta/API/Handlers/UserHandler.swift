@@ -19,7 +19,7 @@ public final class UserHandler: Handler {
                     "_csrftoken": storage.csrfToken]
 
         requests.request(User.self,
-                         method: .get,
+                         method: .post,
                          endpoint: Endpoint.Accounts.current,
                          body: .parameters(body),
                          delay: delay,
@@ -375,7 +375,7 @@ public final class UserHandler: Handler {
                         "radio_type": "wifi-none"]
 
             requests.request(Status.self,
-                             method: .get,
+                             method: .post,
                              endpoint: Endpoint.Friendships.approve.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
@@ -411,7 +411,7 @@ public final class UserHandler: Handler {
                         "radio_type": "wifi-none"]
 
             requests.request(Status.self,
-                             method: .get,
+                             method: .post,
                              endpoint: Endpoint.Friendships.reject.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
@@ -460,7 +460,7 @@ public final class UserHandler: Handler {
                         "radio_type": "wifi-none"]
 
             requests.request(Status.self,
-                             method: .get,
+                             method: .post,
                              endpoint: Endpoint.Friendships.follow.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
@@ -496,7 +496,7 @@ public final class UserHandler: Handler {
                         "radio_type": "wifi-none"]
 
             requests.request(Status.self,
-                             method: .get,
+                             method: .post,
                              endpoint: Endpoint.Friendships.unfollow.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
@@ -614,7 +614,7 @@ public final class UserHandler: Handler {
                         "radio_type": "wifi-none"]
 
             requests.request(Status.self,
-                             method: .get,
+                             method: .post,
                              endpoint: Endpoint.Friendships.block.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
@@ -650,7 +650,7 @@ public final class UserHandler: Handler {
                         "radio_type": "wifi-none"]
 
             requests.request(Status.self,
-                             method: .get,
+                             method: .post,
                              endpoint: Endpoint.Friendships.unblock.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }

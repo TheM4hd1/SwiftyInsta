@@ -35,7 +35,7 @@ public final class MessageHandler: Handler {
         }
 
         requests.request(Status.self,
-                         method: .get,
+                         method: .post,
                          endpoint: Endpoint.Direct.text,
                          body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
     }
