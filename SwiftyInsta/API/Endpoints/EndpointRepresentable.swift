@@ -16,7 +16,7 @@ public protocol EndpointRepresentable {
 public extension EndpointRepresentable {
     /// A `throw`-able `URL`.
     func url() throws -> URL { return try representation.url() }
-    
+
     /// Fill the `userPk`.
     func user(_ userPk: Int) -> EndpointRepresentable! { return representation.user(userPk) }
     /// Fill the `mediaId`.
@@ -27,7 +27,7 @@ public extension EndpointRepresentable {
     func thread(_ threadId: String) -> EndpointRepresentable! { return representation.thread(threadId) }
     /// Fill the `tagId`.
     func tag(_ tagId: String) -> EndpointRepresentable! { return representation.tag(tagId) }
-    
+
     /// Query `maxId`.
     func next(_ maxId: String?) -> EndpointRepresentable! { return representation.next(maxId) }
     /// Query `rankToken`.
@@ -38,7 +38,7 @@ public extension EndpointRepresentable {
     func q(_ query: String) -> EndpointRepresentable! { return representation.q(query) }
     /// Query `query`.
     func query(_ query: String?) -> EndpointRepresentable! { return representation.query(query) }
-    
+
     /// Appendding `query`.
     func appending(_ path: String) -> EndpointRepresentable! { return representation.appending(path) }
 }
@@ -47,15 +47,15 @@ public extension EndpointRepresentable {
 public protocol LosselessEndpointRepresentable: CustomStringConvertible, EndpointRepresentable {
     /// The `URLComponents`.
     var components: URLComponents? { get }
-    
+
     /// Placeholders.
     var placeholders: [String]? { get }
     /// Fill placeholder and return.
     func filling(_ placeholder: String, with string: String) -> LosselessEndpointRepresentable!
-    
+
     /// Query.
     func query<L>(_ items: [String: L]) -> LosselessEndpointRepresentable! where L: LosslessStringConvertible
-    
+
     /// Append path.
     func appending(_ path: String) -> LosselessEndpointRepresentable!
 }
@@ -63,7 +63,7 @@ public protocol LosselessEndpointRepresentable: CustomStringConvertible, Endpoin
 extension LosselessEndpointRepresentable {
     /// The endpoint representable.
     public var representation: LosselessEndpointRepresentable { return self }
-    
+
     /// A `throw`-able `URL`.
     func url() throws -> URL {
         guard (placeholders ?? []).isEmpty else {
@@ -77,7 +77,7 @@ extension LosselessEndpointRepresentable {
         }
         return url
     }
-    
+
     /// Fill the `userPk`.
     func user(_ userPk: Int) -> EndpointRepresentable! { return filling("userPk", with: String(userPk)) }
     /// Fill the `mediaId`.

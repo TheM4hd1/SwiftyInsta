@@ -14,7 +14,7 @@ public struct EndpointQuery<Endpoint: LosselessEndpointRepresentable>: Losseless
     public var endpoint: Endpoint
     /// The query items.
     public var items: [String: String]
-    
+
     // MARK: Representable
     /// The `URLComponents`.
     public var components: URLComponents? {
@@ -26,21 +26,22 @@ public struct EndpointQuery<Endpoint: LosselessEndpointRepresentable>: Losseless
     public var placeholders: [String]? { return endpoint.placeholders }
     /// Fill a placeholder.
     public func filling(_ placeholder: String, with string: String) -> LosselessEndpointRepresentable! {
-        var copy = self
-        copy.endpoint = copy.endpoint.filling(placeholder, with: string) as! Endpoint
-        return copy
+        guard let endpoint = self.endpoint.filling(placeholder, with: string) as? Endpoint else {
+            fatalError("Invalid endpoint.")
+        }
+        return EndpointQuery(endpoint: endpoint, items: items)
     }
     /// Query.
     public func query<L>(_ items: [String: L]) -> LosselessEndpointRepresentable! where L: LosslessStringConvertible {
-        var copy = self
-        copy.items = copy.items.merging(items.mapValues(String.init), uniquingKeysWith: { _, rhs in rhs })
-        return copy
+        let items = self.items.merging(items.mapValues(String.init), uniquingKeysWith: { _, rhs in rhs })
+        return EndpointQuery(endpoint: endpoint, items: items)
     }
     /// Append path.
     public func appending(_ path: String) -> LosselessEndpointRepresentable! {
-        var copy = self
-        copy.endpoint = copy.endpoint.appending(path) as! Endpoint
-        return copy
+        guard let endpoint = self.endpoint.appending(path) as? Endpoint else {
+            fatalError("Invalid endpoint.")
+        }
+        return EndpointQuery(endpoint: endpoint, items: items)
     }
     /// Description.
     public var description: String {

@@ -21,7 +21,7 @@ public struct Endpoint {
         /// Resend two factor.
         case sendTwoFactorLoginSms = "https://www.instagram.com/accounts/send_two_factor_login_sms/"
     }
-    
+
     /// An `enum` providing for `Accounts` endpoints.
     enum Accounts: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Create.
@@ -55,13 +55,13 @@ public struct Endpoint {
         /// Recover by emaill.
         case recoverByEmail = "https://i.instagram.com/api/v1/accounts/send_recovery_flow_email/"
     }
-    
+
     /// An `enum` providing for `Archive` endpoints.
     enum Archive: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Stories.
         case stories = "https://i.instagram.com/api/v1/archive/reel/day_shells/"
     }
-    
+
     /// An `enum` providing for `Direct` endpoints.
     enum Direct: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Inbox.
@@ -75,13 +75,13 @@ public struct Endpoint {
         /// Ranked recipients.
         case rankedRecipients = "https://i.instagram.com/api/v1/direct_v2/ranked_recipients/"
     }
-    
+
     /// An `enum` providing for `Discover` endpoints.
     enum Discover: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Explore.
         case explore = "https://i.instagram.com/api/v1/discover/explore/"
     }
-    
+
     /// An `enum` providing for `Feed` endpoints.
     enum Feed: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Story feed.
@@ -101,7 +101,7 @@ public struct Endpoint {
         /// Story feed.
         case story = "https://i.instagram.com/api/v1/feed/user/{userPk}/story"
     }
-    
+
     /// An `enum` providing for `Friendships` enddpoints.
     enum Friendships: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Following.
@@ -129,13 +129,13 @@ public struct Endpoint {
         /// Unblock.
         case unblock = "https://i.instagram.com/api/v1/friendships/unblock/{userPk}/"
     }
-    
+
     /// An `enum` providing for `Highlights` endpoints.
     enum Highlights: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Highlights.
         case tray = "https://i.instagram.com/api/v1/highlights/{userPk}/highlights_tray/"
     }
-    
+
     /// An `enum` providing for `Media` endpoints.
     enum Media: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Media info.
@@ -171,7 +171,7 @@ public struct Endpoint {
         /// Mark stories as seen.
         case markAsSeen = "https://i.instagram.com/api/v2/media/seen/?reel=1&live_vod=0"
     }
-    
+
     /// An `enum` provoding for `News` endpoints.
     enum News: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Recent activities
@@ -179,7 +179,7 @@ public struct Endpoint {
         /// Recent following activities.
         case followingActivities = "https://i.instagram.com/api/v1/news/"
     }
-    
+
     /// An `enum` provoding for `Upload` endpoints.
     enum Upload: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Photo.
@@ -187,7 +187,7 @@ public struct Endpoint {
         /// Video.
         case video = "https://i.instagram.com/api/v1/upload/video/"
     }
-    
+
     /// An `enum` providing for `Users` endpoints.
     enum Users: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Search.
@@ -199,7 +199,7 @@ public struct Endpoint {
         /// Report.
         case report = "https://i.instagram.com/api/v1/users/{userPk}/flag_user/"
     }
-    
+
     /// An `enum` providing for `UserTags` endpoints.
     enum UserTags: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Feed.
