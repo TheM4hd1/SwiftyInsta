@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Stefano Bertagno on 25/11/2019.
 //
@@ -64,9 +64,7 @@ extension EndpointPath: LosselessEndpointRepresentable {
     }
     /// The `URLComponents`.
     public var components: URLComponents? {
-        var components = URLComponents(string: basePath)
-        components?.path = endpointPath
-        return components
+        return URL(string: basePath+endpointPath).flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false) }
     }
 
     // MARK: Description

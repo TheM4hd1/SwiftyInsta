@@ -136,15 +136,29 @@ class HTTPHelper {
                 // consider response.
                 let result = $0.flatMap { data, response -> Result<Response, Error> in
                     do {
-                        guard let data = data, !options.contains(.validateResponse) || response?.statusCode == 200 else {
-                            throw GenericError.custom("Invalid response. \(response?.statusCode ?? -1)")
+                        guard let data = data else {
+                            throw GenericError.custom("\(response?.url?.absoluteString ?? "_"). Invalid response. \(response?.statusCode ?? -1)")
                         }
                         // decode data.
-                        if let response = process(try DynamicResponse(data: data)) {
-                            return .success(response)
+                        guard let dynamicResponse = try? DynamicResponse(data: data), let value = process(dynamicResponse) else {
+                            throw GenericError.custom([
+                                "\(response?.url?.absoluteString ?? "—").",
+                                "Invalid response.",
+                                "Processing handler returned `nil`.",
+                                "\(response?.statusCode ?? -1)"
+                            ].joined(separator: "\n"))
+                        }
+                        // validate response.
+                        guard !options.contains(.validateResponse) || response?.statusCode == 200 else {
+                            throw GenericError.custom([
+                                "\(response?.url?.absoluteString ?? "—").",
+                                "Invalid response.",
+                                "\(dynamicResponse.beautifiedDescription).",
+                                "\(response?.statusCode ?? -1)"
+                            ].joined(separator: "\n"))
                         }
                         // raise exception.
-                        throw GenericError.custom("Invalid response. Processing handler returned `nil`.")
+                        return .success(value)
                     } catch { return .failure(error) }
                 }
                 // notify results.
@@ -182,7 +196,7 @@ class HTTPHelper {
             }
             // obtain the request.
             var request = me.getDefaultRequest(for: content, method: body == nil ? method : .post)
-            self?.addHeaders(to: &request, header: headers)
+            me.addHeaders(to: &request, header: headers)
             switch body {
             case .parameters(let parameters)?: me.addBody(to: &request, body: parameters)
             case .data(let data)?: request.httpBody = data
