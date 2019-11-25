@@ -16,7 +16,7 @@ public final class FeedHandler: Handler {
         pages.request(ExploreElement.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Discover.explore.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Discover.explore.next($0.nextMaxId) },
                       splice: { $0.rawResponse.items.array?.compactMap(ExploreElement.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -29,7 +29,7 @@ public final class FeedHandler: Handler {
         pages.request(Media.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Feed.liked.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Feed.liked.next($0.nextMaxId) },
                       splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -43,7 +43,7 @@ public final class FeedHandler: Handler {
         pages.request(Media.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Feed.tag(tag).next($0.nextMaxId) },
+                      endpoint: { Endpoint.Feed.tag.tag(tag).next($0.nextMaxId) },
                       splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -88,7 +88,7 @@ public final class FeedHandler: Handler {
         pages.request(Media.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Feed.timeline.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Feed.timeline.next($0.nextMaxId) },
                       body: {
                         switch $0.nextMaxId {
                         case .none:

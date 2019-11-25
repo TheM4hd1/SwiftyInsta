@@ -57,7 +57,7 @@ public final class MediaHandler: Handler {
             pages.request(Media.self,
                           page: AnyPaginatedResponse.self,
                           with: paginationParameters,
-                          endpoint: { Endpoints.Feed.user(pk).next($0.nextMaxId) },
+                          endpoint: { Endpoint.Feed.user.user(pk).next($0.nextMaxId) },
                           splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                           update: updateHandler,
                           completion: completionHandler)
@@ -69,7 +69,7 @@ public final class MediaHandler: Handler {
         pages.request(Media.self,
                       page: AnyPaginatedResponse.self,
                       with: .init(maxPagesToLoad: 1),
-                      endpoint: { _ in Endpoints.Media.info(media: mediaId) },
+                      endpoint: { _ in Endpoint.Media.info.media(mediaId) },
                       splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                       update: nil,
                       completion: { result, _ in
@@ -89,7 +89,7 @@ public final class MediaHandler: Handler {
 
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoints.Media.like(media: mediaId),
+                         endpoint: Endpoint.Media.like.media(mediaId),
                          body: .parameters(body),
                          completion: { completionHandler($0.map { $0.state == .ok }) })
     }
@@ -106,7 +106,7 @@ public final class MediaHandler: Handler {
 
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoints.Media.unlike(media: mediaId),
+                         endpoint: Endpoint.Media.unlike.media(mediaId),
                          body: .parameters(body),
                          completion: { completionHandler($0.map { $0.state == .ok }) })
     }
@@ -156,7 +156,7 @@ public final class MediaHandler: Handler {
 
         requests.request(Upload.Response.Picture.self,
                          method: .post,
-                         endpoint: Endpoints.Upload.photo,
+                         endpoint: Endpoint.Upload.photo,
                          body: .data(content),
                          headers: headers,
                          options: .deliverOnResponseQueue) { [weak self] in
@@ -191,7 +191,7 @@ public final class MediaHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
-        let endpoint = Endpoints.Media.configure
+        let endpoint = Endpoint.Media.configure
         let device = handler.settings.device
         let version = device.firmwareFingerprint.split(separator: "/")[2].split(separator: ":")[1]
         guard let user = storage.user,
@@ -401,7 +401,7 @@ public final class MediaHandler: Handler {
 
         requests.request(Upload.Response.Video.self,
                          method: .post,
-                         endpoint: Endpoints.Upload.video,
+                         endpoint: Endpoint.Upload.video,
                          body: .data(content),
                          headers: headers,
                          options: .validateResponse) { [weak self] in
@@ -491,7 +491,7 @@ public final class MediaHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        guard let url = try? Endpoints.Upload.photo.url() else {
+        guard let url = try? Endpoint.Upload.photo.url() else {
             return completionHandler(.failure(GenericError.invalidUrl))
         }
         var content = Data()
@@ -588,7 +588,7 @@ public final class MediaHandler: Handler {
 
             requests.request(Media.self,
                              method: .post,
-                             endpoint: Endpoints.Media.configure,
+                             endpoint: Endpoint.Media.configure,
                              body: .parameters(body),
                              headers: headers,
                              completion: completionHandler)
@@ -609,7 +609,7 @@ public final class MediaHandler: Handler {
 
         requests.request(Bool.self,
                          method: .post,
-                         endpoint: Endpoints.Media.delete(media: mediaId).type(type),
+                         endpoint: Endpoint.Media.delete.media(mediaId).type(type),
                          body: .parameters(body),
                          process: { $0.didDelete.bool ?? false },
                          completion: completionHandler)
@@ -648,7 +648,7 @@ public final class MediaHandler: Handler {
 
             requests.request(Media.self,
                              method: .post,
-                             endpoint: Endpoints.Media.edit(media: mediaId),
+                             endpoint: Endpoint.Media.edit.media(mediaId),
                              body: .parameters(body),
                              completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
@@ -662,7 +662,7 @@ public final class MediaHandler: Handler {
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Media.likers(media: mediaId).next($0.nextMaxId) },
+                      endpoint: { Endpoint.Media.likers.media(mediaId).next($0.nextMaxId) },
                       splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -672,7 +672,7 @@ public final class MediaHandler: Handler {
     public func permalink(ofMedia mediaId: String, completionHandler: @escaping (Result<String, Error>) -> Void) {
         requests.request(String.self,
                          method: .get,
-                         endpoint: Endpoints.Media.permalink(media: mediaId),
+                         endpoint: Endpoint.Media.permalink.media(mediaId),
                          process: { $0.permalink.string },
                          completion: completionHandler)
     }

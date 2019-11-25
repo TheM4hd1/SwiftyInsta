@@ -45,6 +45,18 @@
 		E004434C2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
 		E004434D2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
 		E004434E2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
+		E0069549238BD3D100236DBA /* EndpointPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069548238BD3D100236DBA /* EndpointPath.swift */; };
+		E006954A238BD3D100236DBA /* EndpointPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069548238BD3D100236DBA /* EndpointPath.swift */; };
+		E006954B238BD3D100236DBA /* EndpointPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069548238BD3D100236DBA /* EndpointPath.swift */; };
+		E006954C238BD3D100236DBA /* EndpointPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069548238BD3D100236DBA /* EndpointPath.swift */; };
+		E0069553238BEFB500236DBA /* EndpointRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069552238BEFB500236DBA /* EndpointRepresentable.swift */; };
+		E0069554238BEFB500236DBA /* EndpointRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069552238BEFB500236DBA /* EndpointRepresentable.swift */; };
+		E0069555238BEFB500236DBA /* EndpointRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069552238BEFB500236DBA /* EndpointRepresentable.swift */; };
+		E0069556238BEFB500236DBA /* EndpointRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069552238BEFB500236DBA /* EndpointRepresentable.swift */; };
+		E0069558238BF97300236DBA /* EndpointQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069557238BF97300236DBA /* EndpointQuery.swift */; };
+		E0069559238BF97300236DBA /* EndpointQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069557238BF97300236DBA /* EndpointQuery.swift */; };
+		E006955A238BF97300236DBA /* EndpointQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069557238BF97300236DBA /* EndpointQuery.swift */; };
+		E006955B238BF97300236DBA /* EndpointQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069557238BF97300236DBA /* EndpointQuery.swift */; };
 		E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1240217FE98000ED3530 /* APIHandler.swift */; };
 		E006E3F022E87EFE002DB4BB /* CommentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FC21A99CD400BD9EFB /* CommentHandler.swift */; };
 		E006E3F122E87EFE002DB4BB /* FeedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FD21A99CD400BD9EFB /* FeedHandler.swift */; };
@@ -248,6 +260,9 @@
 		AC8920D665B7FA72F9F4823E /* Pods-SwiftyInsta.iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AFDA16561358A41181270D5A /* libPods-SwiftyInsta.macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwiftyInsta.macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E004434A2345E4D2000497DF /* Endpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
+		E0069548238BD3D100236DBA /* EndpointPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndpointPath.swift; sourceTree = "<group>"; };
+		E0069552238BEFB500236DBA /* EndpointRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointRepresentable.swift; sourceTree = "<group>"; };
+		E0069557238BF97300236DBA /* EndpointQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointQuery.swift; sourceTree = "<group>"; };
 		E006E3A122E87DFC002DB4BB /* SwiftyInsta_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E006E3CA22E87E2C002DB4BB /* SwiftyInsta_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E006E3E622E87E42002DB4BB /* SwiftyInsta_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -354,7 +369,7 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		115F1235217FE61600ED3530 /* Endpoints */ = {
+		115F1235217FE61600ED3530 /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
 				11AE43FC21A99CD400BD9EFB /* CommentHandler.swift */,
@@ -366,7 +381,7 @@
 				11A95BEE21AC0B9800839250 /* StoryHandler.swift */,
 				E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */,
 			);
-			path = Endpoints;
+			path = Handlers;
 			sourceTree = "<group>";
 		};
 		115F1236217FE7A200ED3530 /* Helpers */ = {
@@ -385,7 +400,8 @@
 			isa = PBXGroup;
 			children = (
 				E06E067F22F8E698004F81C1 /* Client */,
-				115F1235217FE61600ED3530 /* Endpoints */,
+				115F1235217FE61600ED3530 /* Handlers */,
+				E006955C238C05EC00236DBA /* Endpoints */,
 				115F1242217FEA1200ED3530 /* Constants */,
 			);
 			path = API;
@@ -414,7 +430,6 @@
 			isa = PBXGroup;
 			children = (
 				115F1243217FEA4400ED3530 /* Headers.swift */,
-				E004434A2345E4D2000497DF /* Endpoint.swift */,
 				E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */,
 			);
 			path = Constants;
@@ -477,6 +492,17 @@
 				4E8254B369E263C08A7F6940 /* libPods-SwiftyInsta.watchOS.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E006955C238C05EC00236DBA /* Endpoints */ = {
+			isa = PBXGroup;
+			children = (
+				E004434A2345E4D2000497DF /* Endpoint.swift */,
+				E0069552238BEFB500236DBA /* EndpointRepresentable.swift */,
+				E0069548238BD3D100236DBA /* EndpointPath.swift */,
+				E0069557238BF97300236DBA /* EndpointQuery.swift */,
+			);
+			path = Endpoints;
 			sourceTree = "<group>";
 		};
 		E06E067E22F8E55C004F81C1 /* Authentication */ = {
@@ -832,8 +858,10 @@
 				E076015922F1988500F8961F /* DeviceCollection.swift in Sources */,
 				112022982188AACF00CA58BA /* StatusResponse.swift in Sources */,
 				E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */,
+				E0069553238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E09C54432345E687004D4F4F /* StoryLocationResponse.swift in Sources */,
 				E0337967233118A600C176FC /* (null) in Sources */,
+				E0069549238BD3D100236DBA /* EndpointPath.swift in Sources */,
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
 				E0628FCC22FDEAA2007E3BEE /* Authentication.swift in Sources */,
 				1104CD0B2180627400F855BA /* Error.swift in Sources */,
@@ -870,6 +898,7 @@
 				E063077222E253060015AA92 /* PaginationHelper.swift in Sources */,
 				E076015E22F198B900F8961F /* Brand.swift in Sources */,
 				E02F3A562312AF340096F45C /* (null) in Sources */,
+				E0069558238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -884,6 +913,7 @@
 				E006E3F522E87EFE002DB4BB /* UserHandler.swift in Sources */,
 				E006E42922E87EFE002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E5F2306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
+				E0069559238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E43422E87EFE002DB4BB /* PaginationHelper.swift in Sources */,
 				E09C54442345E687004D4F4F /* StoryLocationResponse.swift in Sources */,
 				E0B9940A22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
@@ -912,10 +942,12 @@
 				E006E3F922E87EFE002DB4BB /* Headers.swift in Sources */,
 				E006E3F622E87EFE002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4D622E8811E002DB4BB /* Version.swift in Sources */,
+				E006954A238BD3D100236DBA /* EndpointPath.swift in Sources */,
 				E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1622F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E3F422E87EFE002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9940F22F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
+				E0069554238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E40622E87EFE002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076015F22F198B900F8961F /* Brand.swift in Sources */,
 				E0B9940422F3A8450036BFA5 /* StoryResponse.swift in Sources */,
@@ -935,6 +967,7 @@
 				E006E44222E87EFF002DB4BB /* UserHandler.swift in Sources */,
 				E006E47622E87EFF002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E602306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
+				E006955A238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E48122E87EFF002DB4BB /* PaginationHelper.swift in Sources */,
 				E09C54452345E687004D4F4F /* StoryLocationResponse.swift in Sources */,
 				E0B9940B22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
@@ -963,10 +996,12 @@
 				E006E44622E87EFF002DB4BB /* Headers.swift in Sources */,
 				E006E44322E87EFF002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4D822E8811E002DB4BB /* Version.swift in Sources */,
+				E006954B238BD3D100236DBA /* EndpointPath.swift in Sources */,
 				E006E43C22E87EFF002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1722F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E44122E87EFF002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9941022F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
+				E0069555238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E45322E87EFF002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076016022F198B900F8961F /* Brand.swift in Sources */,
 				E0B9940522F3A8450036BFA5 /* StoryResponse.swift in Sources */,
@@ -986,6 +1021,7 @@
 				E006E48F22E87F00002DB4BB /* UserHandler.swift in Sources */,
 				E006E4C322E87F00002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E612306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
+				E006955B238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E4CE22E87F00002DB4BB /* PaginationHelper.swift in Sources */,
 				E09C54462345E687004D4F4F /* StoryLocationResponse.swift in Sources */,
 				E0B9940C22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
@@ -1014,10 +1050,12 @@
 				E006E49322E87F00002DB4BB /* Headers.swift in Sources */,
 				E006E49022E87F00002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4DA22E8811F002DB4BB /* Version.swift in Sources */,
+				E006954C238BD3D100236DBA /* EndpointPath.swift in Sources */,
 				E006E48922E87F00002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1822F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E48E22E87F00002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9941122F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
+				E0069556238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E4A022E87F00002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076016122F198B900F8961F /* Brand.swift in Sources */,
 				E0B9940622F3A8450036BFA5 /* StoryResponse.swift in Sources */,

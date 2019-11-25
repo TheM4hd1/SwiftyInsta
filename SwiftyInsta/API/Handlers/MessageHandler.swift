@@ -17,7 +17,7 @@ public final class MessageHandler: Handler {
         pages.request(Thread.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Direct.inbox.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Direct.inbox.next($0.nextMaxId) },
                       splice: { $0.rawResponse.inbox.threads.array?.compactMap(Thread.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -36,7 +36,7 @@ public final class MessageHandler: Handler {
 
         requests.request(Status.self,
                          method: .get,
-                         endpoint: Endpoints.Direct.text,
+                         endpoint: Endpoint.Direct.text,
                          body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
@@ -44,7 +44,7 @@ public final class MessageHandler: Handler {
     public func `in`(thread: String, completionHandler: @escaping (Result<Thread, Error>) -> Void) {
         requests.request(Thread.self,
                          method: .get,
-                         endpoint: Endpoints.Direct.thread(thread),
+                         endpoint: Endpoint.Direct.thread.thread(thread),
                          completion: completionHandler)
     }
 
@@ -53,7 +53,7 @@ public final class MessageHandler: Handler {
         pages.request(Recipient.self,
                       page: AnyPaginatedResponse.self,
                       with: .init(maxPagesToLoad: 1),
-                      endpoint: { _ in Endpoints.Direct.recentRecipients },
+                      endpoint: { _ in Endpoint.Direct.recentRecipients },
                       splice: { $0.rawResponse.recentRecipients.array?.compactMap(Recipient.init) ?? [] },
                       update: nil) { result, _ in
                         completionHandler(result)
@@ -65,7 +65,7 @@ public final class MessageHandler: Handler {
         pages.request(Recipient.self,
                       page: AnyPaginatedResponse.self,
                       with: .init(maxPagesToLoad: 1),
-                      endpoint: { _ in Endpoints.Direct.rankedRecipients },
+                      endpoint: { _ in Endpoint.Direct.rankedRecipients },
                       splice: { $0.rawResponse.rankedRecipients.array?.compactMap(Recipient.init) ?? [] },
                       update: nil) { result, _ in
                         completionHandler(result)

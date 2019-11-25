@@ -19,7 +19,7 @@ public final class CommentHandler: Handler {
         pages.request(Comment.self,
                       page: MediaComments.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Media.comments(media: mediaId).next($0.nextMaxId) },
+                      endpoint: { Endpoint.Media.comments.media(mediaId).next($0.nextMaxId) },
                       splice: { $0.rawResponse.comments.array?.compactMap(Comment.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -56,7 +56,7 @@ public final class CommentHandler: Handler {
 
             requests.request(Status.self,
                              method: .post,
-                             endpoint: Endpoints.Media.postComment(media: mediaId),
+                             endpoint: Endpoint.Media.postComment.media(mediaId),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
@@ -71,7 +71,7 @@ public final class CommentHandler: Handler {
                     "_csrftoken": storage.csrfToken]
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoints.Media.deleteComment(commentId, media: mediaId),
+                         endpoint: Endpoint.Media.deleteComment.comment(commentId).media(mediaId),
                          body: .parameters(body),
                          completion: { completionHandler($0.map { $0.state == .ok }) })
     }
@@ -89,7 +89,7 @@ public final class CommentHandler: Handler {
                     "media_id": mediaId]
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoints.Media.reportComment(commentId, media: mediaId),
+                         endpoint: Endpoint.Media.reportComment.comment(commentId).media(mediaId),
                          body: .parameters(body),
                          completion: { completionHandler($0.map { $0.state == .ok }) })
     }

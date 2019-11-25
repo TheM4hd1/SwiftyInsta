@@ -42,7 +42,7 @@ public final class ProfileHandler: Handler {
 
             requests.request(Status.self,
                              method: .post,
-                             endpoint: Endpoints.Accounts.setPublic,
+                             endpoint: Endpoint.Accounts.setPublic,
                              body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
@@ -68,7 +68,7 @@ public final class ProfileHandler: Handler {
 
             requests.request(Status.self,
                              method: .post,
-                             endpoint: Endpoints.Accounts.setPrivate,
+                             endpoint: Endpoint.Accounts.setPrivate,
                              body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
@@ -89,7 +89,7 @@ public final class ProfileHandler: Handler {
                        "new_password2": password]
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoints.Accounts.changePassword,
+                         endpoint: Endpoint.Accounts.changePassword,
                          body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
@@ -107,7 +107,7 @@ public final class ProfileHandler: Handler {
         }
         requests.request(User.self,
                          method: .get,
-                         endpoint: Endpoints.Accounts.editProfile,
+                         endpoint: Endpoint.Accounts.editProfile,
                          options: .validateResponse) { [weak self] in
                             guard let me = self, let handler = me.handler else {
                                 return completionHandler(.failure(GenericError.weakObjectReleased))
@@ -150,7 +150,7 @@ public final class ProfileHandler: Handler {
 
                                 handler.requests.request(Status.self,
                                                          method: .post,
-                                                         endpoint: Endpoints.Accounts.saveEditProfile,
+                                                         endpoint: Endpoint.Accounts.saveEditProfile,
                                                          body: .parameters(content),
                                                          headers: headers) { completionHandler($0.map { $0.state == .ok }) }
                             }
@@ -169,7 +169,7 @@ public final class ProfileHandler: Handler {
 
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoints.Accounts.editBiography,
+                         endpoint: Endpoint.Accounts.editBiography,
                          body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
@@ -185,7 +185,7 @@ public final class ProfileHandler: Handler {
 
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoints.Accounts.removeProfilePicture,
+                         endpoint: Endpoint.Accounts.removeProfilePicture,
                          body: .parameters(content),
                          headers: headers) { completionHandler($0.map { $0.state == .ok }) }
     }
@@ -229,7 +229,7 @@ public final class ProfileHandler: Handler {
 
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoints.Accounts.changeProfilePicture,
+                         endpoint: Endpoint.Accounts.changeProfilePicture,
                          body: .data(content),
                          headers: headers) { completionHandler($0.map { $0.state == .ok }) }
     }

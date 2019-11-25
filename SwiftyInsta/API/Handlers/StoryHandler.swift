@@ -15,7 +15,7 @@ public final class StoryHandler: Handler {
     public func tray(completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         requests.request(Tray.self,
                          method: .get,
-                         endpoint: Endpoints.Feed.reelsTray,
+                         endpoint: Endpoint.Feed.reelsTray,
                          completion: completionHandler)
     }
 
@@ -45,7 +45,7 @@ public final class StoryHandler: Handler {
             // load stories directly.
             requests.request(TrayElement.self,
                              method: .get,
-                             endpoint: Endpoints.Feed.reelMedia(user: pk),
+                             endpoint: Endpoint.Feed.reelMedia.user(pk),
                              completion: completionHandler)
         }
     }
@@ -76,7 +76,7 @@ public final class StoryHandler: Handler {
             // load stories directly.
             requests.request(Tray.self,
                              method: .get,
-                             endpoint: Endpoints.Feed.story(user: pk),
+                             endpoint: Endpoint.Feed.story.user(pk),
                              process: { Tray(rawResponse: $0.reel) },
                              completion: completionHandler)
         }
@@ -124,7 +124,7 @@ public final class StoryHandler: Handler {
 
         requests.request(Upload.Response.Picture.self,
                          method: .post,
-                         endpoint: Endpoints.Upload.photo,
+                         endpoint: Endpoint.Upload.photo,
                          body: .data(content),
                          headers: headers,
                          options: .validateResponse) { [weak self] in
@@ -185,7 +185,7 @@ public final class StoryHandler: Handler {
 
             requests.request(Upload.Response.Picture.self,
                              method: .post,
-                             endpoint: Endpoints.Media.configureStory,
+                             endpoint: Endpoint.Media.configureStory,
                              body: .parameters(body),
                              completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
@@ -199,7 +199,7 @@ public final class StoryHandler: Handler {
         pages.request(User.self,
                       page: StoryViewers.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Media.storyViewers(media: storyId).next($0.nextMaxId) },
+                      endpoint: { Endpoint.Media.storyViewers.media(storyId).next($0.nextMaxId) },
                       splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -263,7 +263,7 @@ public final class StoryHandler: Handler {
 
             requests.request(Status.self,
                              method: .post,
-                             endpoint: Endpoints.Media.markAsSeen,
+                             endpoint: Endpoint.Media.markAsSeen,
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
@@ -295,7 +295,7 @@ public final class StoryHandler: Handler {
 
             requests.request([String: Tray].self,
                              method: .post,
-                             endpoint: Endpoints.Feed.reelsMedia,
+                             endpoint: Endpoint.Feed.reelsMedia,
                              body: .parameters(body),
                              process: { $0.reels.dictionary?.compactMapValues { Tray(rawResponse: $0) } ?? [:] },
                              completion: completionHandler)
@@ -309,7 +309,7 @@ public final class StoryHandler: Handler {
         pages.request(TrayArchive.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Archive.stories.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Archive.stories.next($0.nextMaxId) },
                       splice: { $0.rawResponse.items.array?.compactMap(TrayArchive.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)

@@ -53,7 +53,7 @@ class HTTPHelper {
     /// Parse a specific `Response`.
     func request<Response>(_ response: Response.Type,
                            method: Method,
-                           endpoint: Endpoint,
+                           endpoint: EndpointRepresentable,
                            body: Body? = nil,
                            headers: [String: String]? = nil,
                            options: Options = .default,
@@ -74,7 +74,7 @@ class HTTPHelper {
     /// Parse a specific `Decodable`.
     func request<Response>(_ response: Response.Type,
                            method: Method,
-                           endpoint: Endpoint,
+                           endpoint: EndpointRepresentable,
                            body: Body? = nil,
                            headers: [String: String]? = nil,
                            options: Options = .default,
@@ -99,7 +99,7 @@ class HTTPHelper {
     /// Parse a specific `ParsedResponse`.
     func request<Response>(_ response: Response.Type,
                            method: Method,
-                           endpoint: Endpoint,
+                           endpoint: EndpointRepresentable,
                            body: Body? = nil,
                            headers: [String: String]? = nil,
                            options: Options = .default,
@@ -119,7 +119,7 @@ class HTTPHelper {
     /// Parse a specific optional `Response`.
     func request<Response>(_ response: Response.Type,
                            method: Method,
-                           endpoint: Endpoint,
+                           endpoint: EndpointRepresentable,
                            body: Body? = nil,
                            headers: [String: String]? = nil,
                            options: Options = .default,

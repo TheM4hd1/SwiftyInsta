@@ -20,7 +20,7 @@ public final class UserHandler: Handler {
 
         requests.request(User.self,
                          method: .get,
-                         endpoint: Endpoints.Accounts.current,
+                         endpoint: Endpoint.Accounts.current,
                          body: .parameters(body),
                          delay: delay,
                          process: { User(rawResponse: $0.user) },
@@ -105,7 +105,7 @@ public final class UserHandler: Handler {
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
                       with: .init(maxPagesToLoad: 1),
-                      endpoint: { _ in Endpoints.Users.search.q(query) },
+                      endpoint: { _ in Endpoint.Users.search.q(query) },
                       headers: { _ in headers },
                       splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                       update: nil) { result, _ in
@@ -130,7 +130,7 @@ public final class UserHandler: Handler {
             // load user info directly.
             requests.request(User.self,
                              method: .get,
-                             endpoint: Endpoints.Users.info(user: pk),
+                             endpoint: Endpoint.Users.info.user(pk),
                              process: { User(rawResponse: $0.user) },
                              completion: completionHandler)
         }
@@ -176,7 +176,7 @@ public final class UserHandler: Handler {
             pages.request(Media.self,
                           page: AnyPaginatedResponse.self,
                           with: paginationParameters,
-                          endpoint: { Endpoints.Usertags.feed(user: pk).rank(storage.rankToken).next($0.nextMaxId) },
+                          endpoint: { Endpoint.UserTags.feed.user(pk).rank(storage.rankToken).next($0.nextMaxId) },
                           splice: { $0.rawResponse.items.array?.compactMap(Media.init) ?? [] },
                           update: updateHandler,
                           completion: completionHandler)
@@ -225,7 +225,7 @@ public final class UserHandler: Handler {
             pages.request(User.self,
                           page: AnyPaginatedResponse.self,
                           with: paginationParameters,
-                          endpoint: { Endpoints.Friendships.followers(user: pk)
+                          endpoint: { Endpoint.Friendships.followers.user(pk)
                             .rank(storage.rankToken)
                             .query(query)
                             .next($0.nextMaxId) },
@@ -277,7 +277,7 @@ public final class UserHandler: Handler {
             pages.request(User.self,
                           page: AnyPaginatedResponse.self,
                           with: paginationParameters,
-                          endpoint: { Endpoints.Friendships.folllowing(user: pk)
+                          endpoint: { Endpoint.Friendships.folllowing.user(pk)
                             .rank(storage.rankToken)
                             .query(query)
                             .next($0.nextMaxId) },
@@ -294,7 +294,7 @@ public final class UserHandler: Handler {
             pages.request(SuggestedUser.self,
                           page: RecentActivity.self,
                           with: paginationParameters,
-                          endpoint: { Endpoints.News.activities.next($0.nextMaxId) },
+                          endpoint: { Endpoint.News.activities.next($0.nextMaxId) },
                           next: { $0.aymf.nextMaxId.string },
                           splice: { $0.suggestedUsers },
                           update: updateHandler,
@@ -340,7 +340,7 @@ public final class UserHandler: Handler {
 
             requests.request(Status.self,
                              method: .get,
-                             endpoint: Endpoints.Friendships.remove(user: pk),
+                             endpoint: Endpoint.Friendships.remove.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
     }
@@ -376,7 +376,7 @@ public final class UserHandler: Handler {
 
             requests.request(Status.self,
                              method: .get,
-                             endpoint: Endpoints.Friendships.approve(user: pk),
+                             endpoint: Endpoint.Friendships.approve.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
     }
@@ -412,7 +412,7 @@ public final class UserHandler: Handler {
 
             requests.request(Status.self,
                              method: .get,
-                             endpoint: Endpoints.Friendships.reject(user: pk),
+                             endpoint: Endpoint.Friendships.reject.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
     }
@@ -424,7 +424,7 @@ public final class UserHandler: Handler {
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Friendships.pending.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Friendships.pending.next($0.nextMaxId) },
                       splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -461,7 +461,7 @@ public final class UserHandler: Handler {
 
             requests.request(Status.self,
                              method: .get,
-                             endpoint: Endpoints.Friendships.follow(user: pk),
+                             endpoint: Endpoint.Friendships.follow.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
     }
@@ -497,7 +497,7 @@ public final class UserHandler: Handler {
 
             requests.request(Status.self,
                              method: .get,
-                             endpoint: Endpoints.Friendships.unfollow(user: pk),
+                             endpoint: Endpoint.Friendships.unfollow.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
     }
@@ -524,7 +524,7 @@ public final class UserHandler: Handler {
             // get status directly.
             requests.request(Friendship.self,
                              method: .get,
-                             endpoint: Endpoints.Friendships.status(user: pk),
+                             endpoint: Endpoint.Friendships.status.user(pk),
                              completion: completionHandler)
         }
     }
@@ -553,7 +553,7 @@ public final class UserHandler: Handler {
             pages.request([User.Reference: Friendship].self,
                           page: AnyPaginatedResponse.self,
                           with: .init(maxPagesToLoad: 1),
-                          endpoint: { _ in Endpoints.Friendships.statuses },
+                          endpoint: { _ in Endpoint.Friendships.statuses },
                           body: { _ in .parameters(body) },
                           splice: {
                             $0.rawResponse.friendshipStatuses.dictionary?
@@ -578,7 +578,7 @@ public final class UserHandler: Handler {
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
-                      endpoint: { Endpoints.Users.blocked.next($0.nextMaxId) },
+                      endpoint: { Endpoint.Users.blocked.next($0.nextMaxId) },
                       splice: { $0.rawResponse.blockedList.array?.compactMap(User.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
@@ -615,7 +615,7 @@ public final class UserHandler: Handler {
 
             requests.request(Status.self,
                              method: .get,
-                             endpoint: Endpoints.Friendships.block(user: pk),
+                             endpoint: Endpoint.Friendships.block.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
     }
@@ -651,7 +651,7 @@ public final class UserHandler: Handler {
 
             requests.request(Status.self,
                              method: .get,
-                             endpoint: Endpoints.Friendships.unblock(user: pk),
+                             endpoint: Endpoint.Friendships.unblock.user(pk),
                              body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         }
     }
@@ -746,7 +746,7 @@ public final class UserHandler: Handler {
 
             requests.request(Status.self,
                              method: .post,
-                             endpoint: Endpoints.Users.report(user: pk),
+                             endpoint: Endpoint.Users.report.user(pk),
                              body: .parameters(body),
                              completion: { completionHandler($0.map { $0.state == .ok }) })
         }
