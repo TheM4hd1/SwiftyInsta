@@ -40,8 +40,7 @@ final class AuthenticationHandler: Handler {
             // analyze response.
             switch $0 {
             case .failure(let error): handler.settings.queues.response.async { completionHandler(.failure(error)) }
-            case .success(_, let response) where response != nil:
-                let response = response!
+            case .success(_, let response?):
                 // obtain cookies.
                 let cookies = HTTPCookie.cookies(withResponseHeaderFields: response.allHeaderFields as? [String: String] ?? [:],
                                                  for: response.url!)
@@ -62,7 +61,7 @@ final class AuthenticationHandler: Handler {
                                     endpoint: Endpoint.Authentication.login,
                                     body: .parameters(body),
                                     headers: headers,
-                                    options: .deliverOnResponseQueue,
+                                    options: [],
                                     delay: 0...0) {
                     switch $0 {
                     case .failure(let error):
