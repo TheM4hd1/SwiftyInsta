@@ -161,6 +161,7 @@ public enum DynamicResponse: Equatable {
     public var url: URL? {
         switch self {
         case .string(let string): return URL(string: string)
+        case .dictionary(let dictionary): return dictionary["url"]?.url
         default: return nil
         }
     }

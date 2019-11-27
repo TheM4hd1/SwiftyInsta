@@ -41,7 +41,10 @@ public struct User: IdentifiableParsedResponse {
     public var avatar: URL? {
         return rawResponse.hdProfilePicVersions
             .array?
-            .first?
+            .max(by: {
+                ($0.width.double ?? 0) < ($1.width.double ?? 0)
+                    && ($0.height.double ?? 0) < ($1.height.double ?? 0)
+            })?
             .url
     }
     /// The `isPrivate` value.
@@ -50,7 +53,8 @@ public struct User: IdentifiableParsedResponse {
     public var isVerified: Bool { return rawResponse.isVerified.bool ?? false }
     /// The `friendship` value.
     public var friendship: Friendship? {
-        return Friendship(rawResponse: rawResponse.friendship) ?? Friendship(rawResponse: rawResponse.friendshipStatus)
+        return Friendship(rawResponse: rawResponse.friendship)
+            ?? Friendship(rawResponse: rawResponse.friendshipStatus)
     }
 
     /// The `phoneNumber` value.
