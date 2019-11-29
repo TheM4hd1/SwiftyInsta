@@ -82,6 +82,7 @@ public final class StoryHandler: Handler {
         }
     }
 
+    @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
     /// Upload photo.
     public func upload(photo: Upload.Picture, completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
         guard let storage = handler.response?.storage else {
