@@ -43,8 +43,8 @@ public class APIHandler {
             }
         }
 
-        /// The delay. Defaults to `1...2`. `nil` for no delay.
-        public var delay: ClosedRange<Double>?
+        /// The delay. Defaults to `1...2`. `0...0` for no delay.
+        public var delay: ClosedRange<Double>
         /// The queue used to deliver responses. Defaults to `DispatchQueue.global(qos: .utility)`.
         public var queues: Queues
         /// The device. Defaults to a random device.
@@ -54,7 +54,7 @@ public class APIHandler {
         /// The default headers. Defaults to `[:]`.
         var headers: [String: String] = [:]
 
-        public init(delay: ClosedRange<Double>? = 1...2,
+        public init(delay: ClosedRange<Double> = 1...2,
                     queues: Queues = .init(),
                     device: Device? = nil,
                     session: URLSession = .shared) {
@@ -92,7 +92,7 @@ public class APIHandler {
             }
         case .user(let credentials):
             authentication.authenticate(user: credentials, completionHandler: completionHandler)
-            #if os(iOS)
+        #if os(iOS)
         case .webView(let webView):
             webView.authenticate { [weak self] in
                 guard let handler = self else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
@@ -124,7 +124,7 @@ public class APIHandler {
                     handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
                 }
             }
-            #endif
+        #endif
         }
     }
 

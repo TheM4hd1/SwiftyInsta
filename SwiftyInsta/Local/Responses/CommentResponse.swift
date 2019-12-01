@@ -11,7 +11,10 @@ import Foundation
 /// A `Comment` response.
 public struct Comment: IdentifiableParsedResponse, UserIdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -22,7 +25,7 @@ public struct Comment: IdentifiableParsedResponse, UserIdentifiableParsedRespons
     public var likes: Int { return rawResponse.commentLikeCount.int ?? 0 }
     /// The `user` value.
     public var user: User? {
-        return User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
+        return User(rawResponse: rawResponse.user) ?? User(rawResponse: rawResponse.owner)
     }
 
     // MARK: Codable
@@ -43,7 +46,8 @@ public struct MediaComments: PaginatedResponse {
     public var rawResponse: DynamicResponse
 
     /// Init.
-    public init(rawResponse: DynamicResponse) {
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
         self.rawResponse = rawResponse
     }
 
@@ -52,7 +56,7 @@ public struct MediaComments: PaginatedResponse {
     /// The `commentCount` value.
     public var comments: Int { return rawResponse.commentCount.int ?? 0 }
     /// The `previewComments` value.
-    public var previews: [Comment] { return rawResponse.previewComments.array?.map { Comment(rawResponse: $0) } ?? [] }
+    public var previews: [Comment] { return rawResponse.previewComments.array?.compactMap(Comment.init) ?? [] }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {

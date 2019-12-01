@@ -44,7 +44,10 @@ public struct RecentActivity: ParsedResponse {
     /// The `Story` response.
     public struct Story: IdentifiableParsedResponse {
         /// Init with `rawResponse`.
-        public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+        public init?(rawResponse: DynamicResponse) {
+            guard rawResponse != .none else { return nil }
+            self.rawResponse = rawResponse
+        }
 
         /// The `rawResponse`.
         public let rawResponse: DynamicResponse
@@ -61,7 +64,7 @@ public struct RecentActivity: ParsedResponse {
         // MARK: Codable
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
-            self = try .init(rawResponse: DynamicResponse(data: container.decode(Data.self)))
+            self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
         }
         public func encode(to encoder: Encoder) throws {
             var container = encoder.singleValueContainer()
@@ -70,7 +73,10 @@ public struct RecentActivity: ParsedResponse {
     }
 
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -82,25 +88,25 @@ public struct RecentActivity: ParsedResponse {
     /// The `aymf.items` value.
     public var suggestedUsers: [SuggestedUser] {
         return rawResponse.aymf.items.array?
-            .compactMap { $0 == .none ? nil : SuggestedUser(rawResponse: $0) }
+            .compactMap(SuggestedUser.init)
             ?? []
     }
     /// The `friendRequestStories` value.
     public var friendRequestStories: [Story] {
         return rawResponse.friendRequestStories.array?
-            .compactMap { $0 == .none ? nil : Story(rawResponse: $0) }
+            .compactMap(Story.init)
             ?? []
     }
     /// The `newStories` value.
     public var newStories: [Story] {
         return rawResponse.newStories.array?
-            .compactMap { $0 == .none ? nil : Story(rawResponse: $0) }
+            .compactMap(Story.init)
             ?? []
     }
     /// The `oldStories` value.
     public var oldStories: [Story] {
         return rawResponse.oldStories.array?
-            .compactMap { $0 == .none ? nil : Story(rawResponse: $0) }
+            .compactMap(Story.init)
             ?? []
     }
     /// The `continuationToken` value.
@@ -111,7 +117,7 @@ public struct RecentActivity: ParsedResponse {
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self = try .init(rawResponse: DynamicResponse(data: container.decode(Data.self)))
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
     }
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()

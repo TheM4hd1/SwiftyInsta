@@ -26,20 +26,23 @@ public enum ExploreElement: ParsedResponse {
         }
     }
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) {
-        if rawResponse.stories != .none {
-            self = .story(.init(rawResponse: rawResponse.stories))
-        } else if rawResponse.media != .none {
-            self = .media(.init(rawResponse: rawResponse.media))
+    public init?(rawResponse: DynamicResponse) {
+        if rawResponse.stories != .none, let tray = Tray(rawResponse: rawResponse.stories) {
+            self = .story(tray)
+        } else if rawResponse.media != .none, let media = Media(rawResponse: rawResponse.media) {
+            self = .media(media)
         } else {
-            self = .none
+            return nil
         }
     }
 
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        self = try .init(rawResponse: DynamicResponse(data: container.decode(Data.self)))
+        guard let response = try ExploreElement(rawResponse: DynamicResponse(data: container.decode(Data.self))) else {
+            throw GenericError.custom("Invalid response. `init(from:)` returned `nil`.")
+        }
+        self = response
     }
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()

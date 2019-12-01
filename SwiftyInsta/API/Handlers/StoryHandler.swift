@@ -13,10 +13,10 @@ import Foundation
 public final class StoryHandler: Handler {
     /// Get the story feed.
     public func tray(completionHandler: @escaping (Result<Tray, Error>) -> Void) {
-        requests.parse(Tray.self,
-                       method: .get,
-                       url: Result { try URLs.getStoryFeedUrl() },
-                       completionHandler: completionHandler)
+        requests.request(Tray.self,
+                         method: .get,
+                         endpoint: Endpoint.Feed.reelsTray,
+                         completion: completionHandler)
     }
 
     /// Get user's stories.
@@ -35,18 +35,18 @@ public final class StoryHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.by(user: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.by(user: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
             }
         case .primaryKey(let pk):
             // load stories directly.
-            requests.parse(TrayElement.self,
-                           method: .get,
-                           url: Result { try URLs.getUserStoryUrl(userId: pk) },
-                           completionHandler: completionHandler)
+            requests.request(TrayElement.self,
+                             method: .get,
+                             endpoint: Endpoint.Feed.reelMedia.user(pk),
+                             completion: completionHandler)
         }
     }
 
@@ -66,22 +66,23 @@ public final class StoryHandler: Handler {
                     return completionHandler(.failure(GenericError.weakObjectReleased))
                 }
                 switch $0 {
-                case .success(let user) where user?.identity.primaryKey != nil:
-                    handler.reelBy(user: .primaryKey(user!.identity.primaryKey!), completionHandler: completionHandler)
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.reelBy(user: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
                 case .failure(let error): completionHandler(.failure(error))
                 default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
                 }
             }
         case .primaryKey(let pk):
             // load stories directly.
-            requests.parse(Tray.self,
-                           method: .get,
-                           url: Result { try URLs.getUserStoryFeed(userId: pk) },
-                           processingHandler: { Tray(rawResponse: $0.reel) },
-                           completionHandler: completionHandler)
+            requests.request(Tray.self,
+                             method: .get,
+                             endpoint: Endpoint.Feed.story.user(pk),
+                             process: { Tray(rawResponse: $0.reel) },
+                             completion: completionHandler)
         }
     }
 
+    @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
     /// Upload photo.
     public func upload(photo: Upload.Picture, completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
         guard let storage = handler.response?.storage else {
@@ -122,12 +123,12 @@ public final class StoryHandler: Handler {
         content.append(string: "\n--\(uploadId)--\n\n")
         let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
 
-        requests.decode(Upload.Response.Picture.self,
-                        method: .post,
-                        url: Result { try URLs.getUploadPhotoUrl() },
-                        body: .data(content),
-                        headers: headers,
-                        deliverOnResponseQueue: false) { [weak self] in
+        requests.request(Upload.Response.Picture.self,
+                         method: .post,
+                         endpoint: Endpoint.Upload.photo,
+                         body: .data(content),
+                         headers: headers,
+                         options: .validateResponse) { [weak self] in
                             guard let me = self, let handler = me.handler else {
                                 return completionHandler(.failure(GenericError.weakObjectReleased))
                             }
@@ -183,11 +184,11 @@ public final class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(Upload.Response.Picture.self,
-                            method: .post,
-                            url: Result { try URLs.getConfigureStoryUrl() },
-                            body: .parameters(body),
-                            completionHandler: completionHandler)
+            requests.request(Upload.Response.Picture.self,
+                             method: .post,
+                             endpoint: Endpoint.Media.configureStory,
+                             body: .parameters(body),
+                             completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -196,13 +197,13 @@ public final class StoryHandler: Handler {
                         with paginationParameters: PaginationParameters,
                         updateHandler: PaginationUpdateHandler<User, StoryViewers>?,
                         completionHandler: @escaping PaginationCompletionHandler<User>) {
-        pages.parse(User.self,
-                    paginatedResponse: StoryViewers.self,
-                    with: paginationParameters,
-                    at: { try URLs.getStoryViewersUrl(pk: storyId, maxId: $0.nextMaxId ?? "") },
-                    processingHandler: { $0.rawResponse.users.array?.map(User.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(User.self,
+                      page: StoryViewers.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoint.Media.storyViewers.media(storyId).next($0.nextMaxId) },
+                      splice: { $0.rawResponse.users.array?.compactMap(User.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 
     /// Mark stories as seen.
@@ -261,10 +262,10 @@ public final class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.decode(Status.self,
-                            method: .post,
-                            url: Result { try URLs.markStoriesAsSeenUrl() },
-                            body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
+            requests.request(Status.self,
+                             method: .post,
+                             endpoint: Endpoint.Media.markAsSeen,
+                             body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -293,12 +294,12 @@ public final class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.parse([String: Tray].self,
-                           method: .post,
-                           url: Result { try URLs.getReelsMediaFeed() },
-                           body: .parameters(body),
-                           processingHandler: { $0.reels.dictionary?.mapValues { Tray(rawResponse: $0) } ?? [:] },
-                           completionHandler: completionHandler)
+            requests.request([String: Tray].self,
+                             method: .post,
+                             endpoint: Endpoint.Feed.reelsMedia,
+                             body: .parameters(body),
+                             process: { $0.reels.dictionary?.compactMapValues { Tray(rawResponse: $0) } ?? [:] },
+                             completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
     }
 
@@ -306,12 +307,12 @@ public final class StoryHandler: Handler {
     public func archive(with paginationParameters: PaginationParameters,
                         updateHandler: PaginationUpdateHandler<TrayArchive, AnyPaginatedResponse>?,
                         completionHandler: @escaping PaginationCompletionHandler<TrayArchive>) {
-        pages.parse(TrayArchive.self,
-                    paginatedResponse: AnyPaginatedResponse.self,
-                    with: paginationParameters,
-                    at: { try URLs.getStoryArchiveUrl(maxId: $0.nextMaxId ?? "") },
-                    processingHandler: { $0.rawResponse.items.array?.map(TrayArchive.init) ?? [] },
-                    updateHandler: updateHandler,
-                    completionHandler: completionHandler)
+        pages.request(TrayArchive.self,
+                      page: AnyPaginatedResponse.self,
+                      with: paginationParameters,
+                      endpoint: { Endpoint.Archive.stories.next($0.nextMaxId) },
+                      splice: { $0.rawResponse.items.array?.compactMap(TrayArchive.init) ?? [] },
+                      update: updateHandler,
+                      completion: completionHandler)
     }
 }

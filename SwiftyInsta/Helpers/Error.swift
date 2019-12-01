@@ -65,6 +65,8 @@ public enum AuthenticationError: LocalizedError {
 
 /// A generic `Error`.
 public enum GenericError: LocalizedError {
+    /// Invalid endpoint.
+    case invalidEndpoint(String)
     /// Couldn''t create the `URL`.
     case invalidUrl
     /// The object was released.
@@ -78,6 +80,8 @@ public enum GenericError: LocalizedError {
     /// The error description.
     public var errorDescription: String? {
         switch self {
+        case .invalidEndpoint(let endpoint):
+            return "Invalid \(endpoint) `URL`.\nPlease write an `Issue` on **GitHub.com** telling us what went wrong."
         case .invalidUrl:
             return "Invalid `URL`.\nPlease write an `Issue` on **GitHub.com** telling us what went wrong."
         case .weakObjectReleased:
