@@ -30,18 +30,17 @@ final class AuthenticationHandler: Handler {
 
     func authenticate(user: Credentials, completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         // update user.
-        var user = user
+        let user = user
         user.handler = handler
         // remove cookies.
         HTTPCookieStorage.shared.removeCookies(since: .distantPast)
         // ask for login.
-        requests.fetch(method: .get, url: Result { try URLs.home() }) { [weak self] in
+        requests.fetch(method: .get, url: Result { try Endpoint.Authentication.home.url() }) { [weak self] in
             guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             // analyze response.
             switch $0 {
             case .failure(let error): handler.settings.queues.response.async { completionHandler(.failure(error)) }
-            case .success(_, let response) where response != nil:
-                let response = response!
+            case .success(_, let response?):
                 // obtain cookies.
                 let cookies = HTTPCookie.cookies(withResponseHeaderFields: response.allHeaderFields as? [String: String] ?? [:],
                                                  for: response.url!)
@@ -57,75 +56,75 @@ final class AuthenticationHandler: Handler {
                                "X-CSRFToken": csrfToken,
                                "X-Requested-With": "XMLHttpRequest",
                                "Referer": "https://instagram.com/"]
-                me.requests.decode(CredentialsAuthenticationResponse.self,
-                                   method: .post,
-                                   url: Result { try URLs.login() },
-                                   body: .parameters(body),
-                                   headers: headers,
-                                   checkingValidStatusCode: false,
-                                   delay: 0...0) {
-                                    switch $0 {
-                                    case .failure(let error):
-                                        handler.settings.queues.response.async {
-                                            completionHandler(.failure(error))
-                                        }
-                                    case .success(let response):
-                                        // check for status.
-                                        if let url = try? response.checkpointUrl.flatMap(URLs.checkpoint) {
-                                            user.completionHandler = completionHandler
-                                            user.response = .challenge(url)
-                                            me.challengeInfo(for: user) { form in
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.checkpoint(suggestions: form?.suggestion)))
-                                                }
-                                            }
-                                            // ask for verification code.
-                                            me.challenge(csrfToken: csrfToken, url: url, verification: user.verification) {
-                                                completionHandler(.failure($0))
-                                            }
-                                        } else if let identifier = response.twoFactorInfo?.twoFactorIdentifier {
-                                            user.completionHandler = completionHandler
-                                            user.response = .twoFactor(identifier)
-                                            handler.settings.queues.response.async {
-                                                completionHandler(.failure(AuthenticationError.twoFactor))
-                                            }
-                                        } else if let authentication = response.authenticated {
-                                            // check for authentication status.
-                                            if authentication, let dsUserId = response.userId {
-                                                user.response = .success
-                                                // create session cache.
-                                                let cookies = HTTPCookieStorage.shared
-                                                    .cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
-                                                let storage = Authentication.Storage(
-                                                    dsUserId: dsUserId,
-                                                    csrfToken: csrfToken,
-                                                    sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
-                                                    rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
-                                                    user: nil
-                                                )
-                                                let cache = Authentication.Response(device: handler.settings.device,
-                                                                                    storage: storage,
-                                                                                    data: cookies.data)
-                                                // actually authenticate.
-                                                handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
-                                            } else if response.user ?? false {
-                                                user.response = .failure
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.invalidPassword))
-                                                }
-                                            } else {
-                                                user.response = .failure
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.invalidUsername))
-                                                }
-                                            }
-                                        } else {
-                                            user.response = .failure
-                                            handler.settings.queues.response.async {
-                                                completionHandler(.failure(GenericError.custom("Unknown error.")))
-                                            }
-                                        }
-                                    }
+                me.requests.request(CredentialsAuthenticationResponse.self,
+                                    method: .post,
+                                    endpoint: Endpoint.Authentication.login,
+                                    body: .parameters(body),
+                                    headers: headers,
+                                    options: [],
+                                    delay: 0...0) {
+                    switch $0 {
+                    case .failure(let error):
+                        handler.settings.queues.response.async {
+                            completionHandler(.failure(error))
+                        }
+                    case .success(let response):
+                        // check for status.
+                        if let url = try? response.checkpointUrl.flatMap(Endpoint.Authentication.home.appending)?.url() {
+                            user.completionHandler = completionHandler
+                            user.response = .challenge(url)
+                            me.challengeInfo(for: user) { form in
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(AuthenticationError.checkpoint(suggestions: form?.suggestion)))
+                                }
+                            }
+                            // ask for verification code.
+                            me.challenge(csrfToken: csrfToken, url: url, verification: user.verification) {
+                                completionHandler(.failure($0))
+                            }
+                        } else if let identifier = response.twoFactorInfo?.twoFactorIdentifier {
+                            user.completionHandler = completionHandler
+                            user.response = .twoFactor(identifier)
+                            handler.settings.queues.response.async {
+                                completionHandler(.failure(AuthenticationError.twoFactor))
+                            }
+                        } else if let authentication = response.authenticated {
+                            // check for authentication status.
+                            if authentication, let dsUserId = response.userId {
+                                user.response = .success
+                                // create session cache.
+                                let cookies = HTTPCookieStorage.shared
+                                    .cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
+                                let storage = Authentication.Storage(
+                                    dsUserId: dsUserId,
+                                    csrfToken: csrfToken,
+                                    sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
+                                    rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
+                                    user: nil
+                                )
+                                let cache = Authentication.Response(device: handler.settings.device,
+                                                                    storage: storage,
+                                                                    data: cookies.data)
+                                // actually authenticate.
+                                handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
+                            } else if response.user ?? false {
+                                user.response = .failure
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(AuthenticationError.invalidPassword))
+                                }
+                            } else {
+                                user.response = .failure
+                                handler.settings.queues.response.async {
+                                    completionHandler(.failure(AuthenticationError.invalidUsername))
+                                }
+                            }
+                        } else {
+                            user.response = .failure
+                            handler.settings.queues.response.async {
+                                completionHandler(.failure(GenericError.custom("Unknown error.")))
+                            }
+                        }
+                    }
                 }
             default:
                 user.response = .failure
@@ -228,7 +227,7 @@ final class AuthenticationHandler: Handler {
               at url: URL,
               for user: Credentials,
               completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
-        var user = user
+        let user = user
         let body = ["security_code": code]
         let headers = ["X-CSRFToken": user.csrfToken!,
                        "X-Requested-With": "XMLHttpRequest",
@@ -283,8 +282,10 @@ final class AuthenticationHandler: Handler {
               for user: Credentials,
               completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         // guard for url.
-        guard let url = try? URLs.twoFactor().absoluteString else { return completionHandler(.failure(GenericError.invalidUrl)) }
-        var user = user
+        guard let url = try? Endpoint.Authentication.twoFactor.url().absoluteString else {
+            return completionHandler(.failure(GenericError.invalidUrl))
+        }
+        let user = user
         let body = ["username": user.username,
                     "verificationCode": code,
                     "identifier": identifier]
@@ -294,7 +295,7 @@ final class AuthenticationHandler: Handler {
                        "X-Instagram-AJAX": "1"]
 
         requests.fetch(method: .post,
-                       url: Result { try URLs.twoFactor() },
+                       url: Result { try Endpoint.Authentication.twoFactor.url() },
                        body: .parameters(body),
                        headers: headers,
                        delay: 0...0) { [weak self] in
@@ -346,7 +347,7 @@ final class AuthenticationHandler: Handler {
     }
 
     func afterCheckpointAuthenticate(user: Credentials, completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
-        var user = user
+        let user = user
         let body = ["username": user.username,
                     "password": user.password]
         let headers = ["X-Instagram-AJAX": "1",
@@ -354,7 +355,10 @@ final class AuthenticationHandler: Handler {
                        "X-Requested-With": "XMLHttpRequest",
                        "Referer": "https://instagram.com/"]
 
-        requests.fetch(method: .post, url: Result { try URLs.login() }, body: .parameters(body), headers: headers) { [weak self] in
+        requests.fetch(method: .post,
+                       url: Result { try Endpoint.Authentication.login.url() },
+                       body: .parameters(body),
+                       headers: headers) { [weak self] in
             guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             // check for response.
             switch $0 {
@@ -413,7 +417,7 @@ final class AuthenticationHandler: Handler {
                 completionHandler(.failure(GenericError.custom("User is not logged in.")))
             }
         }
-        handler.requests.fetch(method: .post, url: Result { try URLs.getLogoutUrl() }) { [weak self] in
+        handler.requests.fetch(method: .post, url: Result { try Endpoint.Accounts.logout.url() }) { [weak self] in
             guard let handler = self?.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             let result = $0.flatMap { data, response -> Result<Bool, Error> in
                 do {

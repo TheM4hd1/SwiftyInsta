@@ -26,6 +26,10 @@ public class PaginationParameters {
         self.nextMaxId = maxId
         self.maxPagesToLoad = maxPagesToLoad
     }
+    public init(_ paginationParameters: PaginationParameters) {
+        self.nextMaxId = paginationParameters.nextMaxId
+        self.maxPagesToLoad = paginationParameters.maxPagesToLoad
+    }
     public static let everything = PaginationParameters(startingAt: nil, maxPagesToLoad: .max)
 
     // MARK: Obsolete

@@ -107,7 +107,10 @@ public struct Media: IdentifiableParsedResponse {
     }
 
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -143,7 +146,7 @@ public struct Media: IdentifiableParsedResponse {
     }
 
     /// The `caption` value.
-    public var caption: Comment { return Comment(rawResponse: rawResponse.caption) }
+    public var caption: Comment? { return Comment(rawResponse: rawResponse.caption) }
     /// The `commentCount` value.
     public var comments: Int { return rawResponse.commentCount.int ?? 0 }
     /// The `likeCount` value.
@@ -153,13 +156,19 @@ public struct Media: IdentifiableParsedResponse {
         switch rawResponse.mediaType.int {
         case 1?: return .picture(.init(rawResponse: rawResponse))
         case 2?: return .video(.init(rawResponse: rawResponse))
-        case 8?: return .album(rawResponse.carouselMedia.array?.map { Media(rawResponse: $0).content } ?? [])
+        case 8?: return .album(rawResponse.carouselMedia.array?.compactMap { Media(rawResponse: $0)?.content } ?? [])
         default: return .none
         }
     }
     /// The `user` value.
     public var user: User? {
-        return User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
+        return User(rawResponse: rawResponse.user) ?? User(rawResponse: rawResponse.owner)
+    }
+    /// The `storyLocations` value.
+    public var locations: [StoryLocation] {
+        return rawResponse.storyLocations
+            .array?
+            .compactMap(StoryLocation.init) ?? []
     }
 
     // MARK: Codable

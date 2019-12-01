@@ -11,7 +11,10 @@ import Foundation
 /// A `Tray` response.
 public struct Tray: IdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -35,7 +38,10 @@ public struct Tray: IdentifiableParsedResponse {
 /// A `TrayArchive` response.
 public struct TrayArchive: IdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -57,7 +63,10 @@ public struct TrayArchive: IdentifiableParsedResponse {
 /// A `TrayElement` response.
 public struct TrayElement: IdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -110,7 +119,7 @@ public struct TrayElement: IdentifiableParsedResponse {
     }
     /// The `user` value.
     public var user: User? {
-        return User(rawResponse: rawResponse.user == .none ? rawResponse.owner : rawResponse.user)
+        return User(rawResponse: rawResponse.user) ?? User(rawResponse: rawResponse.owner)
     }
 
     // MARK: Codable
@@ -131,7 +140,8 @@ public struct StoryViewers: PaginatedResponse {
     public var rawResponse: DynamicResponse
 
     /// Init.
-    public init(rawResponse: DynamicResponse) {
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
         self.rawResponse = rawResponse
     }
 

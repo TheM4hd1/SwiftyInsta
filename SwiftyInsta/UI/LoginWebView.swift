@@ -75,6 +75,23 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         }
     }
 
+    private func tryFetchingCookies() {
+        configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] in
+            let data = $0.filter({ $0.domain.contains(".instagram.com") })
+            let filtered = data.filter {
+                ($0.name == "ds_user_id" || $0.name == "csrftoken" || $0.name == "sessionid")
+                    && !$0.value.isEmpty
+            }
+            guard filtered.count >= 3 else { return }
+            // notify completion.
+            self?.didReachEndOfLoginFlow?()
+            // no need to check anymore.
+            self?.navigationDelegate = nil
+            // notify user.
+            self?.completionHandler?(.success($0))
+        }
+    }
+
     private func deleteAllCookies(completionHandler: @escaping () -> Void = { }) {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
@@ -93,7 +110,8 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             // no need to check anymore.
             navigationDelegate = nil
         default:
-            break
+            // try fetching cookies.
+            tryFetchingCookies()
         }
     }
 }

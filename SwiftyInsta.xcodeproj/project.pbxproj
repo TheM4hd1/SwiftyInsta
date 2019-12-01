@@ -29,7 +29,6 @@
 		115F1218217FDD8B00ED3530 /* SwiftyInsta.h in Headers */ = {isa = PBXBuildFile; fileRef = 115F120A217FDD8B00ED3530 /* SwiftyInsta.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		115F1241217FE98000ED3530 /* APIHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1240217FE98000ED3530 /* APIHandler.swift */; };
 		115F1244217FEA4400ED3530 /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
-		115F1246217FEA5200ED3530 /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		115F1257217FF1BF00ED3530 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1256217FF1BF00ED3530 /* Device.swift */; };
 		11723A592187C23400968DA5 /* CredentialsAuthenticationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11723A582187C23400968DA5 /* CredentialsAuthenticationResponse.swift */; };
 		11AE440321A99CD400BD9EFB /* CommentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FC21A99CD400BD9EFB /* CommentHandler.swift */; };
@@ -42,6 +41,22 @@
 		3C4778B5A637A3884C2AB517 /* libPods-SwiftyInsta.macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AFDA16561358A41181270D5A /* libPods-SwiftyInsta.macOS.a */; };
 		488E3DF0AC4BD52FEBE20F90 /* libPods-SwiftyInsta.tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7949891C1E307DEC4B9056B5 /* libPods-SwiftyInsta.tvOS.a */; };
 		A5092854C1851A057470979D /* libPods-SwiftyInsta.watchOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E8254B369E263C08A7F6940 /* libPods-SwiftyInsta.watchOS.a */; };
+		E004434B2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
+		E004434C2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
+		E004434D2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
+		E004434E2345E4D2000497DF /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E004434A2345E4D2000497DF /* Endpoint.swift */; };
+		E0069549238BD3D100236DBA /* EndpointPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069548238BD3D100236DBA /* EndpointPath.swift */; };
+		E006954A238BD3D100236DBA /* EndpointPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069548238BD3D100236DBA /* EndpointPath.swift */; };
+		E006954B238BD3D100236DBA /* EndpointPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069548238BD3D100236DBA /* EndpointPath.swift */; };
+		E006954C238BD3D100236DBA /* EndpointPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069548238BD3D100236DBA /* EndpointPath.swift */; };
+		E0069553238BEFB500236DBA /* EndpointRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069552238BEFB500236DBA /* EndpointRepresentable.swift */; };
+		E0069554238BEFB500236DBA /* EndpointRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069552238BEFB500236DBA /* EndpointRepresentable.swift */; };
+		E0069555238BEFB500236DBA /* EndpointRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069552238BEFB500236DBA /* EndpointRepresentable.swift */; };
+		E0069556238BEFB500236DBA /* EndpointRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069552238BEFB500236DBA /* EndpointRepresentable.swift */; };
+		E0069558238BF97300236DBA /* EndpointQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069557238BF97300236DBA /* EndpointQuery.swift */; };
+		E0069559238BF97300236DBA /* EndpointQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069557238BF97300236DBA /* EndpointQuery.swift */; };
+		E006955A238BF97300236DBA /* EndpointQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069557238BF97300236DBA /* EndpointQuery.swift */; };
+		E006955B238BF97300236DBA /* EndpointQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0069557238BF97300236DBA /* EndpointQuery.swift */; };
 		E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1240217FE98000ED3530 /* APIHandler.swift */; };
 		E006E3F022E87EFE002DB4BB /* CommentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FC21A99CD400BD9EFB /* CommentHandler.swift */; };
 		E006E3F122E87EFE002DB4BB /* FeedHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FD21A99CD400BD9EFB /* FeedHandler.swift */; };
@@ -51,7 +66,6 @@
 		E006E3F522E87EFE002DB4BB /* UserHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FE21A99CD400BD9EFB /* UserHandler.swift */; };
 		E006E3F622E87EFE002DB4BB /* StoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A95BEE21AC0B9800839250 /* StoryHandler.swift */; };
 		E006E3F722E87EFE002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
-		E006E3F822E87EFE002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E3F922E87EFE002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
 		E006E3FB22E87EFE002DB4BB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* Error.swift */; };
 		E006E40422E87EFE002DB4BB /* StatusResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112022972188AACF00CA58BA /* StatusResponse.swift */; };
@@ -72,7 +86,6 @@
 		E006E44222E87EFF002DB4BB /* UserHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FE21A99CD400BD9EFB /* UserHandler.swift */; };
 		E006E44322E87EFF002DB4BB /* StoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A95BEE21AC0B9800839250 /* StoryHandler.swift */; };
 		E006E44422E87EFF002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
-		E006E44522E87EFF002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E44622E87EFF002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
 		E006E44822E87EFF002DB4BB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* Error.swift */; };
 		E006E45122E87EFF002DB4BB /* StatusResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112022972188AACF00CA58BA /* StatusResponse.swift */; };
@@ -93,7 +106,6 @@
 		E006E48F22E87F00002DB4BB /* UserHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11AE43FE21A99CD400BD9EFB /* UserHandler.swift */; };
 		E006E49022E87F00002DB4BB /* StoryHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A95BEE21AC0B9800839250 /* StoryHandler.swift */; };
 		E006E49122E87F00002DB4BB /* AuthenticationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */; };
-		E006E49222E87F00002DB4BB /* URLs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1245217FEA5200ED3530 /* URLs.swift */; };
 		E006E49322E87F00002DB4BB /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 115F1243217FEA4400ED3530 /* Headers.swift */; };
 		E006E49522E87F00002DB4BB /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1104CD0A2180627400F855BA /* Error.swift */; };
 		E006E49E22E87F00002DB4BB /* StatusResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112022972188AACF00CA58BA /* StatusResponse.swift */; };
@@ -123,6 +135,14 @@
 		E0230BB722F84E2C00AD0E83 /* ExploreResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */; };
 		E0230BB822F84E2C00AD0E83 /* ExploreResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */; };
 		E0230BB922F84E2C00AD0E83 /* ExploreResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0230BB522F84E2C00AD0E83 /* ExploreResponse.swift */; };
+		E02F3A562312AF340096F45C /* (null) in Sources */ = {isa = PBXBuildFile; };
+		E02F3A572312B72C0096F45C /* (null) in Sources */ = {isa = PBXBuildFile; };
+		E02F3A582312B72C0096F45C /* (null) in Sources */ = {isa = PBXBuildFile; };
+		E02F3A592312B72D0096F45C /* (null) in Sources */ = {isa = PBXBuildFile; };
+		E0337967233118A600C176FC /* (null) in Sources */ = {isa = PBXBuildFile; };
+		E0337968233118AE00C176FC /* (null) in Sources */ = {isa = PBXBuildFile; };
+		E0337969233118AE00C176FC /* (null) in Sources */ = {isa = PBXBuildFile; };
+		E033796A233118AF00C176FC /* (null) in Sources */ = {isa = PBXBuildFile; };
 		E0628FCC22FDEAA2007E3BEE /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0628FCB22FDEAA2007E3BEE /* Authentication.swift */; };
 		E0628FCD22FDEAA2007E3BEE /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0628FCB22FDEAA2007E3BEE /* Authentication.swift */; };
 		E0628FCE22FDEAA2007E3BEE /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0628FCB22FDEAA2007E3BEE /* Authentication.swift */; };
@@ -148,6 +168,10 @@
 		E08C1DA922F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
 		E08C1DAA22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
 		E08C1DAB22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */; };
+		E09C54432345E687004D4F4F /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09C54422345E687004D4F4F /* StoryLocationResponse.swift */; };
+		E09C54442345E687004D4F4F /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09C54422345E687004D4F4F /* StoryLocationResponse.swift */; };
+		E09C54452345E687004D4F4F /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09C54422345E687004D4F4F /* StoryLocationResponse.swift */; };
+		E09C54462345E687004D4F4F /* StoryLocationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09C54422345E687004D4F4F /* StoryLocationResponse.swift */; };
 		E09FCB8622FED639000E02F1 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */; };
 		E0B993FE22F398860036BFA5 /* DynamicResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B993FD22F398860036BFA5 /* DynamicResponse.swift */; };
 		E0B993FF22F398860036BFA5 /* DynamicResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B993FD22F398860036BFA5 /* DynamicResponse.swift */; };
@@ -208,7 +232,6 @@
 		115F120B217FDD8B00ED3530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		115F1240217FE98000ED3530 /* APIHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIHandler.swift; sourceTree = "<group>"; };
 		115F1243217FEA4400ED3530 /* Headers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Headers.swift; sourceTree = "<group>"; };
-		115F1245217FEA5200ED3530 /* URLs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLs.swift; sourceTree = "<group>"; };
 		115F1256217FF1BF00ED3530 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		11723A582187C23400968DA5 /* CredentialsAuthenticationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsAuthenticationResponse.swift; sourceTree = "<group>"; };
 		11A95BEE21AC0B9800839250 /* StoryHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryHandler.swift; sourceTree = "<group>"; };
@@ -236,6 +259,10 @@
 		A43E70C593FC407F912CFB78 /* Pods-SwiftyInsta.macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.macOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.macOS/Pods-SwiftyInsta.macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AC8920D665B7FA72F9F4823E /* Pods-SwiftyInsta.iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.debug.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AFDA16561358A41181270D5A /* libPods-SwiftyInsta.macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SwiftyInsta.macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E004434A2345E4D2000497DF /* Endpoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
+		E0069548238BD3D100236DBA /* EndpointPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndpointPath.swift; sourceTree = "<group>"; };
+		E0069552238BEFB500236DBA /* EndpointRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointRepresentable.swift; sourceTree = "<group>"; };
+		E0069557238BF97300236DBA /* EndpointQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointQuery.swift; sourceTree = "<group>"; };
 		E006E3A122E87DFC002DB4BB /* SwiftyInsta_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E006E3CA22E87E2C002DB4BB /* SwiftyInsta_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E006E3E622E87E42002DB4BB /* SwiftyInsta_watchOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftyInsta_watchOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -249,6 +276,7 @@
 		E076015D22F198B900F8961F /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
 		E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationHandler.swift; sourceTree = "<group>"; };
 		E08C1DA722F0B39A003A8BA8 /* ParsedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParsedResponse.swift; sourceTree = "<group>"; };
+		E09C54422345E687004D4F4F /* StoryLocationResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryLocationResponse.swift; sourceTree = "<group>"; };
 		E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginWebViewController.swift; sourceTree = "<group>"; };
 		E0B993FD22F398860036BFA5 /* DynamicResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicResponse.swift; sourceTree = "<group>"; };
 		E0B9940222F3A8450036BFA5 /* StoryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryResponse.swift; sourceTree = "<group>"; };
@@ -341,7 +369,7 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		115F1235217FE61600ED3530 /* Endpoints */ = {
+		115F1235217FE61600ED3530 /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
 				11AE43FC21A99CD400BD9EFB /* CommentHandler.swift */,
@@ -353,7 +381,7 @@
 				11A95BEE21AC0B9800839250 /* StoryHandler.swift */,
 				E07EBC8A22E74DDA0031647F /* AuthenticationHandler.swift */,
 			);
-			path = Endpoints;
+			path = Handlers;
 			sourceTree = "<group>";
 		};
 		115F1236217FE7A200ED3530 /* Helpers */ = {
@@ -372,7 +400,8 @@
 			isa = PBXGroup;
 			children = (
 				E06E067F22F8E698004F81C1 /* Client */,
-				115F1235217FE61600ED3530 /* Endpoints */,
+				115F1235217FE61600ED3530 /* Handlers */,
+				E006955C238C05EC00236DBA /* Endpoints */,
 				115F1242217FEA1200ED3530 /* Constants */,
 			);
 			path = API;
@@ -386,6 +415,7 @@
 				112022972188AACF00CA58BA /* StatusResponse.swift */,
 				E0D0EF1922F8EBBB00CBFE36 /* UploadResponse.swift */,
 				E0B9940822F3B7DB0036BFA5 /* UserResponse.swift */,
+				E09C54422345E687004D4F4F /* StoryLocationResponse.swift */,
 				E0B9940222F3A8450036BFA5 /* StoryResponse.swift */,
 				E0B9940D22F3BF8B0036BFA5 /* MediaResponse.swift */,
 				E007B1B522F8207F00750E6D /* CommentResponse.swift */,
@@ -399,7 +429,6 @@
 		115F1242217FEA1200ED3530 /* Constants */ = {
 			isa = PBXGroup;
 			children = (
-				115F1245217FEA5200ED3530 /* URLs.swift */,
 				115F1243217FEA4400ED3530 /* Headers.swift */,
 				E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */,
 			);
@@ -463,6 +492,17 @@
 				4E8254B369E263C08A7F6940 /* libPods-SwiftyInsta.watchOS.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E006955C238C05EC00236DBA /* Endpoints */ = {
+			isa = PBXGroup;
+			children = (
+				E004434A2345E4D2000497DF /* Endpoint.swift */,
+				E0069552238BEFB500236DBA /* EndpointRepresentable.swift */,
+				E0069548238BD3D100236DBA /* EndpointPath.swift */,
+				E0069557238BF97300236DBA /* EndpointQuery.swift */,
+			);
+			path = Endpoints;
 			sourceTree = "<group>";
 		};
 		E06E067E22F8E55C004F81C1 /* Authentication */ = {
@@ -818,6 +858,10 @@
 				E076015922F1988500F8961F /* DeviceCollection.swift in Sources */,
 				112022982188AACF00CA58BA /* StatusResponse.swift in Sources */,
 				E0F49BA622E50B86004C3E7F /* ProfileHandler.swift in Sources */,
+				E0069553238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
+				E09C54432345E687004D4F4F /* StoryLocationResponse.swift in Sources */,
+				E0337967233118A600C176FC /* (null) in Sources */,
+				E0069549238BD3D100236DBA /* EndpointPath.swift in Sources */,
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
 				E0628FCC22FDEAA2007E3BEE /* Authentication.swift in Sources */,
 				1104CD0B2180627400F855BA /* Error.swift in Sources */,
@@ -829,7 +873,7 @@
 				E0B993FE22F398860036BFA5 /* DynamicResponse.swift in Sources */,
 				110B3F9B21A2CE4D0019523A /* Extensions.swift in Sources */,
 				11AE440321A99CD400BD9EFB /* CommentHandler.swift in Sources */,
-				115F1246217FEA5200ED3530 /* URLs.swift in Sources */,
+				E004434B2345E4D2000497DF /* Endpoint.swift in Sources */,
 				115F1257217FF1BF00ED3530 /* Device.swift in Sources */,
 				E0F8D51222F9DE0E0004309C /* MessageRequest.swift in Sources */,
 				11D3779D22674E340023CF07 /* LoginWebView.swift in Sources */,
@@ -853,6 +897,8 @@
 				E0230BB622F84E2C00AD0E83 /* ExploreResponse.swift in Sources */,
 				E063077222E253060015AA92 /* PaginationHelper.swift in Sources */,
 				E076015E22F198B900F8961F /* Brand.swift in Sources */,
+				E02F3A562312AF340096F45C /* (null) in Sources */,
+				E0069558238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				11B8518F219F5208009527CD /* UploadMediaModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -867,15 +913,18 @@
 				E006E3F522E87EFE002DB4BB /* UserHandler.swift in Sources */,
 				E006E42922E87EFE002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E5F2306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
+				E0069559238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E43422E87EFE002DB4BB /* PaginationHelper.swift in Sources */,
+				E09C54442345E687004D4F4F /* StoryLocationResponse.swift in Sources */,
 				E0B9940A22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
+				E004434C2345E4D2000497DF /* Endpoint.swift in Sources */,
 				E006E43622E87EFE002DB4BB /* Extensions.swift in Sources */,
 				E006E41322E87EFE002DB4BB /* PaginationParameters.swift in Sources */,
 				E0D0EF1B22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
+				E0337968233118AE00C176FC /* (null) in Sources */,
 				E006E3F022E87EFE002DB4BB /* CommentHandler.swift in Sources */,
 				E0628FD222FDEF10007E3BEE /* Credentials.swift in Sources */,
 				E076015A22F1988500F8961F /* DeviceCollection.swift in Sources */,
-				E006E3F822E87EFE002DB4BB /* URLs.swift in Sources */,
 				E0F8D51822F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E006E3F122E87EFE002DB4BB /* FeedHandler.swift in Sources */,
 				E0F8D51322F9DE0E0004309C /* MessageRequest.swift in Sources */,
@@ -889,13 +938,16 @@
 				E006E3F322E87EFE002DB4BB /* MessageHandler.swift in Sources */,
 				E006E4D522E8811E002DB4BB /* Device.swift in Sources */,
 				E006E43322E87EFE002DB4BB /* HTTPHelper.swift in Sources */,
+				E02F3A572312B72C0096F45C /* (null) in Sources */,
 				E006E3F922E87EFE002DB4BB /* Headers.swift in Sources */,
 				E006E3F622E87EFE002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4D622E8811E002DB4BB /* Version.swift in Sources */,
+				E006954A238BD3D100236DBA /* EndpointPath.swift in Sources */,
 				E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1622F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E3F422E87EFE002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9940F22F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
+				E0069554238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E40622E87EFE002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076015F22F198B900F8961F /* Brand.swift in Sources */,
 				E0B9940422F3A8450036BFA5 /* StoryResponse.swift in Sources */,
@@ -915,15 +967,18 @@
 				E006E44222E87EFF002DB4BB /* UserHandler.swift in Sources */,
 				E006E47622E87EFF002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E602306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
+				E006955A238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E48122E87EFF002DB4BB /* PaginationHelper.swift in Sources */,
+				E09C54452345E687004D4F4F /* StoryLocationResponse.swift in Sources */,
 				E0B9940B22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
+				E004434D2345E4D2000497DF /* Endpoint.swift in Sources */,
 				E006E48322E87EFF002DB4BB /* Extensions.swift in Sources */,
 				E006E46022E87EFF002DB4BB /* PaginationParameters.swift in Sources */,
 				E0D0EF1C22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
+				E0337969233118AE00C176FC /* (null) in Sources */,
 				E006E43D22E87EFF002DB4BB /* CommentHandler.swift in Sources */,
 				E0628FD322FDEF10007E3BEE /* Credentials.swift in Sources */,
 				E076015B22F1988500F8961F /* DeviceCollection.swift in Sources */,
-				E006E44522E87EFF002DB4BB /* URLs.swift in Sources */,
 				E0F8D51922F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E006E43E22E87EFF002DB4BB /* FeedHandler.swift in Sources */,
 				E0F8D51422F9DE0E0004309C /* MessageRequest.swift in Sources */,
@@ -937,13 +992,16 @@
 				E006E44022E87EFF002DB4BB /* MessageHandler.swift in Sources */,
 				E006E4D722E8811E002DB4BB /* Device.swift in Sources */,
 				E006E48022E87EFF002DB4BB /* HTTPHelper.swift in Sources */,
+				E02F3A582312B72C0096F45C /* (null) in Sources */,
 				E006E44622E87EFF002DB4BB /* Headers.swift in Sources */,
 				E006E44322E87EFF002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4D822E8811E002DB4BB /* Version.swift in Sources */,
+				E006954B238BD3D100236DBA /* EndpointPath.swift in Sources */,
 				E006E43C22E87EFF002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1722F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E44122E87EFF002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9941022F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
+				E0069555238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E45322E87EFF002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076016022F198B900F8961F /* Brand.swift in Sources */,
 				E0B9940522F3A8450036BFA5 /* StoryResponse.swift in Sources */,
@@ -963,15 +1021,18 @@
 				E006E48F22E87F00002DB4BB /* UserHandler.swift in Sources */,
 				E006E4C322E87F00002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E612306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
+				E006955B238BF97300236DBA /* EndpointQuery.swift in Sources */,
 				E006E4CE22E87F00002DB4BB /* PaginationHelper.swift in Sources */,
+				E09C54462345E687004D4F4F /* StoryLocationResponse.swift in Sources */,
 				E0B9940C22F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
+				E004434E2345E4D2000497DF /* Endpoint.swift in Sources */,
 				E006E4D022E87F00002DB4BB /* Extensions.swift in Sources */,
 				E006E4AD22E87F00002DB4BB /* PaginationParameters.swift in Sources */,
 				E0D0EF1D22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
+				E033796A233118AF00C176FC /* (null) in Sources */,
 				E006E48A22E87F00002DB4BB /* CommentHandler.swift in Sources */,
 				E0628FD422FDEF10007E3BEE /* Credentials.swift in Sources */,
 				E076015C22F1988500F8961F /* DeviceCollection.swift in Sources */,
-				E006E49222E87F00002DB4BB /* URLs.swift in Sources */,
 				E0F8D51A22F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E006E48B22E87F00002DB4BB /* FeedHandler.swift in Sources */,
 				E0F8D51522F9DE0E0004309C /* MessageRequest.swift in Sources */,
@@ -985,13 +1046,16 @@
 				E006E48D22E87F00002DB4BB /* MessageHandler.swift in Sources */,
 				E006E4D922E8811F002DB4BB /* Device.swift in Sources */,
 				E006E4CD22E87F00002DB4BB /* HTTPHelper.swift in Sources */,
+				E02F3A592312B72D0096F45C /* (null) in Sources */,
 				E006E49322E87F00002DB4BB /* Headers.swift in Sources */,
 				E006E49022E87F00002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4DA22E8811F002DB4BB /* Version.swift in Sources */,
+				E006954C238BD3D100236DBA /* EndpointPath.swift in Sources */,
 				E006E48922E87F00002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1822F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E48E22E87F00002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9941122F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
+				E0069556238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E4A022E87F00002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076016122F198B900F8961F /* Brand.swift in Sources */,
 				E0B9940622F3A8450036BFA5 /* StoryResponse.swift in Sources */,

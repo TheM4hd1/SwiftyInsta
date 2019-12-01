@@ -11,7 +11,7 @@ import Foundation
 /// A `User` response.
 public struct User: IdentifiableParsedResponse {
     /// A quick way to reference a `User`.
-    public enum Reference {
+    public enum Reference: Hashable {
         /// Through their primary key.
         case primaryKey(Int)
         /// Through their username.
@@ -21,7 +21,10 @@ public struct User: IdentifiableParsedResponse {
     }
 
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -38,7 +41,10 @@ public struct User: IdentifiableParsedResponse {
     public var avatar: URL? {
         return rawResponse.hdProfilePicVersions
             .array?
-            .first?
+            .max(by: {
+                ($0.width.double ?? 0) < ($1.width.double ?? 0)
+                    && ($0.height.double ?? 0) < ($1.height.double ?? 0)
+            })?
             .url
     }
     /// The `isPrivate` value.
@@ -47,9 +53,8 @@ public struct User: IdentifiableParsedResponse {
     public var isVerified: Bool { return rawResponse.isVerified.bool ?? false }
     /// The `friendship` value.
     public var friendship: Friendship? {
-        return rawResponse.friendship == .none
-            ? nil
-            : Friendship(rawResponse: rawResponse.friendship)
+        return Friendship(rawResponse: rawResponse.friendship)
+            ?? Friendship(rawResponse: rawResponse.friendshipStatus)
     }
 
     /// The `phoneNumber` value.
@@ -83,7 +88,10 @@ public struct User: IdentifiableParsedResponse {
 /// A `Friendship` response.
 public struct Friendship: ParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
@@ -101,17 +109,26 @@ public struct Friendship: ParsedResponse {
         return rawResponse.blocking.bool
     }
     /// The `isBestie` value.
-    public var isInYourCloseFriendsList: Bool? {
-        return rawResponse.isBestie.bool
+    public var isInYourCloseFriendsList: Bool {
+        return rawResponse.isBestie.bool ?? false
+    }
+
+    /// The `isPrivate` value.
+    public var isPrivate: Bool {
+        return rawResponse.isPrivate.bool ?? false
+    }
+    /// The `isRestricted` value.
+    public var isRestricted: Bool {
+        return rawResponse.isRestricted.bool ?? false
     }
 
     /// The `incomingRequest` value.
-    public var requestedToFollowYou: Bool? {
-        return rawResponse.incomingRequest.bool
+    public var requestedToFollowYou: Bool {
+        return rawResponse.incomingRequest.bool ?? false
     }
     /// The `outgoingRequest` value.
-    public var followRequestSent: Bool? {
-        return rawResponse.outgoingRequest.bool
+    public var followRequestSent: Bool {
+        return rawResponse.outgoingRequest.bool ?? false
     }
 
     // MARK: Codable
@@ -128,16 +145,17 @@ public struct Friendship: ParsedResponse {
 /// A `SuggestedUser` response.
 public struct SuggestedUser: IdentifiableParsedResponse {
     /// Init with `rawResponse`.
-    public init(rawResponse: DynamicResponse) { self.rawResponse = rawResponse }
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
 
     /// The `user` value.
     public var user: User? {
-        return rawResponse.user == .none
-            ? nil
-            : User(rawResponse: rawResponse.user)
+        return User(rawResponse: rawResponse.user)
     }
     /// The `algorithm` value.
     public var algorithm: String? {
