@@ -49,7 +49,6 @@ public final class FeedHandler: Handler {
                       completion: completionHandler)
     }
 
-    @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
     /// Fetch the timeline.
     public func timeline(with paginationParameters: PaginationParameters,
                          updateHandler: PaginationUpdateHandler<Media, AnyPaginatedResponse>?,
@@ -75,7 +74,6 @@ public final class FeedHandler: Handler {
             "will_sound_on": 1,
             "is_on_screen": "true",
             "is_async_ads_in_headload_enabled": "false",
-            "rti_delivery_backend": "false",
             "is_async_ads_double_request": "false",
             "is_async_ads_rti": "false",
             "latest_story_pk": ""
