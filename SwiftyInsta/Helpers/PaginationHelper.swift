@@ -159,6 +159,7 @@ class PaginationHelper: Handler {
                                                     completion(.success(responses), nextPaginationParameters)
                                                 }
                                             }
+                                            requestNextPage()
                                         }
             }
         }
