@@ -33,7 +33,8 @@ extension EndpointPath: LosselessEndpointRepresentable {
         var former = placeholder
         if !former.hasPrefix("{") { former = "{"+former }
         if !former.hasSuffix("}") { former = former+"}" }
-        return EndpointPath(rawValue: rawValue.replacingOccurrences(of: former, with: string))
+        let escaped = string.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? string
+        return EndpointPath(rawValue: rawValue.replacingOccurrences(of: former, with: escaped))
     }
 
     // MARK: Query
