@@ -21,7 +21,8 @@ public struct Tray: IdentifiableParsedResponse {
 
     /// The actual `TrayElement`s.
     public var items: [TrayElement] {
-        return rawResponse.tray.array?.compactMap { TrayElement(rawResponse: $0) } ?? []
+        return (rawResponse.tray.array ?? rawResponse.items.array)?
+            .compactMap { TrayElement(rawResponse: $0) } ?? []
     }
 
     // MARK: Codable
