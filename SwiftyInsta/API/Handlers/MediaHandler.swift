@@ -334,7 +334,7 @@ public final class MediaHandler: Handler {
                                                         handler.settings.queues.response.async {
                                                             completionHandler(.failure(error))
                                                         }
-                                                    case .success(let data, let response):
+                                                    case .success((let data, let response)):
                                                         guard data != nil, response?.statusCode == 200 else {
                                                             return handler.settings.queues.response.async {
                                                                 completionHandler(.failure(GenericError.unknown))
@@ -413,7 +413,7 @@ public final class MediaHandler: Handler {
                        headers: headers) {
                         switch $0 {
                         case .failure(let error): completionHandler(.failure(error))
-                        case .success(let data, let response) where data != nil && response?.statusCode == 200:
+                        case .success((let data, let response)) where data != nil && response?.statusCode == 200:
                             completionHandler(.success(true))
                         default:
                             completionHandler(.success(false))
