@@ -15,6 +15,8 @@ import WebKit
 public class LoginWebViewController: UIViewController {
     /// The handler.
     public let handler = APIHandler()
+    /// The custom user agent.
+    public var userAgent: String?
     /// The completion handler. **Required**.
     public var completionHandler: (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void
     /// The activity indicator.
@@ -53,7 +55,9 @@ public class LoginWebViewController: UIViewController {
     }
 
     // MARK: Init
-    public init(completionHandler: @escaping (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void) {
+    public init(userAgent: String? = nil,
+                completionHandler: @escaping (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void) {
+        self.userAgent = userAgent
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
     }
@@ -72,7 +76,7 @@ public class LoginWebViewController: UIViewController {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
                                                 modifiedSince: .distantPast) { [weak self] in
-                                                    self?.webView = LoginWebView(frame: self?.view.bounds ?? .zero) {
+                                                    self?.webView = LoginWebView(frame: self?.view.bounds ?? .zero, userAgent: self?.userAgent) {
                                                         UIView.animate(withDuration: TimeInterval(UINavigationController.hideShowBarDuration),
                                                                        animations: { self?.webView?.alpha = 0 },
                                                                        completion: { self?.webView?.isHidden = $0 })
