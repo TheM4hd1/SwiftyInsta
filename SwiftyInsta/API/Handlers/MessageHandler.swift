@@ -30,7 +30,7 @@ public final class MessageHandler: Handler {
         var body = ["text": text,
                     "action": "send_item"]
         switch receipients {
-        case .users(let users): body["receipient_users"] = "[[\(users.map(String.init).joined(separator: ","))]]"
+        case .users(let users): body["recipient_users"] = "[[\(users.map(String.init).joined(separator: ","))]]"
         case .thread(let thread): body["thread_ids"] = "[\(thread)]"
         }
 

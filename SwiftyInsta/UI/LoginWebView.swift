@@ -13,8 +13,6 @@ import WebKit
 // MARK: Views
 @available(iOS 11, *)
 public class LoginWebView: WKWebView, WKNavigationDelegate {
-    /// The custom user agent.
-    public var userAgent: String?
     /// Called when reaching the end of the login flow.
     /// You should probably hide the `InstagramLoginWebView` and notify the user with an activity indicator.
     public var didReachEndOfLoginFlow: (() -> Void)?
@@ -22,14 +20,13 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     var completionHandler: ((Result<[HTTPCookie], Error>) -> Void)!
 
     // MARK: Init
-    public init(frame: CGRect, userAgent: String? = nil, didReachEndOfLoginFlow: (() -> Void)? = nil) {
+    public init(frame: CGRect, didReachEndOfLoginFlow: (() -> Void)? = nil) {
         // delete all cookies.
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         // update the process pool.
         let configuration = WKWebViewConfiguration()
         configuration.processPool = WKProcessPool()
         // init login.
-        self.userAgent = userAgent
         self.didReachEndOfLoginFlow = didReachEndOfLoginFlow
         super.init(frame: frame, configuration: configuration)
         self.navigationDelegate = self
@@ -63,10 +60,9 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             // in some iOS versions, use-agent needs to be different.
             // this use-agent works on iOS 11.4 and iOS 12.0+
             // but it won't work on lower versions.
-            me.customUserAgent = me.userAgent
-                ?? ["(Linux; Android 5.0; iPhone Build/LRX21T)",
-                    "AppleWebKit/537.36 (KHTML, like Gecko)",
-                    "Chrome/70.0.3538.102 Mobile Safari/537.36"].joined(separator: " ")
+            me.customUserAgent = ["(Linux; Android 5.0; iPhone Build/LRX21T)",
+                                  "AppleWebKit/537.36 (KHTML, like Gecko)",
+                                  "Chrome/70.0.3538.102 Mobile Safari/537.36"].joined(separator: " ")
             // load request.
             me.load(URLRequest(url: url))
         }
