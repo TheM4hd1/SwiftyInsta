@@ -270,7 +270,7 @@ public final class StoryHandler: Handler {
     }
 
     /// Get reels media feed.
-    public func reelsMedia(_ feeds: [String], completionHandler: @escaping (Result<[String: Tray], Error>) -> Void) {
+    public func reelsMedia(_ feeds: [String], completionHandler: @escaping (Result<[String: TrayElement], Error>) -> Void) {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
@@ -294,11 +294,11 @@ public final class StoryHandler: Handler {
                 Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
             ]
 
-            requests.request([String: Tray].self,
+            requests.request([String: TrayElement].self,
                              method: .post,
                              endpoint: Endpoint.Feed.reelsMedia,
                              body: .parameters(body),
-                             process: { $0.reels.dictionary?.compactMapValues { Tray(rawResponse: $0) } ?? [:] },
+                             process: { $0.reels.dictionary?.compactMapValues { TrayElement(rawResponse: $0) } ?? [:] },
                              completion: completionHandler)
         } catch { completionHandler(.failure(error)) }
     }
