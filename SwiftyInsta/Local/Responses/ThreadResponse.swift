@@ -57,7 +57,7 @@ public struct Message: ItemIdentifiableParsedResponse, UserIdentifiableParsedRes
     public var sentAt: Date {
         return rawResponse.timestamp
             .double
-            .flatMap { $0 > 9_999_999_999 ? $0/1_000 : $0 }
+            .flatMap { $0 > 9_999_999_999_999 ? $0/1_000_000 : ($0 > 9_999_999_999 ? $0/1_000 : $0) }
             .flatMap { Date(timeIntervalSince1970: $0) } ?? .distantPast
     }
     /// The `text` value.
