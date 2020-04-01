@@ -23,6 +23,6 @@ Pod::Spec.new do |s|
   s.tvos.frameworks = 'UIKit'
   s.watchos.frameworks = 'UIKit'
 
-  s.dependency "CryptoSwift", "~> 1.0"
-  s.dependency "KeychainSwift", "~> 16.0"
+  s.dependency "CryptoSwift", "~> 1.3"
+  s.dependency "KeychainSwift", "~> 19.0"
 end
