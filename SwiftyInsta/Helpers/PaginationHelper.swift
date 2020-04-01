@@ -132,6 +132,10 @@ class PaginationHelper: Handler {
                                      options: options,
                                      delay: delay,
                                      process: process) { [weak self] in
+                                        // update the pagination parameters.
+                                        nextPaginationParameters.currentMaxId = nextPaginationParameters.nextMaxId
+                                        nextPaginationParameters.nextMaxId = nil
+                                        // check for handler.
                                         guard let handler = self?.handler else {
                                             return completion(.failure(GenericError.weakObjectReleased), nextPaginationParameters)
                                         }
@@ -139,6 +143,7 @@ class PaginationHelper: Handler {
                                         switch $0 {
                                         case .failure(let error): completion(.failure(error), nextPaginationParameters)
                                         case .success(let page):
+                                            nextPaginationParameters.nextMaxId = nextPage(page)
                                             nextPaginationParameters.loadedPages += 1
                                             // splice items.
                                             let new = splice(page)
@@ -153,7 +158,6 @@ class PaginationHelper: Handler {
                                                     completion(.success(responses), nextPaginationParameters)
                                                 }
                                             }
-                                            nextPaginationParameters.nextMaxId = nextPage(page)
                                             guard !(nextPaginationParameters.nextMaxId ?? "").isEmpty else {
                                                 return handler.settings.queues.response.async {
                                                     completion(.success(responses), nextPaginationParameters)

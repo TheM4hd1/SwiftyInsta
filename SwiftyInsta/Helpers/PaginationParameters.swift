@@ -14,11 +14,13 @@ public class PaginationParameters {
     public var maxPagesToLoad: Int
     /// The number of pages already loaded. Defaults to `0`.
     public var loadedPages: Int = 0
+    /// The current request `maxId`. Defaults to `nil`.
+    public var currentMaxId: String?
     /// The next `maxId`. Defaults to `nil`.
     public var nextMaxId: String?
 
     /// Whether there's something left to load.
-    public var canLoadMore: Bool { return loadedPages < maxPagesToLoad }
+    var canLoadMore: Bool { return loadedPages < maxPagesToLoad }
 
     // MARK: Init
     public init(startingAt maxId: String? = nil, maxPagesToLoad: Int = 1) {
