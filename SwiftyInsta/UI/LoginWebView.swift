@@ -11,7 +11,7 @@ import UIKit
 import WebKit
 
 // MARK: Views
-@available(iOS 11, *)
+@available(iOS 12, *)
 public class LoginWebView: WKWebView, WKNavigationDelegate {
     /// A custom user agent.
     public var userAgent: String?

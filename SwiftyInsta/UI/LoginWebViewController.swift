@@ -10,7 +10,7 @@
 import UIKit
 import WebKit
 
-@available(iOS 11, *)
+@available(iOS 12, *)
 /// A pre-built `UIViewController` displaying a `LoginWebView`.
 public class LoginWebViewController: UIViewController {
     /// The handler.

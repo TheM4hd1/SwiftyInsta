@@ -79,7 +79,7 @@ self.credentials.code = /* the code */
 And the `completionHandler` in the previous `authenticate(with: completionHandler:)` will automatically catch the response.
 
 
-### `LoginWebViewController` (>= iOS 11 only)
+### `LoginWebViewController` (>= iOS 12 only)
 ```swift
 let login = LoginWebViewController { controller, result in
     controller.dismiss(animated: true, completion: nil)
