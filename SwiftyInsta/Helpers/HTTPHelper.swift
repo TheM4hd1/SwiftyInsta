@@ -140,11 +140,19 @@ class HTTPHelper {
                             throw GenericError.custom("\(response?.url?.absoluteString ?? "_"). Invalid response. \(response?.statusCode ?? -1)")
                         }
                         // decode data.
-                        guard let dynamicResponse = try? DynamicResponse(data: data), let value = process(dynamicResponse) else {
+                        guard let dynamicResponse = try? DynamicResponse(data: data) else {
                             throw GenericError.custom([
                                 "\(response?.url?.absoluteString ?? "—").",
                                 "Invalid response.",
                                 "Processing handler returned `nil`.",
+                                "\(response?.statusCode ?? -1)"
+                            ].joined(separator: "\n"))
+                        }
+                        guard let value = process(dynamicResponse) else {
+                            throw GenericError.custom([
+                                "\(response?.url?.absoluteString ?? "—").",
+                                "Invalid response.",
+                                "Processing handler failed parsing "+dynamicResponse.beautifiedDescription+".",
                                 "\(response?.statusCode ?? -1)"
                             ].joined(separator: "\n"))
                         }
