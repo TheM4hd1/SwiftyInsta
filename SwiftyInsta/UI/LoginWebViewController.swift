@@ -58,7 +58,7 @@ public class LoginWebViewController: UIViewController {
                 completionHandler: @escaping (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         fatalError("Unavailable method.")
     }
-    
+
     public init(completionHandler: @escaping (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
