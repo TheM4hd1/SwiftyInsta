@@ -10,13 +10,11 @@
 import UIKit
 import WebKit
 
-@available(iOS 11, *)
+@available(iOS 12, *)
 /// A pre-built `UIViewController` displaying a `LoginWebView`.
 public class LoginWebViewController: UIViewController {
     /// The handler.
     public let handler = APIHandler()
-    /// The custom user agent.
-    public var userAgent: String?
     /// The completion handler. **Required**.
     public var completionHandler: (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void
     /// The activity indicator.
@@ -55,9 +53,13 @@ public class LoginWebViewController: UIViewController {
     }
 
     // MARK: Init
-    public init(userAgent: String? = nil,
+    @available(*, unavailable, message: "using a custom `userAgent` is no longer supported")
+    public init(userAgent: String?,
                 completionHandler: @escaping (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void) {
-        self.userAgent = userAgent
+        fatalError("Unavailable method.")
+    }
+
+    public init(completionHandler: @escaping (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
     }
@@ -76,7 +78,7 @@ public class LoginWebViewController: UIViewController {
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
         WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
                                                 modifiedSince: .distantPast) { [weak self] in
-                                                    self?.webView = LoginWebView(frame: self?.view.bounds ?? .zero, userAgent: self?.userAgent) {
+                                                    self?.webView = LoginWebView(frame: self?.view.bounds ?? .zero) {
                                                         UIView.animate(withDuration: TimeInterval(UINavigationController.hideShowBarDuration),
                                                                        animations: { self?.webView?.alpha = 0 },
                                                                        completion: { self?.webView?.isHidden = $0 })

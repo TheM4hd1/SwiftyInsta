@@ -17,7 +17,7 @@ public struct Authentication {
         /// Log in with username and password.
         case user(Credentials)
 
-        @available(iOS 11, *)
+        @available(iOS 12, *)
         /// Log in through web view.
         case webView(LoginWebView)
 
