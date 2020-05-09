@@ -45,7 +45,7 @@ public struct User: IdentifiableParsedResponse {
                 ($0.width.double ?? 0) < ($1.width.double ?? 0)
                     && ($0.height.double ?? 0) < ($1.height.double ?? 0)
             })?
-            .url
+            .url ?? rawResponse.hdProfilePicUrlInfo.url
     }
     /// The `isPrivate` value.
     public var isPrivate: Bool { return rawResponse.isPrivate.bool ?? true }
