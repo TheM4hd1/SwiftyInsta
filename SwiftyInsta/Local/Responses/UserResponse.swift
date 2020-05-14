@@ -68,6 +68,13 @@ public struct User: IdentifiableParsedResponse {
     /// The `isBusiness` value.
     public var isBusiness: Bool? { return rawResponse.isBusiness.bool }
 
+    /// The `followerCount` value.
+    public var followerCount: Int? { return rawResponse.followerCount.int }
+    /// The `followingCount` value.
+    public var followingCount: Int? { return rawResponse.followingCount.int }
+    /// The `mediaCount` value.
+    public var mediaCount: Int? { return rawResponse.mediaCount.int }
+    
     /// A `User.Reference`.
     public var reference: Reference {
         return identity.primaryKey.flatMap(Reference.primaryKey)
