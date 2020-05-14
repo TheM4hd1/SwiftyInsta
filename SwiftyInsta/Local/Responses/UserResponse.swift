@@ -74,6 +74,10 @@ public struct User: IdentifiableParsedResponse {
     public var followingCount: Int? { return rawResponse.followingCount.int }
     /// The `mediaCount` value.
     public var mediaCount: Int? { return rawResponse.mediaCount.int }
+    /// The `profileContext` value.
+    public var profileContext: String? { return rawResponse.profileContext.string }
+    /// The `profileContext` value.
+    public var socialContext: String? { return rawResponse.socialContext.string }
     
     /// A `User.Reference`.
     public var reference: Reference {
