@@ -65,9 +65,11 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             // in some iOS versions, use-agent needs to be different.
             // this use-agent works on iOS 11.4 and iOS 12.0+
             // but it won't work on lower versions.
-            me.customUserAgent = ["(Linux; Android 5.0; iPhone Build/LRX21T)",
-                                  "AppleWebKit/537.36 (KHTML, like Gecko)",
-                                  "Chrome/70.0.3538.102 Mobile Safari/537.36"].joined(separator: " ")
+            me.customUserAgent = ["Mozilla/5.0 (iPhone; CPU iPhone OS 13_4_1 like Mac OS X)",
+                                  "AppleWebKit/605.1.15 (KHTML, like Gecko)",
+                                  "Mobile/15E148"].joined(separator: " ")
+            
+            
             // load request.
             me.load(URLRequest(url: url))
         }
