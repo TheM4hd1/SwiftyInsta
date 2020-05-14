@@ -81,6 +81,37 @@ public final class StoryHandler: Handler {
                              completion: completionHandler)
         }
     }
+    
+    /// Get highlights.
+    public func highlightsBy(user: User.Reference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
+        switch user {
+        case .me:
+            // check for valid user.
+            guard let pk = handler.user?.identity.primaryKey ?? Int(handler.response?.storage?.dsUserId ?? "invaild") else {
+                return completionHandler(.failure(AuthenticationError.invalidCache))
+            }
+            highlightsBy(user: .primaryKey(pk), completionHandler: completionHandler)
+        case .username:
+            // fetch username.
+            self.handler.users.user(user) { [weak self] in
+                guard let handler = self else {
+                    return completionHandler(.failure(GenericError.weakObjectReleased))
+                }
+                switch $0 {
+                case .success(let user) where user.identity.primaryKey != nil:
+                    handler.highlightsBy(user: .primaryKey(user.identity.primaryKey!), completionHandler: completionHandler)
+                case .failure(let error): completionHandler(.failure(error))
+                default: completionHandler(.failure(GenericError.custom("No user matching `username`.")))
+                }
+            }
+        case .primaryKey(let pk):
+            // load stories directly.
+            requests.request(Tray.self,
+                             method: .get,
+                             endpoint: Endpoint.Highlights.tray.user(pk),
+                             completion: completionHandler)
+        }
+    }
 
     @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
     /// Upload photo.
