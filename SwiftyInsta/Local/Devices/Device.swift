@@ -24,8 +24,6 @@ public struct Device: Codable {
     public let id: String
     /// The `deviceModel`.
     public let model: String
-    /// The `userAgent`.
-    public let userAgent: String
 
     /// The phone GUID.
     public let phoneGuid: UUID
@@ -90,28 +88,5 @@ public struct Device: Codable {
         self.firmwareType = firmwareType
         self.hardwareManufacturer = hardwareManufacturer
         self.hardwareModel = hardwareModel
-
-        // comute user agent.
-        let apiVersion = "85.0.0.21.100"
-        let version = String(firmwareFingerprint.split(separator: "/")[2].split(separator: ":")[1])
-        guard let androidVersion = try? Version(from: version) else {
-            fatalError("Wrong Android version.")
-        }
-        let osVersion = String(androidVersion.number.split(separator: ".")[0])
-        let osRelease = String(androidVersion.number.split(separator: ".")[1])
-        let fbCode = "95414346"
-        self.userAgent = String(format: "Instagram %@ %@ (%@/%@; %@dpi; %@; %@; %@; %@; %@; %@; %@)",
-                                apiVersion,
-                                "Android",
-                                osVersion,
-                                osRelease,
-                                "640dpi",
-                                "1440x2560",
-                                brand,
-                                model,
-                                model,
-                                deviceModelBoot,
-                                Locale.current.identifier,
-                                fbCode)
     }
 }
