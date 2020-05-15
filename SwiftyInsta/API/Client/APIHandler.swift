@@ -48,7 +48,7 @@ public class APIHandler {
         /// The queue used to deliver responses. Defaults to `DispatchQueue.global(qos: .utility)`.
         public var queues: Queues
         /// The device. Defaults to a random device.
-        public var device: Device { didSet { headers[Headers.userAgentKey] = device.userAgent }}
+        public var device: Device
         /// The url session. Defaults to `.shared`.
         public var session: URLSession
         /// The default headers. Defaults to `[:]`.

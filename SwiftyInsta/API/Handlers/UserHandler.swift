@@ -431,7 +431,7 @@ public final class UserHandler: Handler {
     }
 
     /// Follow user.
-    public func follow(user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+    public func follow(user: User.Reference, completionHandler: @escaping (Result<Friendship, Error>) -> Void) {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
@@ -459,15 +459,16 @@ public final class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.request(Status.self,
+            requests.request(Friendship.self,
                              method: .post,
                              endpoint: Endpoint.Friendships.follow.user(pk),
-                             body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
+                             body: .parameters(body),
+                             completion: completionHandler)
         }
     }
 
     /// Unfollow user.
-    public func unfollow(user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+    public func unfollow(user: User.Reference, completionHandler: @escaping (Result<Friendship, Error>) -> Void) {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
@@ -495,10 +496,11 @@ public final class UserHandler: Handler {
                         "user_id": String(pk),
                         "radio_type": "wifi-none"]
 
-            requests.request(Status.self,
+            requests.request(Friendship.self,
                              method: .post,
                              endpoint: Endpoint.Friendships.unfollow.user(pk),
-                             body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
+                             body: .parameters(body),
+                             completion: completionHandler)
         }
     }
 
