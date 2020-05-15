@@ -463,6 +463,7 @@ public final class UserHandler: Handler {
                              method: .post,
                              endpoint: Endpoint.Friendships.follow.user(pk),
                              body: .parameters(body),
+                             process: { Friendship(rawResponse: $0.friendshipStatus) },
                              completion: completionHandler)
         }
     }
@@ -500,6 +501,7 @@ public final class UserHandler: Handler {
                              method: .post,
                              endpoint: Endpoint.Friendships.unfollow.user(pk),
                              body: .parameters(body),
+                             process: { Friendship(rawResponse: $0.friendshipStatus) },
                              completion: completionHandler)
         }
     }
