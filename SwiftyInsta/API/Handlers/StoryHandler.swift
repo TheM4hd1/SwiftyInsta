@@ -81,7 +81,7 @@ public final class StoryHandler: Handler {
                              completion: completionHandler)
         }
     }
-    
+
     /// Get highlights.
     public func highlightsBy(user: User.Reference, completionHandler: @escaping (Result<Tray, Error>) -> Void) {
         switch user {

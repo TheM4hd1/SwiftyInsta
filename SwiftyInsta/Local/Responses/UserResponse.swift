@@ -78,7 +78,7 @@ public struct User: IdentifiableParsedResponse {
     public var profileContext: String? { return rawResponse.profileContext.string }
     /// The `profileContext` value.
     public var socialContext: String? { return rawResponse.socialContext.string }
-    
+
     /// A `User.Reference`.
     public var reference: Reference {
         return identity.primaryKey.flatMap(Reference.primaryKey)
