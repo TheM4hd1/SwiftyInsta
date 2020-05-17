@@ -9,6 +9,33 @@
 import CoreGraphics
 import Foundation
 
+/// A `Cover` response.
+public struct Cover: CoverIdentifiableParsedResponse {
+    /// The `content` value.
+    public var content: Media.Version? {
+        return Media.Version.init(rawResponse: rawResponse.croppedImageVersion)
+    }
+    
+    /// Init with `rawResponse`.
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
+
+    /// The `rawResponse`.
+    public let rawResponse: DynamicResponse
+    
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
+    }
+}
+
 /// A `Media` response.
 public struct Media: IdentifiableParsedResponse {
     /// A media element `Version` response.
