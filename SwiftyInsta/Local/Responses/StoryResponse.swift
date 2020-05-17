@@ -110,8 +110,8 @@ public struct TrayElement: IdentifiableParsedResponse {
     }
 
     /// The `coverMedia` value.
-    public var cover: Media? {
-        return Media(rawResponse: rawResponse.coverMedia)
+    public var cover: Cover? {
+        return Cover(rawResponse: rawResponse.coverMedia)
     }
     /// The `media` value.
     public var media: [Media] {

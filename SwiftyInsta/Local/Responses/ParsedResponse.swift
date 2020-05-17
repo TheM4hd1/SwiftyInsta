@@ -105,3 +105,17 @@ public extension ItemIdentifiableParsedResponse {
                      identifier: rawResponse.itemId.string)
     }
 }
+
+/// An **cover identifiable** `ParsedResponse`.
+public protocol CoverIdentifiableParsedResponse: ParsedResponse {
+    /// The media identifier.
+    var mediaIdentifier: Identifier<Media> { get }
+}
+/// The default implementation.
+public extension CoverIdentifiableParsedResponse {
+    /// The media identifier.
+    var mediaIdentifier: Identifier<Media> {
+        return .init(primaryKey: nil,
+                     identifier: rawResponse.mediaId.string)
+    }
+}
