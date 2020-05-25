@@ -61,13 +61,13 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             guard let url = URL(string: "https://www.instagram.com/accounts/login/") else {
                 return completionHandler(.failure(GenericError.custom("Invalid URL.")))
             }
-            #if targetEnvironment(macCatalyst) || os(OSX)
-            me.customUserAgent = ["Mozilla/5.0 (iPhone; CPU iPhone OS 13_4_1 like Mac OS X)",
+            #if os(iOS) && !targetEnvironment(macCatalyst)
+            let deviceVersion = UIDevice.current.systemVersion.replacingOccurrences(of: ".", with: "_")
+            me.customUserAgent = ["Mozilla/5.0 (iPhone; CPU iPhone OS \(deviceVersion) like Mac OS X)",
                                   "AppleWebKit/605.1.15 (KHTML, like Gecko)",
                                   "Mobile/15E148"].joined(separator: " ")
             #else
-            let deviceVersion = UIDevice.current.systemVersion.replacingOccurrences(of: ".", with: "_")
-            me.customUserAgent = ["Mozilla/5.0 (iPhone; CPU iPhone OS \(deviceVersion) like Mac OS X)",
+            me.customUserAgent = ["Mozilla/5.0 (iPhone; CPU iPhone OS 13_4_1 like Mac OS X)",
                                   "AppleWebKit/605.1.15 (KHTML, like Gecko)",
                                   "Mobile/15E148"].joined(separator: " ")
             #endif
