@@ -6,7 +6,7 @@
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
-#if canImport(WebKit)
+#if os(iOS)
 import UIKit
 import WebKit
 

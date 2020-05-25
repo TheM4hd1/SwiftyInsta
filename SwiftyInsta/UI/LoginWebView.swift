@@ -7,11 +7,10 @@
 //
 
 #if canImport(WebKit)
-import UIKit
 import WebKit
 
 // MARK: Views
-@available(iOS 11, OSX 10.11, macCatalyst 13, *)
+@available(iOS 11, OSX 10.13, macCatalyst 13, *)
 public class LoginWebView: WKWebView, WKNavigationDelegate {
     /// Called when reaching the end of the login flow.
     /// You should probably hide the `InstagramLoginWebView` and notify the user with an activity indicator.
