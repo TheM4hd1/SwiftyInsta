@@ -11,13 +11,13 @@ import KeychainSwift
 
 /// An abstract `struct` holding login references .
 public struct Authentication {
-    #if os(iOS)
+    #if canImport(WebKit)
     /// Select the way you wish to authenticate.
     public enum Request {
         /// Log in with username and password.
         case user(Credentials)
 
-        @available(iOS 11, *)
+        @available(iOS 11, OSX 10.11, macCatalyst 13, *)
         /// Log in through web view.
         case webView(LoginWebView)
 

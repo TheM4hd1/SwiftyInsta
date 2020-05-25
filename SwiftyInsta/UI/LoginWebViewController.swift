@@ -6,11 +6,11 @@
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
-#if os(iOS)
+#if canImport(WebKit)
 import UIKit
 import WebKit
 
-@available(iOS 11, *)
+@available(iOS 11, OSX 10.11, macCatalyst 13, *)
 /// A pre-built `UIViewController` displaying a `LoginWebView`.
 public class LoginWebViewController: UIViewController {
     /// The handler.

@@ -6,12 +6,12 @@
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
-#if os(iOS)
+#if canImport(WebKit)
 import UIKit
 import WebKit
 
 // MARK: Views
-@available(iOS 11, *)
+@available(iOS 11, OSX 10.11, macCatalyst 13, *)
 public class LoginWebView: WKWebView, WKNavigationDelegate {
     /// Called when reaching the end of the login flow.
     /// You should probably hide the `InstagramLoginWebView` and notify the user with an activity indicator.
@@ -62,13 +62,16 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             guard let url = URL(string: "https://www.instagram.com/accounts/login/") else {
                 return completionHandler(.failure(GenericError.custom("Invalid URL.")))
             }
-            // in some iOS versions, use-agent needs to be different.
-            // this use-agent works on iOS 11.4 and iOS 12.0+
-            // but it won't work on lower versions.
-            me.customUserAgent = ["Mozilla/5.0 (iPhone; CPU iPhone OS \(UIDevice.current.systemVersion) like Mac OS X)",
+            #if targetEnvironment(macCatalyst) || os(OSX)
+            me.customUserAgent = ["Mozilla/5.0 (iPhone; CPU iPhone OS 13_4_1 like Mac OS X)",
                                   "AppleWebKit/605.1.15 (KHTML, like Gecko)",
                                   "Mobile/15E148"].joined(separator: " ")
-
+            #else
+            let deviceVersion = UIDevice.current.systemVersion.replacingOccurrences(of: ".", with: "_")
+            me.customUserAgent = ["Mozilla/5.0 (iPhone; CPU iPhone OS \(deviceVersion) like Mac OS X)",
+                                  "AppleWebKit/605.1.15 (KHTML, like Gecko)",
+                                  "Mobile/15E148"].joined(separator: " ")
+            #endif
             // load request.
             me.load(URLRequest(url: url))
         }
