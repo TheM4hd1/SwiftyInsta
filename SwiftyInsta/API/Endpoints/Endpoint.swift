@@ -199,6 +199,12 @@ public struct Endpoint {
         /// Report.
         case report = "https://i.instagram.com/api/v1/users/{userPk}/flag_user/"
     }
+    
+    /// An `enum` providing for `Tags` endpoints.
+    enum Tags: EndpointPath, CaseIterable, RawEndpointRepresentable {
+        /// Search.
+        case search = "https://i.instagram.com/api/v1/tags/search/"
+    }
 
     /// An `enum` providing for `UserTags` endpoints.
     enum UserTags: EndpointPath, CaseIterable, RawEndpointRepresentable {
