@@ -155,6 +155,8 @@ public class APIHandler {
     lazy var authentication: AuthenticationHandler = .init(handler: self)
     /// `UserHandler` endpoints manager.
     public private(set) lazy var users: UserHandler = .init(handler: self)
+    /// `TagHandler` endpoints manager.
+    public private(set) lazy var tags: TagHandler = .init(handler: self)
     /// `CommentHandler` endpoints manager.
     public private(set) lazy var comments: CommentHandler = .init(handler: self)
     /// `FeedHandler` endpoints manager.
