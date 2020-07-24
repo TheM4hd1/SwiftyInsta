@@ -11,17 +11,9 @@ import Foundation
 
 public final class UserHandler: Handler {
     func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User, Error>) -> Void) {
-        guard let storage = handler.response?.storage else {
-            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
-        }
-        let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
-                    "_uid": storage.dsUserId,
-                    "_csrftoken": storage.csrfToken]
-
         requests.request(User.self,
-                         method: .post,
+                         method: .get,
                          endpoint: Endpoint.Accounts.current,
-                         body: .parameters(body),
                          delay: delay,
                          process: { User(rawResponse: $0.user) },
                          completion: completionHandler)
