@@ -170,8 +170,6 @@ public struct Endpoint {
         case permalink = "https://i.instagram.com/api/v1/media/{mediaId}/permalink/"
         /// Mark stories as seen.
         case markAsSeen = "https://i.instagram.com/api/v2/media/seen/?reel=1&live_vod=0"
-        /// Upload
-        case upload = "https://i.instagram.com/rupload_igphoto/{uploadId}"
     }
 
     /// An `enum` provoding for `News` endpoints.
@@ -185,7 +183,7 @@ public struct Endpoint {
     /// An `enum` provoding for `Upload` endpoints.
     enum Upload: EndpointPath, CaseIterable, RawEndpointRepresentable {
         /// Photo.
-        case photo = "https://i.instagram.com/api/v1/upload/photo/"
+        case photo = "https://i.instagram.com/rupload_igphoto/{uploadId}"
         /// Video.
         case video = "https://i.instagram.com/api/v1/upload/video/"
     }
