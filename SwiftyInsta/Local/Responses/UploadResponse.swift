@@ -66,6 +66,32 @@ public extension Upload {
                 try container.encode(rawResponse.data())
             }
         }
+        /// A `struct` holding reference to a successful `Upload.offset`
+        public struct Offset: PaginatedResponse, StatusEnforceable {
+            /// init with `rawResponse`
+            public init?(rawResponse: DynamicResponse) {
+                guard rawResponse != .none else { return nil }
+                self.rawResponse = rawResponse
+            }
+            
+            /// The `rawResponse`.
+            public let rawResponse: DynamicResponse
+            
+            public var offset: Int? { return rawResponse.offset.int }
+            /// The status.
+            public var status: String? { return rawResponse.status.string }
+            
+            
+            // MARK: Codable
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+            }
+            public func encode(to encoder: Encoder) throws {
+                var container = encoder.singleValueContainer()
+                try container.encode(rawResponse.data())
+            }
+        }
     }
 }
 public extension Upload.Response.Video {

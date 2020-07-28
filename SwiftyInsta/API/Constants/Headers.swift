@@ -19,7 +19,7 @@ struct Headers {
     static let igConnectionTypeValue = "WIFI"
     static let xGoogleAdId = "X-Google-AD-ID"
     static let userAgentKey = "User-Agent"
-    static let userAgentValue = "Instagram 10.20.0(iPhone10,6; iOS 12_1_2;en_US; en-US; ) AppleWebKit/420+"
+    static let userAgentValue = "Instagram 142.0.0.22.109 (iPhone9,1; iOS 13_5; en_US; en-US; scale=2.00; 750x1334; 214888322) AppleWebKit/420+"
     static let contentTypeKey = "Content-Type"
     static let contentTypeApplicationFormValue = "application/x-www-form-urlencoded"
     static let igSignatureKey = "signed_body"

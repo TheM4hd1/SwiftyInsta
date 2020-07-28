@@ -111,37 +111,12 @@ public final class MediaHandler: Handler {
                          completion: { completionHandler($0.map { $0.state == .ok }) })
     }
 
-    @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
     /// Upload photo.
     public func upload(photo: Upload.Picture, completionHandler: @escaping (Result<Upload.Response.Picture, Error>) -> Void) {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let uploadId = String(Date().millisecondsSince1970 / 1000)
-        // prepare content.
-        var content = Data()
-        content.append(string: "--\(uploadId)\n")
-        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
-        content.append(string: "Content-Disposition: form-data; name=\"upload_id\"\n\n")
-        content.append(string: "\(uploadId)\n")
-        content.append(string: "--\(uploadId)\n")
-        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
-        content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\n\n")
-        content.append(string: "\(handler.settings.device.deviceGuid.uuidString)\n")
-        content.append(string: "--\(uploadId)\n")
-        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
-        content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\n\n")
-        content.append(string: "\(storage.csrfToken)\n")
-        content.append(string: "--\(uploadId)\n")
-        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
-        content.append(string: "Content-Disposition: form-data; name=\"image_compression\"\n\n")
-        content.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\n")
-        content.append(string: "--\(uploadId)\n")
-        content.append(string: "Content-Transfer-Encoding: binary\n")
-        content.append(string: "Content-Type: application/octet-stream\n")
-        content.append(string: ["Content-Disposition: form-data; name=photo;",
-                                "filename=pending_media_\(uploadId).jpg;",
-                                "filename*=utf-8''pending_media_\(uploadId).jpg\n\n"].joined(separator: " "))
 
         #if os(macOS)
         let optionalImageData = photo.image.tiffRepresentation
@@ -151,16 +126,22 @@ public final class MediaHandler: Handler {
         guard let imageData = optionalImageData else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        content.append(imageData)
-        content.append(string: "\n--\(uploadId)--\n\n")
-        let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-
-        requests.request(Upload.Response.Picture.self,
-                         method: .post,
-                         endpoint: Endpoint.Upload.photo,
-                         body: .data(content),
-                         headers: headers,
-                         options: .deliverOnResponseQueue) { [weak self] in
+        
+        let rUploadParams = "{\"image_compression\":\"{\\\"quality\\\":64,\\\"lib_version\\\":\\\"1676.104000\\\",\\\"ssim\\\":0.99618792533874512,\\\"colorspace\\\":\\\"kCGColorSpaceDeviceRGB\\\",\\\"lib_name\\\":\\\"uikit\\\"}\",\"upload_id\":\"\(uploadId)\",\"xsharing_user_ids\":[],\"media_type\":1}"
+        let headers = ["Content-Type": "application/octet-stream",
+                       "X-Entity-Name": "image.jpeg",
+                       "X-Entity-Type": "image/jpeg",
+                       "x_fb_photo_waterfall_id": UUID.init().uuidString.md5(),
+                       "X-Entity-Length": "\(imageData.count)",
+                       "Content-Length": "\(imageData.count)",
+                       "X-Instagram-Rupload-Params": rUploadParams,
+                       "Accept-Encoding": "gzip, deflate",
+                       "Offset": "0",
+                       "IG-U-Ds-User-ID": storage.dsUserId]
+        // register uploadId
+        requests.request(Upload.Response.Offset.self,
+                         method: .get,
+                         endpoint: Endpoint.Upload.photo.upload(uploadId.md5())) { [weak self] in
                             guard let me = self, let handler = me.handler else {
                                 return completionHandler(.failure(GenericError.weakObjectReleased))
                             }
@@ -170,15 +151,36 @@ public final class MediaHandler: Handler {
                                     completionHandler(.failure(error))
                                 }
                             case .success(let decoded):
-                                guard decoded.status == "ok" else {
+                                guard decoded.offset == 0 else {
                                     return handler.settings.queues.response.async {
                                         completionHandler(.failure(GenericError.unknown))
                                     }
                                 }
-                                me.configure(photo: photo,
-                                             with: uploadId,
-                                             caption: photo.caption,
-                                             completionHandler: completionHandler)
+                                // upload photo
+                                me.requests.request(Upload.Response.Picture.self,
+                                                    method: .post,
+                                                    endpoint: Endpoint.Upload.photo.upload(uploadId.md5()),
+                                                    body: .data(imageData),
+                                                    headers: headers,
+                                                    options: .deliverOnResponseQueue) {
+                                                        switch $0 {
+                                                        case .failure(let error):
+                                                            handler.settings.queues.response.async {
+                                                                completionHandler(.failure(error))
+                                                            }
+                                                        case .success(let decoded):
+                                                            guard let uploadId = decoded.uploadId else {
+                                                                return handler.settings.queues.response.async {
+                                                                    completionHandler(.failure(GenericError.unknown))
+                                                                }
+                                                            }
+                                                            // configure
+                                                            me.configure(photo: photo,
+                                                                         with: uploadId,
+                                                                         caption: photo.caption,
+                                                                         completionHandler: completionHandler)
+                                                        }
+                                }
                             }
         }
     }
