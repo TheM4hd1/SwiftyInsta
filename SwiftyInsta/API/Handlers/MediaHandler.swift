@@ -126,8 +126,10 @@ public final class MediaHandler: Handler {
         guard let imageData = optionalImageData else {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
-        
+
+        // swiftlint:disable line_length
         let rUploadParams = "{\"image_compression\":\"{\\\"quality\\\":64,\\\"lib_version\\\":\\\"1676.104000\\\",\\\"ssim\\\":0.99618792533874512,\\\"colorspace\\\":\\\"kCGColorSpaceDeviceRGB\\\",\\\"lib_name\\\":\\\"uikit\\\"}\",\"upload_id\":\"\(uploadId)\",\"xsharing_user_ids\":[],\"media_type\":1}"
+        // swiftlint:enable line_length
         let headers = ["Content-Type": "application/octet-stream",
                        "X-Entity-Name": "image.jpeg",
                        "X-Entity-Type": "image/jpeg",

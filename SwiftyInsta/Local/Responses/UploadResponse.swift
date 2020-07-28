@@ -73,15 +73,14 @@ public extension Upload {
                 guard rawResponse != .none else { return nil }
                 self.rawResponse = rawResponse
             }
-            
+
             /// The `rawResponse`.
             public let rawResponse: DynamicResponse
-            
+
             public var offset: Int? { return rawResponse.offset.int }
             /// The status.
             public var status: String? { return rawResponse.status.string }
-            
-            
+
             // MARK: Codable
             public init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()

@@ -111,4 +111,3 @@ public extension RawEndpointRepresentable {
     /// The endpoint representable.
     var representation: LosselessEndpointRepresentable { return rawValue }
 }
-

@@ -15,7 +15,7 @@ public struct Cover: CoverIdentifiableParsedResponse {
     public var content: Media.Version? {
         return Media.Version.init(rawResponse: rawResponse.croppedImageVersion)
     }
-    
+
     /// Init with `rawResponse`.
     public init?(rawResponse: DynamicResponse) {
         guard rawResponse != .none else { return nil }
@@ -24,7 +24,7 @@ public struct Cover: CoverIdentifiableParsedResponse {
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
-    
+
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
