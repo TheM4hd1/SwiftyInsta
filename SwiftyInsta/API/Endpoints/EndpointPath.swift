@@ -9,6 +9,8 @@ import Foundation
 
 /// An `enum` describing possible `URL`s.
 public enum EndpointPath {
+    /// Starting with `https://i.instagram.com
+    case noVersion(String)
     /// Starting with `https://i.instagram.com/api/v1`.
     case version1(String)
     /// Starting with `https://i.instagram.com/api/v2`.
@@ -51,6 +53,7 @@ extension EndpointPath: LosselessEndpointRepresentable {
     /// The base path.
     public var basePath: String {
         switch self {
+        case .noVersion: return "https://i.instagram.com"
         case .version1: return "https://i.instagram.com/api/v1"
         case .version2: return "https://i.instagram.com/api/v2"
         case .generic: return "https://www.instagram.com"
@@ -59,7 +62,7 @@ extension EndpointPath: LosselessEndpointRepresentable {
     /// The main path component.
     public var endpointPath: String {
         switch self {
-        case .version1(let path), .version2(let path), .generic(let path):
+        case .noVersion(let path), .version1(let path), .version2(let path), .generic(let path):
             return path
         }
     }
@@ -85,6 +88,8 @@ extension EndpointPath: RawRepresentable, ExpressibleByStringLiteral, Equatable 
             self = .version2(String(rawValue.dropFirst("https://i.instagram.com/api/v2".count)))
         } else if rawValue.hasPrefix("https://www.instagram.com") {
             self = .generic(String(rawValue.dropFirst("https://www.instagram.com".count)))
+        } else if rawValue.hasPrefix("https://i.instagram.com") {
+            self = .noVersion(String(rawValue.dropFirst("https://i.instagram.com".count)))
         } else {
             return nil
         }

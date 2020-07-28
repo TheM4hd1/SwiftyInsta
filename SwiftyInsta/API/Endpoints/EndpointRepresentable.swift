@@ -21,6 +21,8 @@ public extension EndpointRepresentable {
     func user(_ userPk: Int) -> EndpointRepresentable! { return representation.user(userPk) }
     /// Fill the `mediaId`.
     func media(_ mediaId: String) -> EndpointRepresentable! { return representation.media(mediaId) }
+    /// Fill the `uploadId`.
+    func upload(_ uploadId: String) -> EndpointRepresentable! { return representation.upload(uploadId) }
     /// Fill the `commentId`.
     func comment(_ commentId: String) -> EndpointRepresentable { return representation.comment(commentId) }
     /// Fill the `threadId`.
@@ -82,6 +84,8 @@ extension LosselessEndpointRepresentable {
     func user(_ userPk: Int) -> EndpointRepresentable! { return filling("userPk", with: String(userPk)) }
     /// Fill the `mediaId`.
     func media(_ mediaId: String) -> EndpointRepresentable! { return filling("mediaId", with: mediaId) }
+    /// Fill the `uploadId`.
+    func upload(_ uploadId: String) -> EndpointRepresentable! { return filling("uploadId", with: uploadId) }
     /// Fill the `commentId`.
     func comment(_ commentId: String) -> EndpointRepresentable { return filling("commentId", with: commentId) }
     /// Fill the `threadId`.
@@ -107,3 +111,4 @@ public extension RawEndpointRepresentable {
     /// The endpoint representable.
     var representation: LosselessEndpointRepresentable { return rawValue }
 }
+
