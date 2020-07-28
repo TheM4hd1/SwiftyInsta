@@ -147,12 +147,10 @@ public final class MediaHandler: Handler {
                             }
                             switch $0 {
                             case .failure(let error):
-                                print("Offset failed")
                                 handler.settings.queues.response.async {
                                     completionHandler(.failure(error))
                                 }
                             case .success(let decoded):
-                                print("Offset: ", decoded)
                                 guard decoded.offset == 0 else {
                                     return handler.settings.queues.response.async {
                                         completionHandler(.failure(GenericError.unknown))
@@ -167,20 +165,18 @@ public final class MediaHandler: Handler {
                                                     options: .deliverOnResponseQueue) {
                                                         switch $0 {
                                                         case .failure(let error):
-                                                            print("upload failed")
                                                             handler.settings.queues.response.async {
                                                                 completionHandler(.failure(error))
                                                             }
                                                         case .success(let decoded):
-                                                            print("Upload: ", decoded)
-                                                            guard let _uploadId = decoded.uploadId else {
+                                                            guard let uploadId = decoded.uploadId else {
                                                                 return handler.settings.queues.response.async {
                                                                     completionHandler(.failure(GenericError.unknown))
                                                                 }
                                                             }
                                                             // configure
                                                             me.configure(photo: photo,
-                                                                         with: _uploadId,
+                                                                         with: uploadId,
                                                                          caption: photo.caption,
                                                                          completionHandler: completionHandler)
                                                         }
