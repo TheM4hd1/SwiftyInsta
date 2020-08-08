@@ -25,6 +25,7 @@ class HTTPHelper {
     /// A body for the `URLRequest`.
     enum Body {
         case parameters([String: Any])
+        case payload([String: Any])
         case data(Data)
         // case gzip([String: Any])
     }
@@ -207,6 +208,7 @@ class HTTPHelper {
             me.addHeaders(to: &request, header: headers)
             switch body {
             case .parameters(let parameters)?: me.addBody(to: &request, body: parameters)
+            case .payload(let parameters)?: me.setPayload(to: &request, body: parameters)
             case .data(let data)?: request.httpBody = data
             default: break
             }
@@ -250,6 +252,17 @@ class HTTPHelper {
 
             let data = queries.joined(separator: "&")
             request.httpBody = data.data(using: String.Encoding.utf8)
+        }
+    }
+    
+    fileprivate func setPayload(to request: inout URLRequest, body: [String: Any]) {
+        if !body.isEmpty {
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: body, options: []) else { return }
+            guard let json = String(data: jsonData, encoding: String.Encoding.utf8)?
+                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
+            let payload = "SIGNATURE." + json
+            let signedBody =  "signed_body=" + payload
+            request.httpBody = signedBody.data(using: String.Encoding.utf8)
         }
     }
 }
