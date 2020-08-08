@@ -10,7 +10,7 @@
 import Foundation
 
 public final class UserHandler: Handler {
-    func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User, Error>) -> Void) {
+    public func current(delay: ClosedRange<Double>?, completionHandler: @escaping (Result<User, Error>) -> Void) {
         requests.request(User.self,
                          method: .get,
                          endpoint: Endpoint.Accounts.current,
