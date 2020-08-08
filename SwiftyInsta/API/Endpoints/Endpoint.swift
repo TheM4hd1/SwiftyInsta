@@ -141,7 +141,7 @@ public struct Endpoint {
         /// Media info.
         case info = "https://i.instagram.com/api/v1/media/{mediaId}/info/"
         /// Like.
-        case like = "https://i.instagram.com/api/v1/media/{mediaId}/like/"
+        case like = "https://i.instagram.com/api/v1/media/{mediaId}/like/?d=1"
         /// Unlike.
         case unlike = "https://i.instagram.com/api/v1/media/{mediaId}/unlike/"
         /// Likers.

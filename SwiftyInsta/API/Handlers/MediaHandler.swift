@@ -83,14 +83,20 @@ public final class MediaHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                    "device_id": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
                     "_csrftoken": storage.csrfToken,
+                    "delivery_class": "organic",
+                    "inventory_source": "media_or_ad",
+                    "is_carousel_bumped_post": "false",
+                    "container_module": "feed_timeline",
+                    "carousel_index": "0",
                     "media_id": mediaId]
 
         requests.request(Status.self,
                          method: .post,
                          endpoint: Endpoint.Media.like.media(mediaId),
-                         body: .parameters(body),
+                         body: .payload(body),
                          completion: { completionHandler($0.map { $0.state == .ok }) })
     }
 
