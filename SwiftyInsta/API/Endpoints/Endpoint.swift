@@ -35,7 +35,7 @@ public struct Endpoint {
         /// Change password.
         case changePassword = "https://i.instagram.com/api/v1/accounts/change_password/"
         /// Current user.
-        case current = "https://i.instagram.com/api/v1/accounts/current_user/"
+        case current = "https://i.instagram.com/api/v1/accounts/current_user/?edit=true"
         /// Logout.
         case logout = "https://i.instagram.com/api/v1/accounts/logout/"
         /// Set account public.
