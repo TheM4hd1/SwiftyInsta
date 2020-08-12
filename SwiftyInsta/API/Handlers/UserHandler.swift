@@ -449,12 +449,12 @@ public final class UserHandler: Handler {
                         "_uid": storage.dsUserId,
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
-                        "radio_type": "wifi-none"]
+                        "device_id": handler.settings.device.deviceGuid.uuidString]
 
             requests.request(Friendship.self,
                              method: .post,
                              endpoint: Endpoint.Friendships.follow.user(pk),
-                             body: .parameters(body),
+                             body: .payload(body),
                              process: { Friendship(rawResponse: $0.friendshipStatus) },
                              completion: completionHandler)
         }
@@ -487,12 +487,12 @@ public final class UserHandler: Handler {
                         "_uid": storage.dsUserId,
                         "_csrftoken": storage.csrfToken,
                         "user_id": String(pk),
-                        "radio_type": "wifi-none"]
+                        "device_id": handler.settings.device.deviceGuid.uuidString]
 
             requests.request(Friendship.self,
                              method: .post,
                              endpoint: Endpoint.Friendships.unfollow.user(pk),
-                             body: .parameters(body),
+                             body: .payload(body),
                              process: { Friendship(rawResponse: $0.friendshipStatus) },
                              completion: completionHandler)
         }
@@ -541,10 +541,9 @@ public final class UserHandler: Handler {
 
             // get status directly.
             let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
-                        "_uid": storage.dsUserId,
+                        "include_reel_info": "0",
                         "_csrftoken": storage.csrfToken,
-                        "user_ids": Set(ids).map(String.init).joined(separator: ", "),
-                        "radio_type": "wifi-none"]
+                        "user_ids": Set(ids).map(String.init).joined(separator: ", ")]
 
             pages.request([User.Reference: Friendship].self,
                           page: AnyPaginatedResponse.self,
