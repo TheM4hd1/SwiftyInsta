@@ -205,4 +205,10 @@ public struct Endpoint {
         /// Feed.
         case feed = "https://i.instagram.com/api/v1/usertags/{userPk}/feed/"
     }
+    
+    /// An `enum` providing for `Tags` endpoints.
+    enum Tags: EndpointPath, CaseIterable, RawEndpointRepresentable {
+        /// Search.
+        case search = "https://i.instagram.com/api/v1/tags/search/"
+    }
 }

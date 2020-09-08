@@ -167,4 +167,6 @@ public class APIHandler {
     public private(set) lazy var profile: ProfileHandler = .init(handler: self)
     /// `StoryHandler` endpoints manager.
     public private(set) lazy var stories: StoryHandler = .init(handler: self)
+    /// `TagHandler` endpoints manager.
+    public private(set) lazy var tags: TagHandler = .init(handler: self)
 }
