@@ -259,7 +259,7 @@ class HTTPHelper {
         if !body.isEmpty {
             guard let jsonData = try? JSONSerialization.data(withJSONObject: body, options: []) else { return }
             guard let json = String(data: jsonData, encoding: String.Encoding.utf8)?
-                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
+                .addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved) else { return }
             let payload = "SIGNATURE." + json
             let signedBody =  "signed_body=" + payload
             request.httpBody = signedBody.data(using: String.Encoding.utf8)
