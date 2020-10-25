@@ -9,6 +9,7 @@
 import CryptoSwift
 import Foundation
 
+// swiftlint:disable all
 final class AuthenticationHandler: Handler {
     // MARK: Log in
     func authenticate(cache: Authentication.Response, completionHandler: @escaping (Result<Authentication.Response, Error>) -> Void) {
@@ -29,7 +30,8 @@ final class AuthenticationHandler: Handler {
         }
     }
 
-    func authenticate(user: Credentials, completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
+    func authenticate(user: Credentials,
+                      completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         // update user.
         let user = user
         user.handler = handler
@@ -51,11 +53,11 @@ final class AuthenticationHandler: Handler {
                     }
                 }
                 user.csrfToken = csrfToken
-                guard let _url = URL(string: "https://i.instagram.com/api/v1/launcher/sync/") else { return }
+                guard let url = URL(string: "https://i.instagram.com/api/v1/launcher/sync/") else { return }
                 let params: [String: Any] = ["id": true,
-                              "server_config_retrieval": 1,
-                              "_csrftoken": csrfToken]
-                me.requests.fetch(method: .post, url: _url, body: .parameters(params), headers: [:], delay: nil) { [weak self] in
+                                             "server_config_retrieval": 1,
+                                             "_csrftoken": csrfToken]
+                me.requests.fetch(method: .post, url: url, body: .parameters(params), headers: [:], delay: nil) { [weak self] in
                     guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
                     switch $0 {
                     case .failure(let error): handler.settings.queues.response.async { completionHandler(.failure(error)) }
@@ -66,9 +68,10 @@ final class AuthenticationHandler: Handler {
                             }
                         }
                         guard let passwordKeyId = headers["ig-set-password-encryption-key-id"].flatMap(UInt8.init),
-                                    let passwordPublicKey = headers["ig-set-password-encryption-pub-key"]
-                                        .flatMap({ Data(base64Encoded: $0) })
-                                        .flatMap({ String(data: $0, encoding: .utf8) }) else { return completionHandler(.failure(GenericError.custom("Cannot fetch encryption headers"))) }
+                              let passwordPublicKey = headers["ig-set-password-encryption-pub-key"]
+                                .flatMap({ Data(base64Encoded: $0) })
+                                .flatMap({ String(data: $0, encoding: .utf8) }) else {
+                            return completionHandler(.failure(GenericError.custom("Cannot fetch encryption headers"))) }
                         let randomKey = Data((0..<32).map { _ in UInt8.random(in: 0...255) })
                         let iv = Data((0..<12).map { _ in UInt8.random(in: 0...255) })
                         let time = "\(Int(Date().timeIntervalSince1970))"
@@ -98,11 +101,11 @@ final class AuthenticationHandler: Handler {
                             data.append(rsaEncrypted)
                             data.append(authenticationTag)
                             data.append(aesEncrypted)
-                            let enc_password = "#PWD_INSTAGRAM:4:\(time):\(data.base64EncodedString())"
+                            let encPassword = "#PWD_INSTAGRAM:4:\(time):\(data.base64EncodedString())"
                             // prepare body.
                             let body = ["username": user.username,
                                         "reg_login": "0",
-                                        "enc_password": enc_password,
+                                        "enc_password": encPassword,
                                         "device_id": me.handler.settings.device.deviceGuid.uuidString,
                                         "login_attempt_count": "1",
                                         "phone_id": me.handler.settings.device.phoneGuid.uuidString]
@@ -219,32 +222,32 @@ final class AuthenticationHandler: Handler {
                        body: .parameters(body),
                        headers: headers,
                        delay: 0...0) { [weak self] in
-                        guard let me = self, let handler = me.handler else { return completionHandler(GenericError.weakObjectReleased) }
-                        switch $0 {
-                        case .failure(let error):
-                            handler.settings.queues.response.async {
-                                completionHandler(error)
-                            }
-                        case .success((let data, _)) where data != nil:
-                            let data = data!
-                            let string = String(data: data, encoding: .utf8)!
-                            // check for error.
-                            if string.contains("Enter the 6-digit code")
-                                || string.contains("Enter Your Security Code")
-                                || string.contains("VerifySMSCodeForm")
-                                || string.contains("VerifyEmailCodeForm") {
-                                // no need to notify anything, it's already been done.
-                                return
-                            }
-                            // notify errors.
-                            handler.settings.queues.response.async {
-                                completionHandler(GenericError.custom("Invalid response."))
-                            }
-                        default:
-                            handler.settings.queues.response.async {
-                                completionHandler(GenericError.custom("Invalid response."))
-                            }
-                        }
+            guard let me = self, let handler = me.handler else { return completionHandler(GenericError.weakObjectReleased) }
+            switch $0 {
+            case .failure(let error):
+                handler.settings.queues.response.async {
+                    completionHandler(error)
+                }
+            case .success((let data, _)) where data != nil:
+                let data = data!
+                let string = String(data: data, encoding: .utf8)!
+                // check for error.
+                if string.contains("Enter the 6-digit code")
+                    || string.contains("Enter Your Security Code")
+                    || string.contains("VerifySMSCodeForm")
+                    || string.contains("VerifyEmailCodeForm") {
+                    // no need to notify anything, it's already been done.
+                    return
+                }
+                // notify errors.
+                handler.settings.queues.response.async {
+                    completionHandler(GenericError.custom("Invalid response."))
+                }
+            default:
+                handler.settings.queues.response.async {
+                    completionHandler(GenericError.custom("Invalid response."))
+                }
+            }
         }
     }
 
@@ -274,9 +277,9 @@ final class AuthenticationHandler: Handler {
 
     func code(for credentials: Credentials) {
         guard let code = credentials.code,
-            credentials.csrfToken != nil,
-            let completionHandler = credentials.completionHandler else {
-                return print("Invalid setup.")
+              credentials.csrfToken != nil,
+              let completionHandler = credentials.completionHandler else {
+            return print("Invalid setup.")
         }
         // check for response.
         switch credentials.response {
@@ -369,7 +372,7 @@ final class AuthenticationHandler: Handler {
                         me.handler.settings.queues.response.async { completionHandler(.success(true)) }
                     } catch { me.handler.settings.queues.response.async { completionHandler(.failure(error)) } }
                 } else {
-                    me.handler.settings.queues.response.async { completionHandler(.failure(GenericError.custom("rate_limit_error\nPlease wait a few minutes before you try again."))) }
+                    me.handler.settings.queues.response.async { completionHandler(.failure(GenericError.custom("rate_limit_error"))) }
                 }
             }
         }
@@ -394,50 +397,50 @@ final class AuthenticationHandler: Handler {
                        body: .payload(body),
                        headers: [:],
                        delay: 0...0) { [weak self] in
-                        guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
-                        // check for response.
-                        switch $0 {
-                        case .failure(let error):
-                            handler.settings.queues.response.async {
-                                completionHandler(.failure(error))
-                            }
-                        case .success((_, let response)) where response != nil:
-                            let response = response!
-                            switch response.statusCode {
-                            case 200:
-                                // log in.
-                                user.response = .success
-                                // create session cache.
-                                let cookies = HTTPCookieStorage.shared.cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
-                                let dsUserId = cookies.first(where: { $0.name == "ds_user_id" })!.value
-                                let storage = Authentication.Storage(
-                                    dsUserId: dsUserId,
-                                    csrfToken: user.csrfToken ?? cookies.first(where: { $0.name == "csrftoken" })!.value,
-                                    sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
-                                    rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
-                                    user: nil
-                                )
-                                let cache = Authentication.Response(device: handler.settings.device,
-                                                                    storage: storage,
-                                                                    data: cookies.data)
-                                handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
-                            case 400:
-                                user.response = .failure
-                                handler.settings.queues.response.async {
-                                    completionHandler(.failure(GenericError.custom("Please check the security code and try again.")))
-                                }
-                            default:
-                                user.response = .failure
-                                handler.settings.queues.response.async {
-                                    completionHandler(.failure(GenericError.custom("Invalid response.")))
-                                }
-                            }
-                        default:
-                            user.response = .failure
-                            handler.settings.queues.response.async {
-                                completionHandler(.failure(GenericError.custom("Invalid response.")))
-                            }
-                        }
+            guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
+            // check for response.
+            switch $0 {
+            case .failure(let error):
+                handler.settings.queues.response.async {
+                    completionHandler(.failure(error))
+                }
+            case .success((_, let response)) where response != nil:
+                let response = response!
+                switch response.statusCode {
+                case 200:
+                    // log in.
+                    user.response = .success
+                    // create session cache.
+                    let cookies = HTTPCookieStorage.shared.cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
+                    let dsUserId = cookies.first(where: { $0.name == "ds_user_id" })!.value
+                    let storage = Authentication.Storage(
+                        dsUserId: dsUserId,
+                        csrfToken: user.csrfToken ?? cookies.first(where: { $0.name == "csrftoken" })!.value,
+                        sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
+                        rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
+                        user: nil
+                    )
+                    let cache = Authentication.Response(device: handler.settings.device,
+                                                        storage: storage,
+                                                        data: cookies.data)
+                    handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
+                case 400:
+                    user.response = .failure
+                    handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.custom("Please check the security code and try again.")))
+                    }
+                default:
+                    user.response = .failure
+                    handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.custom("Invalid response.")))
+                    }
+                }
+            default:
+                user.response = .failure
+                handler.settings.queues.response.async {
+                    completionHandler(.failure(GenericError.custom("Invalid response.")))
+                }
+            }
         }
     }
 
