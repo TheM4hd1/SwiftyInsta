@@ -12,6 +12,8 @@ import Foundation
 public class Credentials {
     /// Prefered verification method.
     public enum Verification: String { case email = "1", text = "0" }
+    /// Specifiy type of verification code.
+    public enum VerificationCodeType: String { case challenge = "0", sms = "1", backup = "2", totp = "3" }
     /// Response.
     enum Response {
         case challenge(URL)
@@ -27,8 +29,8 @@ public class Credentials {
     var password: String
     /// The verification method.
     public var verification: Verification
-    /// The code.
-    public var code: String? {
+    /// The code and code type
+    public var code: (VerificationCodeType, String)? {
         didSet {
             // notify a change.
             guard code != nil else { return }
@@ -52,5 +54,15 @@ public class Credentials {
         self.username = username
         self.password = password
         self.verification = verification
+    }
+    
+    /// resends `twoFactor` code
+    public func resendCode(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        switch response {
+        case .twoFactor(let identifier):
+            handler?.authentication.resend(user: self, identifier: identifier, completionHandler: completionHandler)
+        default:
+            return
+        }
     }
 }

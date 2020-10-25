@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CryptoSwift
 
 final class AuthenticationHandler: Handler {
     // MARK: Log in
@@ -50,79 +51,146 @@ final class AuthenticationHandler: Handler {
                     }
                 }
                 user.csrfToken = csrfToken
-                // prepare body.
-                let body = ["username": user.username, "password": user.password]
-                let headers = ["X-Instagram-AJAX": "1",
-                               "X-CSRFToken": csrfToken,
-                               "X-Requested-With": "XMLHttpRequest",
-                               "Referer": "https://instagram.com/"]
-                me.requests.request(CredentialsAuthenticationResponse.self,
-                                    method: .post,
-                                    endpoint: Endpoint.Authentication.login,
-                                    body: .parameters(body),
-                                    headers: headers,
-                                    options: [],
-                                    delay: 0...0) {
+                guard let _url = URL(string: "https://i.instagram.com/api/v1/launcher/sync/") else { return }
+                let params: [String: Any] = ["id": true,
+                              "server_config_retrieval": 1,
+                              "_csrftoken": csrfToken]
+                me.requests.fetch(method: .post, url: _url, body: .parameters(params), headers: [:], delay: nil) { [weak self] in
+                    guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
                     switch $0 {
-                    case .failure(let error):
-                        handler.settings.queues.response.async {
-                            completionHandler(.failure(error))
+                    case .failure(let error): handler.settings.queues.response.async { completionHandler(.failure(error)) }
+                    case .success((_, let response?)):
+                        guard let headers = response.allHeaderFields as? [String: String] else {
+                            return handler.settings.queues.response.async {
+                                completionHandler(.failure(GenericError.custom("Cannot fetch headers.")))
+                            }
                         }
-                    case .success(let response):
-                        // check for status.
-                        if let url = try? response.checkpointUrl.flatMap(Endpoint.Authentication.home.appending)?.url() {
-                            user.completionHandler = completionHandler
-                            user.response = .challenge(url)
-                            me.challengeInfo(for: user) { form in
-                                handler.settings.queues.response.async {
-                                    completionHandler(.failure(AuthenticationError.checkpoint(suggestions: form?.suggestion)))
+                        guard let passwordKeyId = headers["ig-set-password-encryption-key-id"].flatMap(UInt8.init),
+                                    let passwordPublicKey = headers["ig-set-password-encryption-pub-key"]
+                                        .flatMap({ Data(base64Encoded: $0) })
+                                        .flatMap({ String(data: $0, encoding: .utf8) }) else { return completionHandler(.failure(GenericError.custom("Cannot fetch encryption headers"))) }
+                        let randomKey = Data((0..<32).map { _ in UInt8.random(in: 0...255) })
+                        let iv = Data((0..<12).map { _ in UInt8.random(in: 0...255) })
+                        let time = "\(Int(Date().timeIntervalSince1970))"
+                        do {
+                            let (aesEncrypted, authenticationTag) = try CC.GCM.crypt(.encrypt,
+                                                                                     algorithm: .aes,
+                                                                                     data: user.password.data(using: .utf8)!,
+                                                                                     key: randomKey,
+                                                                                     iv: iv,
+                                                                                     aData: time.data(using: .utf8)!,
+                                                                                     tagLength: 16)
+                            // RSA.
+                            let publicKey = try SwKeyConvert.PublicKey.pemToPKCS1DER(passwordPublicKey)
+                            let rsaEncrypted = try CC.RSA.encrypt(randomKey,
+                                                                  derKey: publicKey,
+                                                                  tag: .init(),
+                                                                  padding: .pkcs1,
+                                                                  digest: .none)
+                            var rsaEncryptedLELength = UInt16(littleEndian: UInt16(rsaEncrypted.count))
+                            let rsaEncryptedLength = Data(bytes: &rsaEncryptedLELength, count: MemoryLayout<UInt16>.size)
+                            // Compute `enc_password`.
+                            var data = Data()
+                            data.append(1)
+                            data.append(passwordKeyId)
+                            data.append(iv)
+                            data.append(rsaEncryptedLength)
+                            data.append(rsaEncrypted)
+                            data.append(authenticationTag)
+                            data.append(aesEncrypted)
+                            let enc_password = "#PWD_INSTAGRAM:4:\(time):\(data.base64EncodedString())"
+                            // prepare body.
+                            let body = ["username": user.username,
+                                        "reg_login": "0",
+                                        "enc_password": enc_password,
+                                        "device_id": me.handler.settings.device.deviceGuid.uuidString,
+                                        "login_attempt_count": "1",
+                                        "phone_id": me.handler.settings.device.phoneGuid.uuidString]
+                            
+                            me.requests.request(CredentialsAuthenticationResponse.self,
+                                                method: .post,
+                                                endpoint: Endpoint.Accounts.login,
+                                                body: .payload(body),
+                                                headers: [:],
+                                                options: [],
+                                                delay: 0...0) {
+                                switch $0 {
+                                case .failure(let error):
+                                    print(error.localizedDescription)
+                                    handler.settings.queues.response.async {
+                                        completionHandler(.failure(error))
+                                    }
+                                case .success(let response):
+                                    // check for status.
+                                    if let challenge = response.challenge, let url = challenge.url {
+                                        guard let url = URL(string: url) else { return }
+                                        user.completionHandler = completionHandler
+                                        user.response = .challenge(url)
+                                        me.challengeInfo(for: user) { form in
+                                            handler.settings.queues.response.async {
+                                                completionHandler(.failure(AuthenticationError.checkpoint(suggestions: form?.suggestion)))
+                                            }
+                                        }
+                                        // ask for verification code.
+                                        me.challenge(csrfToken: csrfToken, url: url, verification: user.verification) {
+                                            completionHandler(.failure($0))
+                                        }
+                                    } else if let identifier = response.twoFactorInfo?.identifier {
+                                        user.completionHandler = completionHandler
+                                        user.response = .twoFactor(identifier)
+                                        handler.settings.queues.response.async {
+                                            completionHandler(.failure(AuthenticationError.twoFactor))
+                                        }
+                                    } else if let authentication = response.user {
+                                        // check for authentication status.
+                                        if let dsUserId = authentication.identity.primaryKey {
+                                            user.response = .success
+                                            // create session cache.
+                                            let cookies = HTTPCookieStorage.shared
+                                                .cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
+                                            let storage = Authentication.Storage(
+                                                dsUserId: "\(dsUserId)",
+                                                csrfToken: csrfToken,
+                                                sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
+                                                rankToken: "\(dsUserId)"+"_"+handler.settings.device.phoneGuid.uuidString,
+                                                user: nil
+                                            )
+                                            let cache = Authentication.Response(device: handler.settings.device,
+                                                                                storage: storage,
+                                                                                data: cookies.data)
+                                            // actually authenticate.
+                                            handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
+                                        } else if response.invalidCredentials ?? false {
+                                            if let errorType = response.errorType {
+                                                if errorType.elementsEqual("invalid_user") {
+                                                    user.response = .failure
+                                                    handler.settings.queues.response.async {
+                                                        completionHandler(.failure(AuthenticationError.invalidUsername))
+                                                    }
+                                                } else {
+                                                    user.response = .failure
+                                                    handler.settings.queues.response.async {
+                                                        completionHandler(.failure(AuthenticationError.invalidPassword))
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        user.response = .failure
+                                        handler.settings.queues.response.async {
+                                            completionHandler(.failure(GenericError.custom("Unknown error.")))
+                                        }
+                                    }
                                 }
                             }
-                            // ask for verification code.
-                            me.challenge(csrfToken: csrfToken, url: url, verification: user.verification) {
-                                completionHandler(.failure($0))
-                            }
-                        } else if let identifier = response.twoFactorInfo?.twoFactorIdentifier {
-                            user.completionHandler = completionHandler
-                            user.response = .twoFactor(identifier)
-                            handler.settings.queues.response.async {
-                                completionHandler(.failure(AuthenticationError.twoFactor))
-                            }
-                        } else if let authentication = response.authenticated {
-                            // check for authentication status.
-                            if authentication, let dsUserId = response.userId {
-                                user.response = .success
-                                // create session cache.
-                                let cookies = HTTPCookieStorage.shared
-                                    .cookies?.filter { $0.domain.contains(".instagram.com") } ?? []
-                                let storage = Authentication.Storage(
-                                    dsUserId: dsUserId,
-                                    csrfToken: csrfToken,
-                                    sessionId: cookies.first(where: { $0.name == "sessionid" })!.value,
-                                    rankToken: dsUserId+"_"+handler.settings.device.phoneGuid.uuidString,
-                                    user: nil
-                                )
-                                let cache = Authentication.Response(device: handler.settings.device,
-                                                                    storage: storage,
-                                                                    data: cookies.data)
-                                // actually authenticate.
-                                handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
-                            } else if response.user ?? false {
-                                user.response = .failure
-                                handler.settings.queues.response.async {
-                                    completionHandler(.failure(AuthenticationError.invalidPassword))
-                                }
-                            } else {
-                                user.response = .failure
-                                handler.settings.queues.response.async {
-                                    completionHandler(.failure(AuthenticationError.invalidUsername))
-                                }
-                            }
-                        } else {
-                            user.response = .failure
-                            handler.settings.queues.response.async {
-                                completionHandler(.failure(GenericError.custom("Unknown error.")))
-                            }
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                        
+                    default:
+                        user.response = .failure
+                        handler.settings.queues.response.async {
+                            completionHandler(.failure(GenericError.custom("Invalid response.")))
                         }
                     }
                 }
@@ -217,7 +285,7 @@ final class AuthenticationHandler: Handler {
                 completionHandler(.failure(GenericError.custom("No code required.")))
             }
         case .challenge(let url):
-            send(challengeCode: code, at: url, for: credentials, completionHandler: completionHandler)
+            send(challengeCode: code.1, at: url, for: credentials, completionHandler: completionHandler)
         case .twoFactor(let identifier):
             send(twoFactorCode: code, with: identifier, for: credentials, completionHandler: completionHandler)
         }
@@ -276,28 +344,55 @@ final class AuthenticationHandler: Handler {
             }
         }
     }
+    
+    /// resend two factor sms code
+    func resend(user: Credentials, identifier: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        let user = user
+        let body = ["waterfall_id": UUID().uuidString,
+                    "device_id": handler.settings.device.deviceGuid.uuidString,
+                    "username": user.username,
+                    "two_factor_identifier": identifier]
+        requests.fetch(method: .post,
+                       url: Result { try Endpoint.Accounts.sendTwoFactorLoginSms.url() },
+                       body: .payload(body),
+                       headers: [:],
+                       delay: nil) { [weak self] in
+            guard let me = self else { return }
+            switch $0 {
+            case .failure(let error): me.handler.settings.queues.response.async { completionHandler(.failure(error)) }
+            case .success((let data, let response)):
+                if response?.statusCode == 200 {
+                    guard let data = data else { return }
+                    do {
+                        guard let identifier = try DynamicResponse(data: data).twoFactorInfo.twoFactorIdentifier.string else { return }
+                        user.response = .twoFactor(identifier)
+                        me.handler.settings.queues.response.async { completionHandler(.success(true)) }
+                    } catch { me.handler.settings.queues.response.async { completionHandler(.failure(error)) } }
+                } else {
+                    me.handler.settings.queues.response.async { completionHandler(.failure(GenericError.custom("rate_limit_error\nPlease wait a few minutes before you try again."))) }
+                }
+            }
+        }
+    }
 
-    func send(twoFactorCode code: String,
+    func send(twoFactorCode code: (Credentials.VerificationCodeType, String),
               with identifier: String,
               for user: Credentials,
               completionHandler: @escaping (Result<(Authentication.Response, APIHandler), Error>) -> Void) {
-        // guard for url.
-        guard let url = try? Endpoint.Authentication.twoFactor.url().absoluteString else {
-            return completionHandler(.failure(GenericError.invalidUrl))
-        }
         let user = user
-        let body = ["username": user.username,
-                    "verificationCode": code,
-                    "identifier": identifier]
-        let headers = ["X-CSRFToken": user.csrfToken!,
-                       "X-Requested-With": "XMLHttpRequest",
-                       "Referer": url,
-                       "X-Instagram-AJAX": "1"]
+        let body = ["waterfall_id": UUID().uuidString,
+                    "trust_this_device": "1",
+                    "device_id": handler.settings.device.deviceGuid.uuidString,
+                    "verification_code": code.1,
+                    "username": user.username,
+                    "verification_method": code.0.rawValue,
+                    "phone_id": handler.settings.device.phoneGuid.uuidString,
+                    "two_factor_identifier": identifier]
 
         requests.fetch(method: .post,
-                       url: Result { try Endpoint.Authentication.twoFactor.url() },
-                       body: .parameters(body),
-                       headers: headers,
+                       url: Result { try Endpoint.Accounts.twoFactorLogin.url() },
+                       body: .payload(body),
+                       headers: [:],
                        delay: 0...0) { [weak self] in
                         guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
                         // check for response.
@@ -329,7 +424,7 @@ final class AuthenticationHandler: Handler {
                             case 400:
                                 user.response = .failure
                                 handler.settings.queues.response.async {
-                                    completionHandler(.failure(GenericError.custom("Invalid code.")))
+                                    completionHandler(.failure(GenericError.custom("Please check the security code and try again.")))
                                 }
                             default:
                                 user.response = .failure
@@ -376,7 +471,7 @@ final class AuthenticationHandler: Handler {
                         return completionHandler(.failure(GenericError.custom("Invalid response.")))
                     }
                     user.code = nil
-                    user.response = .twoFactor(decoded.twoFactorInfo!.twoFactorIdentifier!)
+                    user.response = .twoFactor(decoded.twoFactorInfo!.identifier!)
                     // ask for code.
                     handler.settings.queues.response.async {
                         completionHandler(.failure(AuthenticationError.twoFactor))

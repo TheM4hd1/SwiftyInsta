@@ -219,6 +219,10 @@
 		E0F8D51D22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
 		E0F8D51E22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
 		E0F8D51F22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
+		E8A611E825458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
+		E8A611E925458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
+		E8A611EA25458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
+		E8A611EB25458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -288,6 +292,7 @@
 		E0F8D51122F9DE0E0004309C /* MessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequest.swift; sourceTree = "<group>"; };
 		E0F8D51622F9E4680004309C /* DynamicRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicRequest.swift; sourceTree = "<group>"; };
 		E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedCapabilities.swift; sourceTree = "<group>"; };
+		E8A611E725458D4D003EAF16 /* SwCrypt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwCrypt.swift; sourceTree = "<group>"; };
 		E9497D8DD2D1B4C4F52B1DC5 /* Pods-SwiftyInsta.iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -387,6 +392,7 @@
 		115F1236217FE7A200ED3530 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				E8A611E725458D4D003EAF16 /* SwCrypt.swift */,
 				1104CD102180644100F855BA /* HTTPHelper.swift */,
 				11C106CE218DE9B20014D0E5 /* PaginationParameters.swift */,
 				E063077122E253060015AA92 /* PaginationHelper.swift */,
@@ -883,6 +889,7 @@
 				11DDE51F21A1F94B00754F0F /* Version.swift in Sources */,
 				E0F8D51722F9E4680004309C /* DynamicRequest.swift in Sources */,
 				E0F49BA222E4A53D004C3E7F /* UserHandler.swift in Sources */,
+				E8A611E825458D4D003EAF16 /* SwCrypt.swift in Sources */,
 				E0114B1A22F8554E00DACAC5 /* ThreadResponse.swift in Sources */,
 				E09FCB8622FED639000E02F1 /* LoginWebViewController.swift in Sources */,
 				E0B9940922F3B7DB0036BFA5 /* UserResponse.swift in Sources */,
@@ -943,6 +950,7 @@
 				E006E3F622E87EFE002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4D622E8811E002DB4BB /* Version.swift in Sources */,
 				E006954A238BD3D100236DBA /* EndpointPath.swift in Sources */,
+				E8A611E925458D4D003EAF16 /* SwCrypt.swift in Sources */,
 				E006E3EF22E87EFE002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1622F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E3F422E87EFE002DB4BB /* ProfileHandler.swift in Sources */,
@@ -997,6 +1005,7 @@
 				E006E44322E87EFF002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4D822E8811E002DB4BB /* Version.swift in Sources */,
 				E006954B238BD3D100236DBA /* EndpointPath.swift in Sources */,
+				E8A611EA25458D4D003EAF16 /* SwCrypt.swift in Sources */,
 				E006E43C22E87EFF002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1722F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E44122E87EFF002DB4BB /* ProfileHandler.swift in Sources */,
@@ -1051,6 +1060,7 @@
 				E006E49022E87F00002DB4BB /* StoryHandler.swift in Sources */,
 				E006E4DA22E8811F002DB4BB /* Version.swift in Sources */,
 				E006954C238BD3D100236DBA /* EndpointPath.swift in Sources */,
+				E8A611EB25458D4D003EAF16 /* SwCrypt.swift in Sources */,
 				E006E48922E87F00002DB4BB /* APIHandler.swift in Sources */,
 				E0D0EF1822F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E48E22E87F00002DB4BB /* ProfileHandler.swift in Sources */,
