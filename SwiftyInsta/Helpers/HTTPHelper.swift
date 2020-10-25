@@ -233,6 +233,9 @@ class HTTPHelper {
         request.addValue(Headers.igConnectionTypeValue, forHTTPHeaderField: Headers.igConnectionTypeKey)
         request.addValue(Headers.contentTypeApplicationFormValue, forHTTPHeaderField: Headers.contentTypeKey)
         request.addValue(Headers.userAgentValue, forHTTPHeaderField: Headers.userAgentKey)
+        request.addValue(Headers.xIgAppIdValue, forHTTPHeaderField: Headers.xIgAppId)
+        request.addValue(Headers.xIgDeviceLocaleValue, forHTTPHeaderField: Headers.xIgDeviceLocale)
+        request.addValue(handler.settings.device.deviceGuid.uuidString, forHTTPHeaderField: Headers.xIgDeviceId)
         // remove old values and updates with new one.
         handler.settings.headers.forEach { key, value in request.setValue(value, forHTTPHeaderField: key) }
         return request
