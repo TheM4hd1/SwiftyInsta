@@ -257,7 +257,7 @@ class HTTPHelper {
             request.httpBody = data.data(using: String.Encoding.utf8)
         }
     }
-    
+
     fileprivate func setPayload(to request: inout URLRequest, body: [String: Any]) {
         if !body.isEmpty {
             guard let jsonData = try? JSONSerialization.data(withJSONObject: body, options: []) else { return }

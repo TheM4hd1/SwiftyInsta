@@ -55,7 +55,7 @@ public class Credentials {
         self.password = password
         self.verification = verification
     }
-    
+
     /// resends `twoFactor` code
     public func resendCode(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         switch response {

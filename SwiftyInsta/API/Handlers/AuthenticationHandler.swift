@@ -6,8 +6,8 @@
 //  Copyright © 2019 Mahdi. All rights reserved.
 //
 
-import Foundation
 import CryptoSwift
+import Foundation
 
 final class AuthenticationHandler: Handler {
     // MARK: Log in
@@ -106,7 +106,7 @@ final class AuthenticationHandler: Handler {
                                         "device_id": me.handler.settings.device.deviceGuid.uuidString,
                                         "login_attempt_count": "1",
                                         "phone_id": me.handler.settings.device.phoneGuid.uuidString]
-                            
+
                             me.requests.request(CredentialsAuthenticationResponse.self,
                                                 method: .post,
                                                 endpoint: Endpoint.Accounts.login,
@@ -186,7 +186,7 @@ final class AuthenticationHandler: Handler {
                         } catch {
                             print(error.localizedDescription)
                         }
-                        
+
                     default:
                         user.response = .failure
                         handler.settings.queues.response.async {
@@ -344,7 +344,7 @@ final class AuthenticationHandler: Handler {
             }
         }
     }
-    
+
     /// resend two factor sms code
     func resend(user: Credentials, identifier: String, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         let user = user

@@ -77,13 +77,13 @@ struct TwoFactorInfo: IdentifiableParsedResponse {
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
-    
+
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(rawResponse.data())
@@ -123,13 +123,13 @@ struct ChallengeInfo: IdentifiableParsedResponse {
 
     /// The `rawResponse`.
     public let rawResponse: DynamicResponse
-    
+
     // MARK: Codable
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(rawResponse.data())
