@@ -235,12 +235,12 @@ public final class MediaHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
+            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [
-                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Constants.igSignatureVersionKey: Constants.igSignatureVersionValue
             ]
 
             requests.request(Upload.Response.Picture.self,
@@ -438,7 +438,7 @@ public final class MediaHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        let headers = [Headers.contentTypeKey: Headers.contentTypeApplicationFormValue,
+        let headers = [Constants.contentTypeKey: Constants.contentTypeApplicationFormValue,
                        "Host": "i.instagram.com"]
 
         let extra = ConfigureExtras.init(sourceWidth: 0, sourceHeight: 0)
@@ -468,12 +468,12 @@ public final class MediaHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
+            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [
-                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Constants.igSignatureVersionKey: Constants.igSignatureVersionValue
             ]
 
             requests.request(Media.self,
@@ -528,12 +528,12 @@ public final class MediaHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
+            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [
-                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Constants.igSignatureVersionKey: Constants.igSignatureVersionValue
             ]
 
             requests.request(Media.self,

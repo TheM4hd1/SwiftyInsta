@@ -29,6 +29,8 @@ public enum AuthenticationError: LocalizedError {
     case invalidUsername
     /// Invalid code.
     case invalidCode
+    /// Code sent.
+    case codeSent
     /// Invalid `Authentication.Response`.
     case invalidCache
 
@@ -58,6 +60,7 @@ public enum AuthenticationError: LocalizedError {
         case .invalidUsername: return "Invalid username."
         case .invalidPassword: return "Invalid password."
         case .invalidCode: return "Invalid code. Try again."
+        case .codeSent: return "Verification code has been sent."
         case .invalidCache: return "Invalid `Authentication.Response`. Log out and log in again."
         }
     }

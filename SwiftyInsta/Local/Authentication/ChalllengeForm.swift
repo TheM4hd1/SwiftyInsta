@@ -1,58 +1,46 @@
-//
-//  ChallengeModel.swift
-//  SwiftyInsta
-//
-//  Created by Mahdi on 10/29/18.
-//  Copyright © 2018 Mahdi. All rights reserved.
-//
+struct ChallengeForm: IdentifiableParsedResponse {
+    /// Init with `rawResponse`.
+    public init?(rawResponse: DynamicResponse) {
+        guard rawResponse != .none else { return nil }
+        self.rawResponse = rawResponse
+    }
 
-import Foundation
+    /// The `rawResponse`.
+    public let rawResponse: DynamicResponse
 
-struct ChallengeForm: Codable {
-    var entryData: EntryData?
+    // MARK: Codable
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+    }
 
-    /// Compute and return the suggestion.
-    var suggestion: [String]? {
-        guard let values = entryData?.challenge?.first?.extraData?.content?.last?.fields?.first?.values,
-            values.count == 2 else { return nil }
-        let first = values[0]
-        let last = values[1]
-        // check for.
-        return Array(Set([first.label, last.label].compactMap { $0 }))
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawResponse.data())
     }
-}
-extension ChallengeForm {
-    struct EntryData: Codable {
-        enum CodingKeys: String, CodingKey {
-            case challenge = "Callenge"
-        }
-        var challenge: [EntryDataChallengeItem]?
+    /// The `stepName` value
+    public var name: String? {
+        return rawResponse.stepName.string
     }
-}
-extension ChallengeForm.EntryData {
-    struct EntryDataChallengeItem: Codable {
-        var extraData: ChallengeItemExtraData?
+    /// Suggested methods for receiving `challengeCode`. `EMAIL` or `SMS`
+    public var suggestion: [String]? {
+        return [rawResponse.stepData.phoneNumber.string ?? "None",
+                rawResponse.stepData.email.string ?? "None"].filter { !$0.elementsEqual("None") }
     }
-}
-extension ChallengeForm.EntryData.EntryDataChallengeItem {
-    struct ChallengeItemExtraData: Codable {
-        var content: [ExtraDataContent]?
+    /// The `bloksAction` value.
+    public var bloksAction: String? {
+        return rawResponse.bloksAction.string
     }
-}
-extension ChallengeForm.EntryData.EntryDataChallengeItem.ChallengeItemExtraData {
-    struct ExtraDataContent: Codable {
-        var fields: [ContentField]?
+    /// The `userId` value.
+    public var userId: Int? {
+        return rawResponse.userId.int
     }
-}
-extension ChallengeForm.EntryData.EntryDataChallengeItem.ChallengeItemExtraData.ExtraDataContent {
-    struct ContentField: Codable {
-        var values: [FieldsItem]?
+    /// The `nonceCode` value.
+    public var code: String? {
+        return rawResponse.nonceCode.string
     }
-}
-extension ChallengeForm.EntryData.EntryDataChallengeItem.ChallengeItemExtraData.ExtraDataContent.ContentField {
-    struct FieldsItem: Codable {
-        var label: String?
-        var selected: Bool?
-        var value: Int?
+    /// The `challengeContext` value
+    public var context: String? {
+        return rawResponse.challengeContext.string
     }
 }

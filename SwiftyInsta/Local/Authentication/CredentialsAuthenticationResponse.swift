@@ -142,4 +142,8 @@ struct ChallengeInfo: IdentifiableParsedResponse {
     public var apiPath: String? {
         return rawResponse.apiPath.string
     }
+    /// The `challengeContext` value
+    public var context: String? {
+        return rawResponse.challengeContext.string
+    }
 }

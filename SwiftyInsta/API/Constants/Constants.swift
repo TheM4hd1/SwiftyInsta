@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Headers {
+struct Constants {
     private init() {}
 
     static let acceptLanguageKey = "Accept-Language"
@@ -36,4 +36,5 @@ struct Headers {
     static let countKey = "count"
     static let countValue = "1"
     static let rankTokenKey = "rank_token"
+    static let bloksVersioningId = "7b2216598d8fcf84fbda65652788cb12be5aa024c4ea5e03deeb2b81a383c9e0"
 }

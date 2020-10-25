@@ -16,7 +16,8 @@ public class Credentials {
     public enum VerificationCodeType: String { case challenge = "0", sms = "1", backup = "2", totp = "3" }
     /// Response.
     enum Response {
-        case challenge(URL)
+        case challenge(ChallengeInfo)
+        case challengeForm(ChallengeForm)
         case twoFactor(String)
         case success
         case failure
@@ -58,11 +59,7 @@ public class Credentials {
 
     /// resends `twoFactor` code
     public func resendCode(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        switch response {
-        case .twoFactor(let identifier):
-            handler?.authentication.resend(user: self, identifier: identifier, completionHandler: completionHandler)
-        default:
-            return
-        }
+        guard case .twoFactor(let identifier) = response else { return }
+        handler?.authentication.resend(user: self, identifier: identifier, completionHandler: completionHandler)
     }
 }

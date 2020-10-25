@@ -228,14 +228,14 @@ class HTTPHelper {
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: handler.response?.cookies ?? [])
-        request.addValue(Headers.acceptLanguageValue, forHTTPHeaderField: Headers.acceptLanguageKey)
-        request.addValue(Headers.igCapabilitiesValue, forHTTPHeaderField: Headers.igCapabilitiesKey)
-        request.addValue(Headers.igConnectionTypeValue, forHTTPHeaderField: Headers.igConnectionTypeKey)
-        request.addValue(Headers.contentTypeApplicationFormValue, forHTTPHeaderField: Headers.contentTypeKey)
-        request.addValue(Headers.userAgentValue, forHTTPHeaderField: Headers.userAgentKey)
-        request.addValue(Headers.xIgAppIdValue, forHTTPHeaderField: Headers.xIgAppId)
-        request.addValue(Headers.xIgDeviceLocaleValue, forHTTPHeaderField: Headers.xIgDeviceLocale)
-        request.addValue(handler.settings.device.deviceGuid.uuidString, forHTTPHeaderField: Headers.xIgDeviceId)
+        request.addValue(Constants.acceptLanguageValue, forHTTPHeaderField: Constants.acceptLanguageKey)
+        request.addValue(Constants.igCapabilitiesValue, forHTTPHeaderField: Constants.igCapabilitiesKey)
+        request.addValue(Constants.igConnectionTypeValue, forHTTPHeaderField: Constants.igConnectionTypeKey)
+        request.addValue(Constants.contentTypeApplicationFormValue, forHTTPHeaderField: Constants.contentTypeKey)
+        request.addValue(Constants.userAgentValue, forHTTPHeaderField: Constants.userAgentKey)
+        request.addValue(Constants.xIgAppIdValue, forHTTPHeaderField: Constants.xIgAppId)
+        request.addValue(Constants.xIgDeviceLocaleValue, forHTTPHeaderField: Constants.xIgDeviceLocale)
+        request.addValue(handler.settings.device.deviceGuid.uuidString, forHTTPHeaderField: Constants.xIgDeviceId)
         // remove old values and updates with new one.
         handler.settings.headers.forEach { key, value in request.setValue(value, forHTTPHeaderField: key) }
         return request

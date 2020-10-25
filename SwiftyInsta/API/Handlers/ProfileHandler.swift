@@ -35,10 +35,10 @@ public final class ProfileHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes).toHexString()
+            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes).toHexString()
             let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
-            content.updateValue(signature, forKey: Headers.igSignatureKey)
-            content.updateValue(Headers.igSignatureVersionValue, forKey: Headers.igSignatureVersionKey)
+            content.updateValue(signature, forKey: Constants.igSignatureKey)
+            content.updateValue(Constants.igSignatureVersionValue, forKey: Constants.igSignatureVersionKey)
 
             requests.request(Status.self,
                              method: .post,
@@ -61,10 +61,10 @@ public final class ProfileHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes).toHexString()
+            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes).toHexString()
             let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
-            content.updateValue(signature, forKey: Headers.igSignatureKey)
-            content.updateValue(Headers.igSignatureVersionValue, forKey: Headers.igSignatureVersionKey)
+            content.updateValue(signature, forKey: Constants.igSignatureKey)
+            content.updateValue(Constants.igSignatureVersionValue, forKey: Constants.igSignatureVersionKey)
 
             requests.request(Status.self,
                              method: .post,
