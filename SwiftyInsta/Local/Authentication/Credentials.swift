@@ -30,7 +30,10 @@ public class Credentials {
     var password: String
     /// The verification method.
     public var verification: Verification
-    /// The code and code type
+    /// The `verification code`
+    ///
+    /// If the `code` is type of `twoFactor`, you need to specify it `(sms, backup, totp)`,
+    /// Otherwise pass it as `challenge` and it will use the `default verification method (email, text)`
     public var code: (VerificationCodeType, String)? {
         didSet {
             // notify a change.
