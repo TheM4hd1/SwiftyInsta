@@ -163,7 +163,7 @@ public struct Endpoint {
         /// Post comment.
         case postComment = "https://i.instagram.com/api/v1/media/{mediaId}/comment/"
         /// Delete comment.
-        case deleteComment = "https://i.instagram.com/api/v1/media/{mediaId}/comment/{commentId}/delete/"
+        case deleteComment = "https://i.instagram.com/api/v1/media/{mediaId}/comment/bulk_delete/"
         /// Delete.
         case delete = "https://i.instagram.com/api/v1/media/{mediaId}/delete/"
         /// Edit.

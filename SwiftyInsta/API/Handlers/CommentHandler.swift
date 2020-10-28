@@ -30,35 +30,21 @@ public final class CommentHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        let content = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+        let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                        "_uid": storage.dsUserId,
                        "_csrftoken": storage.csrfToken,
-                       "user_breadcrumb": String(Date().millisecondsSince1970),
+                       "is_carousel_bumped_post": "false",
                        "idempotence_token": UUID.init().uuidString,
                        "comment_text": comment,
-                       "containermodule": "comments_feed_timeline",
-                       "radio_type": "wifi-none"]
+                       "container_module": "comments_v2_feed_timeline",
+                       "inventory_source": "media_or_ad",
+                       "delivery_class": "organic",
+                       "carousel_index": "0"]
 
-        let encoder = JSONEncoder()
-        guard let payload = try? String(data: encoder.encode(content), encoding: .utf8) else {
-            return completionHandler(.failure(GenericError.custom("Invalid request.")))
-        }
-        do {
-            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
-            let signature = "\(hash).\(payload)"
-            guard let escapedSignature = signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-                return completionHandler(.failure(GenericError.custom("Invalid request.")))
-            }
-            let body: [String: Any] = [
-                Constants.igSignatureKey: escapedSignature,
-                Constants.igSignatureVersionKey: Constants.igSignatureVersionValue
-            ]
-
-            requests.request(Status.self,
-                             method: .post,
-                             endpoint: Endpoint.Media.postComment.media(mediaId),
-                             body: .parameters(body)) { completionHandler($0.map { $0.state == .ok }) }
-        } catch { completionHandler(.failure(error)) }
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoint.Media.postComment.media(mediaId),
+                         body: .payload(body)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
     /// Delete a comment.
@@ -68,11 +54,12 @@ public final class CommentHandler: Handler {
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
                     "_uid": storage.dsUserId,
-                    "_csrftoken": storage.csrfToken]
+                    "_csrftoken": storage.csrfToken,
+                    "comment_ids_to_delete": commentId]
         requests.request(Status.self,
                          method: .post,
-                         endpoint: Endpoint.Media.deleteComment.comment(commentId).media(mediaId),
-                         body: .parameters(body),
+                         endpoint: Endpoint.Media.deleteComment.media(mediaId),
+                         body: .payload(body),
                          completion: { completionHandler($0.map { $0.state == .ok }) })
     }
 
