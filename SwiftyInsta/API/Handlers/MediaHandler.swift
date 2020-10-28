@@ -91,6 +91,7 @@ public final class MediaHandler: Handler {
                     "is_carousel_bumped_post": "false",
                     "container_module": "feed_timeline",
                     "carousel_index": "0",
+                    "module_name": "feed_timeline",
                     "media_id": mediaId]
 
         requests.request(Status.self,
