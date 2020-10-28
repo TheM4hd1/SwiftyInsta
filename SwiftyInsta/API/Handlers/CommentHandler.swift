@@ -31,15 +31,15 @@ public final class CommentHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         let body = ["_uuid": handler.settings.device.deviceGuid.uuidString,
-                       "_uid": storage.dsUserId,
-                       "_csrftoken": storage.csrfToken,
-                       "is_carousel_bumped_post": "false",
-                       "idempotence_token": UUID.init().uuidString,
-                       "comment_text": comment,
-                       "container_module": "comments_v2_feed_timeline",
-                       "inventory_source": "media_or_ad",
-                       "delivery_class": "organic",
-                       "carousel_index": "0"]
+                    "_uid": storage.dsUserId,
+                    "_csrftoken": storage.csrfToken,
+                    "is_carousel_bumped_post": "false",
+                    "idempotence_token": UUID.init().uuidString,
+                    "comment_text": comment,
+                    "container_module": "comments_v2_feed_timeline",
+                    "inventory_source": "media_or_ad",
+                    "delivery_class": "organic",
+                    "carousel_index": "0"]
 
         requests.request(Status.self,
                          method: .post,
