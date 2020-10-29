@@ -219,6 +219,10 @@
 		E0F8D51D22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
 		E0F8D51E22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
 		E0F8D51F22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */; };
+		E805D295254ADD4F006E536B /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805D294254ADD4F006E536B /* Utilities.swift */; };
+		E805D296254ADD4F006E536B /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805D294254ADD4F006E536B /* Utilities.swift */; };
+		E805D297254ADD4F006E536B /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805D294254ADD4F006E536B /* Utilities.swift */; };
+		E805D298254ADD4F006E536B /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805D294254ADD4F006E536B /* Utilities.swift */; };
 		E8A611E825458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 		E8A611E925458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 		E8A611EA25458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
@@ -292,6 +296,7 @@
 		E0F8D51122F9DE0E0004309C /* MessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequest.swift; sourceTree = "<group>"; };
 		E0F8D51622F9E4680004309C /* DynamicRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicRequest.swift; sourceTree = "<group>"; };
 		E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedCapabilities.swift; sourceTree = "<group>"; };
+		E805D294254ADD4F006E536B /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		E8A611E725458D4D003EAF16 /* SwCrypt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwCrypt.swift; sourceTree = "<group>"; };
 		E9497D8DD2D1B4C4F52B1DC5 /* Pods-SwiftyInsta.iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -398,6 +403,7 @@
 				E063077122E253060015AA92 /* PaginationHelper.swift */,
 				1104CD0A2180627400F855BA /* Error.swift */,
 				110B3F9A21A2CE4D0019523A /* Extensions.swift */,
+				E805D294254ADD4F006E536B /* Utilities.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -884,6 +890,7 @@
 				E0F8D51222F9DE0E0004309C /* MessageRequest.swift in Sources */,
 				11D3779D22674E340023CF07 /* LoginWebView.swift in Sources */,
 				E0F49BA322E4D864004C3E7F /* MediaHandler.swift in Sources */,
+				E805D295254ADD4F006E536B /* Utilities.swift in Sources */,
 				E0F8D51C22F9E4CF0004309C /* SupportedCapabilities.swift in Sources */,
 				11723A592187C23400968DA5 /* CredentialsAuthenticationResponse.swift in Sources */,
 				11DDE51F21A1F94B00754F0F /* Version.swift in Sources */,
@@ -958,6 +965,7 @@
 				E0069554238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E40622E87EFE002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076015F22F198B900F8961F /* Brand.swift in Sources */,
+				E805D296254ADD4F006E536B /* Utilities.swift in Sources */,
 				E0B9940422F3A8450036BFA5 /* StoryResponse.swift in Sources */,
 				E08C1DA922F0B39A003A8BA8 /* ParsedResponse.swift in Sources */,
 				E0230BB722F84E2C00AD0E83 /* ExploreResponse.swift in Sources */,
@@ -1013,6 +1021,7 @@
 				E0069555238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E45322E87EFF002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076016022F198B900F8961F /* Brand.swift in Sources */,
+				E805D297254ADD4F006E536B /* Utilities.swift in Sources */,
 				E0B9940522F3A8450036BFA5 /* StoryResponse.swift in Sources */,
 				E08C1DAA22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */,
 				E0230BB822F84E2C00AD0E83 /* ExploreResponse.swift in Sources */,
@@ -1068,6 +1077,7 @@
 				E0069556238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E4A022E87F00002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076016122F198B900F8961F /* Brand.swift in Sources */,
+				E805D298254ADD4F006E536B /* Utilities.swift in Sources */,
 				E0B9940622F3A8450036BFA5 /* StoryResponse.swift in Sources */,
 				E08C1DAB22F0B39A003A8BA8 /* ParsedResponse.swift in Sources */,
 				E0230BB922F84E2C00AD0E83 /* ExploreResponse.swift in Sources */,
