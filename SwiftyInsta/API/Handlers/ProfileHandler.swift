@@ -7,7 +7,6 @@
 //  Copyright © 2018 Mahdi. All rights reserved.
 //
 
-import CryptoSwift
 import Foundation
 
 /// **Instagram** accepted `Gender`s.
@@ -27,24 +26,12 @@ public final class ProfileHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
-        var content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
-                       "_uid": storage.dsUserId,
+        let content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
                        "_csrftoken": storage.csrfToken]
-        let encoder = JSONEncoder()
-        guard let encodedContent = try? String(data: encoder.encode(content), encoding: .utf8) else {
-            return completionHandler(.failure(GenericError.custom("Invalid request.")))
-        }
-        do {
-            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes).toHexString()
-            let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
-            content.updateValue(signature, forKey: Constants.igSignatureKey)
-            content.updateValue(Constants.igSignatureVersionValue, forKey: Constants.igSignatureVersionKey)
-
-            requests.request(Status.self,
-                             method: .post,
-                             endpoint: Endpoint.Accounts.setPublic,
-                             body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
-        } catch { completionHandler(.failure(error)) }
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoint.Accounts.setPublic,
+                         body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
     /// Set the account to private.
@@ -53,24 +40,12 @@ public final class ProfileHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
         // prepare body.
-        var content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
-                       "_uid": storage.dsUserId,
+        let content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
                        "_csrftoken": storage.csrfToken]
-        let encoder = JSONEncoder()
-        guard let encodedContent = try? String(data: encoder.encode(content), encoding: .utf8) else {
-            return completionHandler(.failure(GenericError.custom("Invalid request.")))
-        }
-        do {
-            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(encodedContent.bytes).toHexString()
-            let signature = "\(hash).\(encodedContent.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)"
-            content.updateValue(signature, forKey: Constants.igSignatureKey)
-            content.updateValue(Constants.igSignatureVersionValue, forKey: Constants.igSignatureVersionKey)
-
-            requests.request(Status.self,
-                             method: .post,
-                             endpoint: Endpoint.Accounts.setPrivate,
-                             body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
-        } catch { completionHandler(.failure(error)) }
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoint.Accounts.setPrivate,
+                         body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
     }
 
     /// Update password.
@@ -80,17 +55,55 @@ public final class ProfileHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        // prepare body.
-        let content = ["_uuid": handler!.settings.device.deviceGuid.uuidString,
-                       "_uid": storage.dsUserId,
-                       "_csrftoken": storage.csrfToken,
-                       "old_password": oldPassword,
-                       "new_password1": password,
-                       "new_password2": password]
-        requests.request(Status.self,
-                         method: .post,
-                         endpoint: Endpoint.Accounts.changePassword,
-                         body: .parameters(content)) { completionHandler($0.map { $0.state == .ok }) }
+        let params: [String: Any] = ["id": true,
+                                     "server_config_retrieval": 1,
+                                     "_csrftoken": storage.csrfToken]
+        requests.fetch(method: .post,
+                       url: Result { try Endpoint.Accounts.launcherSync.url() },
+                       body: .parameters(params),
+                       headers: [:],
+                       delay: nil) { [weak self] in
+            guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
+            switch $0 {
+            case .failure(let error): handler.settings.queues.response.async { completionHandler(.failure(error)) }
+            case .success((_, let response?)):
+                guard let headers = response.allHeaderFields as? [String: String] else {
+                    return handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.custom("Cannot fetch headers.")))
+                    }
+                }
+                guard case .success(let newEncPassword1) = Utilities.encryptPassword(from: headers, password) else {
+                    return handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.custom("Cannot generate enc_password.")))
+                    }
+                }
+                guard case .success(let newEncPassword2) = Utilities.encryptPassword(from: headers, password) else {
+                    return handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.custom("Cannot generate enc_password.")))
+                    }
+                }
+                guard case .success(let oldEncPassword) = Utilities.encryptPassword(from: headers, oldPassword) else {
+                    return handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.custom("Cannot generate enc_password.")))
+                    }
+                }
+                // prepare body.
+                let content = ["_uuid": handler.settings.device.deviceGuid.uuidString,
+                               "_uid": storage.dsUserId,
+                               "_csrftoken": storage.csrfToken,
+                               "enc_old_password": oldEncPassword,
+                               "enc_new_password1": newEncPassword1,
+                               "enc_new_password2": newEncPassword2]
+                me.requests.request(Status.self,
+                                    method: .post,
+                                    endpoint: Endpoint.Accounts.changePassword,
+                                    body: .payload(content)) { completionHandler($0.map { $0.state == .ok }) }
+            default:
+                handler.settings.queues.response.async {
+                    completionHandler(.failure(GenericError.custom("Invalid response.")))
+                }
+            }
+        }
     }
 
     /// Edit profile.
