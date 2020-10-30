@@ -14,40 +14,37 @@ public struct UploadPhotoAlbumResponse: Codable, StatusEnforceable {
     var status: String?
 }
 
-struct ConfigurePhotoModel: Codable {
+struct ConfigurePhoto: Codable {
     enum CodingKeys: String, CodingKey {
         case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
-        case mediaFolder, sourceType, caption, uploadId, device, edits, extras
+        case  sourceType, caption, uploadId, edits, isStoriesDraft,
+             clientTimestamp, timezoneOffset, cameraPosition, videoSubtitlesEnabled,
+             disableComments, waterfallId, geotagEnabled, deviceId, containerModule
     }
 
+    let isStoriesDraft: Bool
+    let clientTimestamp: String
+    let csrfToken: String
+    let timezoneOffset: String
+    let edits: ConfigureEdits
     let uuid: String
     let uid: Int
-    let csrfToken: String
-    let mediaFolder: String
+    let cameraPosition: String
+    let videoSubtitlesEnabled: Bool
     let sourceType: String
-    let caption: String
+    let disableComments: Bool
+    let waterfallId: String
+    let geotagEnabled: Bool
     let uploadId: String
-    let device: ConfigureDevice
-    let edits: ConfigureEdits
-    let extras: ConfigureExtras
-}
-
-struct ConfigureDevice: Codable {
-    let manufacturer: String
-    let model: String
-    let androidVersion: String
-    let androidRelease: String
+    let deviceId: String
+    let containerModule: String
+    let caption: String
 }
 
 struct ConfigureEdits: Codable {
     let cropOriginalSize: [Int]
     let cropCenter: [Double]
     let cropZoom: Int
-}
-
-struct ConfigureExtras: Codable {
-    let sourceWidth: Int
-    let sourceHeight: Int
 }
 
 struct ConfigurePhotoAlbumModel: Codable {
@@ -80,14 +77,13 @@ struct ConfigureChildren: Codable {
 struct ConfigureVideoModel: Codable {
     enum CodingKeys: String, CodingKey {
         case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
-        case caption, uploadId, sourceType, cameraPosition, extra, clips, posterFrameIndex, audioMuted, filterType, videoResult
+        case caption, uploadId, sourceType, cameraPosition, clips, posterFrameIndex, audioMuted, filterType, videoResult
     }
 
     let caption: String
     let uploadId: String
     let sourceType: String
     let cameraPosition: String
-    let extra: ConfigureExtras
     let clips: [ClipsModel]
     let posterFrameIndex: Int
     let audioMuted: Bool
