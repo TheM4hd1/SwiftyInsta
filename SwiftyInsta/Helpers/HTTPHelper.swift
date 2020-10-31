@@ -228,11 +228,14 @@ class HTTPHelper {
         var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30)
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: handler.response?.cookies ?? [])
-        request.addValue(Headers.acceptLanguageValue, forHTTPHeaderField: Headers.acceptLanguageKey)
-        request.addValue(Headers.igCapabilitiesValue, forHTTPHeaderField: Headers.igCapabilitiesKey)
-        request.addValue(Headers.igConnectionTypeValue, forHTTPHeaderField: Headers.igConnectionTypeKey)
-        request.addValue(Headers.contentTypeApplicationFormValue, forHTTPHeaderField: Headers.contentTypeKey)
-        request.addValue(Headers.userAgentValue, forHTTPHeaderField: Headers.userAgentKey)
+        request.addValue(Constants.acceptLanguageValue, forHTTPHeaderField: Constants.acceptLanguageKey)
+        request.addValue(Constants.igCapabilitiesValue, forHTTPHeaderField: Constants.igCapabilitiesKey)
+        request.addValue(Constants.igConnectionTypeValue, forHTTPHeaderField: Constants.igConnectionTypeKey)
+        request.addValue(Constants.contentTypeApplicationFormValue, forHTTPHeaderField: Constants.contentTypeKey)
+        request.addValue(Constants.userAgentValue, forHTTPHeaderField: Constants.userAgentKey)
+        request.addValue(Constants.xIgAppIdValue, forHTTPHeaderField: Constants.xIgAppId)
+        request.addValue(Constants.xIgDeviceLocaleValue, forHTTPHeaderField: Constants.xIgDeviceLocale)
+        request.addValue(handler.settings.device.deviceGuid.uuidString, forHTTPHeaderField: Constants.xIgDeviceId)
         // remove old values and updates with new one.
         handler.settings.headers.forEach { key, value in request.setValue(value, forHTTPHeaderField: key) }
         return request
@@ -254,12 +257,12 @@ class HTTPHelper {
             request.httpBody = data.data(using: String.Encoding.utf8)
         }
     }
-    
+
     fileprivate func setPayload(to request: inout URLRequest, body: [String: Any]) {
         if !body.isEmpty {
             guard let jsonData = try? JSONSerialization.data(withJSONObject: body, options: []) else { return }
             guard let json = String(data: jsonData, encoding: String.Encoding.utf8)?
-                .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
+                .addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved) else { return }
             let payload = "SIGNATURE." + json
             let signedBody =  "signed_body=" + payload
             request.httpBody = signedBody.data(using: String.Encoding.utf8)

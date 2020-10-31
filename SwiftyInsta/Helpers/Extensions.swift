@@ -70,3 +70,8 @@ extension HTTPCookie: CookieEncodable {
     /// Get `Data` from cookie.
     var data: Data? { return properties.flatMap(saveProperties) }
 }
+
+/// `CharacterSet` accesories.
+extension CharacterSet {
+    static let rfc3986Unreserved = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
+}

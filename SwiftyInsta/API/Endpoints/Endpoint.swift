@@ -54,6 +54,12 @@ public struct Endpoint {
         case changeProfilePicture = "https://i.instagram.com/api/v1/accounts/change_profile_picture/"
         /// Recover by emaill.
         case recoverByEmail = "https://i.instagram.com/api/v1/accounts/send_recovery_flow_email/"
+        /// Challenge resolve
+        case challenge = "https://i.instagram.com/api/v1/{apiPath}/"
+        /// Launcher Sync
+        case launcherSync = "https://i.instagram.com/api/v1/launcher/sync/"
+        /// Challenge BloksAction
+        case challengeBloksAction = "https://i.instagram.com/api/v1/bloks/apps/{bloksAction}/"
     }
 
     /// An `enum` providing for `Archive` endpoints.
@@ -157,7 +163,7 @@ public struct Endpoint {
         /// Post comment.
         case postComment = "https://i.instagram.com/api/v1/media/{mediaId}/comment/"
         /// Delete comment.
-        case deleteComment = "https://i.instagram.com/api/v1/media/{mediaId}/comment/{commentId}/delete/"
+        case deleteComment = "https://i.instagram.com/api/v1/media/{mediaId}/comment/bulk_delete/"
         /// Delete.
         case delete = "https://i.instagram.com/api/v1/media/{mediaId}/delete/"
         /// Edit.

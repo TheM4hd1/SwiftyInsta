@@ -65,7 +65,7 @@ public final class FeedHandler: Handler {
             "seen_posts": "",
             "phone_id": handler.settings.device.phoneGuid,
             "battery_level": 72,
-            "timezone_offset": Headers.timeZoneOffsetValue,
+            "timezone_offset": Constants.timeZoneOffsetValue,
             "_csrftoken": storage.csrfToken,
             "client_session_id": storage.sessionId,
             "device_id": handler.settings.device.id,

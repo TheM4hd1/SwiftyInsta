@@ -12,9 +12,12 @@ import Foundation
 public class Credentials {
     /// Prefered verification method.
     public enum Verification: String { case email = "1", text = "0" }
+    /// Specifiy type of verification code.
+    public enum VerificationCodeType: String { case challenge = "0", sms = "1", backup = "2", totp = "3" }
     /// Response.
     enum Response {
-        case challenge(URL)
+        case challenge(ChallengeInfo)
+        case challengeForm(ChallengeForm)
         case twoFactor(String)
         case success
         case failure
@@ -27,8 +30,11 @@ public class Credentials {
     var password: String
     /// The verification method.
     public var verification: Verification
-    /// The code.
-    public var code: String? {
+    /// The `verification code`
+    ///
+    /// If the `code` is type of `twoFactor`, you need to specify it `(sms, backup, totp)`,
+    /// Otherwise pass it as `challenge` and it will use the `default verification method (email, text)`
+    public var code: (VerificationCodeType, String)? {
         didSet {
             // notify a change.
             guard code != nil else { return }
@@ -52,5 +58,11 @@ public class Credentials {
         self.username = username
         self.password = password
         self.verification = verification
+    }
+
+    /// resends `twoFactor` code
+    public func resendCode(completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        guard case .twoFactor(let identifier) = response else { return }
+        handler?.authentication.resend(user: self, identifier: identifier, completionHandler: completionHandler)
     }
 }

@@ -28,14 +28,33 @@ public enum Upload {
         public var image: Image
         /// The caption.
         public var caption: String
+        /// Turn off comments.
+        public var disableComments: Bool
         /// The size.
         public var size: CGSize
 
         /// Init.
-        public init(image: Image, caption: String, size: CGSize) {
+        public init(image: Image, caption: String, disableComments: Bool, size: CGSize) {
             self.image = image
             self.caption = caption
             self.size = size
+            self.disableComments = disableComments
+        }
+    }
+    /// An `Album` reference.
+    public struct Album {
+        /// The image.
+        public var images: [Image]
+        /// The caption.
+        public var caption: String
+        /// Turn off comments.
+        public var disableComments: Bool
+
+        /// Init.
+        public init(images: [Image], caption: String, disableComments: Bool) {
+            self.images = images
+            self.caption = caption
+            self.disableComments = disableComments
         }
     }
     /// A `Video` reference.

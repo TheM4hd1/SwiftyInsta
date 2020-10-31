@@ -29,6 +29,10 @@ public extension EndpointRepresentable {
     func thread(_ threadId: String) -> EndpointRepresentable! { return representation.thread(threadId) }
     /// Fill the `tagId`.
     func tag(_ tagId: String) -> EndpointRepresentable! { return representation.tag(tagId) }
+    // Fill the `apiPath`.
+    func apiPath(_ apiPath: String) -> EndpointRepresentable! { return representation.apiPath(apiPath) }
+    // Fill the `bloksAction`.
+    func bloksAction(_ bloksAction: String) -> EndpointRepresentable! { return representation.bloksAction(bloksAction) }
 
     /// Query `maxId`.
     func next(_ maxId: String?) -> EndpointRepresentable! { return representation.next(maxId) }
@@ -40,7 +44,10 @@ public extension EndpointRepresentable {
     func q(_ query: String) -> EndpointRepresentable! { return representation.q(query) }
     /// Query `query`.
     func query(_ query: String?) -> EndpointRepresentable! { return representation.query(query) }
-
+    /// Query `deviceId`
+    func deviceId(_ deviceId: String) -> EndpointRepresentable! { return representation.deviceId(deviceId) }
+    /// Query `challenge_context`
+    func challenge(_ context: String) -> EndpointRepresentable! { return representation.challenge(context) }
     /// Appendding `query`.
     func appending(_ path: String) -> EndpointRepresentable! { return representation.appending(path) }
 }
@@ -92,6 +99,10 @@ extension LosselessEndpointRepresentable {
     func thread(_ threadId: String) -> EndpointRepresentable! { return filling("threadId", with: threadId) }
     /// Fill the `tagId`.
     func tag(_ tagId: String) -> EndpointRepresentable! { return filling("tagId", with: tagId) }
+    // Fill the `apiPath`.
+    func apiPath(_ apiPath: String) -> EndpointRepresentable! { return filling("apiPath", with: apiPath) }
+    // Fill the `bloksAction`.
+    func bloksAction(_ bloksAction: String) -> EndpointRepresentable! { return filling("bloksAction", with: bloksAction) }
 
     /// Query `maxId`.
     func next(_ maxId: String?) -> EndpointRepresentable! { return maxId.flatMap { query(["max_id": $0]) } ?? self }
@@ -103,6 +114,10 @@ extension LosselessEndpointRepresentable {
     func q(_ query: String) -> EndpointRepresentable! { return self.query(["q": query]) }
     /// Query `query`.
     func query(_ query: String?) -> EndpointRepresentable! { return query.flatMap { self.query(["query": $0]) } ?? self }
+    /// Query `deviceId`
+    func deviceId(_ deviceId: String) -> EndpointRepresentable! { return query(["device_id": deviceId]) }
+    /// Query `challenge_context`
+    func challenge(_ context: String) -> EndpointRepresentable! { return query(["challenge_context": context]) }
 }
 
 /// Extend `RawRepresentable` to mimic `EndpointRepresentable`.

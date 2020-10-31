@@ -207,12 +207,12 @@ public final class StoryHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
+            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [
-                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Constants.igSignatureVersionKey: Constants.igSignatureVersionValue
             ]
 
             requests.request(Upload.Response.Picture.self,
@@ -285,12 +285,12 @@ public final class StoryHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
+            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [
-                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Constants.igSignatureVersionKey: Constants.igSignatureVersionValue
             ]
 
             requests.request(Status.self,
@@ -317,12 +317,12 @@ public final class StoryHandler: Handler {
             return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         do {
-            let hash = try HMAC(key: Headers.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
+            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
 
             let signature = "\(hash).\(payload)"
             let body: [String: Any] = [
-                Headers.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-                Headers.igSignatureVersionKey: Headers.igSignatureVersionValue
+                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
+                Constants.igSignatureVersionKey: Constants.igSignatureVersionValue
             ]
 
             requests.request([String: TrayElement].self,

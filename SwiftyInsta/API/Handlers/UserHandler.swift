@@ -90,9 +90,9 @@ public final class UserHandler: Handler {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
         }
-        let headers = [Headers.timeZoneOffsetKey: Headers.timeZoneOffsetValue,
-                       Headers.countKey: Headers.countValue,
-                       Headers.rankTokenKey: storage.rankToken]
+        let headers = [Constants.timeZoneOffsetKey: Constants.timeZoneOffsetValue,
+                       Constants.countKey: Constants.countValue,
+                       Constants.rankTokenKey: storage.rankToken]
 
         pages.request(User.self,
                       page: AnyPaginatedResponse.self,
