@@ -229,14 +229,11 @@ public final class MediaHandler: Handler {
                          completion: completionHandler)
     }
 
+    /// Upload photo album
     public func upload(album: Upload.Album,
                        completionHandler: @escaping (Result<Upload.Response.Album, Error>) -> Void) {
         guard let storage = handler.response?.storage else {
             return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
-        }
-        let device = handler.settings.device
-        guard let user = storage.user else {
-            return completionHandler(.failure(GenericError.custom("Invalid request.")))
         }
         var uploadIds: [String] = []
         let group = DispatchGroup()
@@ -291,44 +288,60 @@ public final class MediaHandler: Handler {
                 }
                 group.wait()
             }
-
-            let childrens = uploadIds.map { ConfigureChildren.init(uploadId: $0,
-                                                                   disableComments: album.disableComments,
-                                                                   sourceType: "library",
-                                                                   isStoriesDraft: false,
-                                                                   allowMultiConfigures: false,
-                                                                   cameraPosition: "unknown",
-                                                                   geotagEnabled: false) }
-            let timestamp = String(Date().millisecondsSince1970 / 1000)
-            let sidecarId = String(Date().millisecondsSince1970 / 1000)
-            let configure = ConfigurePhotoAlbum(uuid: device.deviceGuid.uuidString,
-                                                uid: user.identity.primaryKey ?? -1,
-                                                csrfToken: storage.csrfToken,
-                                                caption: album.caption,
-                                                clientSidecarId: sidecarId,
-                                                geotagEnabled: false,
-                                                disableComments: album.disableComments,
-                                                deviceId: device.deviceGuid.uuidString,
-                                                waterfallId: UUID().uuidString,
-                                                timezoneOffset: "\(TimeZone.current.secondsFromGMT())",
-                                                clientTimestamp: timestamp,
-                                                childrenMetadata: childrens)
-            // prepare body
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
-            guard let payload = try? String(data: encoder.encode(configure), encoding: .utf8) else {
-                return completionHandler(.failure(GenericError.custom("Invalid request.")))
-            }
-            let signature = "SIGNATURE.\(payload)"
-            let body: [String: Any] = [
-                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!
-            ]
-            me.requests.request(Upload.Response.Album.self,
-                                method: .post,
-                                endpoint: Endpoint.Media.configureAlbum,
-                                body: .parameters(body),
-                                completion: completionHandler)
+            // configure album
+            me.configureAlbum(album: album,
+                              with: uploadIds,
+                              completionHandler: completionHandler)
         }
+    }
+
+    /// Set up album.
+    func configureAlbum(album: Upload.Album,
+                        with uploadIds: [String],
+                        completionHandler: @escaping (Result<Upload.Response.Album, Error>) -> Void) {
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
+        }
+        let device = handler.settings.device
+        guard let user = storage.user else {
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
+        }
+        let childrens = uploadIds.map { ConfigureChildren.init(uploadId: $0,
+                                                               disableComments: album.disableComments,
+                                                               sourceType: "library",
+                                                               isStoriesDraft: false,
+                                                               allowMultiConfigures: false,
+                                                               cameraPosition: "unknown",
+                                                               geotagEnabled: false) }
+        let timestamp = String(Date().millisecondsSince1970 / 1000)
+        let sidecarId = String(Date().millisecondsSince1970 / 1000)
+        let configure = ConfigurePhotoAlbum(uuid: device.deviceGuid.uuidString,
+                                            uid: user.identity.primaryKey ?? -1,
+                                            csrfToken: storage.csrfToken,
+                                            caption: album.caption,
+                                            clientSidecarId: sidecarId,
+                                            geotagEnabled: false,
+                                            disableComments: album.disableComments,
+                                            deviceId: device.deviceGuid.uuidString,
+                                            waterfallId: UUID().uuidString,
+                                            timezoneOffset: "\(TimeZone.current.secondsFromGMT())",
+                                            clientTimestamp: timestamp,
+                                            childrenMetadata: childrens)
+        // prepare body
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        guard let payload = try? String(data: encoder.encode(configure), encoding: .utf8) else {
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
+        }
+        let signature = "SIGNATURE.\(payload)"
+        let body: [String: Any] = [
+            Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!
+        ]
+        requests.request(Upload.Response.Album.self,
+                         method: .post,
+                         endpoint: Endpoint.Media.configureAlbum,
+                         body: .parameters(body),
+                         completion: completionHandler)
     }
 
     @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
