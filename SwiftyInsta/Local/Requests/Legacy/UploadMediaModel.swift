@@ -8,12 +8,6 @@
 
 import Foundation
 
-public struct UploadPhotoAlbumResponse: Codable, StatusEnforceable {
-    var clientSidecarId: String?
-    var media: Media?
-    var status: String?
-}
-
 struct ConfigurePhoto: Codable {
     enum CodingKeys: String, CodingKey {
         case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
@@ -47,10 +41,11 @@ struct ConfigureEdits: Codable {
     let cropZoom: Int
 }
 
-struct ConfigurePhotoAlbumModel: Codable {
+struct ConfigurePhotoAlbum: Codable {
     enum CodingKeys: String, CodingKey {
         case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
-        case caption, clientSidecarId, geotagEnabled, disableComments, childrenMetadata
+        case caption, clientSidecarId, geotagEnabled, disableComments,
+             childrenMetadata, deviceId, waterfallId, timezoneOffset, clientTimestamp
     }
 
     let uuid: String
@@ -60,18 +55,21 @@ struct ConfigurePhotoAlbumModel: Codable {
     let clientSidecarId: String
     let geotagEnabled: Bool
     let disableComments: Bool
+    let deviceId: String
+    let waterfallId: String
+    let timezoneOffset: String
+    let clientTimestamp: String
     let childrenMetadata: [ConfigureChildren]
 }
 
 struct ConfigureChildren: Codable {
-    let sceneCaptureType: String
-    let masOptIn: String
-    let cameraPosition: String
-    let allowMultiConfigures: Bool
-    let geotagEnabled: Bool
-    let disableComments: Bool
-    let sourceType: Int
     let uploadId: String
+    let disableComments: Bool
+    let sourceType: String
+    let isStoriesDraft: Bool
+    let allowMultiConfigures: Bool
+    let cameraPosition: String
+    let geotagEnabled: Bool
 }
 
 struct ConfigureVideoModel: Codable {

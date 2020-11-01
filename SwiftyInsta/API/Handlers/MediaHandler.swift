@@ -130,7 +130,7 @@ public final class MediaHandler: Handler {
         let optionalImageData = photo.image.jpegData(compressionQuality: 1)
         #endif
         guard let imageData = optionalImageData else {
-            return completionHandler(.failure(GenericError.custom("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid Image.")))
         }
 
         // swiftlint:disable line_length
@@ -219,7 +219,7 @@ public final class MediaHandler: Handler {
         // prepare body.
         let signature = "SIGNATURE.\(payload)"
         let body: [String: Any] = [
-            Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!
         ]
 
         requests.request(Upload.Response.Picture.self,
@@ -227,6 +227,108 @@ public final class MediaHandler: Handler {
                          endpoint: Endpoint.Media.configure,
                          body: .parameters(body),
                          completion: completionHandler)
+    }
+
+    public func upload(album: Upload.Album,
+                       completionHandler: @escaping (Result<Upload.Response.Album, Error>) -> Void) {
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
+        }
+        let device = handler.settings.device
+        guard let user = storage.user else {
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
+        }
+        var uploadIds: [String] = []
+        let group = DispatchGroup()
+        DispatchQueue.global().async { [weak self] in
+            guard let me = self, let handler = me.handler else {
+                return completionHandler(.failure(GenericError.weakObjectReleased))
+            }
+            for photo in album.images {
+                group.enter()
+                let uploadId = String(Date().millisecondsSince1970 / 1000)
+                // swiftlint:disable line_length
+                let rUploadParams = "{\"image_compression\":\"{\\\"quality\\\":48,\\\"lib_version\\\":\\\"1676.104000\\\",\\\"ssim\\\":0.99717170000076294,\\\"colorspace\\\":\\\"kCGColorSpaceDeviceRGB\\\",\\\"lib_name\\\":\\\"uikit\\\"}\",\"upload_id\":\"\(uploadId)\",\"xsharing_user_ids\":[],\"is_sidecar\":\"1\",\"media_type\":1}"
+                #if os(macOS)
+                let optionalImageData = photo.tiffRepresentation
+                #else
+                let optionalImageData = photo.jpegData(compressionQuality: 1)
+                #endif
+                guard let imageData = optionalImageData else {
+                    return completionHandler(.failure(GenericError.custom("Invalid Image.")))
+                }
+                let headers = ["Content-Type": "application/octet-stream",
+                               "X-Entity-Name": "image.jpeg",
+                               "X-Entity-Type": "image/jpeg",
+                               "x_fb_photo_waterfall_id": UUID.init().uuidString.md5(),
+                               "X-Entity-Length": "\(imageData.count)",
+                               "Content-Length": "\(imageData.count)",
+                               "X-Instagram-Rupload-Params": rUploadParams,
+                               "Accept-Encoding": "gzip, deflate",
+                               "Offset": "0",
+                               "IG-U-Ds-User-ID": storage.dsUserId]
+
+                me.requests.request(Upload.Response.Picture.self,
+                                    method: .post,
+                                    endpoint: Endpoint.Upload.photo.upload(uploadId.md5()),
+                                    body: .data(imageData),
+                                    headers: headers,
+                                    options: .deliverOnResponseQueue) {
+                    switch $0 {
+                    case .failure(let error):
+                        handler.settings.queues.response.async {
+                            completionHandler(.failure(error))
+                        }
+                    case .success(let decoded):
+                        guard let uploadId = decoded.uploadId else {
+                            return handler.settings.queues.response.async {
+                                completionHandler(.failure(GenericError.unknown))
+                            }
+                        }
+                        uploadIds.append(uploadId)
+                        group.leave()
+                    }
+                }
+                group.wait()
+            }
+
+            let childrens = uploadIds.map { ConfigureChildren.init(uploadId: $0,
+                                                                   disableComments: album.disableComments,
+                                                                   sourceType: "library",
+                                                                   isStoriesDraft: false,
+                                                                   allowMultiConfigures: false,
+                                                                   cameraPosition: "unknown",
+                                                                   geotagEnabled: false) }
+            let timestamp = String(Date().millisecondsSince1970 / 1000)
+            let sidecarId = String(Date().millisecondsSince1970 / 1000)
+            let configure = ConfigurePhotoAlbum(uuid: device.deviceGuid.uuidString,
+                                                uid: user.identity.primaryKey ?? -1,
+                                                csrfToken: storage.csrfToken,
+                                                caption: album.caption,
+                                                clientSidecarId: sidecarId,
+                                                geotagEnabled: false,
+                                                disableComments: album.disableComments,
+                                                deviceId: device.deviceGuid.uuidString,
+                                                waterfallId: UUID().uuidString,
+                                                timezoneOffset: "\(TimeZone.current.secondsFromGMT())",
+                                                clientTimestamp: timestamp,
+                                                childrenMetadata: childrens)
+            // prepare body
+            let encoder = JSONEncoder()
+            encoder.keyEncodingStrategy = .convertToSnakeCase
+            guard let payload = try? String(data: encoder.encode(configure), encoding: .utf8) else {
+                return completionHandler(.failure(GenericError.custom("Invalid request.")))
+            }
+            let signature = "SIGNATURE.\(payload)"
+            let body: [String: Any] = [
+                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!
+            ]
+            me.requests.request(Upload.Response.Album.self,
+                                method: .post,
+                                endpoint: Endpoint.Media.configureAlbum,
+                                body: .parameters(body),
+                                completion: completionHandler)
+        }
     }
 
     @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
