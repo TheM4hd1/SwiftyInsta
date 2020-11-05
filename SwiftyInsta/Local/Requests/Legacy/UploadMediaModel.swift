@@ -72,29 +72,25 @@ struct ConfigureChildren: Codable {
     let geotagEnabled: Bool
 }
 
-struct ConfigureVideoModel: Codable {
+struct ConfigureVideo: Codable {
     enum CodingKeys: String, CodingKey {
         case uuid = "_uuid", uid = "_uid", csrfToken = "_csrftoken"
-        case caption, uploadId, sourceType, cameraPosition, clips, posterFrameIndex, audioMuted, filterType, videoResult
+        case caption, uploadId, sourceType, cameraPosition, disableComments,
+             posterFrameIndex, audioMuted, deviceId, waterfallId, clientTimestamp, timezoneOffset
     }
 
-    let caption: String
-    let uploadId: String
-    let sourceType: String
-    let cameraPosition: String
-    let clips: [ClipsModel]
-    let posterFrameIndex: Int
-    let audioMuted: Bool
-    let filterType: String
-    let videoResult: String
-    let csrfToken: String
     let uuid: String
     let uid: String
-}
-
-struct ClipsModel: Codable {
-    let length: Int
-    let creationDate: String
     let sourceType: String
+    let deviceId: String
+    let csrfToken: String
+    let waterfallId: String
+    let clientTimestamp: String
+    let audioMuted: Bool
+    let caption: String
+    let uploadId: String
     let cameraPosition: String
+    let timezoneOffset: String
+    let posterFrameIndex: Int
+    let disableComments: Bool
 }

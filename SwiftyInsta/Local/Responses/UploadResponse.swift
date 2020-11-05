@@ -78,7 +78,7 @@ public extension Upload {
             public let rawResponse: DynamicResponse
 
             /// The media.
-            public var urls: [URL] { return rawResponse.videoUploadUrls.array?.compactMap(URL.init) ?? [] }
+            public var media: Media? { return Media(rawResponse: rawResponse.media) }
             /// The upload id.
             public var uploadId: String? { return rawResponse.uploadId.string }
             /// The status.

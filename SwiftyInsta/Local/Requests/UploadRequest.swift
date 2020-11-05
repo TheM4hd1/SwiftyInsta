@@ -59,32 +59,32 @@ public enum Upload {
     }
     /// A `Video` reference.
     public struct Video {
+        /// The thumbnail
+        public var thumbnail: Image
         /// The video.
         public var data: Data
-        /// The filename.
-        public var file: String
         /// The caption.
         public var caption: String
         /// Is audio muted.
         public var isAudioMuted: Bool
         /// The size.
         public var size: CGSize
-        /// The type.
-        public var type: Int
+        /// Turn off comments.
+        public var disableComments: Bool
 
         /// Init.
-        public init(data: Data,
-                    file: String,
+        public init(thumbnail: Image,
+                    data: Data,
                     caption: String,
                     isAudioMuted: Bool,
                     size: CGSize,
-                    type: Int) {
+                    disableComments: Bool) {
+            self.thumbnail = thumbnail
             self.data = data
-            self.file = file
             self.caption = caption
             self.isAudioMuted = isAudioMuted
             self.size = size
-            self.type = type
+            self.disableComments = disableComments
         }
     }
 
