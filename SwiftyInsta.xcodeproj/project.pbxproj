@@ -227,6 +227,8 @@
 		E8403DEF25542DD700F2CE98 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */; };
 		E8403DF52554300C00F2CE98 /* LoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D3779C22674E340023CF07 /* LoginWebView.swift */; };
 		E8403DFB2554300C00F2CE98 /* LoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D3779C22674E340023CF07 /* LoginWebView.swift */; };
+		E8403E012554307F00F2CE98 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */; };
+		E8403E072554307F00F2CE98 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */; };
 		E8A611E825458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 		E8A611E925458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 		E8A611EA25458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
@@ -987,6 +989,7 @@
 				E0114B1C22F8554E00DACAC5 /* ThreadResponse.swift in Sources */,
 				E006E45122E87EFF002DB4BB /* StatusResponse.swift in Sources */,
 				E006E44222E87EFF002DB4BB /* UserHandler.swift in Sources */,
+				E8403E012554307F00F2CE98 /* LoginWebViewController.swift in Sources */,
 				E006E47622E87EFF002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E602306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
 				E006955A238BF97300236DBA /* EndpointQuery.swift in Sources */,
@@ -1044,6 +1047,7 @@
 				E0114B1D22F8554E00DACAC5 /* ThreadResponse.swift in Sources */,
 				E006E49E22E87F00002DB4BB /* StatusResponse.swift in Sources */,
 				E006E48F22E87F00002DB4BB /* UserHandler.swift in Sources */,
+				E8403E072554307F00F2CE98 /* LoginWebViewController.swift in Sources */,
 				E006E4C322E87F00002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E612306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
 				E006955B238BF97300236DBA /* EndpointQuery.swift in Sources */,
