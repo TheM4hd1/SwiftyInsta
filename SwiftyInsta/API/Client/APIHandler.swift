@@ -92,7 +92,7 @@ public class APIHandler {
             }
         case .user(let credentials):
             authentication.authenticate(user: credentials, completionHandler: completionHandler)
-        #if os(iOS)
+        #if canImport(WebKit)
         case .webView(let webView):
             webView.authenticate { [weak self] in
                 guard let handler = self else { return completionHandler(.failure(GenericError.weakObjectReleased)) }

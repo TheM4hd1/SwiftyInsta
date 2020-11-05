@@ -73,7 +73,7 @@ public final class MediaHandler: Handler {
                       update: nil,
                       completion: { result, _ in
                         completionHandler(result.map { $0.first })
-        })
+                      })
     }
 
     /// Like media.
@@ -130,7 +130,7 @@ public final class MediaHandler: Handler {
         let optionalImageData = photo.image.jpegData(compressionQuality: 1)
         #endif
         guard let imageData = optionalImageData else {
-            return completionHandler(.failure(GenericError.custom("Invalid request.")))
+            return completionHandler(.failure(GenericError.custom("Invalid Image.")))
         }
 
         // swiftlint:disable line_length
@@ -219,7 +219,7 @@ public final class MediaHandler: Handler {
         // prepare body.
         let signature = "SIGNATURE.\(payload)"
         let body: [String: Any] = [
-            Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+            Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!
         ]
 
         requests.request(Upload.Response.Picture.self,
@@ -229,238 +229,318 @@ public final class MediaHandler: Handler {
                          completion: completionHandler)
     }
 
-    @available(*, unavailable, message: "Instagram changed this endpoint. We're working on making it work again.")
+    /// Upload photo album
+    public func upload(album: Upload.Album,
+                       completionHandler: @escaping (Result<Upload.Response.Album, Error>) -> Void) {
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
+        }
+        var uploadIds: [String] = []
+        let group = DispatchGroup()
+        DispatchQueue.global().async { [weak self] in
+            guard let me = self, let handler = me.handler else {
+                return completionHandler(.failure(GenericError.weakObjectReleased))
+            }
+            for photo in album.images {
+                group.enter()
+                let uploadId = String(Date().millisecondsSince1970 / 1000)
+                // swiftlint:disable line_length
+                let rUploadParams = "{\"image_compression\":\"{\\\"quality\\\":48,\\\"lib_version\\\":\\\"1676.104000\\\",\\\"ssim\\\":0.99717170000076294,\\\"colorspace\\\":\\\"kCGColorSpaceDeviceRGB\\\",\\\"lib_name\\\":\\\"uikit\\\"}\",\"upload_id\":\"\(uploadId)\",\"xsharing_user_ids\":[],\"is_sidecar\":\"1\",\"media_type\":1}"
+                #if os(macOS)
+                let optionalImageData = photo.tiffRepresentation
+                #else
+                let optionalImageData = photo.jpegData(compressionQuality: 1)
+                #endif
+                guard let imageData = optionalImageData else {
+                    return completionHandler(.failure(GenericError.custom("Invalid Image.")))
+                }
+                let headers = ["Content-Type": "application/octet-stream",
+                               "X-Entity-Name": "image.jpeg",
+                               "X-Entity-Type": "image/jpeg",
+                               "x_fb_photo_waterfall_id": UUID.init().uuidString.md5(),
+                               "X-Entity-Length": "\(imageData.count)",
+                               "Content-Length": "\(imageData.count)",
+                               "X-Instagram-Rupload-Params": rUploadParams,
+                               "Accept-Encoding": "gzip, deflate",
+                               "Offset": "0",
+                               "IG-U-Ds-User-ID": storage.dsUserId]
+
+                me.requests.request(Upload.Response.Picture.self,
+                                    method: .post,
+                                    endpoint: Endpoint.Upload.photo.upload(uploadId.md5()),
+                                    body: .data(imageData),
+                                    headers: headers,
+                                    options: .deliverOnResponseQueue) {
+                    switch $0 {
+                    case .failure(let error):
+                        handler.settings.queues.response.async {
+                            completionHandler(.failure(error))
+                        }
+                    case .success(let decoded):
+                        guard let uploadId = decoded.uploadId else {
+                            return handler.settings.queues.response.async {
+                                completionHandler(.failure(GenericError.unknown))
+                            }
+                        }
+                        uploadIds.append(uploadId)
+                        group.leave()
+                    }
+                }
+                group.wait()
+            }
+            // configure album
+            me.configureAlbum(album: album,
+                              with: uploadIds,
+                              completionHandler: completionHandler)
+        }
+    }
+
+    /// Set up album.
+    func configureAlbum(album: Upload.Album,
+                        with uploadIds: [String],
+                        completionHandler: @escaping (Result<Upload.Response.Album, Error>) -> Void) {
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
+        }
+        let device = handler.settings.device
+        guard let user = storage.user else {
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
+        }
+        let childrens = uploadIds.map { ConfigureChildren.init(uploadId: $0,
+                                                               disableComments: album.disableComments,
+                                                               sourceType: "library",
+                                                               isStoriesDraft: false,
+                                                               allowMultiConfigures: false,
+                                                               cameraPosition: "unknown",
+                                                               geotagEnabled: false) }
+        let timestamp = String(Date().millisecondsSince1970 / 1000)
+        let sidecarId = String(Date().millisecondsSince1970 / 1000)
+        let configure = ConfigurePhotoAlbum(uuid: device.deviceGuid.uuidString,
+                                            uid: user.identity.primaryKey ?? -1,
+                                            csrfToken: storage.csrfToken,
+                                            caption: album.caption,
+                                            clientSidecarId: sidecarId,
+                                            geotagEnabled: false,
+                                            disableComments: album.disableComments,
+                                            deviceId: device.deviceGuid.uuidString,
+                                            waterfallId: UUID().uuidString,
+                                            timezoneOffset: "\(TimeZone.current.secondsFromGMT())",
+                                            clientTimestamp: timestamp,
+                                            childrenMetadata: childrens)
+        // prepare body
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        guard let payload = try? String(data: encoder.encode(configure), encoding: .utf8) else {
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
+        }
+        let signature = "SIGNATURE.\(payload)"
+        let body: [String: Any] = [
+            Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!
+        ]
+        requests.request(Upload.Response.Album.self,
+                         method: .post,
+                         endpoint: Endpoint.Media.configureAlbum,
+                         body: .parameters(body),
+                         completion: completionHandler)
+    }
+
     // Make sure file is valid (correct format, codecs, width, height and aspect ratio)
     // also its important to provide fileName.extenstion in InstaVideo
     // to convert video to data you need to pass file's URL to Data.init(contentsOf: URL)
     public func upload(video: Upload.Video,
-                       thumbnail: Upload.Picture,
-                       caption: String,
-                       completionHandler: @escaping (Result<Media, Error>) -> Void) {
-//        guard let storage = handler.response?.storage else {
-//            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
-//        }
-//        let uploadId = String(Date().millisecondsSince1970 / 1000)
-//        // prepare content.
-//        var content = Data()
-//        content.append(string: "--\(uploadId)\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"media_type\"\r\n\r\n")
-//        content.append(string: "2\r\n")
-//        content.append(string: "--\(uploadId)\r\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"upload_id\"\r\n\r\n")
-//        content.append(string: "\(uploadId)\r\n")
-//        content.append(string: "--\(uploadId)\r\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\r\n\r\n")
-//        content.append(string: "\(handler!.settings.device.deviceGuid.uuidString)\r\n")
-//        content.append(string: "--\(uploadId)\r\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\r\n\r\n")
-//        content.append(string: "\(storage.csrfToken)\n")
-//        content.append(string: "--\(uploadId)\r\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"image_compression\"\r\n\r\n")
-//        content.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\r\n")
-//        content.append(string: "--\(uploadId)--\r\n\r\n")
-//
-//        let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-//
-//        requests.request(Upload.Response.Video.self,
-//                         method: .post,
-//                         endpoint: Endpoint.Upload.video,
-//                         body: .data(content),
-//                         headers: headers,
-//                         options: .validateResponse) { [weak self] in
-//                            guard let me = self, let handler = me.handler else {
-//                                return completionHandler(.failure(GenericError.weakObjectReleased))
-//                            }
-//                            switch $0 {
-//                            case .failure(let error):
-//                                handler.settings.queues.response.async {
-//                                    completionHandler(.failure(error))
-//                                }
-//                            case .success(let decoded):
-//                                guard decoded.status == "ok",
-//                                    let url = decoded.urls.first,
-//                                    let job = url.job,
-//                                    let path = url.url?.removingPercentEncoding,
-//                                    let uploadUrl = URL(string: path) else {
-//                                        return handler.settings.queues.response.async {
-//                                            completionHandler(.failure(GenericError.unknown))
-//                                        }
-//                                }
-//
-//                                let headers = ["Host": "upload.instagram.com",
-//                                               "Cookie2": "$Version=1",
-//                                               "Session-ID": uploadId,
-//                                               "job": job,
-//                                               "Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-//                                var videoContent = Data()
-//                                videoContent.append(string: "--\(uploadId)\r\n")
-//                                videoContent.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-//                                videoContent.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\r\n\r\n")
-//                                videoContent.append(string: "\(storage.csrfToken)\n")
-//                                videoContent.append(string: "--\(uploadId)\r\n")
-//                                videoContent.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-//                                videoContent.append(string: "Content-Disposition: form-data; name=\"image_compression\"\r\n\r\n")
-//                                videoContent.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\r\n")
-//                                videoContent.append(string: "--\(uploadId)\r\n")
-//                                videoContent.append(string: "Content-Transfer-Encoding: binary\r\n")
-//                                videoContent.append(string: "Content-Type: application/octet-stream\r\n")
-//                                videoContent.append(string: "Content-Disposition: attachment; filename=\"\(video.file)\"\r\n\r\n")
-//                                videoContent.append(video.data)
-//                                videoContent.append(string: "\r\n--\(uploadId)--\r\n\r\n")
-//
-//                                me.requests.fetch(method: .post,
-//                                                  url: uploadUrl,
-//                                                  body: .data(videoContent),
-//                                                  headers: headers) {
-//                                                    switch $0 {
-//                                                    case .failure(let error):
-//                                                        handler.settings.queues.response.async {
-//                                                            completionHandler(.failure(error))
-//                                                        }
-//                                                    case .success((let data, let response)):
-//                                                        guard data != nil, response?.statusCode == 200 else {
-//                                                            return handler.settings.queues.response.async {
-//                                                                completionHandler(.failure(GenericError.unknown))
-//                                                            }
-//                                                        }
-//                                                        me.upload(thumbnail: thumbnail, with: uploadId) {
-//                                                            switch $0 {
-//                                                            case .failure(let error):
-//                                                                handler.settings.queues.response.async {
-//                                                                    completionHandler(.failure(error))
-//                                                                }
-//                                                            case .success(let hasBeenUploaded):
-//                                                                guard hasBeenUploaded else {
-//                                                                    return handler.settings.queues.response.async {
-//                                                                        completionHandler(.failure(GenericError.unknown))
-//                                                                    }
-//                                                                }
-//                                                                // configure video.
-//                                                                me.configure(video: video,
-//                                                                             with: uploadId,
-//                                                                             caption: caption,
-//                                                                             completionHandler: completionHandler)
-//                                                            }
-//                                                        }
-//                                                    }
-//                                }
-//                            }
-//        }
+                       completionHandler: @escaping (Result<Upload.Response.Video, Error>) -> Void) {
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
+        }
+        let uploadId = String(Date().millisecondsSince1970 / 1000)
+
+        // swiftlint:disable line_length
+        let rVideoUploadParams = "{\"content_tags\":\"infinite-gop,has-crop,square,source-type-library\",\"upload_media_height\":720,\"upload_id\":\"\(uploadId)\",\"media_type\":2,\"xsharing_user_ids\":[],\"upload_media_width\":720,\"upload_media_duration_ms\":6800}"
+        // swiftlint:enable line_length
+        let headers = ["Content-Type": "application/octet-stream",
+                       "X-Entity-Name": "video.mp4",
+                       "X-Entity-Type": "video/mpeg",
+                       "X_FB_VIDEO_WATERFALL_ID": UUID.init().uuidString.md5(),
+                       "X-Entity-Length": "\(video.data.count)",
+                       "Content-Length": "\(video.data.count)",
+                       "X-Instagram-Rupload-Params": rVideoUploadParams,
+                       "Accept-Encoding": "gzip, deflate",
+                       "Offset": "0",
+                       "IG-U-Ds-User-ID": storage.dsUserId]
+        // upload video
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoint.Upload.video.upload(UUID().uuidString),
+                         body: .data(video.data),
+                         headers: headers,
+                         options: .deliverOnResponseQueue) { [weak self] in
+            guard let me = self, let handler = me.handler else {
+                return completionHandler(.failure(GenericError.weakObjectReleased))
+            }
+            switch $0 {
+            case .failure(let error):
+                handler.settings.queues.response.async {
+                    completionHandler(.failure(error))
+                }
+            case .success(let decoded):
+                if decoded.state == .ok {
+                    // upload thumbnail
+                    me.upload(thumbnail: video.thumbnail, with: uploadId) {
+                        switch $0 {
+                        case .failure(let error):
+                            handler.settings.queues.response.async {
+                                completionHandler(.failure(error))
+                            }
+                        case .success(let uploadId):
+                            // finish upload
+                            me.finish(video: video,
+                                      with: uploadId,
+                                      completionHandler: completionHandler)
+                        }
+                    }
+                } else {
+                    return handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.unknown))
+                    }
+                }
+            }
+        }
     }
 
-    func upload(thumbnail: Upload.Picture,
+    /// upload video thumbnail.
+    func upload(thumbnail: Image,
                 with uploadId: String,
-                completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-//        guard let storage = handler.response?.storage else {
-//            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
-//        }
-//        guard let url = try? Endpoint.Upload.photo.url() else {
-//            return completionHandler(.failure(GenericError.invalidUrl))
-//        }
-//        var content = Data()
-//        content.append(string: "--\(uploadId)\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"upload_id\"\n\n")
-//        content.append(string: "\(uploadId)\n")
-//        content.append(string: "--\(uploadId)\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"_uuid\"\n\n")
-//        content.append(string: "\(handler!.settings.device.deviceGuid.uuidString)\r\n")
-//        content.append(string: "--\(uploadId)\r\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\r\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"_csrftoken\"\r\n\r\n")
-//        content.append(string: "\(storage.csrfToken)\n")
-//        content.append(string: "--\(uploadId)\n")
-//        content.append(string: "Content-Type: text/plain; charset=utf-8\n")
-//        content.append(string: "Content-Disposition: form-data; name=\"image_compression\"\n\n")
-//        content.append(string: "{\"lib_name\":\"jt\",\"lib_version\":\"1.3.0\",\"quality\":\"87\"}\n")
-//        content.append(string: "--\(uploadId)\n")
-//        content.append(string: "Content-Transfer-Encoding: binary\n")
-//        content.append(string: "Content-Type: application/octet-stream\n")
-//        content.append(string: ["Content-Disposition: form-data; name=photo;",
-//                                "filename=pending_media_\(uploadId).jpg; filename*=utf-8''pending_media_\(uploadId).jpg\n\n"]
-//            .joined(separator: " "))
-//
-//        #if os(macOS)
-//        let imageData = thumbnail.image.tiffRepresentation
-//        #else
-//        let imageData = thumbnail.image.jpegData(compressionQuality: 1)
-//        #endif
-//        content.append(imageData!)
-//        content.append(string: "\n--\(uploadId)--\n\n")
-//        let headers = ["Content-Type": "multipart/form-data; boundary=\"\(uploadId)\""]
-//
-//        requests.fetch(method: .post,
-//                       url: url,
-//                       body: .data(content),
-//                       headers: headers) {
-//                        switch $0 {
-//                        case .failure(let error): completionHandler(.failure(error))
-//                        case .success((let data, let response)) where data != nil && response?.statusCode == 200:
-//                            completionHandler(.success(true))
-//                        default:
-//                            completionHandler(.success(false))
-//                        }
-//        }
+                completionHandler: @escaping (Result<String, Error>) -> Void) {
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
+        }
+        #if os(macOS)
+        let optionalImageData = thumbnail.tiffRepresentation
+        #else
+        let optionalImageData = thumbnail.jpegData(compressionQuality: 1)
+        #endif
+        guard let imageData = optionalImageData else {
+            return completionHandler(.failure(GenericError.custom("Invalid Image.")))
+        }
+
+        // swiftlint:disable line_length
+        let rThumbnailUploadParams =
+            "{\"image_compression\":\"{\\\"quality\\\":65,\\\"lib_version\\\":\\\"1676.104000\\\",\\\"ssim\\\":0.98724246025085449,\\\"colorspace\\\":\\\"kCGColorSpaceDeviceRGB\\\",\\\"lib_name\\\":\\\"uikit\\\"}\",\"upload_id\":\"\(uploadId)\",\"xsharing_user_ids\":[],\"content_tags\":\"infinite-gop,has-crop,square,source-type-library\",\"media_type\":2}"
+        // swiftlint:enable line_length
+        let headers = ["Content-Type": "application/octet-stream",
+                       "X-Entity-Name": "image.jpeg",
+                       "X-Entity-Type": "image/jpeg",
+                       "x_fb_photo_waterfall_id": UUID.init().uuidString.md5(),
+                       "X-Entity-Length": "\(imageData.count)",
+                       "Content-Length": "\(imageData.count)",
+                       "X-Instagram-Rupload-Params": rThumbnailUploadParams,
+                       "Accept-Encoding": "gzip, deflate",
+                       "Offset": "0",
+                       "IG-U-Ds-User-ID": storage.dsUserId]
+        requests.request(Upload.Response.Picture.self,
+                         method: .post,
+                         endpoint: Endpoint.Upload.photo.upload(uploadId.md5()),
+                         body: .data(imageData),
+                         headers: headers,
+                         options: .deliverOnResponseQueue) { [weak self] in
+            guard let me = self, let handler = me.handler else {
+                return completionHandler(.failure(GenericError.weakObjectReleased))
+            }
+            switch $0 {
+            case .failure(let error):
+                handler.settings.queues.response.async {
+                    completionHandler(.failure(error))
+                }
+            case .success(let decoded):
+                guard let uploadId = decoded.uploadId else {
+                    return handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.unknown))
+                    }
+                }
+                completionHandler(.success(uploadId))
+            }
+        }
     }
 
+    /// Set up video.
     func configure(video: Upload.Video,
                    with uploadId: String,
-                   caption: String,
-                   completionHandler: @escaping (Result<Media, Error>) -> Void) {
-//        guard let storage = handler.response?.storage else {
-//            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
-//        }
-//        let headers = [Constants.contentTypeKey: Constants.contentTypeApplicationFormValue,
-//                       "Host": "i.instagram.com"]
-//
-//        let extra = ConfigureExtras.init(sourceWidth: 0, sourceHeight: 0)
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "yyyy-dd-MM'T'H:mm:ss-0SSS"
-//        let clips = ClipsModel.init(length: 10,
-//                                    creationDate: formatter.string(from: Date()),
-//                                    sourceType: "3",
-//                                    cameraPosition: "back")
-//        let content = ConfigureVideoModel(caption: caption,
-//                                          uploadId: uploadId,
-//                                          sourceType: "3",
-//                                          cameraPosition: "unknown",
-//                                          extra: extra,
-//                                          clips: [clips],
-//                                          posterFrameIndex: 0,
-//                                          audioMuted: video.isAudioMuted,
-//                                          filterType: "0",
-//                                          videoResult: "deprecated",
-//                                          csrfToken: "",
-//                                          uuid: handler!.settings.device.deviceGuid.uuidString,
-//                                          uid: storage.dsUserId)
-//
-//        let encoder = JSONEncoder()
-//        encoder.keyEncodingStrategy = .convertToSnakeCase
-//        guard let payload = try? String(data: encoder.encode(content), encoding: .utf8) else {
-//            return completionHandler(.failure(GenericError.custom("Invalid request.")))
-//        }
-//        do {
-//            let hash = try HMAC(key: Constants.igSignatureKey, variant: .sha256).authenticate(payload.bytes).toHexString()
-//
-//            let signature = "\(hash).\(payload)"
-//            let body: [String: Any] = [
-//                Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!,
-//                Constants.igSignatureVersionKey: Constants.igSignatureVersionValue
-//            ]
-//
-//            requests.request(Media.self,
-//                             method: .post,
-//                             endpoint: Endpoint.Media.configure,
-//                             body: .parameters(body),
-//                             headers: headers,
-//                             completion: completionHandler)
-//        } catch { completionHandler(.failure(error)) }
+                   completionHandler: @escaping (Result<Upload.Response.Video, Error>) -> Void) {
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
+        }
+        let device = handler.settings.device
+        let waterfallId = UUID().uuidString
+        let timestamp = String(Date().millisecondsSince1970 / 1000)
+        let configure = ConfigureVideo(uuid: device.deviceGuid.uuidString,
+                                       uid: storage.dsUserId,
+                                       sourceType: "library",
+                                       deviceId: device.deviceGuid.uuidString,
+                                       csrfToken: storage.csrfToken,
+                                       waterfallId: waterfallId,
+                                       clientTimestamp: timestamp,
+                                       audioMuted: video.isAudioMuted,
+                                       caption: video.caption,
+                                       uploadId: uploadId,
+                                       cameraPosition: "unknown",
+                                       timezoneOffset: "\(TimeZone.current.secondsFromGMT())",
+                                       posterFrameIndex: 0,
+                                       disableComments: video.disableComments)
+
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        guard let payload = try? String(data: encoder.encode(configure), encoding: .utf8) else {
+            return completionHandler(.failure(GenericError.custom("Invalid request.")))
+        }
+        // prepare body.
+        let signature = "SIGNATURE.\(payload)"
+        let body: [String: Any] = [
+            Constants.igSignatureKey: signature.addingPercentEncoding(withAllowedCharacters: .rfc3986Unreserved)!
+        ]
+
+        requests.request(Upload.Response.Video.self,
+                         method: .post,
+                         endpoint: Endpoint.Media.configure,
+                         body: .parameters(body),
+                         completion: completionHandler)
+    }
+
+    /// Finish video upload.
+    func finish(video: Upload.Video,
+                with uploadId: String,
+                completionHandler: @escaping (Result<Upload.Response.Video, Error>) -> Void) {
+        guard let storage = handler.response?.storage else {
+            return completionHandler(.failure(GenericError.custom("Invalid `Authentication.Response` in `APIHandler.respone`. Log in again.")))
+        }
+        let body = ["_csrftoken": storage.csrfToken,
+                    "_uuid": handler.settings.device.deviceGuid.uuidString,
+                    "_uid": storage.dsUserId,
+                    "upload_id": uploadId]
+        requests.request(Status.self,
+                         method: .post,
+                         endpoint: Endpoint.Upload.finish,
+                         body: .payload(body)) { [weak self] in
+            guard let me = self, let handler = me.handler else {
+                return completionHandler(.failure(GenericError.weakObjectReleased))
+            }
+            switch $0 {
+            case .failure(let error):
+                handler.settings.queues.response.async {
+                    completionHandler(.failure(error))
+                }
+            case .success(let decoded):
+                if decoded.state == .ok {
+                    // configure
+                    me.configure(video: video,
+                                 with: uploadId,
+                                 completionHandler: completionHandler)
+                } else {
+                    return handler.settings.queues.response.async {
+                        completionHandler(.failure(GenericError.unknown))
+                    }
+                }
+            }
+        }
     }
 
     /// Delete media.

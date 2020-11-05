@@ -38,6 +38,34 @@ public extension Upload {
                 try container.encode(rawResponse.data())
             }
         }
+        /// A `struct` holding reference to a successful `Upload.picture`.
+        public struct Album: ParsedResponse, StatusEnforceable {
+            /// Init with `rawResponse`.
+            public init?(rawResponse: DynamicResponse) {
+                guard rawResponse != .none else { return nil }
+                self.rawResponse = rawResponse
+            }
+
+            /// The `rawResponse`.
+            public let rawResponse: DynamicResponse
+
+            /// The media.
+            public var media: Media? { return Media(rawResponse: rawResponse.media) }
+            /// The upload id.
+            public var sidecarId: String? { return rawResponse.clientSidecarId.string }
+            /// The status.
+            public var status: String? { return rawResponse.status.string }
+
+            // MARK: Codable
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                self.rawResponse = try DynamicResponse(data: container.decode(Data.self))
+            }
+            public func encode(to encoder: Encoder) throws {
+                var container = encoder.singleValueContainer()
+                try container.encode(rawResponse.data())
+            }
+        }
         /// A `struct` holding reference to a successful `Upload.video`.
         public struct Video: ParsedResponse, StatusEnforceable {
             /// Init with `rawResponse`.
@@ -50,7 +78,7 @@ public extension Upload {
             public let rawResponse: DynamicResponse
 
             /// The media.
-            public var urls: [URL] { return rawResponse.videoUploadUrls.array?.compactMap(URL.init) ?? [] }
+            public var media: Media? { return Media(rawResponse: rawResponse.media) }
             /// The upload id.
             public var uploadId: String? { return rawResponse.uploadId.string }
             /// The status.

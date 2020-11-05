@@ -191,7 +191,9 @@ public struct Endpoint {
         /// Photo.
         case photo = "https://i.instagram.com/rupload_igphoto/{uploadId}"
         /// Video.
-        case video = "https://i.instagram.com/api/v1/upload/video/"
+        case video = "https://i.instagram.com/rupload_igvideo/{uploadId}"
+        /// Finish upload for video.
+        case finish = "https://i.instagram.com/api/v1/media/upload_finish/"
     }
 
     /// An `enum` providing for `Users` endpoints.
