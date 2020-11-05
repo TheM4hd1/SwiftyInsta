@@ -11,7 +11,7 @@ import KeychainSwift
 
 /// An abstract `struct` holding login references .
 public struct Authentication {
-    #if os(iOS)
+    #if canImport(WebKit)
     /// Select the way you wish to authenticate.
     public enum Request {
         /// Log in with username and password.
