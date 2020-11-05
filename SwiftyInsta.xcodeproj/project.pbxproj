@@ -223,6 +223,8 @@
 		E805D296254ADD4F006E536B /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805D294254ADD4F006E536B /* Utilities.swift */; };
 		E805D297254ADD4F006E536B /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805D294254ADD4F006E536B /* Utilities.swift */; };
 		E805D298254ADD4F006E536B /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E805D294254ADD4F006E536B /* Utilities.swift */; };
+		E8403DE925542DCF00F2CE98 /* LoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D3779C22674E340023CF07 /* LoginWebView.swift */; };
+		E8403DEF25542DD700F2CE98 /* LoginWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E09FCB8522FED639000E02F1 /* LoginWebViewController.swift */; };
 		E8A611E825458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 		E8A611E925458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 		E8A611EA25458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
@@ -925,6 +927,7 @@
 				E0114B1B22F8554E00DACAC5 /* ThreadResponse.swift in Sources */,
 				E006E40422E87EFE002DB4BB /* StatusResponse.swift in Sources */,
 				E006E3F522E87EFE002DB4BB /* UserHandler.swift in Sources */,
+				E8403DEF25542DD700F2CE98 /* LoginWebViewController.swift in Sources */,
 				E006E42922E87EFE002DB4BB /* UploadMediaModel.swift in Sources */,
 				E0C84E5F2306AEE800CB6F40 /* ActivityResponse.swift in Sources */,
 				E0069559238BF97300236DBA /* EndpointQuery.swift in Sources */,
@@ -962,6 +965,7 @@
 				E0D0EF1622F8EA7B00CBFE36 /* UploadRequest.swift in Sources */,
 				E006E3F422E87EFE002DB4BB /* ProfileHandler.swift in Sources */,
 				E0B9940F22F3BF8B0036BFA5 /* MediaResponse.swift in Sources */,
+				E8403DE925542DCF00F2CE98 /* LoginWebView.swift in Sources */,
 				E0069554238BEFB500236DBA /* EndpointRepresentable.swift in Sources */,
 				E006E40622E87EFE002DB4BB /* ChalllengeForm.swift in Sources */,
 				E076015F22F198B900F8961F /* Brand.swift in Sources */,
