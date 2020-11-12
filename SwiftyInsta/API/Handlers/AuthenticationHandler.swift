@@ -136,18 +136,23 @@ final class AuthenticationHandler: Handler {
                                                                             data: cookies.data)
                                         // actually authenticate.
                                         handler.authenticate(with: .cache(cache), completionHandler: completionHandler)
-                                    } else if response.invalidCredentials ?? false {
-                                        if let errorType = response.errorType {
-                                            if errorType.elementsEqual("invalid_user") {
-                                                user.response = .failure
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.invalidUsername))
-                                                }
-                                            } else {
-                                                user.response = .failure
-                                                handler.settings.queues.response.async {
-                                                    completionHandler(.failure(AuthenticationError.invalidPassword))
-                                                }
+                                    } else {
+                                        user.response = .failure
+                                        handler.settings.queues.response.async {
+                                            completionHandler(.failure(GenericError.custom("Unknown error.")))
+                                        }
+                                    }
+                                } else if response.invalidCredentials ?? false {
+                                    if let errorType = response.errorType {
+                                        if errorType.elementsEqual("invalid_user") {
+                                            user.response = .failure
+                                            handler.settings.queues.response.async {
+                                                completionHandler(.failure(AuthenticationError.invalidUsername))
+                                            }
+                                        } else {
+                                            user.response = .failure
+                                            handler.settings.queues.response.async {
+                                                completionHandler(.failure(AuthenticationError.invalidPassword))
                                             }
                                         }
                                     }
