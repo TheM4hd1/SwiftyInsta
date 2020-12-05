@@ -57,8 +57,8 @@ public struct Device: Codable {
 
     init(brand: String,
          model: String,
-         phoneGuid: UUID,
-         deviceGuid: UUID,
+         phoneGuid: UUID = .init(),
+         deviceGuid: UUID = .init(),
          googleAdId: UUID,
          rankToken: UUID,
          androidBoardName: String,
@@ -74,8 +74,8 @@ public struct Device: Codable {
         self.brand = brand
         self.id = "android-\(deviceGuid.uuidString.md5().prefix(16))"
         self.model = model
-        self.phoneGuid = .init()// phoneGuid
-        self.deviceGuid = .init()// deviceGuid
+        self.phoneGuid = phoneGuid
+        self.deviceGuid = deviceGuid
         self.googleAdId = googleAdId
         self.rankToken = rankToken
         self.androidBoardName = androidBoardName
