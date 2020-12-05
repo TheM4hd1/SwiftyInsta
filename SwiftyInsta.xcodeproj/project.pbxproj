@@ -233,6 +233,10 @@
 		E8A611E925458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 		E8A611EA25458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
 		E8A611EB25458D4D003EAF16 /* SwCrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A611E725458D4D003EAF16 /* SwCrypt.swift */; };
+		E8C58ED5257B907C007327A8 /* UserAgentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C58ED4257B907C007327A8 /* UserAgentHelper.swift */; };
+		E8C58ED6257B907C007327A8 /* UserAgentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C58ED4257B907C007327A8 /* UserAgentHelper.swift */; };
+		E8C58ED7257B907C007327A8 /* UserAgentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C58ED4257B907C007327A8 /* UserAgentHelper.swift */; };
+		E8C58ED8257B907C007327A8 /* UserAgentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C58ED4257B907C007327A8 /* UserAgentHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -304,6 +308,7 @@
 		E0F8D51B22F9E4CF0004309C /* SupportedCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedCapabilities.swift; sourceTree = "<group>"; };
 		E805D294254ADD4F006E536B /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		E8A611E725458D4D003EAF16 /* SwCrypt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwCrypt.swift; sourceTree = "<group>"; };
+		E8C58ED4257B907C007327A8 /* UserAgentHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAgentHelper.swift; sourceTree = "<group>"; };
 		E9497D8DD2D1B4C4F52B1DC5 /* Pods-SwiftyInsta.iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftyInsta.iOS.release.xcconfig"; path = "Target Support Files/Pods-SwiftyInsta.iOS/Pods-SwiftyInsta.iOS.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -410,6 +415,7 @@
 				1104CD0A2180627400F855BA /* Error.swift */,
 				110B3F9A21A2CE4D0019523A /* Extensions.swift */,
 				E805D294254ADD4F006E536B /* Utilities.swift */,
+				E8C58ED4257B907C007327A8 /* UserAgentHelper.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -883,6 +889,7 @@
 				11C106CF218DE9B20014D0E5 /* PaginationParameters.swift in Sources */,
 				E0628FCC22FDEAA2007E3BEE /* Authentication.swift in Sources */,
 				1104CD0B2180627400F855BA /* Error.swift in Sources */,
+				E8C58ED5257B907C007327A8 /* UserAgentHelper.swift in Sources */,
 				E0628FD122FDEF10007E3BEE /* Credentials.swift in Sources */,
 				E007B1B622F8207F00750E6D /* CommentResponse.swift in Sources */,
 				E0F49BA122E49E34004C3E7F /* FeedHandler.swift in Sources */,
@@ -941,6 +948,7 @@
 				E004434C2345E4D2000497DF /* Endpoint.swift in Sources */,
 				E006E43622E87EFE002DB4BB /* Extensions.swift in Sources */,
 				E006E41322E87EFE002DB4BB /* PaginationParameters.swift in Sources */,
+				E8C58ED6257B907C007327A8 /* UserAgentHelper.swift in Sources */,
 				E0D0EF1B22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
 				E0337968233118AE00C176FC /* (null) in Sources */,
 				E006E3F022E87EFE002DB4BB /* CommentHandler.swift in Sources */,
@@ -999,6 +1007,7 @@
 				E004434D2345E4D2000497DF /* Endpoint.swift in Sources */,
 				E006E48322E87EFF002DB4BB /* Extensions.swift in Sources */,
 				E006E46022E87EFF002DB4BB /* PaginationParameters.swift in Sources */,
+				E8C58ED7257B907C007327A8 /* UserAgentHelper.swift in Sources */,
 				E0D0EF1C22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
 				E0337969233118AE00C176FC /* (null) in Sources */,
 				E006E43D22E87EFF002DB4BB /* CommentHandler.swift in Sources */,
@@ -1057,6 +1066,7 @@
 				E004434E2345E4D2000497DF /* Endpoint.swift in Sources */,
 				E006E4D022E87F00002DB4BB /* Extensions.swift in Sources */,
 				E006E4AD22E87F00002DB4BB /* PaginationParameters.swift in Sources */,
+				E8C58ED8257B907C007327A8 /* UserAgentHelper.swift in Sources */,
 				E0D0EF1D22F8EBBB00CBFE36 /* UploadResponse.swift in Sources */,
 				E033796A233118AF00C176FC /* (null) in Sources */,
 				E006E48A22E87F00002DB4BB /* CommentHandler.swift in Sources */,
