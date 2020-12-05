@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct Constants {
     private init() {}
@@ -24,7 +25,7 @@ struct Constants {
     static let xIgAppId = "X-IG-App-ID"
     static let xIgAppIdValue = "124024574287414"
     static let userAgentKey = "User-Agent"
-    static let userAgentValue = "Instagram 160.1.0.31.120 (iPhone9,1; iOS 13_5; en_US; en-US; scale=2.00; 750x1334; 246979827) AppleWebKit/420+"
+    static let userAgentValue = "Instagram 160.1.0.31.120 (\(getIdentifier()); iOS \(getOsVersion()); en_US; en-US; scale=2.00; \(getScreenSize()); 246979827) AppleWebKit/420+"
     static let contentTypeKey = "Content-Type"
     static let contentTypeApplicationFormValue = "application/x-www-form-urlencoded"
     static let igSignatureKey = "signed_body"
@@ -37,4 +38,37 @@ struct Constants {
     static let countValue = "1"
     static let rankTokenKey = "rank_token"
     static let bloksVersioningId = "7b2216598d8fcf84fbda65652788cb12be5aa024c4ea5e03deeb2b81a383c9e0"
+    
+    static func getIdentifier() -> String {
+        #if os(iOS)
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machineMirror = Mirror(reflecting: systemInfo.machine)
+        let identifier = machineMirror.children.reduce("") { identifier, element in
+            guard let value = element.value as? Int8, value != 0 else { return identifier }
+            return identifier + String(UnicodeScalar(UInt8(value)))
+        }
+        return identifier
+        #else
+        return "iPhone9,1"
+        #endif
+    }
+    
+    static func getOsVersion() -> String {
+        #if os(iOS)
+        return UIDevice.current.systemVersion.replacingOccurrences(of: ".", with: "_")
+        #else
+        return "13_5"
+        #endif
+    }
+    
+    static func getScreenSize(scale: CGFloat = 2.0) -> String {
+        #if os(iOS)
+        let width = Int(UIScreen.main.bounds.width * scale)
+        let height = Int(UIScreen.main.bounds.height * scale)
+        return String(format: "%dx%d", arguments: [width, height])
+        #else
+        return "750x1334"
+        #endif
+    }
 }
