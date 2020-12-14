@@ -19,12 +19,38 @@ final class AuthenticationHandler: Handler {
         handler.response = cache
         // fetch the user.
         handler.users.current(delay: 0...0) { [weak self] in
+            guard let me = self, let handler = me.handler else { return completionHandler(.failure(GenericError.weakObjectReleased)) }
             switch $0 {
             case .success(let user):
                 // update user info alone.
                 self?.handler.response?.storage?.user = user
                 cache.storage?.user = user
-                completionHandler(.success(cache))
+                // user already logged in. We send a request to update `Authorization` header.
+                let params: [String: Any] = ["id": true,
+                                             "server_config_retrieval": 1,
+                                             "_csrftoken": cache.storage?.csrfToken ?? ""]
+                me.requests.fetch(method: .post,
+                                  url: Result { try Endpoint.Accounts.launcherSync.url() },
+                                  body: .parameters(params),
+                                  headers: [:],
+                                  delay: nil) {
+                    switch $0 {
+                    case .success((_, let response?)):
+                        guard let headers = response.allHeaderFields as? [String: String] else {
+                            return handler.settings.queues.response.async {
+                                completionHandler(.failure(GenericError.custom("Cannot fetch headers.")))
+                            }
+                        }
+                        guard let authorization = headers["ig-set-authorization"] else { return }
+                        /// add `Authorization` header to default `headers`.
+                        me.handler.settings.headers.updateValue(authorization, forKey: "Authorization")
+                        completionHandler(.success(cache))
+                    case .failure(let err):
+                        completionHandler(.failure(err))
+                    default:
+                        fatalError()
+                    }
+                }
             case .failure(let error): completionHandler(.failure(error))
             }
         }

@@ -24,7 +24,7 @@ struct Constants {
     static let xIgAppId = "X-IG-App-ID"
     static let xIgAppIdValue = "124024574287414"
     static let userAgentKey = "User-Agent"
-    static let userAgentValue = "Instagram 160.1.0.31.120 (iPhone9,1; iOS 13_5; en_US; en-US; scale=2.00; 750x1334; 246979827) AppleWebKit/420+"
+    static let userAgentValue = getUserAgent()
     static let contentTypeKey = "Content-Type"
     static let contentTypeApplicationFormValue = "application/x-www-form-urlencoded"
     static let igSignatureKey = "signed_body"
@@ -37,4 +37,12 @@ struct Constants {
     static let countValue = "1"
     static let rankTokenKey = "rank_token"
     static let bloksVersioningId = "7b2216598d8fcf84fbda65652788cb12be5aa024c4ea5e03deeb2b81a383c9e0"
+
+    static func getUserAgent() -> String {
+        #if os(iOS)
+        return UserAgentHelper.generate()
+        #else
+        return "Instagram 160.1.0.31.120 iPhone9,1; iOS 13_5; en_US; en-US; scale=2.00; 750x1334; 246979827) AppleWebKit/420+"
+        #endif
+    }
 }
