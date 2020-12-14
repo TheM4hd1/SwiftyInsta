@@ -54,8 +54,10 @@ public struct Authentication {
         /// Store the cache **if valid** in the user's keychain.
         /// You can save the returned value safely in your `UserDefaults`, or your database
         /// and then retrieve the `Response` when needed.
+        /// - Parameters:
+        ///     - access: An optional `KeychainSwiftAccessOptions` value.
         /// - Returns: The `key` used to store `Response` in your keychahin (the logged user's `pk`). `nil` otherwise.
-        public func persist() -> String? {
+        public func persist(withAccess access: KeychainSwiftAccessOptions? = nil) -> String? {
             let encoder = JSONEncoder()
 
             guard let dsUserId = storage?.dsUserId,
@@ -63,7 +65,7 @@ public struct Authentication {
                 let data = try? encoder.encode(self) else { return nil }
             // update keychain.
             let keychain = KeychainSwift()
-            keychain.set(data, forKey: dsUserId)
+            keychain.set(data, forKey: dsUserId, withAccess: access)
             return dsUserId
         }
 
