@@ -18,6 +18,7 @@ public final class MessageHandler: Handler {
                       page: AnyPaginatedResponse.self,
                       with: paginationParameters,
                       endpoint: { Endpoint.Direct.inbox.next($0.nextMaxId) },
+                      next: { $0.inbox.oldestCursor.string },
                       splice: { $0.rawResponse.inbox.threads.array?.compactMap(Thread.init) ?? [] },
                       update: updateHandler,
                       completion: completionHandler)
