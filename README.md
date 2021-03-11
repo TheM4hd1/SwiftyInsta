@@ -1,4 +1,10 @@
 # SwiftyInsta
+
+> Please notice **SwiftyInsta** may not be actively maintained at the moment of you reading this note.<br />
+> Refer to [#244](https://github.com/TheM4hd1/SwiftyInsta/issues/244) for more info.
+>
+<br />
+
 [![CI Status](https://img.shields.io/travis/TheM4hd1/SwiftyInsta/master.svg?style=flat)](https://travis-ci.org/TheM4hd1/SwiftyInsta)
 [![Version](https://img.shields.io/cocoapods/v/SwiftyInsta.svg?style=flat)](https://cocoapods.org/pods/SwiftyInsta)
 [![License](https://img.shields.io/cocoapods/l/SwiftyInsta.svg?style=flat)](https://github.com/TheM4hd1/SwiftyInsta/LICENSE.md)
@@ -142,7 +148,13 @@ Futhermore, responses now display every single value contained in the `JSON` fil
 
 _Pull requests_ and _issues_ are more than welcome.
 
-[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/0)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/0)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/1)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/1)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/2)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/2)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/3)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/3)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/4)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/4)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/5)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/5)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/6)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/6)[![](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/images/7)](https://sourcerer.io/fame/TheM4hd1/TheM4hd1/SwiftyInsta/links/7)
+<!-- Remove sourcer.io because of it being discontinued. -->
+### Authors
+- [Mahdi Makhdumi (**@TheM4hd1**)](https://github.com/them4hd1)
+- [Stefano Bertagno (**@sbertix**)](https://github.com/sbertix)
+
+> We're actively looking for maintainers.<br />
+> Refer to [#244](https://github.com/TheM4hd1/SwiftyInsta/issues/244) for more info.
 
 ## License
 
