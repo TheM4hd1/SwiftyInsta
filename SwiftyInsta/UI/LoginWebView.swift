@@ -18,6 +18,8 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     /// Called once the flow is completed.
     var completionHandler: ((Result<[HTTPCookie], Error>) -> Void)!
 
+    private var cookieTimer: Timer?
+
     // MARK: Init
     @available(*, unavailable, message: "using a custom `userAgent` is no longer supported")
     public init(frame: CGRect, userAgent: String?, didReachEndOfLoginFlow: (() -> Void)? = nil) {
@@ -34,6 +36,7 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         self.didReachEndOfLoginFlow = didReachEndOfLoginFlow
         super.init(frame: frame, configuration: configuration)
         self.navigationDelegate = self
+        setCookieTimer()
     }
 
     @available(*, unavailable, message: "use `init(frame:didReachEndOfLoginFlow:)` instead.")
@@ -79,9 +82,10 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     }
 
     // MARK: Clean cookies
-    private func fetchCookies() {
-        configuration.websiteDataStore.httpCookieStore.getAllCookies { [weak self] in
-            self?.completionHandler?(.success($0))
+
+    private func setCookieTimer() {
+        cookieTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            self?.tryFetchingCookies()
         }
     }
 
@@ -99,6 +103,9 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
             self?.navigationDelegate = nil
             // notify user.
             self?.completionHandler?(.success($0))
+            // deinit timer
+            self?.cookieTimer?.invalidate()
+            self?.cookieTimer = nil
         }
     }
 
@@ -109,20 +116,5 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
                                                 completionHandler: completionHandler)
     }
 
-    // MARK: Navigation delegate
-    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        switch webView.url?.absoluteString {
-        case "https://www.instagram.com/"?:
-            // notify user.
-            didReachEndOfLoginFlow?()
-            // fetch cookies.
-            fetchCookies()
-            // no need to check anymore.
-            navigationDelegate = nil
-        default:
-            // try fetching cookies.
-            tryFetchingCookies()
-        }
-    }
 }
 #endif
