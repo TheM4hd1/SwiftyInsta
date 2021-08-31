@@ -1,0 +1,21 @@
+name:                  close-prs
+on:
+  pull_request_target:
+    types:             [opened, reopened]
+
+jobs:
+  state:
+    runs-on:           ubuntu-latest
+    steps:
+      - name:          Close pull
+        uses:          peter-evans/close-pull@v1
+        with:
+          comment:     >
+            Hey @{{ author }},<br /><br />
+            This repo is not currenlty maintained, and it's to be considered as _read-only_: **pull requests**, such as this one, **will not be considered**.<br />
+            Please refer to #244 for more info.<br /><br />
+            Check out [**Swiftagram**](https://github.com/sbertix/Swiftagram) if you're looking for up-to-date alternatives to **SwiftyInsta**.<br /><br />
+      - name:          initial labeling
+        uses:          andymckay/labeler@master
+        with:
+          add-labels:  "legacy"
