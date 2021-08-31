@@ -33,10 +33,4 @@ public class PaginationParameters {
         self.maxPagesToLoad = paginationParameters.maxPagesToLoad
     }
     public static let everything = PaginationParameters(startingAt: nil, maxPagesToLoad: .max)
-
-    // MARK: Obsolete
-    @available(*, unavailable, message: "use `init` instead.")
-    public static func maxPagesToLoad(maxPages: Int) -> PaginationParameters {
-        fatalError("`maxPagesToLoad(maxPages:)` was removed.")
-    }
 }

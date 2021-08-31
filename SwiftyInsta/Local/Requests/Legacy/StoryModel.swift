@@ -20,7 +20,7 @@ public struct ConfigureStoryUploadModel: Codable {
     public var sourceType: String
     public var caption: String
     public var uploadId: String
-    //var edits
+    // var edits
     public var disableComments: Bool
     public var configureMode: Int
     public var cameraPosition: String

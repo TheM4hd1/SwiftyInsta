@@ -10,7 +10,6 @@
 import UIKit
 import WebKit
 
-@available(iOS 11, OSX 10.11, macCatalyst 13, *)
 /// A pre-built `UIViewController` displaying a `LoginWebView`.
 public class LoginWebViewController: UIViewController {
     /// The handler.
@@ -53,12 +52,6 @@ public class LoginWebViewController: UIViewController {
     }
 
     // MARK: Init
-    @available(*, unavailable, message: "using a custom `userAgent` is no longer supported")
-    public init(userAgent: String?,
-                completionHandler: @escaping (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void) {
-        fatalError("Unavailable method.")
-    }
-
     public init(completionHandler: @escaping (LoginWebViewController, Result<(Authentication.Response, APIHandler), Error>) -> Void) {
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)

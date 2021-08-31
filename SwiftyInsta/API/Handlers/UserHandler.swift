@@ -293,14 +293,6 @@ public final class UserHandler: Handler {
                           completion: completionHandler)
     }
 
-    @available(*, unavailable, message: "Instagram no longer supports this endpoint.")
-    /// Get recent following activities.
-    public func recentFollowingActivities(with paginationParameters: PaginationParameters,
-                                          updateHandler: PaginationUpdateHandler<RecentActivity.Story, AnyPaginatedResponse>?,
-                                          completionHandler: @escaping PaginationCompletionHandler<RecentActivity.Story>) {
-        fatalError("Instagram no longer supports this endpoint.")
-    }
-
     /// Unfollow user.
     public func remove(follower user: User.Reference, completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         guard let storage = handler.response?.storage else {

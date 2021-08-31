@@ -10,7 +10,6 @@
 import WebKit
 
 // MARK: Views
-@available(iOS 11, OSX 10.13, macCatalyst 13, *)
 public class LoginWebView: WKWebView, WKNavigationDelegate {
     /// Called when reaching the end of the login flow.
     /// You should probably hide the `InstagramLoginWebView` and notify the user with an activity indicator.
@@ -21,11 +20,6 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
     private var cookieTimer: Timer?
 
     // MARK: Init
-    @available(*, unavailable, message: "using a custom `userAgent` is no longer supported")
-    public init(frame: CGRect, userAgent: String?, didReachEndOfLoginFlow: (() -> Void)? = nil) {
-        fatalError("Unavailable method.")
-    }
-
     public init(frame: CGRect, didReachEndOfLoginFlow: (() -> Void)? = nil) {
         // delete all cookies.
         HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
@@ -39,16 +33,6 @@ public class LoginWebView: WKWebView, WKNavigationDelegate {
         setCookieTimer()
     }
 
-    @available(*, unavailable, message: "use `init(frame:didReachEndOfLoginFlow:)` instead.")
-    public init(frame: CGRect,
-                improvingReadability shouldImproveReadability: Bool,
-                didReachEndOfLoginFlow: (() -> Void)? = nil) {
-        fatalError("init(frame:improvingReadabililty:didReachEndOfLoginFlow:) has been removed")
-    }
-    @available(*, unavailable, message: "use `init(frame:configuration:didReachEndOfLoginFlow:didSuccessfullyLogIn:completionHandler:)` instead.")
-    private override init(frame: CGRect, configuration: WKWebViewConfiguration) {
-        fatalError("init(frame:, configuration:) has been removed")
-    }
     @available(*, unavailable)
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
