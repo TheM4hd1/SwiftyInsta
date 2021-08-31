@@ -1,8 +1,9 @@
-# SwiftyInsta
+# SwiftyInsta (legacy)
 
-> Please notice **SwiftyInsta** may not be actively maintained at the moment of you reading this note.<br />
-> Refer to [#244](https://github.com/TheM4hd1/SwiftyInsta/issues/244) for more info.
->
+> Please notice **SwiftyInsta** is no longer actively maintained.<br />
+> Refer to [#244](https://github.com/TheM4hd1/SwiftyInsta/issues/244) for more info.<br />
+> Check out [**Swiftagram**](https://github.com/sbertix/Swiftagram) if you're looking for up-to-date alternatives.<br />
+
 <br />
 
 [![CI Status](https://img.shields.io/travis/TheM4hd1/SwiftyInsta/master.svg?style=flat)](https://travis-ci.org/TheM4hd1/SwiftyInsta)
@@ -85,7 +86,7 @@ self.credentials.code = /* the code */
 And the `completionHandler` in the previous `authenticate(with: completionHandler:)` will automatically catch the response.
 
 
-### `LoginWebViewController` (>= iOS 12 only)
+### `LoginWebViewController`
 ```swift
 let login = LoginWebViewController { controller, result in
     controller.dismiss(animated: true, completion: nil)
@@ -150,8 +151,8 @@ _Pull requests_ and _issues_ are more than welcome.
 
 <!-- Remove sourcer.io because of it being discontinued. -->
 ### Authors
-- [Mahdi Makhdumi (**@TheM4hd1**)](https://github.com/them4hd1)
-- [Stefano Bertagno (**@sbertix**)](https://github.com/sbertix)
+- [Mahdi Makhdumi (**@TheM4hd1**)](https://github.com/them4hd1), `1.*` _maintainer_
+- [Stefano Bertagno (**@sbertix**)](https://github.com/sbertix), `2.*` _maintainer_
 
 > We're actively looking for maintainers.<br />
 > Refer to [#244](https://github.com/TheM4hd1/SwiftyInsta/issues/244) for more info.
